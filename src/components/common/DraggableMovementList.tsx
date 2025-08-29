@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { UserMovement } from '@/models/types';
 import {
     closestCenter,
@@ -43,57 +45,59 @@ function DraggableMovementItem({ movement, index, onRemove }: DraggableMovementI
   };
 
   return (
-    <div
+    <Card 
       ref={setNodeRef}
       style={style}
-      className={`p-4 bg-slate-800 border-2 rounded-lg transition-all ${
-        isDragging ? 'border-blue-500 shadow-lg' : 'border-slate-600 hover:border-slate-500'
+      className={`transition-all ${
+        isDragging ? 'ring-2 ring-primary shadow-lg' : ''
       }`}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {/* Drag Handle */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-2 text-slate-400 hover:text-slate-300 transition-colors"
-            aria-label="Drag to reorder"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-            </svg>
-          </div>
-          
-          <span className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center text-sm font-medium text-slate-50">
-            {index + 1}
-          </span>
-          
-          <div>
-            <h3 className="font-medium text-slate-50">{movement.name}</h3>
-            <p className="text-sm text-slate-300">{movement.muscleGroup}</p>
-            <span className="inline-block mt-1 px-2 py-1 bg-blue-600 text-blue-100 text-xs rounded capitalize">
-              {movement.trackingType}
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {/* Drag Handle */}
+            <div
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Drag to reorder"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+              </svg>
+            </div>
+            
+            <span className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-sm font-medium">
+              {index + 1}
             </span>
+            
+            <div>
+              <h3 className="font-medium">{movement.name}</h3>
+              <p className="text-sm text-muted-foreground">{movement.muscleGroup}</p>
+              <span className="inline-block mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded capitalize">
+                {movement.trackingType}
+              </span>
+            </div>
+          </div>
+        
+          <div className="flex items-center space-x-2">
+            <Button size="sm" asChild>
+              <Link href={`/movement/${movement.id}`}>
+                Track
+              </Link>
+            </Button>
+            <Button 
+              size="sm" 
+              variant="destructive"
+              onClick={() => onRemove(movement.id)}
+              aria-label={`Remove ${movement.name}`}
+            >
+              Remove
+            </Button>
           </div>
         </div>
-        
-        <div className="flex items-center space-x-2">
-          <Link
-            href={`/movement/${movement.id}`}
-            className="px-3 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors"
-          >
-            Track
-          </Link>
-          <button
-            onClick={() => onRemove(movement.id)}
-            className="px-3 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors"
-            aria-label={`Remove ${movement.name}`}
-          >
-            Remove
-          </button>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -129,14 +133,14 @@ export default function DraggableMovementList({
 
   if (movements.length === 0) {
     return (
-      <div className="text-center py-12 bg-slate-800 rounded-lg border-2 border-dashed border-slate-600">
-        <div className="text-slate-400 mb-4">
+      <div className="text-center py-12 border-2 border-dashed border-muted rounded-lg">
+        <div className="text-muted-foreground mb-4">
           <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-slate-50 mb-2">No movements added yet</h3>
-        <p className="text-slate-300 mb-4">
+        <h3 className="text-lg font-medium mb-2">No movements added yet</h3>
+        <p className="text-muted-foreground mb-4">
           Add movements from the library to build your workout routine.
         </p>
       </div>
@@ -152,10 +156,10 @@ export default function DraggableMovementList({
       <SortableContext items={movements.map(m => m.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-muted-foreground">
               Drag movements to reorder them in your workout
             </p>
-            <span className="text-xs text-slate-400 bg-slate-700 px-2 py-1 rounded">
+            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
               {movements.length} movement{movements.length !== 1 ? 's' : ''}
             </span>
           </div>

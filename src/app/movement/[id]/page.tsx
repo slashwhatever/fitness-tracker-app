@@ -130,12 +130,14 @@ export default function MovementTrackingPage() {
      const success = persistenceService.saveSet(duplicatedSet);
      if (success) {
        setSets(prev => [duplicatedSet, ...prev]);
-       // Force timer restart with a clean state cycle
+       // Always ensure timer starts fresh - even if it was previously inactive
        setIsRestTimerActive(false);
-       // Use a longer timeout to ensure clean state transition
-       setTimeout(() => {
-         setIsRestTimerActive(true);
-       }, 100);
+       // Use requestAnimationFrame to ensure clean state update
+       requestAnimationFrame(() => {
+         setTimeout(() => {
+           setIsRestTimerActive(true);
+         }, 10);
+       });
      }
    };
 
@@ -152,57 +154,62 @@ export default function MovementTrackingPage() {
          const success = persistenceService.saveSet(newSet);
     if (success) {
       setSets(prev => [newSet, ...prev]);
-      // Ensure timer is reset and restarted
+      // Always ensure timer starts fresh - even if it was previously inactive
       setIsRestTimerActive(false);
-      setTimeout(() => setIsRestTimerActive(true), 50);
+      // Use requestAnimationFrame to ensure clean state update
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setIsRestTimerActive(true);
+        }, 10);
+      });
     }
    };
 
   if (!movement) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading movement...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading movement...</p>
         </div>
       </div>
     );
   }
 
              return (
-       <main className="min-h-screen bg-slate-900 p-8">
+       <main className="min-h-screen bg-background p-8">
          <div className="max-w-4xl mx-auto">
-           <Link href="/" className="text-blue-400 hover:text-blue-300 mb-4 block">
+           <Link href="/" className="text-primary hover:text-primary/80 mb-4 block">
              ← Back to Dashboard
            </Link>
           
                   {/* Movement Header */}
-          <div className="bg-slate-800 border border-slate-600 rounded-lg shadow-md p-6 mb-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-3xl font-bold text-slate-50">{movement.name}</h1>
-                <p className="text-slate-300 mt-2">{movement.muscleGroup}</p>
-              <span className="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full capitalize">
-                {movement.trackingType}
-              </span>
+          <div className="bg-card border border-border rounded-lg shadow-md p-6 mb-6">
+                          <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">{movement.name}</h1>
+                  <p className="text-muted-foreground mt-2">{movement.muscleGroup}</p>
+                <span className="inline-block mt-2 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full capitalize">
+                  {movement.trackingType}
+                </span>
             </div>
             {personalRecords && (
               <div className="text-right">
-                <p className="text-sm text-slate-400">Personal Record</p>
-                <p className="text-2xl font-bold text-green-400">{personalRecords.value}</p>
+                <p className="text-sm text-muted-foreground">Personal Record</p>
+                <p className="text-2xl font-bold text-green-500">{personalRecords.value}</p>
                 {personalRecords.details && (
-                  <p className="text-sm text-slate-300">{personalRecords.details}</p>
+                  <p className="text-sm text-muted-foreground">{personalRecords.details}</p>
                 )}
                 {personalRecords.oneRM && (
-                  <div className="mt-2 p-2 bg-blue-900 border border-blue-700 rounded">
-                    <p className="text-xs text-blue-300">Estimated 1RM</p>
-                    <p className="text-lg font-bold text-blue-100">{personalRecords.oneRM.value}</p>
-                    <p className="text-xs text-blue-300">
+                  <div className="mt-2 p-2 bg-primary/10 border border-primary/20 rounded">
+                    <p className="text-xs text-primary/70">Estimated 1RM</p>
+                    <p className="text-lg font-bold text-primary">{personalRecords.oneRM.value}</p>
+                    <p className="text-xs text-primary/70">
                       From {personalRecords.oneRM.fromWeight} lbs × {personalRecords.oneRM.fromReps}
                     </p>
                   </div>
                 )}
-                <p className="text-xs text-slate-500 mt-2">{personalRecords.date}</p>
+                <p className="text-xs text-muted-foreground mt-2">{personalRecords.date}</p>
               </div>
             )}
           </div>

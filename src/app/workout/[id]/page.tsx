@@ -2,6 +2,8 @@
 
 import DraggableMovementList from '@/components/common/DraggableMovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserMovement, Workout } from '@/models/types';
 import { persistenceService } from '@/services/persistenceService';
 import Link from 'next/link';
@@ -69,33 +71,38 @@ export default function WorkoutDetailPage() {
       return (
       <main className="min-h-screen bg-background p-8">
         <div className="max-w-4xl mx-auto">
-          <Link href="/" className="text-primary hover:text-blue-400 mb-4 block">
-            ← Back to Dashboard
-          </Link>
+          <Button variant="ghost" asChild className="mb-4 -ml-4">
+            <Link href="/" className="flex items-center space-x-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span>Back to Dashboard</span>
+            </Link>
+          </Button>
           
-          <div className="bg-card rounded-lg shadow-md p-6">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-card-foreground">{workout.name}</h1>
-                             {workout.description && (
-                 <p className="text-muted-foreground mt-2">{workout.description}</p>
-               )}
-            </div>
-            <button
-              onClick={() => setIsSelectionModalOpen(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Add Movement
-            </button>
-          </div>
-
-                     <DraggableMovementList
-             movements={workout.userMovements}
-             onReorder={handleReorderMovements}
-             onRemove={handleRemoveMovement}
-           />
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-3xl">{workout.name}</CardTitle>
+                  {workout.description && (
+                    <p className="text-muted-foreground mt-2">{workout.description}</p>
+                  )}
+                </div>
+                <Button onClick={() => setIsSelectionModalOpen(true)}>
+                  Add Movement
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <DraggableMovementList
+                movements={workout.userMovements}
+                onReorder={handleReorderMovements}
+                onRemove={handleRemoveMovement}
+              />
+            </CardContent>
+          </Card>
         </div>
-      </div>
 
       <MovementSelectionModal
         isOpen={isSelectionModalOpen}

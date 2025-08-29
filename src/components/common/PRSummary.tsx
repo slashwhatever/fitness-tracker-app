@@ -1,5 +1,6 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserMovement } from '@/models/types';
 import { persistenceService } from '@/services/persistenceService';
 import { useEffect, useState } from 'react';
@@ -127,33 +128,37 @@ export default function PRSummary() {
   };
 
   return (
-    <div className="bg-slate-800 border border-slate-600 rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-slate-50 mb-4">Personal Records</h3>
+    <Card>
+      <CardHeader>
+        <CardTitle>Personal Records</CardTitle>
+      </CardHeader>
+      <CardContent>
       
-              {personalRecords.length === 0 ? (
+                      {personalRecords.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-slate-400">No personal records yet.</p>
-            <p className="text-sm text-slate-500 mt-2">Start logging sets to track your PRs!</p>
+            <p className="text-muted-foreground">No personal records yet.</p>
+            <p className="text-sm text-muted-foreground mt-2">Start logging sets to track your PRs!</p>
           </div>
-      ) : (
-        <div className="space-y-4">
-          {personalRecords.map((pr, index) => (
-                         <div key={`${pr.movementName}-${index}`} className="flex items-center justify-between p-3 border border-slate-600 rounded-lg bg-slate-700">
-               <div className="flex items-center space-x-3">
-                 {getTypeIcon(pr.type)}
-                 <div>
-                   <p className="font-medium text-slate-50">{pr.movementName}</p>
-                   <p className="text-sm text-slate-300">{pr.date}</p>
-                 </div>
-               </div>
-               <div className="text-right">
-                 <p className="font-bold text-lg text-slate-50">{pr.value}</p>
-                 <p className="text-xs text-slate-400 uppercase">PR</p>
-               </div>
-             </div>
-          ))}
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="space-y-4">
+            {personalRecords.map((pr, index) => (
+              <div key={`${pr.movementName}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center space-x-3">
+                  {getTypeIcon(pr.type)}
+                  <div>
+                    <p className="font-medium">{pr.movementName}</p>
+                    <p className="text-sm text-muted-foreground">{pr.date}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-lg">{pr.value}</p>
+                  <p className="text-xs text-muted-foreground uppercase">PR</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

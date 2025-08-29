@@ -1,3 +1,5 @@
+import { Card, CardContent } from '@/components/ui/card';
+
 interface AnalyticsCardProps {
   title: string;
   value: string | number;
@@ -35,24 +37,26 @@ export default function AnalyticsCard({ title, value, subtitle, trend, icon }: A
   };
 
   return (
-    <div className="bg-slate-800 border border-slate-600 rounded-lg shadow-md p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-slate-300">{title}</p>
-          <p className="text-3xl font-bold text-slate-50 mt-2">{value}</p>
-          {subtitle && (
-            <div className="flex items-center mt-2">
-              {getTrendIcon()}
-              <p className={`text-sm ml-1 ${getTrendColor()}`}>{subtitle}</p>
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-3xl font-bold mt-2">{value}</p>
+            {subtitle && (
+              <div className="flex items-center mt-2">
+                {getTrendIcon()}
+                <p className={`text-sm ml-1 ${getTrendColor()}`}>{subtitle}</p>
+              </div>
+            )}
+          </div>
+          {icon && (
+            <div className="text-muted-foreground">
+              {icon}
             </div>
           )}
         </div>
-        {icon && (
-          <div className="text-slate-400">
-            {icon}
-          </div>
-        )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

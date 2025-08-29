@@ -64,6 +64,11 @@ export default function RestTimer({ isActive, duration, onComplete, onSkip }: Re
       setHasNotified(false);
       setIsPaused(false);
       requestNotificationPermission();
+    } else {
+      // When timer becomes inactive, reset all state
+      setTimeLeft(duration);
+      setHasNotified(false);
+      setIsPaused(false);
     }
   }, [isActive, duration, requestNotificationPermission]);
 

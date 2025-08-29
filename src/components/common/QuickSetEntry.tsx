@@ -146,9 +146,6 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
         </div>
       </div>
 
-      <div className="text-xs text-slate-400 text-center">
-        💡 Tip: Swipe up/down on input fields to quickly adjust values, or use &quot;Repeat Last&quot; for identical sets
-      </div>
     </div>
   );
 }
