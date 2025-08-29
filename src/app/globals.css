@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* WCAG AA Compliant Dark Theme for Gym Environment */
+:root {
+  /* Dark theme by default as per PRD requirements */
+  --background: #0f172a; /* slate-900 */
+  --foreground: #f8fafc; /* slate-50 */
+  --card: #1e293b; /* slate-800 */
+  --card-foreground: #f8fafc; /* slate-50 */
+  --primary: #3b82f6; /* blue-500 */
+  --primary-foreground: #ffffff;
+  --secondary: #475569; /* slate-600 */
+  --secondary-foreground: #f8fafc;
+  --muted: #334155; /* slate-700 */
+  --muted-foreground: #cbd5e1; /* slate-300 */
+  --border: #475569; /* slate-600 */
+  --input: #1e293b; /* slate-800 */
+  --ring: #3b82f6; /* blue-500 */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --error: #ef4444; /* red-500 */
+}
+
+/* Light theme override */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ffffff;
+    --foreground: #0f172a; /* slate-900 */
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --primary: #2563eb; /* blue-600 */
+    --primary-foreground: #ffffff;
+    --secondary: #64748b; /* slate-500 */
+    --secondary-foreground: #ffffff;
+    --muted: #f1f5f9; /* slate-100 */
+    --muted-foreground: #475569; /* slate-600 */
+    --border: #e2e8f0; /* slate-200 */
+    --input: #ffffff;
+    --ring: #2563eb; /* blue-600 */
+    --success: #059669; /* emerald-600 */
+    --warning: #d97706; /* amber-600 */
+    --error: #dc2626; /* red-600 */
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* WCAG AA Compliant base classes */
+.bg-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.bg-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.border-default {
+  border-color: var(--border);
+}
