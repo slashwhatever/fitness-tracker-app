@@ -46,7 +46,7 @@ export default function WorkoutList() {
                         <p className="text-sm text-muted-foreground mt-1">{workout.description}</p>
                       )}
                       <p className="text-xs text-muted-foreground mt-2">
-                        {workout.userMovements.length} movements • Created {new Date(workout.createdAt).toLocaleDateString()}
+                        {persistenceService.getMovementCountForWorkout(workout.id)} movements • Created {new Date(workout.created_at).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="text-muted-foreground ml-4">

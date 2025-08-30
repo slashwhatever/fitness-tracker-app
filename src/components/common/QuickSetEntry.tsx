@@ -16,14 +16,14 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
 
   const handleQuickLog = () => {
     const setData: Partial<Set> = {
-      ...(movement.trackingType === 'weight' && { 
+      ...(movement.tracking_type === 'weight' && { 
         reps: quickReps || undefined, 
         weight: quickWeight || undefined 
       }),
-      ...(movement.trackingType === 'bodyweight' && { 
+      ...(movement.tracking_type === 'bodyweight' && { 
         reps: quickReps || undefined 
       }),
-      ...(movement.trackingType === 'timed' && { 
+      ...(movement.tracking_type === 'duration' && { 
         duration: quickDuration || undefined 
       })
     };
@@ -48,12 +48,12 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
 
 
   const isValidQuickSet = () => {
-    switch (movement.trackingType) {
+    switch (movement.tracking_type) {
       case 'weight':
         return quickReps > 0 && quickWeight > 0;
       case 'bodyweight':
         return quickReps > 0;
-      case 'timed':
+      case 'duration':
         return quickDuration > 0;
       default:
         return false;
@@ -75,7 +75,7 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {movement.trackingType === 'weight' && (
+        {movement.tracking_type === 'weight' && (
           <>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -105,7 +105,7 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
           </>
         )}
         
-        {movement.trackingType === 'bodyweight' && (
+        {movement.tracking_type === 'bodyweight' && (
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Reps
@@ -120,7 +120,7 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
           </div>
         )}
         
-        {movement.trackingType === 'timed' && (
+        {movement.tracking_type === 'duration' && (
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">
               Duration (seconds)

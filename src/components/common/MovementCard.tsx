@@ -30,7 +30,7 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
         return '🏋️';
       case 'bodyweight':
         return '💪';
-      case 'timed':
+      case 'duration':
         return '⏱️';
       default:
         return '📊';
@@ -54,18 +54,18 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{movement.name}</h3>
-            <p className="text-muted-foreground text-sm">{movement.muscleGroup}</p>
+            <p className="text-muted-foreground text-sm">{movement.muscle_group}</p>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="text-lg">{getTrackingTypeIcon(movement.trackingType)}</span>
-            <Badge variant={getExperienceLevelVariant(movement.experienceLevel)}>
-              {movement.experienceLevel}
+            <span className="text-lg">{getTrackingTypeIcon(movement.tracking_type)}</span>
+            <Badge variant={getExperienceLevelVariant(movement.experience_level)}>
+              {movement.experience_level}
             </Badge>
           </div>
         </div>
 
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span className="capitalize">{movement.trackingType} exercise</span>
+          <span className="capitalize">{movement.tracking_type} exercise</span>
           {selected && (
             <div className="text-primary">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

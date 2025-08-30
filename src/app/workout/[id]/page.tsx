@@ -33,37 +33,31 @@ export default function WorkoutDetailPage() {
   const handleMovementsSelected = (newMovements: UserMovement[]) => {
     if (!workout) return;
 
-    const updatedWorkout: Workout = {
-      ...workout,
-      userMovements: [...workout.userMovements, ...newMovements],
-    };
+    // TODO: Implement proper WorkoutMovement relationship
+    // For now, just save the movements
+    newMovements.forEach(movement => {
+      persistenceService.saveUserMovement(movement);
+    });
 
-    persistenceService.saveWorkout(updatedWorkout);
-    setWorkout(updatedWorkout);
+    // Workout doesn't need to be updated since movements are separate
   };
 
   const handleReorderMovements = (newOrder: UserMovement[]) => {
     if (!workout) return;
 
-    const updatedWorkout: Workout = {
-      ...workout,
-      userMovements: newOrder,
-    };
-
-    persistenceService.saveWorkout(updatedWorkout);
-    setWorkout(updatedWorkout);
+    // TODO: Implement proper WorkoutMovement relationship with order_index
+    // For now, just save the movements individually
+    newOrder.forEach(movement => {
+      persistenceService.saveUserMovement(movement);
+    });
   };
 
   const handleRemoveMovement = (movementId: string) => {
     if (!workout) return;
 
-    const updatedWorkout: Workout = {
-      ...workout,
-      userMovements: workout.userMovements.filter(m => m.id !== movementId),
-    };
-
-    persistenceService.saveWorkout(updatedWorkout);
-    setWorkout(updatedWorkout);
+    // TODO: Implement proper WorkoutMovement relationship removal
+    // For now, just delete the user movement
+    persistenceService.deleteUserMovement(movementId);
   };
 
   if (!workout) return null;
@@ -96,7 +90,7 @@ export default function WorkoutDetailPage() {
             </CardHeader>
             <CardContent>
               <DraggableMovementList
-                movements={workout.userMovements}
+                movements={persistenceService.getMovementsForWorkout(workout.id)}
                 onReorder={handleReorderMovements}
                 onRemove={handleRemoveMovement}
               />

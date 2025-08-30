@@ -23,7 +23,7 @@ export default function PRSummary() {
       
       // Collect all movements from all workouts
       workouts.forEach(workout => {
-        allMovements.push(...workout.userMovements);
+        allMovements.push(...persistenceService.getMovementsForWorkout(workout.id));
       });
 
       const prs: PersonalRecord[] = [];
@@ -38,14 +38,14 @@ export default function PRSummary() {
 
       movementMap.forEach((movement) => {
         const movementSets = sets.filter(set => 
-          allMovements.some(m => m.id === set.userMovementId && m.name === movement.name)
+          allMovements.some(m => m.id === set.user_movement_id && m.name === movement.name)
         );
 
         if (movementSets.length === 0) return;
 
         let pr: PersonalRecord | null = null;
 
-        switch (movement.trackingType) {
+        switch (movement.tracking_type) {
           case 'weight':
             const maxWeightSet = movementSets.reduce((max, set) => 
               (set.weight || 0) > (max.weight || 0) ? set : max
@@ -55,7 +55,7 @@ export default function PRSummary() {
                 movementName: movement.name,
                 value: `${maxWeightSet.weight} lbs × ${maxWeightSet.reps || 1}`,
                 type: 'weight',
-                date: new Date(maxWeightSet.createdAt).toLocaleDateString()
+                date: new Date(maxWeightSet.created_at).toLocaleDateString()
               };
             }
             break;
@@ -68,11 +68,11 @@ export default function PRSummary() {
                 movementName: movement.name,
                 value: `${maxRepsSet.reps} reps`,
                 type: 'reps',
-                date: new Date(maxRepsSet.createdAt).toLocaleDateString()
+                date: new Date(maxRepsSet.created_at).toLocaleDateString()
               };
             }
             break;
-          case 'timed':
+          case 'duration':
             const maxTimeSet = movementSets.reduce((max, set) => 
               (set.duration || 0) > (max.duration || 0) ? set : max
             );
@@ -83,7 +83,7 @@ export default function PRSummary() {
                 movementName: movement.name,
                 value: `${mins}:${secs.toString().padStart(2, '0')}`,
                 type: 'time',
-                date: new Date(maxTimeSet.createdAt).toLocaleDateString()
+                date: new Date(maxTimeSet.created_at).toLocaleDateString()
               };
             }
             break;

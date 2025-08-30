@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 interface SearchFiltersProps {
   onSearchChange: (search: string) => void;
-  onMuscleGroupFilter: (muscleGroup: string | null) => void;
+  onMuscleGroupFilter: (muscle_group: string | null) => void;
   onExperienceLevelFilter: (level: string | null) => void;
 }
 
@@ -26,8 +26,8 @@ export default function SearchFilters({
     onSearchChange(value);
   };
 
-  const handleMuscleGroupChange = (muscleGroup: string) => {
-    const newValue = selectedMuscleGroup === muscleGroup ? null : muscleGroup;
+  const handleMuscleGroupChange = (muscle_group: string) => {
+    const newValue = selectedMuscleGroup === muscle_group ? null : muscle_group;
     setSelectedMuscleGroup(newValue);
     onMuscleGroupFilter(newValue);
   };

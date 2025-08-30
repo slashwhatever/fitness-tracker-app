@@ -73,9 +73,9 @@ function DraggableMovementItem({ movement, index, onRemove }: DraggableMovementI
             
             <div>
               <h3 className="font-medium">{movement.name}</h3>
-              <p className="text-sm text-muted-foreground">{movement.muscleGroup}</p>
+              <p className="text-sm text-muted-foreground">{movement.muscle_group}</p>
               <span className="inline-block mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded capitalize">
-                {movement.trackingType}
+                {movement.tracking_type}
               </span>
             </div>
           </div>

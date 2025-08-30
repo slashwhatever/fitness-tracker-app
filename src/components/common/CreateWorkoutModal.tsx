@@ -35,10 +35,12 @@ export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }
     try {
       const newWorkout: Workout = {
         id: crypto.randomUUID(),
+        user_id: 'user', // TODO: Get actual user ID
         name: title.trim(),
-        description: description.trim() || undefined,
-        userMovements: [],
-        createdAt: new Date(),
+        description: description.trim() || null,
+        default_rest_timer: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
 
       const success = persistenceService.saveWorkout(newWorkout);

@@ -29,12 +29,12 @@ export default function MovementSelectionModal({
   // Custom movement form state
   const [customName, setCustomName] = useState('');
   const [customMuscleGroup, setCustomMuscleGroup] = useState('');
-  const [customTrackingType, setCustomTrackingType] = useState<'weight' | 'bodyweight' | 'timed'>('weight');
+  const [customTrackingType, setCustomTrackingType] = useState<'weight' | 'bodyweight' | 'duration'>('weight');
 
   const filteredMovements = useMemo(() => {
     return movementLibrary.filter((movement) =>
       movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      movement.muscleGroup.toLowerCase().includes(searchTerm.toLowerCase())
+      movement.muscle_group.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [searchTerm]);
 
@@ -52,11 +52,14 @@ export default function MovementSelectionModal({
     const selectedMovementTemplates = movementLibrary.filter(m => selectedMovements.has(m.id));
     const userMovements: UserMovement[] = selectedMovementTemplates.map(template => ({
       id: crypto.randomUUID(),
-      userId: 'user', // TODO: Get actual user ID
-      templateId: template.id,
+      user_id: 'user', // TODO: Get actual user ID
+      template_id: template.id,
       name: template.name,
-      muscleGroup: template.muscleGroup,
-      trackingType: template.trackingType,
+      muscle_group: template.muscle_group,
+      tracking_type: template.tracking_type,
+      usage_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     }));
 
     onMovementsSelected(userMovements);
@@ -68,11 +71,14 @@ export default function MovementSelectionModal({
 
     const customMovement: UserMovement = {
       id: crypto.randomUUID(),
-      userId: 'user', // TODO: Get actual user ID
-      templateId: null,
+      user_id: 'user', // TODO: Get actual user ID
+      template_id: null,
       name: customName.trim(),
-      muscleGroup: customMuscleGroup,
-      trackingType: customTrackingType,
+      muscle_group: customMuscleGroup,
+      tracking_type: customTrackingType,
+      usage_count: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     onMovementsSelected([customMovement]);
@@ -179,7 +185,7 @@ export default function MovementSelectionModal({
 
                 <div className="space-y-2">
                   <Label htmlFor="tracking-type">Tracking Type *</Label>
-                  <Select value={customTrackingType} onValueChange={(value) => setCustomTrackingType(value as 'weight' | 'bodyweight' | 'timed')}>
+                  <Select value={customTrackingType} onValueChange={(value) => setCustomTrackingType(value as 'weight' | 'bodyweight' | 'duration')}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

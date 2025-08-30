@@ -23,14 +23,14 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
   const handleSave = () => {
     const updatedSet: Set = {
       ...set,
-      ...(movement.trackingType === 'weight' && { 
+      ...(movement.tracking_type === 'weight' && { 
         reps: editReps || undefined, 
         weight: editWeight || undefined 
       }),
-      ...(movement.trackingType === 'bodyweight' && { 
+      ...(movement.tracking_type === 'bodyweight' && { 
         reps: editReps || undefined 
       }),
-      ...(movement.trackingType === 'timed' && { 
+      ...(movement.tracking_type === 'duration' && { 
         duration: editDuration || undefined 
       })
     };
@@ -47,12 +47,12 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
   };
 
   const isValidEdit = () => {
-    switch (movement.trackingType) {
+    switch (movement.tracking_type) {
       case 'weight':
         return editReps > 0 && editWeight > 0;
       case 'bodyweight':
         return editReps > 0;
-      case 'timed':
+      case 'duration':
         return editDuration > 0;
       default:
         return false;
@@ -144,16 +144,16 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
         
         <div className="flex items-center space-x-4">
           <div className="text-sm text-muted-foreground">
-            {new Date(set.createdAt).toLocaleDateString()}
+            {new Date(set.created_at).toLocaleDateString()}
           </div>
           <div className="text-sm text-muted-foreground">
-            {new Date(set.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
       
       {isEditing ? (
         <div className="flex items-center space-x-3">
-          {movement.trackingType === 'weight' && (
+          {movement.tracking_type === 'weight' && (
             <>
               <div className="flex flex-col">
                 <label className="text-xs text-gray-600 mb-1">Weight (lbs)</label>
@@ -178,7 +178,7 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
             </>
           )}
           
-          {movement.trackingType === 'bodyweight' && (
+          {movement.tracking_type === 'bodyweight' && (
             <div className="flex flex-col">
               <label className="text-xs text-gray-600 mb-1">Reps</label>
               <input
@@ -191,7 +191,7 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
             </div>
           )}
           
-          {movement.trackingType === 'timed' && (
+          {movement.tracking_type === 'duration' && (
             <div className="flex flex-col">
               <label className="text-xs text-gray-600 mb-1">Duration (sec)</label>
               <input

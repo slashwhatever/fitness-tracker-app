@@ -115,10 +115,10 @@ export class PersistenceService {
     return this.saveUserMovements(userMovements);
   }
 
-  public deleteUserMovement(userMovementId: string): boolean {
+  public deleteUserMovement(user_movement_id: string): boolean {
     const userMovements = this.getUserMovements();
     const filteredUserMovements = userMovements.filter(
-      (um) => um.id !== userMovementId
+      (um) => um.id !== user_movement_id
     );
     return this.saveUserMovements(filteredUserMovements);
   }
@@ -152,9 +152,9 @@ export class PersistenceService {
   }
 
   // Get sets for a specific user movement
-  public getSetsForUserMovement(userMovementId: string): Set[] {
+  public getSetsForUserMovement(user_movement_id: string): Set[] {
     const sets = this.getSets();
-    return sets.filter((s) => s.userMovementId === userMovementId);
+    return sets.filter((s) => s.user_movement_id === user_movement_id);
   }
 
   // Clear all data (useful for testing or reset)
@@ -169,6 +169,19 @@ export class PersistenceService {
       console.error("Failed to clear localStorage:", error);
       return false;
     }
+  }
+
+  // Temporary method to get movements for a workout (backward compatibility)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public getMovementsForWorkout(_workoutId: string): UserMovement[] {
+    // For now, return empty array - this will be replaced with proper WorkoutMovement relationship
+    // TODO: Implement proper WorkoutMovement relationship handling
+    return [];
+  }
+
+  // Temporary method to get movement count for a workout
+  public getMovementCountForWorkout(workoutId: string): number {
+    return this.getMovementsForWorkout(workoutId).length;
   }
 }
 

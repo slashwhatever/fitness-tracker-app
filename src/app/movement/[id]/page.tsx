@@ -31,7 +31,8 @@ export default function MovementTrackingPage() {
     let foundMovement: UserMovement | null = null;
     
     for (const workout of allWorkouts) {
-      const foundInWorkout = workout.userMovements.find(m => m.id === movementId);
+      const workoutMovements = persistenceService.getMovementsForWorkout(workout.id);
+      const foundInWorkout = workoutMovements.find(m => m.id === movementId);
       if (foundInWorkout) {
         foundMovement = foundInWorkout;
         break;
@@ -46,18 +47,18 @@ export default function MovementTrackingPage() {
     setMovement(foundMovement);
     
     // Set custom rest time or default
-    const defaultRestTimes = { weight: 90, bodyweight: 60, timed: 120 };
-    setCustomRestTime(foundMovement.customRestTimer || defaultRestTimes[foundMovement.trackingType!]);
+    const defaultRestTimes = { weight: 90, bodyweight: 60, duration: 120, distance: 90, reps_only: 60 };
+    setCustomRestTime(foundMovement.custom_rest_timer || defaultRestTimes[foundMovement.tracking_type!]);
     
     // Load sets for this movement
     const movementSets = persistenceService.getSetsForUserMovement(movementId);
-    setSets(movementSets.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    setSets(movementSets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
   }, [movementId, router]);
 
   const personalRecords = useMemo(() => {
     if (!movement || sets.length === 0) return null;
 
-    switch (movement.trackingType) {
+    switch (movement.tracking_type) {
       case 'weight':
         const maxWeight = Math.max(...sets.filter(s => s.weight).map(s => s.weight!));
         const maxWeightSet = sets.find(s => s.weight === maxWeight);
@@ -69,7 +70,7 @@ export default function MovementTrackingPage() {
           type: 'Max Weight',
           value: `${maxWeight} lbs`,
           details: `${maxWeightSet?.reps || 0} reps`,
-          date: maxWeightSet ? new Date(maxWeightSet.createdAt).toLocaleDateString() : '',
+          date: maxWeightSet ? new Date(maxWeightSet.created_at).toLocaleDateString() : '',
           oneRM: best1RM ? {
             value: format1RM(best1RM.oneRM),
             fromWeight: best1RM.fromSet.weight!,
@@ -83,16 +84,16 @@ export default function MovementTrackingPage() {
           type: 'Max Reps',
           value: `${maxReps} reps`,
           details: '',
-          date: maxRepsSet ? new Date(maxRepsSet.createdAt).toLocaleDateString() : ''
+          date: maxRepsSet ? new Date(maxRepsSet.created_at).toLocaleDateString() : ''
         };
-      case 'timed':
+      case 'duration':
         const maxDuration = Math.max(...sets.filter(s => s.duration).map(s => s.duration!));
         const maxDurationSet = sets.find(s => s.duration === maxDuration);
         return {
           type: 'Best Time',
           value: `${Math.floor(maxDuration / 60)}:${(maxDuration % 60).toString().padStart(2, '0')}`,
           details: '',
-          date: maxDurationSet ? new Date(maxDurationSet.createdAt).toLocaleDateString() : ''
+          date: maxDurationSet ? new Date(maxDurationSet.created_at).toLocaleDateString() : ''
         };
       default:
         return null;
@@ -120,11 +121,16 @@ export default function MovementTrackingPage() {
 
      const duplicatedSet: Set = {
        id: crypto.randomUUID(),
-       userMovementId: originalSet.userMovementId,
-       createdAt: new Date(),
+       user_movement_id: originalSet.user_movement_id,
+       workout_id: null, // TODO: Get actual workout ID
+       user_id: 'user', // TODO: Get actual user ID
+       set_type: 'working',
        reps: originalSet.reps,
        weight: originalSet.weight,
        duration: originalSet.duration,
+       distance: null,
+       notes: null,
+       created_at: new Date().toISOString(),
      };
 
      const success = persistenceService.saveSet(duplicatedSet);
@@ -146,8 +152,16 @@ export default function MovementTrackingPage() {
 
      const newSet: Set = {
        id: crypto.randomUUID(),
-       userMovementId: movement.id,
-       createdAt: new Date(),
+       user_movement_id: movement.id,
+       workout_id: null, // TODO: Get actual workout ID
+       user_id: 'user', // TODO: Get actual user ID
+       set_type: 'working',
+       reps: null,
+       weight: null,
+       duration: null,
+       distance: null,
+       notes: null,
+       created_at: new Date().toISOString(),
        ...setData,
      };
 
@@ -188,9 +202,9 @@ export default function MovementTrackingPage() {
                           <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-3xl font-bold text-foreground">{movement.name}</h1>
-                  <p className="text-muted-foreground mt-2">{movement.muscleGroup}</p>
+                  <p className="text-muted-foreground mt-2">{movement.muscle_group}</p>
                 <span className="inline-block mt-2 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full capitalize">
-                  {movement.trackingType}
+                  {movement.tracking_type}
                 </span>
             </div>
             {personalRecords && (

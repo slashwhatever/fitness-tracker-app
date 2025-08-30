@@ -11,9 +11,9 @@ interface AnalyticsCardProps {
 export default function AnalyticsCard({ title, value, subtitle, trend, icon }: AnalyticsCardProps) {
   const getTrendColor = () => {
     switch (trend) {
-      case 'up': return 'text-green-600';
-      case 'down': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'up': return 'text-emerald-500 dark:text-emerald-400';
+      case 'down': return 'text-red-500 dark:text-red-400';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -21,13 +21,13 @@ export default function AnalyticsCard({ title, value, subtitle, trend, icon }: A
     switch (trend) {
       case 'up':
         return (
-          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17l9.2-9.2M17 17V7H7" />
           </svg>
         );
       case 'down':
         return (
-          <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 7l-9.2 9.2M7 7v10h10" />
           </svg>
         );
@@ -37,21 +37,34 @@ export default function AnalyticsCard({ title, value, subtitle, trend, icon }: A
   };
 
   return (
-    <Card>
+    <Card role="region" aria-labelledby={`analytics-${title.toLowerCase().replace(/\s+/g, '-')}`}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold mt-2">{value}</p>
+            <p 
+              id={`analytics-${title.toLowerCase().replace(/\s+/g, '-')}`}
+              className="text-sm font-medium text-muted-foreground"
+            >
+              {title}
+            </p>
+            <p className="text-3xl font-bold mt-2" aria-describedby={subtitle ? `subtitle-${title.toLowerCase().replace(/\s+/g, '-')}` : undefined}>
+              {value}
+            </p>
             {subtitle && (
               <div className="flex items-center mt-2">
                 {getTrendIcon()}
-                <p className={`text-sm ml-1 ${getTrendColor()}`}>{subtitle}</p>
+                <p 
+                  id={`subtitle-${title.toLowerCase().replace(/\s+/g, '-')}`}
+                  className={`text-sm ml-1 ${getTrendColor()}`}
+                  aria-label={`Trend: ${trend === 'up' ? 'increasing' : trend === 'down' ? 'decreasing' : 'neutral'}, ${subtitle}`}
+                >
+                  {subtitle}
+                </p>
               </div>
             )}
           </div>
           {icon && (
-            <div className="text-muted-foreground">
+            <div className="text-muted-foreground" aria-hidden="true">
               {icon}
             </div>
           )}
