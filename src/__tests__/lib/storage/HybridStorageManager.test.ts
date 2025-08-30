@@ -27,15 +27,18 @@ Object.defineProperty(global, "localStorage", {
 });
 
 // Mock navigator.onLine
-Object.defineProperty(navigator, "onLine", {
+const mockNavigator = {
+  onLine: true,
+};
+Object.defineProperty(global, "navigator", {
+  value: mockNavigator,
   writable: true,
-  value: true,
 });
 
 describe("HybridStorageManager", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    navigator.onLine = true;
+    mockNavigator.onLine = true;
   });
 
   describe("Local Storage Operations", () => {
@@ -245,7 +248,11 @@ describe("HybridStorageManager", () => {
       });
 
       expect(results).toHaveLength(2);
-      expect(results.every((r) => r.user_id === "user-123")).toBe(true);
+      expect(
+        (results as Array<{ user_id: string }>).every(
+          (r) => r.user_id === "user-123"
+        )
+      ).toBe(true);
 
       // Restore original Object.keys
       Object.keys = originalKeys;
@@ -345,7 +352,7 @@ describe("HybridStorageManager", () => {
 
   describe("Offline Functionality", () => {
     it("should queue operations when offline", async () => {
-      navigator.onLine = false;
+      mockNavigator.onLine = false;
 
       const testData = { id: "test-id", name: "Test" };
       mockLocalStorage.getItem.mockReturnValue("[]");
@@ -365,7 +372,7 @@ describe("HybridStorageManager", () => {
     });
 
     it("should not process sync when offline", async () => {
-      navigator.onLine = false;
+      mockNavigator.onLine = false;
 
       await HybridStorageManager.processBackgroundSync();
 
