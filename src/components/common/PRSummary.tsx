@@ -1,6 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserMovement } from '@/models/types';
 import { persistenceService } from '@/services/persistenceService';
 import { useEffect, useState } from 'react';
@@ -140,23 +141,25 @@ export default function PRSummary() {
             <p className="text-sm text-muted-foreground mt-2">Start logging sets to track your PRs!</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {personalRecords.map((pr, index) => (
-              <div key={`${pr.movementName}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center space-x-3">
-                  {getTypeIcon(pr.type)}
-                  <div>
-                    <p className="font-medium">{pr.movementName}</p>
-                    <p className="text-sm text-muted-foreground">{pr.date}</p>
+          <ScrollArea className="h-[400px]">
+            <div className="space-y-4 pb-4">
+              {personalRecords.map((pr, index) => (
+                <div key={`${pr.movementName}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    {getTypeIcon(pr.type)}
+                    <div>
+                      <p className="font-medium">{pr.movementName}</p>
+                      <p className="text-sm text-muted-foreground">{pr.date}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-bold text-lg">{pr.value}</p>
+                    <p className="text-xs text-muted-foreground uppercase">PR</p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-bold text-lg">{pr.value}</p>
-                  <p className="text-xs text-muted-foreground uppercase">PR</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
         )}
       </CardContent>
     </Card>

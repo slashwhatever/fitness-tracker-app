@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { getExperienceLevelVariant, getTrackingTypeIcon } from '@/lib/utils/typeHelpers';
 import { MovementTemplate } from '@/models/types';
 
 interface MovementCardProps {
@@ -11,31 +12,6 @@ interface MovementCardProps {
 }
 
 export default function MovementCard({ movement, onClick, selected }: MovementCardProps) {
-  const getExperienceLevelVariant = (level: string): "default" | "secondary" | "destructive" | "outline" => {
-    switch (level) {
-      case 'Beginner':
-        return 'secondary';
-      case 'Intermediate':
-        return 'default';
-      case 'Advanced':
-        return 'destructive';
-      default:
-        return 'outline';
-    }
-  };
-
-  const getTrackingTypeIcon = (type: string) => {
-    switch (type) {
-      case 'weight':
-        return '🏋️';
-      case 'bodyweight':
-        return '💪';
-      case 'duration':
-        return '⏱️';
-      default:
-        return '📊';
-    }
-  };
 
   const handleClick = () => {
     if (onClick) {
@@ -54,7 +30,7 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{movement.name}</h3>
-            <p className="text-muted-foreground text-sm">{movement.muscle_group}</p>
+            <p className="text-muted-foreground text-sm">{movement.muscle_groups.join(', ')}</p>
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-lg">{getTrackingTypeIcon(movement.tracking_type)}</span>

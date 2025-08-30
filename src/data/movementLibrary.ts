@@ -1,11 +1,15 @@
-import { MovementTemplate } from "@/models/types";
+import {
+  ExperienceLevel,
+  MovementTemplate,
+  TrackingType,
+} from "@/models/types";
 
 export const movementLibrary: MovementTemplate[] = [
   // Chest Exercises
   {
     id: "bench-press",
     name: "Bench Press",
-    muscle_group: "Chest",
+    muscle_groups: ["Chest", "Shoulders", "Triceps"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Lie on bench, lower bar to chest, press up with control",
@@ -16,7 +20,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "push-ups",
     name: "Push-ups",
-    muscle_group: "Chest",
+    muscle_groups: ["Chest", "Shoulders", "Triceps"],
     tracking_type: "bodyweight",
     experience_level: "Beginner",
     instructions: "Standard push-up form, full range of motion",
@@ -27,7 +31,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "incline-bench-press",
     name: "Incline Bench Press",
-    muscle_group: "Chest",
+    muscle_groups: ["Chest", "Shoulders"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Set bench to 30-45 degrees, press at incline",
@@ -38,7 +42,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "decline-bench-press",
     name: "Decline Bench Press",
-    muscle_group: "Chest",
+    muscle_groups: ["Chest"],
     tracking_type: "weight",
     experience_level: "Advanced",
     instructions: "Set bench to decline, press with controlled motion",
@@ -49,7 +53,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "dumbbell-flyes",
     name: "Dumbbell Flyes",
-    muscle_group: "Chest",
+    muscle_groups: ["Chest"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Lie flat, arc dumbbells out and back together",
@@ -62,7 +66,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "pull-ups",
     name: "Pull-ups",
-    muscle_group: "Back",
+    muscle_groups: ["Back"],
     tracking_type: "bodyweight",
     experience_level: "Intermediate",
     instructions: "Hang from bar, pull chin over bar",
@@ -73,7 +77,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "deadlift",
     name: "Deadlift",
-    muscle_group: "Back",
+    muscle_groups: ["Back", "Legs", "Core"],
     tracking_type: "weight",
     experience_level: "Advanced",
     instructions: "Hip hinge movement, keep bar close to body",
@@ -84,7 +88,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "barbell-rows",
     name: "Barbell Rows",
-    muscle_group: "Back",
+    muscle_groups: ["Back"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Bend over, row bar to lower chest",
@@ -95,7 +99,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "lat-pulldowns",
     name: "Lat Pulldowns",
-    muscle_group: "Back",
+    muscle_groups: ["Back"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Pull bar to upper chest, squeeze lats",
@@ -106,7 +110,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "face-pulls",
     name: "Face Pulls",
-    muscle_group: "Back",
+    muscle_groups: ["Back"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Pull cable to face level, focus on rear delts",
@@ -119,7 +123,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "overhead-press",
     name: "Overhead Press",
-    muscle_group: "Shoulders",
+    muscle_groups: ["Shoulders"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Press bar overhead, keep core tight",
@@ -130,7 +134,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "lateral-raises",
     name: "Lateral Raises",
-    muscle_group: "Shoulders",
+    muscle_groups: ["Shoulders"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Raise arms to sides, control the weight",
@@ -141,7 +145,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "front-raises",
     name: "Front Raises",
-    muscle_group: "Shoulders",
+    muscle_groups: ["Shoulders"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Raise weights in front to shoulder height",
@@ -152,7 +156,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "rear-delt-flyes",
     name: "Rear Delt Flyes",
-    muscle_group: "Shoulders",
+    muscle_groups: ["Shoulders"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Bend over, fly weights back and out",
@@ -165,7 +169,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "barbell-curls",
     name: "Barbell Curls",
-    muscle_group: "Biceps",
+    muscle_groups: ["Biceps"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Curl bar up, control the negative",
@@ -176,7 +180,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "dumbbell-curls",
     name: "Dumbbell Curls",
-    muscle_group: "Biceps",
+    muscle_groups: ["Biceps"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Alternate or simultaneous dumbbell curls",
@@ -187,7 +191,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "hammer-curls",
     name: "Hammer Curls",
-    muscle_group: "Biceps",
+    muscle_groups: ["Biceps"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Neutral grip curls, target brachialis",
@@ -198,7 +202,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "preacher-curls",
     name: "Preacher Curls",
-    muscle_group: "Biceps",
+    muscle_groups: ["Biceps"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Use preacher bench, strict form",
@@ -211,7 +215,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "tricep-dips",
     name: "Tricep Dips",
-    muscle_group: "Triceps",
+    muscle_groups: ["Triceps"],
     tracking_type: "bodyweight",
     experience_level: "Intermediate",
     instructions: "Dip down and press up on parallel bars",
@@ -222,7 +226,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "skull-crushers",
     name: "Skull Crushers",
-    muscle_group: "Triceps",
+    muscle_groups: ["Triceps"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Lower weight to forehead, extend back up",
@@ -233,7 +237,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "tricep-pushdowns",
     name: "Tricep Pushdowns",
-    muscle_group: "Triceps",
+    muscle_groups: ["Triceps"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Push cable down, squeeze triceps",
@@ -246,7 +250,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "squats",
     name: "Squats",
-    muscle_group: "Legs",
+    muscle_groups: ["Legs"],
     tracking_type: "weight",
     experience_level: "Intermediate",
     instructions: "Squat down and drive through heels",
@@ -257,7 +261,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "leg-press",
     name: "Leg Press",
-    muscle_group: "Legs",
+    muscle_groups: ["Legs"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Press weight with legs, full range of motion",
@@ -268,7 +272,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "lunges",
     name: "Lunges",
-    muscle_group: "Legs",
+    muscle_groups: ["Legs"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Step forward into lunge, alternate legs",
@@ -279,7 +283,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "leg-curls",
     name: "Leg Curls",
-    muscle_group: "Legs",
+    muscle_groups: ["Legs"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Curl heels to glutes, control the weight",
@@ -290,7 +294,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "leg-extensions",
     name: "Leg Extensions",
-    muscle_group: "Legs",
+    muscle_groups: ["Legs"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Extend legs up, squeeze quads",
@@ -301,7 +305,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "calf-raises",
     name: "Calf Raises",
-    muscle_group: "Legs",
+    muscle_groups: ["Legs"],
     tracking_type: "weight",
     experience_level: "Beginner",
     instructions: "Rise up on toes, squeeze calves",
@@ -314,7 +318,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "plank",
     name: "Plank",
-    muscle_group: "Core",
+    muscle_groups: ["Core"],
     tracking_type: "duration",
     experience_level: "Beginner",
     instructions: "Hold plank position, keep body straight",
@@ -325,7 +329,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "crunches",
     name: "Crunches",
-    muscle_group: "Core",
+    muscle_groups: ["Core"],
     tracking_type: "reps_only",
     experience_level: "Beginner",
     instructions: "Crunch up, focus on abs contraction",
@@ -336,7 +340,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "russian-twists",
     name: "Russian Twists",
-    muscle_group: "Core",
+    muscle_groups: ["Core"],
     tracking_type: "reps_only",
     experience_level: "Intermediate",
     instructions: "Twist side to side, engage obliques",
@@ -347,7 +351,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "leg-raises",
     name: "Leg Raises",
-    muscle_group: "Core",
+    muscle_groups: ["Core"],
     tracking_type: "reps_only",
     experience_level: "Intermediate",
     instructions: "Raise legs to 90 degrees, control descent",
@@ -360,7 +364,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "running",
     name: "Running",
-    muscle_group: "Cardio",
+    muscle_groups: ["Cardio"],
     tracking_type: "duration",
     experience_level: "Beginner",
     instructions: "Maintain steady pace, monitor heart rate",
@@ -371,7 +375,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "cycling",
     name: "Cycling",
-    muscle_group: "Cardio",
+    muscle_groups: ["Cardio"],
     tracking_type: "duration",
     experience_level: "Beginner",
     instructions: "Steady cycling pace, adjust resistance",
@@ -382,7 +386,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "rowing",
     name: "Rowing",
-    muscle_group: "Cardio",
+    muscle_groups: ["Cardio"],
     tracking_type: "duration",
     experience_level: "Intermediate",
     instructions: "Full body rowing motion, proper form",
@@ -393,7 +397,7 @@ export const movementLibrary: MovementTemplate[] = [
   {
     id: "jump-rope",
     name: "Jump Rope",
-    muscle_group: "Cardio",
+    muscle_groups: ["Cardio"],
     tracking_type: "duration",
     experience_level: "Beginner",
     instructions: "Jump with light bounces, stay on balls of feet",
@@ -404,19 +408,21 @@ export const movementLibrary: MovementTemplate[] = [
 ];
 
 export const muscleGroups = Array.from(
-  new Set(movementLibrary.map((m) => m.muscle_group))
+  new Set(movementLibrary.flatMap((m) => m.muscle_groups))
 ).sort();
 
-export const experienceLevels = [
+// Export experience levels derived from the ExperienceLevel union
+export const experienceLevels: ExperienceLevel[] = [
   "Beginner",
   "Intermediate",
   "Advanced",
-] as const;
+];
 
-export const trackingTypes = [
+// Export tracking types derived from the TrackingType union
+export const trackingTypes: TrackingType[] = [
   "weight",
   "bodyweight",
   "duration",
   "distance",
   "reps_only",
-] as const;
+];

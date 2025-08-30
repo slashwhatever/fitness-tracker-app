@@ -1,7 +1,13 @@
 // Local Storage Persistence Service
 // Provides type-safe wrapper for localStorage with error handling
 
-import { Set, User, UserMovement, Workout } from "@/models/types";
+import {
+  Set,
+  User,
+  UserMovement,
+  Workout,
+  WorkoutMovement,
+} from "@/models/types";
 
 export class PersistenceService {
   private static instance: PersistenceService;
@@ -171,12 +177,129 @@ export class PersistenceService {
     }
   }
 
-  // Temporary method to get movements for a workout (backward compatibility)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public getMovementsForWorkout(_workoutId: string): UserMovement[] {
-    // For now, return empty array - this will be replaced with proper WorkoutMovement relationship
-    // TODO: Implement proper WorkoutMovement relationship handling
-    return [];
+  // WorkoutMovement management
+  public saveWorkoutMovement(workoutMovement: WorkoutMovement): boolean {
+    try {
+      const workoutMovements = this.getWorkoutMovements();
+      const existingIndex = workoutMovements.findIndex(
+        (wm) => wm.id === workoutMovement.id
+      );
+
+      if (existingIndex >= 0) {
+        workoutMovements[existingIndex] = workoutMovement;
+      } else {
+        workoutMovements.push(workoutMovement);
+      }
+
+      localStorage.setItem(
+        "workout_movements",
+        JSON.stringify(workoutMovements)
+      );
+      return true;
+    } catch (error) {
+      console.error("Failed to save workout movement:", error);
+      return false;
+    }
+  }
+
+  public getWorkoutMovements(): WorkoutMovement[] {
+    try {
+      const data = localStorage.getItem("workout_movements");
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error("Failed to get workout movements:", error);
+      return [];
+    }
+  }
+
+  public deleteWorkoutMovement(workoutMovementId: string): boolean {
+    try {
+      const workoutMovements = this.getWorkoutMovements();
+      const filtered = workoutMovements.filter(
+        (wm) => wm.id !== workoutMovementId
+      );
+      localStorage.setItem("workout_movements", JSON.stringify(filtered));
+      return true;
+    } catch (error) {
+      console.error("Failed to delete workout movement:", error);
+      return false;
+    }
+  }
+
+  public getMovementsForWorkout(workoutId: string): UserMovement[] {
+    try {
+      const workoutMovements = this.getWorkoutMovements()
+        .filter((wm) => wm.workout_id === workoutId)
+        .sort((a, b) => a.order_index - b.order_index);
+
+      const userMovements = this.getUserMovements();
+
+      return workoutMovements
+        .map((wm) => userMovements.find((um) => um.id === wm.user_movement_id))
+        .filter((movement): movement is UserMovement => movement !== undefined);
+    } catch (error) {
+      console.error("Failed to get movements for workout:", error);
+      return [];
+    }
+  }
+
+  public addMovementsToWorkout(
+    workoutId: string,
+    movements: UserMovement[]
+  ): boolean {
+    try {
+      const existingWorkoutMovements = this.getWorkoutMovements().filter(
+        (wm) => wm.workout_id === workoutId
+      );
+      const maxOrderIndex =
+        existingWorkoutMovements.length > 0
+          ? Math.max(...existingWorkoutMovements.map((wm) => wm.order_index))
+          : -1;
+
+      // Save the user movements first
+      movements.forEach((movement) => {
+        this.saveUserMovement(movement);
+      });
+
+      // Create WorkoutMovement relationships
+      movements.forEach((movement, index) => {
+        const workoutMovement: WorkoutMovement = {
+          id: crypto.randomUUID(),
+          workout_id: workoutId,
+          user_movement_id: movement.id,
+          order_index: maxOrderIndex + 1 + index,
+          created_at: new Date().toISOString(),
+        };
+        this.saveWorkoutMovement(workoutMovement);
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Failed to add movements to workout:", error);
+      return false;
+    }
+  }
+
+  public removeMovementFromWorkout(
+    workoutId: string,
+    userMovementId: string
+  ): boolean {
+    try {
+      const workoutMovements = this.getWorkoutMovements();
+      const workoutMovement = workoutMovements.find(
+        (wm) =>
+          wm.workout_id === workoutId && wm.user_movement_id === userMovementId
+      );
+
+      if (workoutMovement) {
+        this.deleteWorkoutMovement(workoutMovement.id);
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Failed to remove movement from workout:", error);
+      return false;
+    }
   }
 
   // Temporary method to get movement count for a workout

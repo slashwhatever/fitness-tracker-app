@@ -202,7 +202,7 @@ export default function MovementTrackingPage() {
                           <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-3xl font-bold text-foreground">{movement.name}</h1>
-                  <p className="text-muted-foreground mt-2">{movement.muscle_group}</p>
+                  <p className="text-muted-foreground mt-2">{movement.muscle_groups.join(', ')}</p>
                 <span className="inline-block mt-2 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full capitalize">
                   {movement.tracking_type}
                 </span>

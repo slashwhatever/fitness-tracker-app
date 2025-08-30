@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { experienceLevels, muscleGroups } from '@/data/movementLibrary';
+import { ExperienceLevel } from '@/models/types';
 import { useState } from 'react';
 
 interface SearchFiltersProps {
   onSearchChange: (search: string) => void;
   onMuscleGroupFilter: (muscle_group: string | null) => void;
-  onExperienceLevelFilter: (level: string | null) => void;
+  onExperienceLevelFilter: (level: ExperienceLevel | null) => void;
 }
 
 export default function SearchFilters({
@@ -19,7 +20,7 @@ export default function SearchFilters({
 }: SearchFiltersProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
-  const [selectedExperienceLevel, setSelectedExperienceLevel] = useState<string | null>(null);
+  const [selectedExperienceLevel, setSelectedExperienceLevel] = useState<ExperienceLevel | null>(null);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -32,7 +33,7 @@ export default function SearchFilters({
     onMuscleGroupFilter(newValue);
   };
 
-  const handleExperienceLevelChange = (level: string) => {
+  const handleExperienceLevelChange = (level: ExperienceLevel) => {
     const newValue = selectedExperienceLevel === level ? null : level;
     setSelectedExperienceLevel(newValue);
     onExperienceLevelFilter(newValue);

@@ -4,26 +4,27 @@ import MovementCard from '@/components/common/MovementCard';
 import SearchFilters from '@/components/common/SearchFilters';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { movementLibrary } from '@/data/movementLibrary';
-import { MovementTemplate } from '@/models/types';
+import { ExperienceLevel, MovementTemplate } from '@/models/types';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 export default function MovementLibraryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [muscleGroupFilter, setMuscleGroupFilter] = useState<string | null>(null);
-  const [experienceLevelFilter, setExperienceLevelFilter] = useState<string | null>(null);
+  const [experienceLevelFilter, setExperienceLevelFilter] = useState<ExperienceLevel | null>(null);
 
   const filteredMovements = useMemo(() => {
     return movementLibrary.filter((movement) => {
       // Search filter
       const matchesSearch = searchTerm === '' || 
         movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movement.muscle_group.toLowerCase().includes(searchTerm.toLowerCase());
+        movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()));
 
       // Muscle group filter
       const matchesMuscleGroup = muscleGroupFilter === null || 
-        movement.muscle_group === muscleGroupFilter;
+        movement.muscle_groups.includes(muscleGroupFilter);
 
       // Experience level filter
       const matchesExperienceLevel = experienceLevelFilter === null || 
@@ -96,29 +97,31 @@ export default function MovementLibraryPage() {
               </CardHeader>
 
               <CardContent>
-                {filteredMovements.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="text-muted-foreground mb-4">
-                      <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
+                <ScrollArea className="h-[600px]">
+                  {filteredMovements.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="text-muted-foreground mb-4">
+                        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium mb-2">No exercises found</h3>
+                      <p className="text-muted-foreground">
+                        Try adjusting your search terms or filters to find what you&apos;re looking for.
+                      </p>
                     </div>
-                    <h3 className="text-lg font-medium mb-2">No exercises found</h3>
-                    <p className="text-muted-foreground">
-                      Try adjusting your search terms or filters to find what you&apos;re looking for.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {filteredMovements.map((movement) => (
-                      <MovementCard
-                        key={movement.id}
-                        movement={movement}
-                        onClick={handleMovementClick}
-                      />
-                    ))}
-                  </div>
-                )}
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-4">
+                      {filteredMovements.map((movement) => (
+                        <MovementCard
+                          key={movement.id}
+                          movement={movement}
+                          onClick={handleMovementClick}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>

@@ -16,7 +16,7 @@ export type ExperienceLevel = "Beginner" | "Intermediate" | "Advanced";
 export interface MovementTemplate {
   id: string;
   name: string;
-  muscle_group: string;
+  muscle_groups: string[];
   tracking_type: TrackingType;
   experience_level: ExperienceLevel;
   instructions: string | null;
@@ -51,7 +51,7 @@ export interface UserMovement {
   user_id: string;
   template_id: string | null; // References MovementTemplate.id
   name: string;
-  muscle_group: string;
+  muscle_groups: string[];
   tracking_type: TrackingType;
   custom_rest_timer?: number; // Movement-specific timer override
   personal_notes?: string;
@@ -180,7 +180,8 @@ export function getEffectiveRestTimer(
 ): number {
   if (movement?.custom_rest_timer) return movement.custom_rest_timer;
   if (workout?.default_rest_timer) return workout.default_rest_timer;
-  if (userPreferences.default_rest_timer) return userPreferences.default_rest_timer;
+  if (userPreferences.default_rest_timer)
+    return userPreferences.default_rest_timer;
   return 180; // Default 3 minutes
 }
 
@@ -217,7 +218,10 @@ export function formatWeight(weight: number | null): string {
 /**
  * Calculate and format volume (weight × reps)
  */
-export function formatVolume(weight: number | null, reps: number | null): string {
+export function formatVolume(
+  weight: number | null,
+  reps: number | null
+): string {
   if (weight === null || reps === null) return "-";
   return `${weight * reps} lbs`;
 }
@@ -250,7 +254,7 @@ export interface CreateWorkoutRequest {
 export interface CreateUserMovementRequest {
   template_id?: string;
   name: string;
-  muscle_group: string;
+  muscle_groups: string[];
   tracking_type: TrackingType;
   custom_rest_timer?: number;
   personal_notes?: string;

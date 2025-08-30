@@ -33,13 +33,11 @@ export default function WorkoutDetailPage() {
   const handleMovementsSelected = (newMovements: UserMovement[]) => {
     if (!workout) return;
 
-    // TODO: Implement proper WorkoutMovement relationship
-    // For now, just save the movements
-    newMovements.forEach(movement => {
-      persistenceService.saveUserMovement(movement);
-    });
-
-    // Workout doesn't need to be updated since movements are separate
+    // Add movements to the workout using proper WorkoutMovement relationship
+    persistenceService.addMovementsToWorkout(workout.id, newMovements);
+    
+    // Force re-render by updating the workout state
+    setWorkout({ ...workout });
   };
 
   const handleReorderMovements = (newOrder: UserMovement[]) => {
@@ -55,9 +53,11 @@ export default function WorkoutDetailPage() {
   const handleRemoveMovement = (movementId: string) => {
     if (!workout) return;
 
-    // TODO: Implement proper WorkoutMovement relationship removal
-    // For now, just delete the user movement
-    persistenceService.deleteUserMovement(movementId);
+    // Remove movement from workout using proper WorkoutMovement relationship
+    persistenceService.removeMovementFromWorkout(workout.id, movementId);
+    
+    // Force re-render by updating the workout state
+    setWorkout({ ...workout });
   };
 
   if (!workout) return null;

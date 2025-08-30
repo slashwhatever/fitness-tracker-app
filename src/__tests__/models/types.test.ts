@@ -36,7 +36,7 @@ describe("Data Models", () => {
       const template: MovementTemplate = {
         id: "test-id",
         name: "Push Up",
-        muscle_group: "chest",
+        muscle_groups: ["chest"],
         tracking_type: "weight",
         experience_level: "Beginner",
         instructions: "Test instructions",
@@ -45,7 +45,7 @@ describe("Data Models", () => {
         updated_at: "2024-01-01T00:00:00Z",
       };
 
-      expect(template).toHaveProperty("muscle_group");
+      expect(template).toHaveProperty("muscle_groups");
       expect(template).toHaveProperty("tracking_type");
       expect(template).toHaveProperty("experience_level");
       expect(template).toHaveProperty("created_at");
@@ -64,7 +64,7 @@ describe("Data Models", () => {
         const template: MovementTemplate = {
           id: "test-id",
           name: "Test Movement",
-          muscle_group: "chest",
+          muscle_groups: ["chest"],
           tracking_type: type as "weight" | "bodyweight" | "duration" | "distance" | "reps_only",
           experience_level: "Beginner",
           instructions: "Test",
