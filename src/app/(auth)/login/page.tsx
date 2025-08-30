@@ -2,17 +2,19 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { Suspense } from 'react';
 
 interface LoginPageProps {
-  searchParams: {
+  searchParams: Promise<{
     redirectTo?: string;
-  };
+  }>;
 }
 
-export default function LoginPage({ searchParams }: LoginPageProps) {
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Suspense fallback={<div>Loading...</div>}>
-          <LoginForm redirectTo={searchParams.redirectTo} />
+          <LoginForm redirectTo={params.redirectTo} />
         </Suspense>
       </div>
     </div>

@@ -164,4 +164,48 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Fix autofill styling for dark mode - more aggressive approach */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px oklch(0.208 0.042 265.755) inset !important;
+    -webkit-text-fill-color: oklch(0.984 0.003 247.858) !important;
+    caret-color: oklch(0.984 0.003 247.858) !important;
+    background-color: oklch(0.208 0.042 265.755) !important;
+    color: oklch(0.984 0.003 247.858) !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+  }
+
+  /* Firefox autofill */
+  input:-moz-autofill {
+    background-color: oklch(0.208 0.042 265.755) !important;
+    color: oklch(0.984 0.003 247.858) !important;
+    box-shadow: 0 0 0 1000px oklch(0.208 0.042 265.755) inset !important;
+  }
+
+  /* 1Password and other password manager overrides */
+  input[data-com-onepassword-filled],
+  input[data-com-onepassword-filled]:hover,
+  input[data-com-onepassword-filled]:focus,
+  input[data-com-onepassword-filled]:active {
+    background-color: oklch(0.208 0.042 265.755) !important;
+    background-image: none !important;
+    color: oklch(0.984 0.003 247.858) !important;
+    -webkit-box-shadow: 0 0 0 1000px oklch(0.208 0.042 265.755) inset !important;
+    box-shadow: 0 0 0 1000px oklch(0.208 0.042 265.755) inset !important;
+    -webkit-text-fill-color: oklch(0.984 0.003 247.858) !important;
+    border-color: oklch(1 0 0 / 15%) !important;
+  }
+
+  /* Other password managers */
+  input[data-lpignore="true"],
+  input:-internal-autofill-selected {
+    background-color: oklch(0.208 0.042 265.755) !important;
+    background-image: none !important;
+    color: oklch(0.984 0.003 247.858) !important;
+    -webkit-box-shadow: 0 0 0 1000px oklch(0.208 0.042 265.755) inset !important;
+    box-shadow: 0 0 0 1000px oklch(0.208 0.042 265.755) inset !important;
+  }
 }

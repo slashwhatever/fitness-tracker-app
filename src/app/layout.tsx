@@ -1,4 +1,6 @@
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { SupabaseProvider } from "@/lib/providers/SupabaseProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,9 +30,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <ErrorBoundary>
+          <SupabaseProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </SupabaseProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

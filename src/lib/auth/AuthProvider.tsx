@@ -3,6 +3,7 @@
 import { getCurrentSession, onAuthStateChange } from '@/lib/supabase/auth-utils';
 import type { Session, User } from '@supabase/supabase-js';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useOptionalSupabase } from '@/lib/providers/SupabaseProvider';
 
 interface AuthContextType {
   user: User | null;
@@ -22,12 +23,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isAvailable } = useOptionalSupabase();
 
   const refreshSession = async () => {
     try {
-      const { user: currentUser, session: currentSession } = await getCurrentSession();
-      setUser(currentUser);
-      setSession(currentSession);
+      // Only try to get session if Supabase is available
+      if (isAvailable) {
+        const { user: currentUser, session: currentSession } = await getCurrentSession();
+        setUser(currentUser);
+        setSession(currentSession);
+      } else {
+        setUser(null);
+        setSession(null);
+      }
     } catch (error) {
       console.error('Failed to refresh session:', error);
       setUser(null);
@@ -62,25 +70,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Get initial session
     refreshSession().finally(() => setLoading(false));
 
-    // Listen for auth changes
-    const { data: { subscription } } = onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (session) {
-        setUser(session.user);
-        setSession(session);
-      } else {
-        setUser(null);
-        setSession(null);
-      }
-      
-      setLoading(false);
-    });
+    // Only listen for auth changes if Supabase is available
+    if (!isAvailable) {
+      return;
+    }
 
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, []);
+    try {
+      // Listen for auth changes
+      const { data: { subscription } } = onAuthStateChange(async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        if (session) {
+          setUser(session.user);
+          setSession(session);
+        } else {
+          setUser(null);
+          setSession(null);
+        }
+        
+        setLoading(false);
+      });
+
+      return () => {
+        subscription?.unsubscribe();
+      };
+    } catch (error) {
+      console.error('Failed to set up auth state listener:', error);
+    }
+  }, [isAvailable]);
 
   const value: AuthContextType = {
     user,

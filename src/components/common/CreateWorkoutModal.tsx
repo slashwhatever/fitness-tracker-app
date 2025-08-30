@@ -75,7 +75,7 @@ export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="title">
               Workout Title *
             </Label>
@@ -90,7 +90,7 @@ export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="description">
               Description (Optional)
             </Label>
