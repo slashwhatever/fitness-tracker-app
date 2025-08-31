@@ -3,12 +3,11 @@
 # ============================================================================
 
 [build]
-  command = "npm ci && npm run build"
+  command = "pnpm install --frozen-lockfile && pnpm build"
   publish = ".next"
   
 [build.environment]
   NODE_VERSION = "18"
-  NPM_FLAGS = "--version" # Prevent npm auto-install
   # Enable Next.js standalone output for better performance
   NEXT_PRIVATE_STANDALONE = "true"
 
