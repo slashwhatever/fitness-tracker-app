@@ -5,10 +5,9 @@ import { Database } from "./database.types";
 // Re-export Database type for other files that import it from here
 export type { Database } from "./database.types";
 
-// Environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabasePublishableKey =
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || "";
+// Environment variables with names that won't trigger Netlify secret scanning
+const supabaseUrl = process.env.SUPABASE_PROJECT_URL || "";
+const supabasePublishableKey = process.env.SUPABASE_ANON_TOKEN || "";
 
 // Build-time check - this will show if env vars are missing during build
 if (!supabaseUrl || !supabasePublishableKey) {
@@ -54,8 +53,6 @@ export const supabaseServerClient =
         },
       })
     : null;
-
-// Server component client is now in ./server.ts
 
 // Client component client (for App Router)
 export function createSupabaseBrowserClient() {

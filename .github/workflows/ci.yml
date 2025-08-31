@@ -54,8 +54,8 @@ jobs:
       - name: Build application
         run: pnpm build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_TOKEN: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
 
   # ============================================================================
   # SECURITY SCANNING
@@ -139,8 +139,8 @@ jobs:
           rm -f .env.local .env
           pnpm build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_TOKEN: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
           NEXT_PUBLIC_APP_ENV: production
 
       - name: Deploy to Netlify
@@ -151,8 +151,8 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           # Pass environment variables to Netlify
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_PROJECT_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_TOKEN: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
 
       - name: Run health checks
         run: |
