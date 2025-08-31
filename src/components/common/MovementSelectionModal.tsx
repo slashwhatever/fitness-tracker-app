@@ -13,12 +13,15 @@ import { movementLibrary, muscleGroups, trackingTypes } from '@/data/movementLib
 import { formatTrackingType, getExperienceLevelVariant, getTrackingTypeIcon } from '@/lib/utils/typeHelpers';
 import { MovementTemplate, TrackingType, UserMovement } from '@/models/types';
 import { Check } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface MovementSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onMovementsSelected: (movements: UserMovement[]) => void;
+  currentMovements: UserMovement[];
+  onMovementAdded: (movement: UserMovement) => void;
+  onMovementRemoved: (movementId: string) => void;
 }
 
 const MovementListItem = ({ movement, selected, onToggle }: { 
@@ -63,15 +66,26 @@ export default function MovementSelectionModal({
   isOpen,
   onClose,
   onMovementsSelected,
+  currentMovements,
+  onMovementAdded,
+  onMovementRemoved,
 }: MovementSelectionModalProps) {
   const [activeTab, setActiveTab] = useState<'library' | 'custom'>('library');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMovements, setSelectedMovements] = useState<Set<string>>(new Set());
+  // Initialize selected movements based on current movements in the workout
+  const [selectedMovements, setSelectedMovements] = useState<Set<string>>(
+    new Set(currentMovements.map(m => m.template_id).filter(Boolean) as string[])
+  );
   
   // Custom movement form state
   const [customName, setCustomName] = useState('');
   const [customMuscleGroups, setCustomMuscleGroups] = useState<string[]>([]);
   const [customTrackingType, setCustomTrackingType] = useState<TrackingType>('weight');
+
+  // Update selected movements when current movements change
+  useEffect(() => {
+    setSelectedMovements(new Set(currentMovements.map(m => m.template_id).filter(Boolean) as string[]));
+  }, [currentMovements]);
 
   const filteredMovements = useMemo(() => {
     return movementLibrary.filter((movement) =>
@@ -82,31 +96,38 @@ export default function MovementSelectionModal({
 
   const handleMovementToggle = (movementId: string) => {
     const newSelected = new Set(selectedMovements);
+    const template = movementLibrary.find(m => m.id === movementId);
+    
+    if (!template) return;
+    
     if (newSelected.has(movementId)) {
+      // Remove movement immediately
       newSelected.delete(movementId);
+      const existingMovement = currentMovements.find(m => m.template_id === movementId);
+      if (existingMovement) {
+        onMovementRemoved(existingMovement.id);
+      }
     } else {
+      // Add movement immediately
       newSelected.add(movementId);
+      const userMovement: UserMovement = {
+        id: crypto.randomUUID(),
+        user_id: 'user', // TODO: Get actual user ID
+        template_id: template.id,
+        name: template.name,
+        muscle_groups: template.muscle_groups,
+        tracking_type: template.tracking_type,
+        usage_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      onMovementAdded(userMovement);
     }
+    
     setSelectedMovements(newSelected);
   };
 
-  const handleAddMovements = () => {
-    const selectedMovementTemplates = movementLibrary.filter(m => selectedMovements.has(m.id));
-    const userMovements: UserMovement[] = selectedMovementTemplates.map(template => ({
-      id: crypto.randomUUID(),
-      user_id: 'user', // TODO: Get actual user ID
-      template_id: template.id,
-      name: template.name,
-      muscle_groups: template.muscle_groups,
-      tracking_type: template.tracking_type,
-      usage_count: 0,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }));
-
-    onMovementsSelected(userMovements);
-    handleClose();
-  };
+  // No longer needed - movements are added immediately on toggle
 
   const handleCreateCustomMovement = () => {
     if (!customName.trim() || customMuscleGroups.length === 0) return;
@@ -123,12 +144,18 @@ export default function MovementSelectionModal({
       updated_at: new Date().toISOString(),
     };
 
-    onMovementsSelected([customMovement]);
+    // Add the custom movement immediately
+    onMovementAdded(customMovement);
+    
+    // Reset the form and close
+    setCustomName('');
+    setCustomMuscleGroups([]);
+    setCustomTrackingType('weight');
     handleClose();
   };
 
   const handleClose = () => {
-    setSelectedMovements(new Set());
+    // Don't reset selectedMovements - they should reflect current workout state
     setSearchTerm('');
     setCustomName('');
     setCustomMuscleGroups([]);
@@ -191,17 +218,11 @@ export default function MovementSelectionModal({
             {/* Footer */}
             <div className="flex-shrink-0 flex justify-between items-center pt-4 border-t bg-background">
               <div className="text-sm text-muted-foreground">
-                {selectedMovements.size} movement{selectedMovements.size !== 1 ? 's' : ''} selected
+                {selectedMovements.size} movement{selectedMovements.size !== 1 ? 's' : ''} in workout
               </div>
               <div className="flex space-x-3">
-                <Button variant="outline" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleAddMovements}
-                  disabled={selectedMovements.size === 0}
-                >
-                  Add {selectedMovements.size} Movement{selectedMovements.size !== 1 ? 's' : ''}
+                <Button onClick={handleClose}>
+                  Done
                 </Button>
               </div>
             </div>

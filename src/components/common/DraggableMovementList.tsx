@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserMovement } from '@/models/types';
 import {
   closestCenter,
@@ -49,7 +48,8 @@ function DraggableMovementItem({ movement, index, onRemove }: DraggableMovementI
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const handleRemoveClick = () => {
+  const handleRemoveClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setShowDeleteConfirm(true);
   };
 
@@ -139,7 +139,11 @@ export default function DraggableMovementList({
   onRemove 
 }: DraggableMovementListProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -151,7 +155,7 @@ export default function DraggableMovementList({
     if (active.id !== over?.id) {
       const oldIndex = movements.findIndex(m => m.id === active.id);
       const newIndex = movements.findIndex(m => m.id === over?.id);
-      
+            
       const newOrder = arrayMove(movements, oldIndex, newIndex);
       onReorder(newOrder);
     }
@@ -174,23 +178,23 @@ export default function DraggableMovementList({
   }
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={movements.map(m => m.id)} strategy={verticalListSortingStrategy}>
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted-foreground">
-            Drag movements to reorder them in your workout
-          </p>
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-            {movements.length} movement{movements.length !== 1 ? 's' : ''}
-          </span>
-        </div>
-        
-        <ScrollArea className="h-96">
-          <div className="space-y-3 pr-4">
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-sm text-muted-foreground">
+          Drag movements to reorder them in your workout
+        </p>
+        <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+          {movements.length} movement{movements.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={movements.map(m => m.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-3">
             {movements.map((movement, index) => (
               <DraggableMovementItem
                 key={movement.id}
@@ -200,8 +204,8 @@ export default function DraggableMovementList({
               />
             ))}
           </div>
-        </ScrollArea>
-      </SortableContext>
-    </DndContext>
+        </SortableContext>
+      </DndContext>
+    </>
   );
 }

@@ -2,10 +2,12 @@
 
 import DraggableMovementList from '@/components/common/DraggableMovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
+import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserMovement, Workout } from '@/models/types';
 import { persistenceService } from '@/services/persistenceService';
+import { Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -16,7 +18,9 @@ export default function WorkoutDetailPage() {
   const workoutId = params.id as string;
   
   const [workout, setWorkout] = useState<Workout | null>(null);
+  const [movements, setMovements] = useState<UserMovement[]>([]);
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   useEffect(() => {
     const workouts = persistenceService.getWorkouts();
@@ -28,9 +32,11 @@ export default function WorkoutDetailPage() {
     }
     
     setWorkout(foundWorkout);
+    setMovements(persistenceService.getMovementsForWorkout(workoutId));
   }, [workoutId, router]);
 
   const handleMovementsSelected = (newMovements: UserMovement[]) => {
+    // This is now only used for custom movements from the modal
     if (!workout) return;
 
     // Add movements to the workout using proper WorkoutMovement relationship
@@ -40,14 +46,44 @@ export default function WorkoutDetailPage() {
     setWorkout({ ...workout });
   };
 
+  const handleMovementAdded = (movement: UserMovement) => {
+    if (!workout) return;
+
+    // Add single movement immediately
+    persistenceService.addMovementsToWorkout(workout.id, [movement]);
+    
+    // Update local movements state
+    setMovements(persistenceService.getMovementsForWorkout(workout.id));
+  };
+
+  const handleMovementRemovedFromModal = (movementId: string) => {
+    if (!workout) return;
+
+    // Remove movement immediately
+    persistenceService.removeMovementFromWorkout(workout.id, movementId);
+    
+    // Update local movements state
+    setMovements(persistenceService.getMovementsForWorkout(workout.id));
+  };
+
+  const handleWorkoutUpdated = (updatedWorkout: Workout) => {
+    setWorkout(updatedWorkout);
+    setIsSettingsModalOpen(false);
+  };
+
+  const handleWorkoutDeleted = (workoutId: string) => {
+    // Navigate back to home page after deletion
+    router.push('/');
+  };
+
   const handleReorderMovements = (newOrder: UserMovement[]) => {
     if (!workout) return;
 
-    // TODO: Implement proper WorkoutMovement relationship with order_index
-    // For now, just save the movements individually
-    newOrder.forEach(movement => {
-      persistenceService.saveUserMovement(movement);
-    });
+    // Update the order in persistence
+    persistenceService.updateWorkoutMovementOrder(workout.id, newOrder);
+    
+    // Update local state immediately for responsive UI
+    setMovements(newOrder);
   };
 
   const handleRemoveMovement = (movementId: string) => {
@@ -56,8 +92,8 @@ export default function WorkoutDetailPage() {
     // Remove movement from workout using proper WorkoutMovement relationship
     persistenceService.removeMovementFromWorkout(workout.id, movementId);
     
-    // Force re-render by updating the workout state
-    setWorkout({ ...workout });
+    // Update local movements state
+    setMovements(persistenceService.getMovementsForWorkout(workout.id));
   };
 
   if (!workout) return null;
@@ -83,14 +119,23 @@ export default function WorkoutDetailPage() {
                     <p className="text-muted-foreground mt-2">{workout.description}</p>
                   )}
                 </div>
-                <Button onClick={() => setIsSelectionModalOpen(true)}>
-                  Add Movement
-                </Button>
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setIsSettingsModalOpen(true)}
+                  >
+                    <Settings />
+                  </Button>
+                  <Button onClick={() => setIsSelectionModalOpen(true)}>
+                    Add Movement
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               <DraggableMovementList
-                movements={persistenceService.getMovementsForWorkout(workout.id)}
+                movements={movements}
                 onReorder={handleReorderMovements}
                 onRemove={handleRemoveMovement}
               />
@@ -102,6 +147,17 @@ export default function WorkoutDetailPage() {
         isOpen={isSelectionModalOpen}
         onClose={() => setIsSelectionModalOpen(false)}
         onMovementsSelected={handleMovementsSelected}
+        currentMovements={movements}
+        onMovementAdded={handleMovementAdded}
+        onMovementRemoved={handleMovementRemovedFromModal}
+      />
+
+      <WorkoutSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        workout={workout}
+        onWorkoutUpdated={handleWorkoutUpdated}
+        onWorkoutDeleted={handleWorkoutDeleted}
       />
     </main>
   );

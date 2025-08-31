@@ -83,17 +83,17 @@ export default function WorkoutList() {
                         </div>
                       </Link>
                     </Button>
-                    
-                    {/* Delete Button - appears on hover */}
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                      onClick={(e) => handleDeleteClick(e, workout)}
-                      aria-label={`Delete ${workout.name}`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                                      
+                  {/* Delete Button - appears on hover */}
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    onClick={(e) => handleDeleteClick(e, workout)}
+                    aria-label={`Delete ${workout.name}`}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                   </div>
                 ))}
               </div>
@@ -114,6 +114,7 @@ export default function WorkoutList() {
         }
         confirmText="Delete Workout"
         cancelText="Cancel"
+        variant="destructive"
       />
     </>
   );

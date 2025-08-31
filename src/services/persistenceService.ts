@@ -306,6 +306,33 @@ export class PersistenceService {
   public getMovementCountForWorkout(workoutId: string): number {
     return this.getMovementsForWorkout(workoutId).length;
   }
+
+  public updateWorkoutMovementOrder(
+    workoutId: string,
+    orderedMovements: UserMovement[]
+  ): boolean {
+    try {
+      const workoutMovements = this.getWorkoutMovements();
+
+      // Update the order_index for each movement in the workout
+      orderedMovements.forEach((movement, index) => {
+        const workoutMovement = workoutMovements.find(
+          (wm) =>
+            wm.workout_id === workoutId && wm.user_movement_id === movement.id
+        );
+
+        if (workoutMovement) {
+          workoutMovement.order_index = index;
+          this.saveWorkoutMovement(workoutMovement);
+        }
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Failed to update workout movement order:", error);
+      return false;
+    }
+  }
 }
 
 // Export singleton instance

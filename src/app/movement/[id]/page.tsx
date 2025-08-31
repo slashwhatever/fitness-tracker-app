@@ -3,6 +3,7 @@
 import EditableSet from '@/components/common/EditableSet';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import RestTimer from '@/components/common/RestTimer';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Set, UserMovement } from '@/models/types';
 import { persistenceService } from '@/services/persistenceService';
 import { format1RM, getBest1RM } from '@/utils/oneRepMax';
@@ -24,6 +25,10 @@ export default function MovementTrackingPage() {
   // Rest timer state
   const [isRestTimerActive, setIsRestTimerActive] = useState(false);
   const [customRestTime, setCustomRestTime] = useState<number>(0);
+
+  // Delete confirmation state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [setToDelete, setSetToDelete] = useState<Set | null>(null);
 
   useEffect(() => {
     // Find the movement across all workouts
@@ -109,11 +114,28 @@ export default function MovementTrackingPage() {
      }
    };
 
-     const handleDeleteSet = (setId: string) => {
-    const success = persistenceService.deleteSet(setId);
-    if (success) {
-      setSets(prev => prev.filter(s => s.id !== setId));
+  const handleDeleteSet = (setId: string) => {
+    const setToDelete = sets.find(s => s.id === setId);
+    if (setToDelete) {
+      setSetToDelete(setToDelete);
+      setShowDeleteConfirm(true);
     }
+  };
+
+  const handleConfirmDelete = () => {
+    if (setToDelete) {
+      const success = persistenceService.deleteSet(setToDelete.id);
+      if (success) {
+        setSets(prev => prev.filter(s => s.id !== setToDelete.id));
+      }
+    }
+    setShowDeleteConfirm(false);
+    setSetToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setSetToDelete(null);
   };
 
      const handleDuplicateSet = (originalSet: Set) => {
@@ -246,11 +268,11 @@ export default function MovementTrackingPage() {
           onQuickLog={handleQuickLog}
         />
 
-                 {/* Set History */}
+        {/* Set History */}
          <div className="bg-slate-800 border border-slate-600 rounded-lg shadow-md p-6">
            <h2 className="text-xl font-semibold text-slate-50 mb-4">History</h2>
           
-                     {sets.length === 0 ? (
+            {sets.length === 0 ? (
              <div className="text-center py-8">
                <p className="text-slate-400">No sets logged yet.</p>
                <p className="text-sm text-slate-500 mt-2">Log your first set above to start tracking progress!</p>
@@ -271,6 +293,26 @@ export default function MovementTrackingPage() {
            )}
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Set"
+        description={
+          setToDelete 
+            ? `Are you sure you want to delete this set${
+                setToDelete.weight ? ` (${setToDelete.weight} lbs × ${setToDelete.reps} reps)` :
+                setToDelete.reps ? ` (${setToDelete.reps} reps)` :
+                setToDelete.duration ? ` (${Math.floor(setToDelete.duration / 60)}:${(setToDelete.duration % 60).toString().padStart(2, '0')})` :
+                ''
+              }? This action cannot be undone.`
+            : ''
+        }
+        confirmText="Delete Set"
+        cancelText="Cancel"
+        variant="destructive"
+      />
     </main>
   );
 }
