@@ -1,5 +1,5 @@
 import { createSupabaseBrowserClient, supabaseClient } from "./client";
-import { createSupabaseServerClient } from "./server";
+import { createClient as createSupabaseServerClient } from "./server";
 
 /**
  * Test basic Supabase connection and authentication
@@ -20,7 +20,7 @@ export async function testSupabaseConnection(): Promise<{
 
     // Test 2: Environment variables
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-          const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
     if (!url || !anonKey) {
       return {
