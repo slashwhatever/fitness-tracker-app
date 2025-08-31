@@ -109,11 +109,14 @@ export default function MovementTrackingPage() {
 
 
 
-     const handleUpdateSet = async (updatedSet: Set) => {
-    const saved = await HybridStorageManager.saveRecord('sets', updatedSet);
-    if (saved) {
-      setSets(prev => prev.map(s => s.id === updatedSet.id ? updatedSet : s));
-    }
+       const handleUpdateSet = (updatedSet: Set) => {
+    HybridStorageManager.saveRecord('sets', updatedSet).then((saved) => {
+      if (saved) {
+        setSets(prev => prev.map(s => s.id === updatedSet.id ? updatedSet : s));
+      }
+    }).catch(error => {
+      console.error('Failed to update set:', error);
+    });
   };
 
   const handleDeleteSet = (setId: string) => {
@@ -124,14 +127,13 @@ export default function MovementTrackingPage() {
     }
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (setToDelete) {
-      try {
-        await HybridStorageManager.deleteRecord('sets', setToDelete.id);
+      HybridStorageManager.deleteRecord('sets', setToDelete.id).then(() => {
         setSets(prev => prev.filter(s => s.id !== setToDelete.id));
-      } catch (error) {
+      }).catch(error => {
         console.error('Failed to delete set:', error);
-      }
+      });
     }
     setShowDeleteConfirm(false);
     setSetToDelete(null);
@@ -142,7 +144,7 @@ export default function MovementTrackingPage() {
     setSetToDelete(null);
   };
 
-     const handleDuplicateSet = async (originalSet: Set) => {
+  const handleDuplicateSet = (originalSet: Set) => {
      if (!movement) return;
 
      const duplicatedSet: Set = {
@@ -159,21 +161,24 @@ export default function MovementTrackingPage() {
        created_at: new Date().toISOString(),
      };
 
-         const saved = await HybridStorageManager.saveRecord('sets', duplicatedSet);
-    if (saved) {
-      setSets(prev => [duplicatedSet, ...prev]);
-       // Always ensure timer starts fresh - even if it was previously inactive
-       setIsRestTimerActive(false);
-       // Use requestAnimationFrame to ensure clean state update
-       requestAnimationFrame(() => {
-         setTimeout(() => {
-           setIsRestTimerActive(true);
-         }, 10);
-       });
-     }
-   };
+    HybridStorageManager.saveRecord('sets', duplicatedSet).then((saved) => {
+      if (saved) {
+        setSets(prev => [duplicatedSet, ...prev]);
+        // Always ensure timer starts fresh - even if it was previously inactive
+        setIsRestTimerActive(false);
+        // Use requestAnimationFrame to ensure clean state update
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setIsRestTimerActive(true);
+          }, 10);
+        });
+      }
+    }).catch(error => {
+      console.error('Failed to save duplicated set:', error);
+    });
+  };
 
-   const handleQuickLog = async (setData: Partial<Set>) => {
+  const handleQuickLog = (setData: Partial<Set>) => {
      if (!movement) return;
 
      const newSet: Set = {
@@ -191,19 +196,22 @@ export default function MovementTrackingPage() {
        ...setData,
      };
 
-                 const saved = await HybridStorageManager.saveRecord('sets', newSet);
-   if (saved) {
-     setSets(prev => [newSet, ...prev]);
-      // Always ensure timer starts fresh - even if it was previously inactive
-      setIsRestTimerActive(false);
-      // Use requestAnimationFrame to ensure clean state update
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          setIsRestTimerActive(true);
-        }, 10);
-      });
-    }
-   };
+    HybridStorageManager.saveRecord('sets', newSet).then((saved) => {
+      if (saved) {
+        setSets(prev => [newSet, ...prev]);
+        // Always ensure timer starts fresh - even if it was previously inactive
+        setIsRestTimerActive(false);
+        // Use requestAnimationFrame to ensure clean state update
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            setIsRestTimerActive(true);
+          }, 10);
+        });
+      }
+    }).catch(error => {
+      console.error('Failed to save quick log set:', error);
+    });
+  };
 
   if (!movement) {
     return (

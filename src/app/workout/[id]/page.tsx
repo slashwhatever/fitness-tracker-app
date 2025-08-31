@@ -22,6 +22,24 @@ export default function WorkoutDetailPage() {
   const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
+  // Helper function to reload movements from storage
+  const reloadMovements = async () => {
+    if (!workout) return;
+    
+    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      workout_id: workout.id
+    });
+    
+    const userMovements: UserMovement[] = [];
+    for (const wm of workoutMovements) {
+      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+      if (movement) {
+        userMovements.push(movement);
+      }
+    }
+    setMovements(userMovements);
+  };
+
   useEffect(() => {
     const loadWorkoutData = async () => {
       const workouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
@@ -54,63 +72,46 @@ export default function WorkoutDetailPage() {
     loadWorkoutData();
   }, [workoutId, router]);
 
-  const handleMovementAdded = async (movement: UserMovement) => {
+  const handleMovementAdded = (movement: UserMovement) => {
     if (!workout) return;
 
-    // Save the user movement first
-    await HybridStorageManager.saveRecord('user_movements', movement);
-    
-    // Create the workout-movement relationship
-    const workoutMovement = {
-      id: crypto.randomUUID(),
-      workout_id: workout.id,
-      user_movement_id: movement.id,
-      order_index: movements.length,
-      created_at: new Date().toISOString(),
-    };
-    await HybridStorageManager.saveRecord('workout_movements', workoutMovement);
-    
-    // Update local movements state - reload from storage
-    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-      workout_id: workout.id
+    // Save the user movement first, then create relationship
+    HybridStorageManager.saveRecord('user_movements', movement).then(() => {
+      const workoutMovement = {
+        id: crypto.randomUUID(),
+        workout_id: workout.id,
+        user_movement_id: movement.id,
+        order_index: movements.length,
+        created_at: new Date().toISOString(),
+      };
+      
+      return HybridStorageManager.saveRecord('workout_movements', workoutMovement);
+    }).then(() => {
+      // Reload movements from storage
+      reloadMovements();
+    }).catch(error => {
+      console.error('Failed to add movement:', error);
     });
-    
-    const userMovements: UserMovement[] = [];
-    for (const wm of workoutMovements) {
-      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
-      if (movement) {
-        userMovements.push(movement);
-      }
-    }
-    setMovements(userMovements);
   };
 
-  const handleMovementRemovedFromModal = async (movementId: string) => {
+  const handleMovementRemovedFromModal = (movementId: string) => {
     if (!workout) return;
 
     // Find and delete the workout_movement relationship
-    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+    HybridStorageManager.getLocalRecords('workout_movements', {
       workout_id: workout.id,
       user_movement_id: movementId
+    }).then(workoutMovements => {
+      const deletePromises = workoutMovements.map(wm => 
+        HybridStorageManager.deleteRecord('workout_movements', (wm as any).id)
+      );
+      return Promise.all(deletePromises);
+    }).then(() => {
+      // Reload movements from storage
+      reloadMovements();
+    }).catch(error => {
+      console.error('Failed to remove movement:', error);
     });
-    
-    for (const wm of workoutMovements) {
-      await HybridStorageManager.deleteRecord('workout_movements', (wm as any).id);
-    }
-    
-    // Update local movements state - reload from storage
-    const updatedWorkoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-      workout_id: workout.id
-    });
-    
-    const userMovements: UserMovement[] = [];
-    for (const wm of updatedWorkoutMovements) {
-      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
-      if (movement) {
-        userMovements.push(movement);
-      }
-    }
-    setMovements(userMovements);
   };
 
   const handleWorkoutUpdated = (updatedWorkout: Workout) => {
@@ -123,32 +124,24 @@ export default function WorkoutDetailPage() {
     router.push('/');
   };
 
-  const handleRemoveMovement = async (movementId: string) => {
+  const handleRemoveMovement = (movementId: string) => {
     if (!workout) return;
 
     // Find and delete the workout_movement relationship
-    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+    HybridStorageManager.getLocalRecords('workout_movements', {
       workout_id: workout.id,
       user_movement_id: movementId
+    }).then(workoutMovements => {
+      const deletePromises = workoutMovements.map(wm => 
+        HybridStorageManager.deleteRecord('workout_movements', (wm as any).id)
+      );
+      return Promise.all(deletePromises);
+    }).then(() => {
+      // Reload movements from storage
+      reloadMovements();
+    }).catch(error => {
+      console.error('Failed to remove movement:', error);
     });
-    
-    for (const wm of workoutMovements) {
-      await HybridStorageManager.deleteRecord('workout_movements', (wm as any).id);
-    }
-    
-    // Update local movements state - reload from storage
-    const updatedWorkoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-      workout_id: workout.id
-    });
-    
-    const userMovements: UserMovement[] = [];
-    for (const wm of updatedWorkoutMovements) {
-      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
-      if (movement) {
-        userMovements.push(movement);
-      }
-    }
-    setMovements(userMovements);
   };
 
   if (!workout) return null;
