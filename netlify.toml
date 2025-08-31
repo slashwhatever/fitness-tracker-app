@@ -3,12 +3,12 @@
 # ============================================================================
 
 [build]
-  command = "npm run build"
+  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
   publish = ".next"
   
 [build.environment]
   NODE_VERSION = "18"
-  NPM_VERSION = "9"
+  NPM_FLAGS = "--version" # Prevent npm auto-install
   # Enable Next.js standalone output for better performance
   NEXT_PRIVATE_STANDALONE = "true"
 
@@ -99,7 +99,7 @@
 
 # Production environment
 [context.production]
-  command = "npm run build"
+  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
   
 [context.production.environment]
   NODE_ENV = "production"
@@ -108,7 +108,7 @@
 
 # Staging environment (deploy-preview)
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
   
 [context.deploy-preview.environment]
   NODE_ENV = "production"
@@ -117,7 +117,7 @@
 
 # Branch deploys (develop branch)
 [context.branch-deploy]
-  command = "npm run build"
+  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
   
 [context.branch-deploy.environment]
   NODE_ENV = "production"

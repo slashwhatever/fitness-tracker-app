@@ -25,7 +25,7 @@ export default function AnalyticsDashboard({ refreshKey = 0 }: AnalyticsDashboar
         setWorkouts(allWorkouts);
         setTotalSets(allSets.length);
       } catch (error) {
-        console.error('Failed to load analytics data:', error);
+        console.error('Failed to load analytics data test:', error);
       } finally {
         setIsLoading(false);
       }
