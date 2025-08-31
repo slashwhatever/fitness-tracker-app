@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { UserMovement } from '@/models/types';
-import { formatWeight } from '@/utils/userPreferences';
+import { formatWeight } from '@/models/types';
 import { useEffect, useState } from 'react';
 
 interface PersonalRecord {
@@ -66,7 +66,7 @@ export default function PRSummary() {
             if (maxWeightSet.weight) {
               pr = {
                 movementName: movement.name,
-                value: `${formatWeight(maxWeightSet.weight)} × ${maxWeightSet.reps || 1}`,
+                value: `${formatWeight(maxWeightSet.weight)} lbs × ${maxWeightSet.reps || 1}`,
                 type: 'weight',
                 date: new Date(maxWeightSet.created_at).toLocaleDateString()
               };

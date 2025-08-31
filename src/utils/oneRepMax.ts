@@ -68,10 +68,20 @@ export function getBest1RM(
 }
 
 /**
- * Format 1RM for display with appropriate precision
+ * Format 1RM for display with appropriate precision (sync version with default unit)
  */
 export function format1RM(oneRM: number): string {
-  const unit = getUserWeightUnit();
+  if (oneRM % 1 === 0) {
+    return `${oneRM} lbs`;
+  }
+  return `${oneRM.toFixed(1)} lbs`;
+}
+
+/**
+ * Format 1RM for display with user's preferred unit (async version)
+ */
+export async function format1RMWithUnit(oneRM: number): Promise<string> {
+  const unit = await getUserWeightUnit();
   if (oneRM % 1 === 0) {
     return `${oneRM} ${unit}`;
   }

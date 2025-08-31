@@ -1,8 +1,8 @@
 'use client';
 
-import { Set, UserMovement } from '@/models/types';
+import { Set, UserMovement, WeightUnit } from '@/models/types';
 import { getUserWeightUnit } from '@/utils/userPreferences';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface QuickSetEntryProps {
   movement: UserMovement;
@@ -14,6 +14,11 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
   const [quickReps, setQuickReps] = useState(lastSet?.reps || 0);
   const [quickWeight, setQuickWeight] = useState(lastSet?.weight || 0);
   const [quickDuration, setQuickDuration] = useState(lastSet?.duration || 0);
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
+
+  useEffect(() => {
+    getUserWeightUnit().then(setWeightUnit);
+  }, []);
 
   const handleQuickLog = () => {
     const setData: Partial<Set> = {
@@ -57,7 +62,7 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
           <>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Weight ({getUserWeightUnit()})
+                Weight ({weightUnit})
               </label>
               <input
                 type="number"

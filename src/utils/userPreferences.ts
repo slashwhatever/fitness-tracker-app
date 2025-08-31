@@ -1,101 +1,53 @@
-import { DistanceUnit, WeightUnit } from "@/models/types";
 import { HybridStorageManager } from "@/lib/storage/HybridStorageManager";
+import { DistanceUnit, WeightUnit } from "@/models/types";
 
 /**
- * Get the user's preferred weight unit, defaulting to 'lbs' (sync version for render logic)
+ * Get the user's preferred weight unit from storage
  */
-export function getUserWeightUnit(): WeightUnit {
-  // Fallback to default for render logic - use async version for actual storage operations
-  return "lbs";
-}
-
-/**
- * Get the user's preferred weight unit from storage (async version)
- */
-export async function getUserWeightUnitFromStorage(): Promise<WeightUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords('user_profiles');
+export async function getUserWeightUnit(): Promise<WeightUnit> {
+  const profiles = await HybridStorageManager.getLocalRecords("user_profiles");
   const profile = profiles[0]; // Assuming single user
   return (profile as any)?.weight_unit || "lbs";
 }
 
 /**
- * Get the user's preferred distance unit, defaulting to 'miles' (sync version for render logic)
+ * Get the user's preferred distance unit from storage
  */
-export function getUserDistanceUnit(): DistanceUnit {
-  // Fallback to default for render logic - use async version for actual storage operations
-  return "miles";
-}
-
-/**
- * Get the user's preferred distance unit from storage (async version)
- */
-export async function getUserDistanceUnitFromStorage(): Promise<DistanceUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords('user_profiles');
+export async function getUserDistanceUnit(): Promise<DistanceUnit> {
+  const profiles = await HybridStorageManager.getLocalRecords("user_profiles");
   const profile = profiles[0]; // Assuming single user
   return (profile as any)?.distance_unit || "miles";
 }
 
 /**
- * Get the user's default rest timer, defaulting to 60 seconds (sync version for render logic)
+ * Get the user's default rest timer from storage
  */
-export function getUserDefaultRestTimer(): number {
-  // Fallback to default for render logic - use async version for actual storage operations  
-  return 60;
-}
-
-/**
- * Get the user's default rest timer from storage (async version)
- */
-export async function getUserDefaultRestTimerFromStorage(): Promise<number> {
-  const profiles = await HybridStorageManager.getLocalRecords('user_profiles');
+export async function getUserDefaultRestTimer(): Promise<number> {
+  const profiles = await HybridStorageManager.getLocalRecords("user_profiles");
   const profile = profiles[0]; // Assuming single user
   return (profile as any)?.default_rest_timer || 60;
 }
 
 /**
- * Format weight with user's preferred unit (sync version for render logic)
+ * Format weight with user's preferred unit
  */
-export function formatWeight(weight: number): string {
-  const unit = getUserWeightUnit();
+export async function formatWeight(weight: number): Promise<string> {
+  const unit = await getUserWeightUnit();
   return `${weight} ${unit}`;
 }
 
 /**
- * Format weight with user's preferred unit from storage (async version)
+ * Format distance with user's preferred unit
  */
-export async function formatWeightFromStorage(weight: number): Promise<string> {
-  const unit = await getUserWeightUnitFromStorage();
-  return `${weight} ${unit}`;
-}
-
-/**
- * Format distance with user's preferred unit (sync version for render logic)
- */
-export function formatDistance(distance: number): string {
-  const unit = getUserDistanceUnit();
+export async function formatDistance(distance: number): Promise<string> {
+  const unit = await getUserDistanceUnit();
   return `${distance} ${unit}`;
 }
 
 /**
- * Format distance with user's preferred unit from storage (async version)
+ * Get weight unit label for forms
  */
-export async function formatDistanceFromStorage(distance: number): Promise<string> {
-  const unit = await getUserDistanceUnitFromStorage();
-  return `${distance} ${unit}`;
-}
-
-/**
- * Get weight unit label for forms (sync version for render logic)
- */
-export function getWeightUnitLabel(): string {
-  const unit = getUserWeightUnit();
-  return unit === "lbs" ? "Weight (lbs)" : "Weight (kg)";
-}
-
-/**
- * Get weight unit label for forms from storage (async version)
- */
-export async function getWeightUnitLabelFromStorage(): Promise<string> {
-  const unit = await getUserWeightUnitFromStorage();
+export async function getWeightUnitLabel(): Promise<string> {
+  const unit = await getUserWeightUnit();
   return unit === "lbs" ? "Weight (lbs)" : "Weight (kg)";
 }

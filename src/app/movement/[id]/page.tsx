@@ -7,7 +7,8 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { Set, UserMovement } from '@/models/types';
 import { format1RM, getBest1RM } from '@/utils/oneRepMax';
-import { formatWeight } from '@/utils/userPreferences';
+import { formatWeight as formatWeightFromPrefs } from '@/utils/userPreferences';
+import { formatWeight } from '@/models/types';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -75,7 +76,7 @@ export default function MovementTrackingPage() {
         
         return {
           type: 'Max Weight',
-          value: formatWeight(maxWeight),
+          value: `${formatWeight(maxWeight)} lbs`,
           details: `${maxWeightSet?.reps || 0} reps`,
           date: maxWeightSet ? new Date(maxWeightSet.created_at).toLocaleDateString() : '',
           oneRM: best1RM ? {
@@ -253,7 +254,7 @@ export default function MovementTrackingPage() {
                     <p className="text-xs text-primary/70">Estimated 1RM</p>
                     <p className="text-lg font-bold text-primary">{personalRecords.oneRM.value}</p>
                     <p className="text-xs text-primary/70">
-                      From {formatWeight(personalRecords.oneRM.fromWeight)} × {personalRecords.oneRM.fromReps}
+                      From {formatWeight(personalRecords.oneRM.fromWeight)} lbs × {personalRecords.oneRM.fromReps}
                     </p>
                   </div>
                 )}
@@ -314,7 +315,7 @@ export default function MovementTrackingPage() {
         description={
           setToDelete 
             ? `Are you sure you want to delete this set${
-                setToDelete.weight ? ` (${formatWeight(setToDelete.weight)} × ${setToDelete.reps} reps)` :
+                setToDelete.weight ? ` (${formatWeight(setToDelete.weight)} lbs × ${setToDelete.reps} reps)` :
                 setToDelete.reps ? ` (${setToDelete.reps} reps)` :
                 setToDelete.duration ? ` (${Math.floor(setToDelete.duration / 60)}:${(setToDelete.duration % 60).toString().padStart(2, '0')})` :
                 ''

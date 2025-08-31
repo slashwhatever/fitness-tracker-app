@@ -13,10 +13,10 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Set, UserMovement } from '@/models/types';
+import { Set, UserMovement, WeightUnit } from '@/models/types';
 import { getUserWeightUnit, getWeightUnitLabel } from '@/utils/userPreferences';
 import { Copy, Edit, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface EditableSetProps {
   set: Set;
@@ -31,7 +31,13 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
   const [editReps, setEditReps] = useState(set.reps || 0);
   const [editWeight, setEditWeight] = useState(set.weight || 0);
   const [editDuration, setEditDuration] = useState(set.duration || 0);
-  const weightUnit = getUserWeightUnit();
+  const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
+  const [weightUnitLabel, setWeightUnitLabel] = useState('Weight (lbs)');
+
+  useEffect(() => {
+    getUserWeightUnit().then(setWeightUnit);
+    getWeightUnitLabel().then(setWeightUnitLabel);
+  }, []);
 
   const handleSave = () => {
     const updatedSet: Set = {
@@ -164,7 +170,7 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
                   {movement.tracking_type === 'weight' && (
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="edit-weight">{getWeightUnitLabel()}</Label>
+                        <Label htmlFor="edit-weight">{weightUnitLabel}</Label>
                         <Input
                           id="edit-weight"
                           type="number"
