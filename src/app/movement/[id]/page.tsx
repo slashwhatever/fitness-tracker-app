@@ -5,7 +5,7 @@ import QuickSetEntry from '@/components/common/QuickSetEntry';
 import RestTimer from '@/components/common/RestTimer';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Set, UserMovement } from '@/models/types';
-import { persistenceService } from '@/services/persistenceService';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { format1RM, getBest1RM } from '@/utils/oneRepMax';
 import { formatWeight } from '@/utils/userPreferences';
 import Link from 'next/link';

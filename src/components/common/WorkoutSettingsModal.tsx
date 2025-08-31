@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TIMER_PRESETS, Workout } from '@/models/types';
-import { persistenceService } from '@/services/persistenceService';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -46,8 +46,8 @@ export default function WorkoutSettingsModal({
       updated_at: new Date().toISOString(),
     };
 
-    // Save to persistence service
-    persistenceService.saveWorkout(updatedWorkout);
+    // Save to storage
+    await HybridStorageManager.saveRecord('workouts', updatedWorkout);
     
     // Notify parent component
     onWorkoutUpdated(updatedWorkout);
@@ -56,9 +56,9 @@ export default function WorkoutSettingsModal({
     onClose();
   };
 
-  const handleDelete = () => {
-    // Delete from persistence service
-    persistenceService.deleteWorkout(workout.id);
+  const handleDelete = async () => {
+    // Delete from storage
+    await HybridStorageManager.deleteRecord('workouts', workout.id);
     
     // Notify parent component
     onWorkoutDeleted(workout.id);

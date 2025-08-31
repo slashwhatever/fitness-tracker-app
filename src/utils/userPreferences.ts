@@ -1,5 +1,5 @@
 import { DistanceUnit, WeightUnit } from "@/models/types";
-import { persistenceService } from "@/services/persistenceService";
+import { HybridStorageManager } from "@/lib/storage/HybridStorageManager";
 
 /**
  * Get the user's preferred weight unit, defaulting to 'lbs'

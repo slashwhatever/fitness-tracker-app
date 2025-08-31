@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Workout } from '@/models/types';
-import { persistenceService } from '@/services/persistenceService';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -14,11 +14,29 @@ export default function WorkoutList() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState<Workout | null>(null);
+  const [movementCounts, setMovementCounts] = useState<Record<string, number>>({});
+
+  const getMovementCount = (workoutId: string): number => {
+    return movementCounts[workoutId] || 0;
+  };
 
   useEffect(() => {
-    // Load workouts from localStorage
-    const savedWorkouts = persistenceService.getWorkouts();
-    setWorkouts(savedWorkouts);
+    // Load workouts from storage
+    const loadWorkouts = async () => {
+      const savedWorkouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
+      setWorkouts(savedWorkouts);
+      
+      // Load movement counts for each workout
+      const counts: Record<string, number> = {};
+      for (const workout of savedWorkouts) {
+        const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+          workout_id: workout.id
+        });
+        counts[workout.id] = workoutMovements.length;
+      }
+      setMovementCounts(counts);
+    };
+    loadWorkouts();
   }, []);
 
   const handleDeleteClick = (e: React.MouseEvent, workout: Workout) => {
@@ -28,9 +46,9 @@ export default function WorkoutList() {
     setShowDeleteConfirm(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (workoutToDelete) {
-      persistenceService.deleteWorkout(workoutToDelete.id);
+      await HybridStorageManager.deleteRecord('workouts', workoutToDelete.id);
       setWorkouts(workouts.filter(w => w.id !== workoutToDelete.id));
       setWorkoutToDelete(null);
     }
@@ -67,7 +85,7 @@ export default function WorkoutList() {
                           <p className="text-sm text-muted-foreground mt-1">{workout.description}</p>
                         )}
                         <p className="text-xs text-muted-foreground mt-1">
-                          {persistenceService.getMovementCountForWorkout(workout.id)} movements
+                          {getMovementCount(workout.id)} movements
                         </p>
                       </div>
                     </Link>

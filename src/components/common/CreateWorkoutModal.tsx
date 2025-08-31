@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Workout } from '@/models/types';
-import { persistenceService } from '@/services/persistenceService';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { useState } from 'react';
 
 interface CreateWorkoutModalProps {
@@ -43,7 +43,8 @@ export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }
         updated_at: new Date().toISOString(),
       };
 
-      const success = persistenceService.saveWorkout(newWorkout);
+      const savedWorkout = await HybridStorageManager.saveRecord('workouts', newWorkout);
+      const success = !!savedWorkout;
       
       if (success) {
         onWorkoutCreated(newWorkout);

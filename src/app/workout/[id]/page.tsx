@@ -6,7 +6,7 @@ import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserMovement, Workout } from '@/models/types';
-import { persistenceService } from '@/services/persistenceService';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -23,36 +23,74 @@ export default function WorkoutDetailPage() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   useEffect(() => {
-    const workouts = persistenceService.getWorkouts();
-    const foundWorkout = workouts.find(w => w.id === workoutId);
+    const loadWorkoutData = async () => {
+      const workouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
+      const foundWorkout = workouts.find(w => w.id === workoutId);
+      
+      if (!foundWorkout) {
+        router.push('/');
+        return;
+      }
+      
+      setWorkout(foundWorkout);
+      
+      // Get workout_movement relationships
+      const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+        workout_id: workoutId
+      });
+      
+      // Get the actual UserMovement objects
+      const userMovements: UserMovement[] = [];
+      for (const wm of workoutMovements) {
+        const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+        if (movement) {
+          userMovements.push(movement);
+        }
+      }
+      
+      setMovements(userMovements);
+    };
     
-    if (!foundWorkout) {
-      router.push('/');
-      return;
-    }
-    
-    setWorkout(foundWorkout);
-    setMovements(persistenceService.getMovementsForWorkout(workoutId));
+    loadWorkoutData();
   }, [workoutId, router]);
 
-  const handleMovementAdded = (movement: UserMovement) => {
+  const handleMovementAdded = async (movement: UserMovement) => {
     if (!workout) return;
 
-    // Add single movement immediately
-    persistenceService.addMovementsToWorkout(workout.id, [movement]);
+    // Save the user movement first
+    await HybridStorageManager.saveRecord('user_movements', movement);
+    
+    // Create the workout-movement relationship
+    const workoutMovement = {
+      id: crypto.randomUUID(),
+      workout_id: workout.id,
+      user_movement_id: movement.id,
+      order_index: movements.length,
+      created_at: new Date().toISOString(),
+    };
+    await HybridStorageManager.saveRecord('workout_movements', workoutMovement);
     
     // Update local movements state
-    setMovements(persistenceService.getMovementsForWorkout(workout.id));
+    const updatedMovements = await HybridStorageManager.getWorkoutMovements(workout.id);
+    setMovements(updatedMovements as UserMovement[]);
   };
 
-  const handleMovementRemovedFromModal = (movementId: string) => {
+  const handleMovementRemovedFromModal = async (movementId: string) => {
     if (!workout) return;
 
-    // Remove movement immediately
-    persistenceService.removeMovementFromWorkout(workout.id, movementId);
+    // Find and delete the workout_movement relationship
+    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      workout_id: workout.id,
+      user_movement_id: movementId
+    });
+    
+    for (const wm of workoutMovements) {
+      await HybridStorageManager.deleteRecord('workout_movements', wm.id);
+    }
     
     // Update local movements state
-    setMovements(persistenceService.getMovementsForWorkout(workout.id));
+    const updatedMovements = await HybridStorageManager.getWorkoutMovements(workout.id);
+    setMovements(updatedMovements as UserMovement[]);
   };
 
   const handleWorkoutUpdated = (updatedWorkout: Workout) => {
@@ -65,14 +103,22 @@ export default function WorkoutDetailPage() {
     router.push('/');
   };
 
-  const handleRemoveMovement = (movementId: string) => {
+  const handleRemoveMovement = async (movementId: string) => {
     if (!workout) return;
 
-    // Remove movement from workout using proper WorkoutMovement relationship
-    persistenceService.removeMovementFromWorkout(workout.id, movementId);
+    // Find and delete the workout_movement relationship
+    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      workout_id: workout.id,
+      user_movement_id: movementId
+    });
+    
+    for (const wm of workoutMovements) {
+      await HybridStorageManager.deleteRecord('workout_movements', wm.id);
+    }
     
     // Update local movements state
-    setMovements(persistenceService.getMovementsForWorkout(workout.id));
+    const updatedMovements = await HybridStorageManager.getWorkoutMovements(workout.id);
+    setMovements(updatedMovements as UserMovement[]);
   };
 
   if (!workout) return null;
