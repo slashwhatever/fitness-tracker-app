@@ -1,6 +1,10 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Set, UserMovement } from '@/models/types';
+import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface EditableSetProps {
@@ -81,24 +85,26 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
         <div className="flex items-center space-x-3">
           {movement.tracking_type === 'weight' && (
             <>
-              <div className="flex flex-col">
-                <label className="text-xs text-muted-foreground mb-1">Weight (lbs)</label>
-                <input
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="edit-weight" className="text-xs">Weight (lbs)</Label>
+                <Input
+                  id="edit-weight"
                   type="number"
                   value={editWeight}
                   onChange={(e) => setEditWeight(Number(e.target.value))}
-                  className="w-20 p-2 border border-default rounded text-center bg-card text-card-foreground"
+                  className="w-20 text-center"
                   min="0"
                   step="0.5"
                 />
               </div>
-              <div className="flex flex-col">
-                <label className="text-xs text-muted-foreground mb-1">Reps</label>
-                <input
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="edit-reps" className="text-xs">Reps</Label>
+                <Input
+                  id="edit-reps"
                   type="number"
                   value={editReps}
                   onChange={(e) => setEditReps(Number(e.target.value))}
-                  className="w-16 p-2 border border-default rounded text-center bg-card text-card-foreground"
+                  className="w-16 text-center"
                   min="0"
                 />
               </div>
@@ -106,45 +112,49 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
           )}
           
           {movement.tracking_type === 'bodyweight' && (
-            <div className="flex flex-col">
-              <label className="text-xs text-muted-foreground mb-1">Reps</label>
-              <input
+            <div className="flex flex-col space-y-2">
+              <Label htmlFor="edit-reps" className="text-xs">Reps</Label>
+              <Input
+                id="edit-reps"
                 type="number"
                 value={editReps}
                 onChange={(e) => setEditReps(Number(e.target.value))}
-                className="w-16 p-2 border border-default rounded text-center bg-card text-card-foreground"
+                className="w-16 text-center"
                 min="0"
               />
             </div>
           )}
           
           {movement.tracking_type === 'duration' && (
-            <div className="flex flex-col">
-              <label className="text-xs text-muted-foreground mb-1">Duration (seconds)</label>
-              <input
+            <div className="flex flex-col space-y-2">
+              <Label htmlFor="edit-duration" className="text-xs">Duration (seconds)</Label>
+              <Input
+                id="edit-duration"
                 type="number"
                 value={editDuration}
                 onChange={(e) => setEditDuration(Number(e.target.value))}
-                className="w-24 p-2 border border-default rounded text-center bg-card text-card-foreground"
+                className="w-24 text-center"
                 min="0"
               />
             </div>
           )}
           
           <div className="flex space-x-2">
-            <button
+            <Button
               onClick={handleSave}
               disabled={!isValidEdit()}
-              className="px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              size="sm"
+              className="bg-green-500 hover:bg-green-600"
             >
               Save
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleCancel}
-              className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
+              variant="secondary"
+              size="sm"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -190,33 +200,32 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-2">
-          <button
+        <div className="flex items-center space-x-2">
+          <Button
             onClick={handleDuplicate}
-            className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition-colors"
-            aria-label="Duplicate set"
+            size="sm"
+            className="bg-green-500 hover:bg-green-600 h-9"
           >
+            <Copy className="w-4 h-4 mr-1" />
             Duplicate
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setIsEditing(true)}
-            className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
-            aria-label="Edit set"
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </button>
+            <Edit className="w-4 h-4" />
+          </Button>
           
-          <button
+          <Button
             onClick={() => onDelete(set.id)}
-            className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-            aria-label="Delete set"
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-red-500 h-9 w-9"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </button>
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>

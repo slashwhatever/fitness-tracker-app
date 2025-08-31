@@ -1,54 +1,23 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { UserMovement } from '@/models/types';
-import {
-  closestCenter,
-  DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { Play, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
-interface DraggableMovementItemProps {
+interface MovementItemProps {
   movement: UserMovement;
   index: number;
   onRemove: (movementId: string) => void;
 }
 
-function DraggableMovementItem({ movement, index, onRemove }: DraggableMovementItemProps) {
+function MovementItem({ movement, index, onRemove }: MovementItemProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: movement.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
 
   const handleRemoveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     setShowDeleteConfirm(true);
   };
@@ -60,59 +29,38 @@ function DraggableMovementItem({ movement, index, onRemove }: DraggableMovementI
 
   return (
     <>
-      <Card 
-        ref={setNodeRef}
-        style={style}
-        className={`transition-all ${
-          isDragging ? 'ring-2 ring-primary shadow-lg' : ''
-        }`}
-      >
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {/* Drag Handle */}
-              <div
-                {...attributes}
-                {...listeners}
-                className="cursor-grab active:cursor-grabbing p-2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Drag to reorder"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-                </svg>
-              </div>
-              
-              <span className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-sm font-medium">
-                {index + 1}
-              </span>
-              
-              <div>
-                <h3 className="font-medium">{movement.name}</h3>
-                <p className="text-sm text-muted-foreground">{movement.muscle_groups.join(', ')}</p>
-                <span className="inline-block mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded capitalize">
-                  {movement.tracking_type}
-                </span>
-              </div>
-            </div>
-          
-            <div className="flex items-center space-x-2">
-              <Button size="sm" asChild>
-                <Link href={`/movement/${movement.id}`}>
-                  Track
-                </Link>
-              </Button>
-              <Button 
-                size="sm" 
-                variant="destructive"
-                onClick={handleRemoveClick}
-                aria-label={`Remove ${movement.name}`}
-              >
-                Remove
-              </Button>
-            </div>
+      <div className="flex justify-between items-center p-4 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
+
+        <Link href={`/movement/${movement.id}`} className="flex-1">
+          <div className="text-left">
+            <h3 className="text-lg font-bold text-foreground">{movement.name}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{movement.muscle_groups.join(', ')}</p>
+            <span className="inline-block mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded capitalize">
+              {movement.tracking_type}
+            </span>
           </div>
-        </CardContent>
-      </Card>
+        </Link>
+
+        <div className="flex items-center space-x-2">
+          <Link href={`/movement/${movement.id}`}>
+            <Button
+              size="sm"
+              className="bg-green-500 hover:bg-green-600"
+            >
+              <Play className="w-4 h-4 mr-1" />
+              Track
+            </Button>
+          </Link>
+          <Button
+            onClick={handleRemoveClick}
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-red-500 h-9 w-9"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
 
       <ConfirmationModal
         isOpen={showDeleteConfirm}
@@ -122,6 +70,7 @@ function DraggableMovementItem({ movement, index, onRemove }: DraggableMovementI
         description={`Are you sure you want to remove "${movement.name}" from this workout? This action cannot be undone.`}
         confirmText="Remove"
         cancelText="Cancel"
+        variant="destructive"
       />
     </>
   );
@@ -138,29 +87,6 @@ export default function DraggableMovementList({
   onReorder, 
   onRemove 
 }: DraggableMovementListProps) {
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      const oldIndex = movements.findIndex(m => m.id === active.id);
-      const newIndex = movements.findIndex(m => m.id === over?.id);
-            
-      const newOrder = arrayMove(movements, oldIndex, newIndex);
-      onReorder(newOrder);
-    }
-  };
-
   if (movements.length === 0) {
     return (
       <div className="text-center py-12 border-2 border-dashed border-muted rounded-lg">
@@ -181,31 +107,23 @@ export default function DraggableMovementList({
     <>
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-muted-foreground">
-          Drag movements to reorder them in your workout
+          Your workout movements
         </p>
         <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
           {movements.length} movement{movements.length !== 1 ? 's' : ''}
         </span>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={movements.map(m => m.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-3">
-            {movements.map((movement, index) => (
-              <DraggableMovementItem
-                key={movement.id}
-                movement={movement}
-                index={index}
-                onRemove={onRemove}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <div className="space-y-3">
+        {movements.map((movement, index) => (
+          <MovementItem
+            key={movement.id}
+            movement={movement}
+            index={index}
+            onRemove={onRemove}
+          />
+        ))}
+      </div>
     </>
   );
 }

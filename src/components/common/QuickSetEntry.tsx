@@ -64,14 +64,6 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
     <div className="bg-slate-800 border border-slate-600 rounded-lg p-4 mb-4">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-slate-50">Quick Entry</h3>
-        {lastSet && (
-          <button
-            onClick={handleRepeatLast}
-            className="px-3 py-1 bg-slate-600 text-slate-50 text-sm rounded hover:bg-slate-500 transition-colors"
-          >
-            Repeat Last
-          </button>
-        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
