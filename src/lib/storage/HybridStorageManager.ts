@@ -1,9 +1,8 @@
-import { supabaseClient } from "@/lib/supabase/client";
-import type {
-  SyncOperation,
-  UserProfile,
-  WorkoutSession,
-} from "@/models/types";
+import { supabaseClient, type Database } from "@/lib/supabase/client";
+import type { SyncOperation, WorkoutSession } from "@/models/types";
+
+// Define valid table names from the Database schema
+type TableName = keyof Database["public"]["Tables"];
 
 // ============================================================================
 // HYBRID STORAGE MANAGER
@@ -83,7 +82,10 @@ export class HybridStorageManager {
     return updatedRecord;
   }
 
-  static async deleteRecord(tableName: string, id: string): Promise<boolean> {
+  static async deleteRecord(
+    tableName: TableName,
+    id: string
+  ): Promise<boolean> {
     // Remove locally first
     await this.removeLocalRecord(tableName, id);
 
@@ -568,12 +570,13 @@ export class HybridStorageManager {
   // SPECIALIZED METHODS
   // ============================================================================
 
-  static async getUserProfile(user_id: string): Promise<UserProfile | null> {
+  static async getUserProfile(
+    user_id: string
+  ): Promise<Database["public"]["Tables"]["user_profiles"]["Row"] | null> {
     // Try local first
-    let profile = await this.getLocalRecord<UserProfile>(
-      "user_profiles",
-      user_id
-    );
+    let profile = await this.getLocalRecord<
+      Database["public"]["Tables"]["user_profiles"]["Row"]
+    >("user_profiles", user_id);
 
     if (!profile && navigator.onLine && supabaseClient) {
       // Fetch from server if not in local storage
@@ -585,7 +588,8 @@ export class HybridStorageManager {
           .single();
 
         if (!error && data) {
-          profile = data;
+          profile =
+            data as Database["public"]["Tables"]["user_profiles"]["Row"];
           await this.setLocalRecord("user_profiles", user_id, profile);
         }
       } catch (error) {
