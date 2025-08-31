@@ -100,13 +100,4 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[[plugins]]
-  package = "netlify-plugin-lighthouse"
-  
-  [plugins.inputs]
-    performance_budget = 90
-    accessibility_budget = 95
-    best_practices_budget = 90
-    seo_budget = 90
-
 
