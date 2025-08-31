@@ -109,6 +109,4 @@
     best_practices_budget = 90
     seo_budget = 90
 
-# Essential files plugin for better caching
-[[plugins]]
-  package = "netlify-plugin-cache-nextjs"
+
