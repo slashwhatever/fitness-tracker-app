@@ -27,26 +27,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   });
 
   useEffect(() => {
-    // Check if Supabase is configured
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    if (!supabaseUrl || !supabaseAnonKey) {
-      setContextValue({
-        client: null,
-        isAvailable: false,
-        isConfigured: false,
-        error: 'Supabase environment variables are not configured',
-      });
-      return;
-    }
-
+    // Check if Supabase client was properly initialized at build time
     if (!supabaseClient) {
       setContextValue({
         client: null,
         isAvailable: false,
-        isConfigured: true,
-        error: 'Failed to initialize Supabase client',
+        isConfigured: false,
+        error: 'Supabase client not available. Please check your environment variables.',
       });
       return;
     }
