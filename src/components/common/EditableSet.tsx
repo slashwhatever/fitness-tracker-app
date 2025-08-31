@@ -1,6 +1,16 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Set, UserMovement } from '@/models/types';
@@ -16,7 +26,7 @@ interface EditableSetProps {
 }
 
 export default function EditableSet({ set, movement, onUpdate, onDelete, onDuplicate }: EditableSetProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editReps, setEditReps] = useState(set.reps || 0);
   const [editWeight, setEditWeight] = useState(set.weight || 0);
   const [editDuration, setEditDuration] = useState(set.duration || 0);
@@ -37,14 +47,24 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
     };
 
     onUpdate(updatedSet);
-    setIsEditing(false);
+    setIsDrawerOpen(false);
   };
 
   const handleCancel = () => {
     setEditReps(set.reps || 0);
     setEditWeight(set.weight || 0);
     setEditDuration(set.duration || 0);
-    setIsEditing(false);
+    setIsDrawerOpen(false);
+  };
+
+  const handleDrawerOpenChange = (open: boolean) => {
+    setIsDrawerOpen(open);
+    if (open) {
+      // Reset form values when opening the drawer
+      setEditReps(set.reps || 0);
+      setEditWeight(set.weight || 0);
+      setEditDuration(set.duration || 0);
+    }
   };
 
   const isValidEdit = () => {
@@ -70,9 +90,9 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
     onDuplicate(set);
   };
 
-  if (isEditing) {
-    return (
-      <div className="flex justify-between items-center p-4 bg-card border border-default rounded-lg">
+  return (
+    <>
+      <div className="flex justify-between items-center p-4 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
         <div className="flex items-center space-x-4">
           <div className="text-sm text-muted-foreground">
             {new Date(set.created_at).toLocaleDateString()}
@@ -82,152 +102,148 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
           </div>
         </div>
       
-        <div className="flex items-center space-x-3">
-          {movement.tracking_type === 'weight' && (
-            <>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="edit-weight" className="text-xs">Weight (lbs)</Label>
-                <Input
-                  id="edit-weight"
-                  type="number"
-                  value={editWeight}
-                  onChange={(e) => setEditWeight(Number(e.target.value))}
-                  className="w-20 text-center"
-                  min="0"
-                  step="0.5"
-                />
+        <div className="flex items-center space-x-6">
+          {/* Set Data Display */}
+          <div className="text-right">
+            {movement.tracking_type === 'weight' && (
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl font-bold text-foreground">{set.weight}</span>
+                <span className="text-sm text-muted-foreground">lbs</span>
+                <span className="text-muted-foreground">×</span>
+                <span className="text-xl font-semibold text-foreground">{set.reps}</span>
+                <span className="text-sm text-muted-foreground">reps</span>
               </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="edit-reps" className="text-xs">Reps</Label>
-                <Input
-                  id="edit-reps"
-                  type="number"
-                  value={editReps}
-                  onChange={(e) => setEditReps(Number(e.target.value))}
-                  className="w-16 text-center"
-                  min="0"
-                />
+            )}
+            
+            {movement.tracking_type === 'bodyweight' && (
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl font-bold text-foreground">{set.reps}</span>
+                <span className="text-sm text-muted-foreground">reps</span>
               </div>
-            </>
-          )}
-          
-          {movement.tracking_type === 'bodyweight' && (
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="edit-reps" className="text-xs">Reps</Label>
-              <Input
-                id="edit-reps"
-                type="number"
-                value={editReps}
-                onChange={(e) => setEditReps(Number(e.target.value))}
-                className="w-16 text-center"
-                min="0"
-              />
-            </div>
-          )}
-          
-          {movement.tracking_type === 'duration' && (
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="edit-duration" className="text-xs">Duration (seconds)</Label>
-              <Input
-                id="edit-duration"
-                type="number"
-                value={editDuration}
-                onChange={(e) => setEditDuration(Number(e.target.value))}
-                className="w-24 text-center"
-                min="0"
-              />
-            </div>
-          )}
-          
-          <div className="flex space-x-2">
+            )}
+            
+            {movement.tracking_type === 'duration' && set.duration && (
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl font-bold text-foreground">{formatDuration(set.duration)}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-2">
             <Button
-              onClick={handleSave}
-              disabled={!isValidEdit()}
+              onClick={handleDuplicate}
               size="sm"
-              className="bg-green-500 hover:bg-green-600"
+              className="bg-green-500 hover:bg-green-600 h-9"
             >
-              Save
+              <Copy className="w-4 h-4 mr-1" />
+              Duplicate
             </Button>
+            
+            <Drawer open={isDrawerOpen} onOpenChange={handleDrawerOpenChange}>
+              <DrawerTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Edit Set</DrawerTitle>
+                  <DrawerDescription>
+                    Modify the values for this set from {new Date(set.created_at).toLocaleDateString()} at {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </DrawerDescription>
+                </DrawerHeader>
+                
+                <div className="px-4 pb-4 space-y-6">
+                  {movement.tracking_type === 'weight' && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-weight">Weight (lbs)</Label>
+                        <Input
+                          id="edit-weight"
+                          type="number"
+                          value={editWeight}
+                          onChange={(e) => setEditWeight(Number(e.target.value))}
+                          className="text-center text-lg"
+                          min="0"
+                          step="0.5"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-reps">Reps</Label>
+                        <Input
+                          id="edit-reps"
+                          type="number"
+                          value={editReps}
+                          onChange={(e) => setEditReps(Number(e.target.value))}
+                          className="text-center text-lg"
+                          min="0"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  {movement.tracking_type === 'bodyweight' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-reps">Reps</Label>
+                      <Input
+                        id="edit-reps"
+                        type="number"
+                        value={editReps}
+                        onChange={(e) => setEditReps(Number(e.target.value))}
+                        className="text-center text-lg"
+                        min="0"
+                      />
+                    </div>
+                  )}
+                  
+                  {movement.tracking_type === 'duration' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-duration">Duration (seconds)</Label>
+                      <Input
+                        id="edit-duration"
+                        type="number"
+                        value={editDuration}
+                        onChange={(e) => setEditDuration(Number(e.target.value))}
+                        className="text-center text-lg"
+                        min="0"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                <DrawerFooter>
+                  <Button
+                    onClick={handleSave}
+                    disabled={!isValidEdit()}
+                    className="bg-green-500 hover:bg-green-600"
+                  >
+                    Save Changes
+                  </Button>
+                  <DrawerClose asChild>
+                    <Button variant="outline" onClick={handleCancel}>
+                      Cancel
+                    </Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
+            
             <Button
-              onClick={handleCancel}
-              variant="secondary"
-              size="sm"
+              onClick={() => onDelete(set.id)}
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground hover:text-red-500 h-9 w-9"
             >
-              Cancel
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="flex justify-between items-center p-4 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
-      <div className="flex items-center space-x-4">
-        <div className="text-sm text-muted-foreground">
-          {new Date(set.created_at).toLocaleDateString()}
-        </div>
-        <div className="text-sm text-muted-foreground">
-          {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </div>
-      </div>
-    
-      <div className="flex items-center space-x-6">
-        {/* Set Data Display */}
-        <div className="text-right">
-          {movement.tracking_type === 'weight' && (
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-foreground">{set.weight}</span>
-              <span className="text-sm text-muted-foreground">lbs</span>
-              <span className="text-muted-foreground">×</span>
-              <span className="text-xl font-semibold text-foreground">{set.reps}</span>
-              <span className="text-sm text-muted-foreground">reps</span>
-            </div>
-          )}
-          
-          {movement.tracking_type === 'bodyweight' && (
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-foreground">{set.reps}</span>
-              <span className="text-sm text-muted-foreground">reps</span>
-            </div>
-          )}
-          
-          {movement.tracking_type === 'duration' && set.duration && (
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-bold text-foreground">{formatDuration(set.duration)}</span>
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-2">
-          <Button
-            onClick={handleDuplicate}
-            size="sm"
-            className="bg-green-500 hover:bg-green-600 h-9"
-          >
-            <Copy className="w-4 h-4 mr-1" />
-            Duplicate
-          </Button>
-          <Button
-            onClick={() => setIsEditing(true)}
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9"
-          >
-            <Edit className="w-4 h-4" />
-          </Button>
-          
-          <Button
-            onClick={() => onDelete(set.id)}
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-red-500 h-9 w-9"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
