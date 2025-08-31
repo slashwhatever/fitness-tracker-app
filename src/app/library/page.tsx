@@ -16,22 +16,24 @@ export default function MovementLibraryPage() {
   const [experienceLevelFilter, setExperienceLevelFilter] = useState<ExperienceLevel | null>(null);
 
   const filteredMovements = useMemo(() => {
-    return movementLibrary.filter((movement) => {
-      // Search filter
-      const matchesSearch = searchTerm === '' || 
-        movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()));
+    return movementLibrary
+      .filter((movement) => {
+        // Search filter
+        const matchesSearch = searchTerm === '' || 
+          movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      // Muscle group filter
-      const matchesMuscleGroup = muscleGroupFilter === null || 
-        movement.muscle_groups.includes(muscleGroupFilter);
+        // Muscle group filter
+        const matchesMuscleGroup = muscleGroupFilter === null || 
+          movement.muscle_groups.includes(muscleGroupFilter);
 
-      // Experience level filter
-      const matchesExperienceLevel = experienceLevelFilter === null || 
-        movement.experience_level === experienceLevelFilter;
+        // Experience level filter
+        const matchesExperienceLevel = experienceLevelFilter === null || 
+          movement.experience_level === experienceLevelFilter;
 
-      return matchesSearch && matchesMuscleGroup && matchesExperienceLevel;
-    });
+        return matchesSearch && matchesMuscleGroup && matchesExperienceLevel;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
   }, [searchTerm, muscleGroupFilter, experienceLevelFilter]);
 
   const handleMovementClick = (movement: MovementTemplate) => {

@@ -8,9 +8,13 @@ import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { Workout } from '@/models/types';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 
-export default function WorkoutList() {
+export interface WorkoutListRef {
+  refreshWorkouts: () => Promise<void>;
+}
+
+const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState<Workout | null>(null);
@@ -20,22 +24,32 @@ export default function WorkoutList() {
     return movementCounts[workoutId] || 0;
   };
 
+  // Load workouts from storage
+  const loadWorkouts = async () => {
+    const savedWorkouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
+    // Sort workouts by created date (newest first)
+    const sortedWorkouts = savedWorkouts.sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    setWorkouts(sortedWorkouts);
+    
+    // Load movement counts for each workout
+    const counts: Record<string, number> = {};
+    for (const workout of savedWorkouts) {
+      const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+        workout_id: workout.id
+      });
+      counts[workout.id] = workoutMovements.length;
+    }
+    setMovementCounts(counts);
+  };
+
+  // Expose refresh function to parent
+  useImperativeHandle(ref, () => ({
+    refreshWorkouts: loadWorkouts,
+  }));
+
   useEffect(() => {
-    // Load workouts from storage
-    const loadWorkouts = async () => {
-      const savedWorkouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
-      setWorkouts(savedWorkouts);
-      
-      // Load movement counts for each workout
-      const counts: Record<string, number> = {};
-      for (const workout of savedWorkouts) {
-        const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-          workout_id: workout.id
-        });
-        counts[workout.id] = workoutMovements.length;
-      }
-      setMovementCounts(counts);
-    };
     loadWorkouts();
   }, []);
 
@@ -133,4 +147,8 @@ export default function WorkoutList() {
       />
     </>
   );
-}
+});
+
+WorkoutList.displayName = 'WorkoutList';
+
+export default WorkoutList;

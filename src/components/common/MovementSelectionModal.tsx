@@ -9,6 +9,7 @@ import { MultiSelect } from '@/components/ui/multiselect';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { movementLibrary, muscleGroups, trackingTypes } from '@/data/movementLibrary';
 import { formatTrackingType, getExperienceLevelVariant, getTrackingTypeIcon } from '@/lib/utils/typeHelpers';
 import { MovementTemplate, TrackingType, UserMovement } from '@/models/types';
@@ -70,6 +71,7 @@ export default function MovementSelectionModal({
 }: MovementSelectionModalProps) {
   const [activeTab, setActiveTab] = useState<'library' | 'custom'>('library');
   const [searchTerm, setSearchTerm] = useState('');
+  const [customMovements, setCustomMovements] = useState<UserMovement[]>([]);
   // Initialize selected movements based on current movements in the workout
   const [selectedMovements, setSelectedMovements] = useState<Set<string>>(
     new Set(currentMovements.map(m => m.template_id).filter(Boolean) as string[])
@@ -80,17 +82,34 @@ export default function MovementSelectionModal({
   const [customMuscleGroups, setCustomMuscleGroups] = useState<string[]>([]);
   const [customTrackingType, setCustomTrackingType] = useState<TrackingType>('weight');
 
-  // Update selected movements when current movements change
+  // Load custom movements and update selected movements when current movements change
   useEffect(() => {
+    const loadCustomMovements = async () => {
+      const allUserMovements = await HybridStorageManager.getLocalRecords<UserMovement>('user_movements');
+      setCustomMovements(allUserMovements);
+    };
+    
+    loadCustomMovements();
     setSelectedMovements(new Set(currentMovements.map(m => m.template_id).filter(Boolean) as string[]));
   }, [currentMovements]);
 
   const filteredMovements = useMemo(() => {
-    return movementLibrary.filter((movement) =>
-      movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    return movementLibrary
+      .filter((movement) =>
+        movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+      .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
   }, [searchTerm]);
+
+  const filteredCustomMovements = useMemo(() => {
+    return customMovements
+      .filter((movement) =>
+        movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()))
+      )
+      .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
+  }, [searchTerm, customMovements]);
 
   const handleMovementToggle = (movementId: string) => {
     const newSelected = new Set(selectedMovements);
@@ -226,9 +245,78 @@ export default function MovementSelectionModal({
             </div>
           </TabsContent>
 
-          <TabsContent value="custom" className="flex-1 flex flex-col space-y-6 min-h-0">
-            <div className="flex-1 flex items-center justify-center">
-              <div className="w-full max-w-md space-y-6">
+          <TabsContent value="custom" className="flex-1 flex flex-col space-y-4 min-h-0">
+            {/* Search Bar for Custom Movements */}
+            <div className="flex-shrink-0">
+              <Input
+                type="text"
+                placeholder="Search my movements..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+            {/* Existing Custom Movements */}
+            {filteredCustomMovements.length > 0 && (
+              <div className="flex-1 min-h-0">
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">My Movements</h3>
+                <ScrollArea className="h-48 -mr-4 pr-4">
+                  <div className="space-y-2 pb-4">
+                    {filteredCustomMovements.map((movement) => (
+                      <div
+                        key={movement.id}
+                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
+                          currentMovements.some(m => m.id === movement.id) 
+                            ? 'bg-primary/10 border-primary' 
+                            : 'border-border hover:border-accent-foreground/20'
+                        }`}
+                        onClick={() => {
+                          const isAlreadyInWorkout = currentMovements.some(m => m.id === movement.id);
+                          if (isAlreadyInWorkout) {
+                            onMovementRemoved(movement.id);
+                          } else {
+                            onMovementAdded(movement);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center space-x-3 flex-1">
+                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                            currentMovements.some(m => m.id === movement.id)
+                              ? 'bg-primary border-primary' 
+                              : 'border-muted-foreground/30'
+                          }`}>
+                            {currentMovements.some(m => m.id === movement.id) && (
+                              <Check className="w-3 h-3 text-primary-foreground" />
+                            )}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-lg">{getTrackingTypeIcon(movement.tracking_type)}</span>
+                              <h3 className="font-medium text-sm truncate">{movement.name}</h3>
+                            </div>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <p className="text-xs text-muted-foreground truncate">
+                                {movement.muscle_groups.join(', ')}
+                              </p>
+                              <Badge variant="secondary" className="text-xs">
+                                Custom
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+
+            {/* Create New Custom Movement Form */}
+            <div className="flex-shrink-0">
+              <h3 className="text-sm font-medium text-muted-foreground mb-4">Create New Movement</h3>
+              <div className="w-full space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="movement-name">Movement Name *</Label>
                   <Input

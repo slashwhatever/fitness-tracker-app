@@ -185,6 +185,7 @@ export default function WorkoutDetailPage() {
               <DraggableMovementList
                 movements={movements}
                 onRemove={handleRemoveMovement}
+                onUpdate={handleUpdateMovement}
               />
             </CardContent>
           </Card>

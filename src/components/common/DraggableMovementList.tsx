@@ -2,18 +2,23 @@
 
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { Input } from '@/components/ui/input';
+import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
 import { UserMovement } from '@/models/types';
-import { Play, Trash2 } from 'lucide-react';
+import { Edit2, Play, Trash2, Check, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
 interface MovementItemProps {
   movement: UserMovement;
   onRemove: (movementId: string) => void;
+  onUpdate: (movementId: string, updatedMovement: Partial<UserMovement>) => void;
 }
 
-function MovementItem({ movement, onRemove }: MovementItemProps) {
+function MovementItem({ movement, onRemove, onUpdate }: MovementItemProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(movement.name);
 
   const handleRemoveClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -26,13 +31,64 @@ function MovementItem({ movement, onRemove }: MovementItemProps) {
     setShowDeleteConfirm(false);
   };
 
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsEditing(true);
+    setEditName(movement.name);
+  };
+
+  const handleSaveEdit = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (editName.trim() && editName.trim() !== movement.name) {
+      try {
+                 await HybridStorageManager.updateRecord('user_movements', movement.id, {
+           name: editName.trim(),
+           updated_at: new Date().toISOString(),
+         } as any);
+        onUpdate(movement.id, { name: editName.trim() });
+      } catch (error) {
+        console.error('Failed to update movement name:', error);
+      }
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditName(movement.name);
+    setIsEditing(false);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center p-4 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
 
         <Link href={`/movement/${movement.id}`} className="flex-1">
           <div className="text-left">
-            <h3 className="text-lg font-bold text-foreground">{movement.name}</h3>
+            {isEditing ? (
+              <div className="flex items-center space-x-2">
+                <Input
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="text-lg font-bold"
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSaveEdit(e as any);
+                    } else if (e.key === 'Escape') {
+                      handleCancelEdit(e as any);
+                    }
+                  }}
+                  autoFocus
+                />
+              </div>
+            ) : (
+              <h3 className="text-lg font-bold text-foreground">{movement.name}</h3>
+            )}
             <p className="text-sm text-muted-foreground mt-1">{movement.muscle_groups.join(', ')}</p>
             <span className="inline-block mt-1 px-2 py-1 bg-primary text-primary-foreground text-xs rounded capitalize">
               {movement.tracking_type}
@@ -41,23 +97,51 @@ function MovementItem({ movement, onRemove }: MovementItemProps) {
         </Link>
 
         <div className="flex items-center space-x-2">
-          <Link href={`/movement/${movement.id}`}>
-            <Button
-              size="sm"
-              className="bg-green-500 hover:bg-green-600"
-            >
-              <Play className="w-4 h-4 mr-1" />
-              Track
-            </Button>
-          </Link>
-          <Button
-            onClick={handleRemoveClick}
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-red-500 h-9 w-9"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
+          {isEditing ? (
+            <>
+              <Button
+                size="sm"
+                variant="default"
+                onClick={handleSaveEdit}
+              >
+                <Check className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleCancelEdit}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleEditClick}
+              >
+                <Edit2 className="w-4 h-4" />
+              </Button>
+              <Link href={`/movement/${movement.id}`}>
+                <Button
+                  size="sm"
+                  className="bg-green-500 hover:bg-green-600"
+                >
+                  <Play className="w-4 h-4 mr-1" />
+                  Track
+                </Button>
+              </Link>
+              <Button
+                onClick={handleRemoveClick}
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-red-500 h-9 w-9"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -78,11 +162,13 @@ function MovementItem({ movement, onRemove }: MovementItemProps) {
 interface DraggableMovementListProps {
   movements: UserMovement[];
   onRemove: (movementId: string) => void;
+  onUpdate?: (movementId: string, updatedMovement: Partial<UserMovement>) => void;
 }
 
 export default function DraggableMovementList({ 
   movements, 
-  onRemove 
+  onRemove,
+  onUpdate = () => {} 
 }: DraggableMovementListProps) {
   if (movements.length === 0) {
     return (
@@ -117,6 +203,7 @@ export default function DraggableMovementList({
             key={movement.id}
             movement={movement}
             onRemove={onRemove}
+            onUpdate={onUpdate}
           />
         ))}
       </div>

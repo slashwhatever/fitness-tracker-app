@@ -1,13 +1,13 @@
 'use client';
 
 import CreateWorkoutModal from '@/components/common/CreateWorkoutModal';
-import WorkoutList from '@/components/common/WorkoutList';
+import WorkoutList, { WorkoutListRef } from '@/components/common/WorkoutList';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Workout } from '@/models/types';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 interface WorkoutManagementProps {
   onWorkoutCreated?: (workout: Workout) => void;
@@ -15,10 +15,13 @@ interface WorkoutManagementProps {
 
 export default function WorkoutManagement({ onWorkoutCreated }: WorkoutManagementProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const workoutListRef = useRef<WorkoutListRef>(null);
 
-  const handleWorkoutCreated = (workout: Workout) => {
+  const handleWorkoutCreated = async (workout: Workout) => {
     setIsCreateModalOpen(false);
     onWorkoutCreated?.(workout);
+    // Refresh the workout list to show the new workout
+    await workoutListRef.current?.refreshWorkouts();
   };
 
   return (
@@ -57,7 +60,7 @@ export default function WorkoutManagement({ onWorkoutCreated }: WorkoutManagemen
       </Card>
 
       {/* Workout List */}
-      <WorkoutList />
+      <WorkoutList ref={workoutListRef} />
 
       {/* Create Workout Modal */}
       <CreateWorkoutModal
