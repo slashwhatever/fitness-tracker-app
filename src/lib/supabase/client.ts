@@ -2,6 +2,9 @@ import { createBrowserClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "./database.types";
 
+// Re-export Database type for other files that import it from here
+export type { Database } from "./database.types";
+
 // Environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabasePublishableKey =
