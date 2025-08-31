@@ -58,14 +58,25 @@ describe("Data Models", () => {
     });
 
     it("should validate tracking_type values", () => {
-      const validTypes = ["weight", "bodyweight", "duration", "distance", "reps_only"];
+      const validTypes = [
+        "weight",
+        "bodyweight",
+        "duration",
+        "distance",
+        "reps_only",
+      ];
 
       validTypes.forEach((type) => {
         const template: MovementTemplate = {
           id: "test-id",
           name: "Test Movement",
           muscle_groups: ["chest"],
-          tracking_type: type as "weight" | "bodyweight" | "duration" | "distance" | "reps_only",
+          tracking_type: type as
+            | "weight"
+            | "bodyweight"
+            | "duration"
+            | "distance"
+            | "reps_only",
           experience_level: "Beginner",
           instructions: "Test",
           tags: [],
@@ -162,6 +173,8 @@ describe("Data Models", () => {
         id: "test-id",
         display_name: "Test User",
         default_rest_timer: 180,
+        weight_unit: "lbs",
+        distance_unit: "miles",
         privacy_settings: {
           profile_visibility: "private",
           workout_sharing: false,
@@ -172,6 +185,8 @@ describe("Data Models", () => {
 
       expect(profile).toHaveProperty("display_name");
       expect(profile).toHaveProperty("default_rest_timer");
+      expect(profile).toHaveProperty("weight_unit");
+      expect(profile).toHaveProperty("distance_unit");
       expect(profile).toHaveProperty("privacy_settings");
       expect(profile.privacy_settings).toHaveProperty("profile_visibility");
       expect(profile.privacy_settings).toHaveProperty("workout_sharing");

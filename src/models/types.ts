@@ -34,10 +34,15 @@ export interface User {
   created_at: string;
 }
 
+export type WeightUnit = "lbs" | "kg";
+export type DistanceUnit = "miles" | "km";
+
 export interface UserProfile {
   id: string; // UUID from auth.users
   display_name?: string;
   default_rest_timer: number; // Global timer preference in seconds
+  weight_unit: WeightUnit; // Preferred weight unit
+  distance_unit: DistanceUnit; // Preferred distance unit
   privacy_settings: {
     profile_visibility: "public" | "private";
     workout_sharing: boolean;
@@ -208,22 +213,22 @@ export function calculateBrzycki(weight: number, reps: number): number {
 }
 
 /**
- * Format weight for display
+ * Format weight for display (without unit)
  */
 export function formatWeight(weight: number | null): string {
   if (weight === null) return "-";
-  return `${weight} lbs`;
+  return weight.toString();
 }
 
 /**
- * Calculate and format volume (weight × reps)
+ * Calculate and format volume (weight × reps, without unit)
  */
 export function formatVolume(
   weight: number | null,
   reps: number | null
 ): string {
   if (weight === null || reps === null) return "-";
-  return `${weight * reps} lbs`;
+  return (weight * reps).toString();
 }
 
 // ============================================================================

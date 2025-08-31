@@ -1,6 +1,7 @@
 'use client';
 
 import { Set, UserMovement } from '@/models/types';
+import { getUserWeightUnit } from '@/utils/userPreferences';
 import { useState } from 'react';
 
 interface QuickSetEntryProps {
@@ -71,7 +72,7 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
           <>
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Weight (lbs)
+                Weight ({getUserWeightUnit()})
               </label>
               <input
                 type="number"

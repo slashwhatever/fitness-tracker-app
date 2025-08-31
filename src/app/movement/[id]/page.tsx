@@ -7,6 +7,7 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Set, UserMovement } from '@/models/types';
 import { persistenceService } from '@/services/persistenceService';
 import { format1RM, getBest1RM } from '@/utils/oneRepMax';
+import { formatWeight } from '@/utils/userPreferences';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -73,7 +74,7 @@ export default function MovementTrackingPage() {
         
         return {
           type: 'Max Weight',
-          value: `${maxWeight} lbs`,
+          value: formatWeight(maxWeight),
           details: `${maxWeightSet?.reps || 0} reps`,
           date: maxWeightSet ? new Date(maxWeightSet.created_at).toLocaleDateString() : '',
           oneRM: best1RM ? {
@@ -241,7 +242,7 @@ export default function MovementTrackingPage() {
                     <p className="text-xs text-primary/70">Estimated 1RM</p>
                     <p className="text-lg font-bold text-primary">{personalRecords.oneRM.value}</p>
                     <p className="text-xs text-primary/70">
-                      From {personalRecords.oneRM.fromWeight} lbs × {personalRecords.oneRM.fromReps}
+                      From {formatWeight(personalRecords.oneRM.fromWeight)} × {personalRecords.oneRM.fromReps}
                     </p>
                   </div>
                 )}
@@ -302,7 +303,7 @@ export default function MovementTrackingPage() {
         description={
           setToDelete 
             ? `Are you sure you want to delete this set${
-                setToDelete.weight ? ` (${setToDelete.weight} lbs × ${setToDelete.reps} reps)` :
+                setToDelete.weight ? ` (${formatWeight(setToDelete.weight)} × ${setToDelete.reps} reps)` :
                 setToDelete.reps ? ` (${setToDelete.reps} reps)` :
                 setToDelete.duration ? ` (${Math.floor(setToDelete.duration / 60)}:${(setToDelete.duration % 60).toString().padStart(2, '0')})` :
                 ''

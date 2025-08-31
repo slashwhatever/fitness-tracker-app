@@ -5,6 +5,7 @@ import {
   Set,
   User,
   UserMovement,
+  UserProfile,
   Workout,
   WorkoutMovement,
 } from "@/models/types";
@@ -330,6 +331,39 @@ export class PersistenceService {
       return true;
     } catch (error) {
       console.error("Failed to update workout movement order:", error);
+      return false;
+    }
+  }
+
+  // ============================================================================
+  // USER PROFILE METHODS
+  // ============================================================================
+
+  public getUserProfile(): UserProfile | null {
+    return this.getFromStorage<UserProfile>("userProfile");
+  }
+
+  public saveUserProfile(profile: UserProfile): boolean {
+    return this.saveToStorage("userProfile", profile);
+  }
+
+  public updateUserProfile(updates: Partial<UserProfile>): boolean {
+    try {
+      const existingProfile = this.getUserProfile();
+      if (!existingProfile) {
+        console.error("Cannot update user profile: no existing profile found");
+        return false;
+      }
+
+      const updatedProfile: UserProfile = {
+        ...existingProfile,
+        ...updates,
+        updated_at: new Date().toISOString(),
+      };
+
+      return this.saveUserProfile(updatedProfile);
+    } catch (error) {
+      console.error("Failed to update user profile:", error);
       return false;
     }
   }
