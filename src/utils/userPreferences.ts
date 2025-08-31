@@ -5,7 +5,9 @@ import { DistanceUnit, UserProfile, WeightUnit } from "@/models/types";
  * Get the user's preferred weight unit from storage
  */
 export async function getUserWeightUnit(): Promise<WeightUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>("user_profiles");
+  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>(
+    "user_profiles"
+  );
   const profile = profiles[0]; // Assuming single user
   return profile?.weight_unit || "lbs";
 }
@@ -14,7 +16,9 @@ export async function getUserWeightUnit(): Promise<WeightUnit> {
  * Get the user's preferred distance unit from storage
  */
 export async function getUserDistanceUnit(): Promise<DistanceUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>("user_profiles");
+  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>(
+    "user_profiles"
+  );
   const profile = profiles[0]; // Assuming single user
   return profile?.distance_unit || "miles";
 }
@@ -23,7 +27,9 @@ export async function getUserDistanceUnit(): Promise<DistanceUnit> {
  * Get the user's default rest timer from storage
  */
 export async function getUserDefaultRestTimer(): Promise<number> {
-  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>("user_profiles");
+  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>(
+    "user_profiles"
+  );
   const profile = profiles[0]; // Assuming single user
   return profile?.default_rest_timer || 60;
 }

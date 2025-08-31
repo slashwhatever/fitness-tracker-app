@@ -34,7 +34,7 @@ SUPABASE_URL=https://your-project-id.supabase.co
 
 # Supabase Anonymous Key (Public)
 # This is safe to expose in client-side code
-SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_PUBLISHABLE_KEY=your-anon-key-here
 
 # Supabase Service Role Key (Private - Server Only)
 # NEVER expose this in client-side code
@@ -103,7 +103,7 @@ SUPABASE_URL=https://production-project.supabase.co
 ### For Local Development
 
 - ✅ `SUPABASE_URL`
-- ✅ `SUPABASE_ANON_KEY`
+- ✅ `SUPABASE_PUBLISHABLE_KEY`
 
 ### For CI/CD Pipeline
 
@@ -133,7 +133,7 @@ SUPABASE_URL=https://production-project.supabase.co
 Add these secrets to your GitHub repository:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `SUPABASE_PROJECT_REF`
 - `SUPABASE_ACCESS_TOKEN`
 - `NETLIFY_AUTH_TOKEN`
@@ -145,7 +145,7 @@ Add these secrets to your GitHub repository:
 Set these in your Netlify site settings:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `NEXT_PUBLIC_APP_ENV`
 - `NEXT_PUBLIC_BASE_URL`
 
@@ -179,7 +179,7 @@ Use this script to validate your environment setup:
 
 required_vars=(
   "SUPABASE_URL"
-  "SUPABASE_ANON_KEY"
+  "SUPABASE_PUBLISHABLE_KEY"
 )
 
 for var in "${required_vars[@]}"; do

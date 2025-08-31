@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { formatWeight, Set as WorkoutSet, UserMovement, Workout } from '@/models/types';
+import { formatWeight, UserMovement, Workout, Set as WorkoutSet } from '@/models/types';
 import { useEffect, useState } from 'react';
 
 interface PersonalRecord {

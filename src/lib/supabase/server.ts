@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import type { Database } from "./client";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
 // Server component client (for App Router)
 export async function createSupabaseServerClient() {
