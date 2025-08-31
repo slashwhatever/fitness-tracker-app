@@ -19,6 +19,8 @@
   # Disable CSS optimization that conflicts with Tailwind v4
   NODE_OPTIONS = "--max-old-space-size=4096"
 
+
+
 # ============================================================================
 # REDIRECTS AND REWRITES
 # ============================================================================
