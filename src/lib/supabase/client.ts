@@ -353,6 +353,16 @@ export interface Database {
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+// Build-time check - this will fail the build if env vars are missing
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables at build time:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseAnonKey,
+    urlLength: supabaseUrl.length,
+    keyLength: supabaseAnonKey.length
+  });
+}
+
 // Client-side Supabase client (will be null if env vars are missing)
 export const supabaseClient =
   supabaseUrl && supabaseAnonKey
