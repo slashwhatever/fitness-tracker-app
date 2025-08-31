@@ -22,15 +22,17 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    // Load current user profile
-    const profile = persistenceService.getUserProfile();
-    if (profile) {
-      setUserProfile(profile);
-      setDisplayName(profile.display_name || '');
-      setDefaultRestTimer(profile.default_rest_timer);
-      setWeightUnit(profile.weight_unit || 'lbs');
-      setDistanceUnit(profile.distance_unit || 'miles');
-    } else {
+    const loadProfile = async () => {
+      // Load current user profile
+      const profiles = await HybridStorageManager.getLocalRecords<UserProfile>('user_profiles');
+      const profile = profiles[0]; // Assuming single user
+      if (profile) {
+        setUserProfile(profile);
+        setDisplayName(profile.display_name || '');
+        setDefaultRestTimer(profile.default_rest_timer);
+        setWeightUnit(profile.weight_unit || 'lbs');
+        setDistanceUnit(profile.distance_unit || 'miles');
+      } else {
       // Create default profile if none exists
       const defaultProfile: UserProfile = {
         id: 'default-user',
@@ -45,9 +47,12 @@ export default function SettingsPage() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-      persistenceService.saveUserProfile(defaultProfile);
+      await HybridStorageManager.saveRecord('user_profiles', defaultProfile);
       setUserProfile(defaultProfile);
     }
+    };
+    
+    loadProfile();
   }, []);
 
   const handleSave = async () => {
@@ -64,7 +69,7 @@ export default function SettingsPage() {
         updated_at: new Date().toISOString(),
       };
 
-      persistenceService.saveUserProfile(updatedProfile);
+      await HybridStorageManager.saveRecord('user_profiles', updatedProfile);
       setUserProfile(updatedProfile);
       
       // Show success feedback and navigate back

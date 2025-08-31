@@ -32,33 +32,34 @@ export default function MovementTrackingPage() {
   const [setToDelete, setSetToDelete] = useState<Set | null>(null);
 
   useEffect(() => {
-    // Find the movement across all workouts
-    const allWorkouts = persistenceService.getWorkouts();
-    let foundMovement: UserMovement | null = null;
-    
-    for (const workout of allWorkouts) {
-      const workoutMovements = persistenceService.getMovementsForWorkout(workout.id);
-      const foundInWorkout = workoutMovements.find(m => m.id === movementId);
-      if (foundInWorkout) {
-        foundMovement = foundInWorkout;
-        break;
+    const loadMovementData = async () => {
+      try {
+        // Find the movement directly by ID
+        const foundMovement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', movementId);
+        
+        if (!foundMovement) {
+          router.push('/');
+          return;
+        }
+        
+        setMovement(foundMovement);
+        
+        // Set custom rest time or default
+        const defaultRestTimes = { weight: 90, bodyweight: 60, duration: 120, distance: 90, reps_only: 60 };
+        setCustomRestTime(foundMovement.custom_rest_timer || defaultRestTimes[foundMovement.tracking_type!]);
+        
+        // Load sets for this movement
+        const movementSets = await HybridStorageManager.getLocalRecords('sets', {
+          user_movement_id: movementId
+        });
+        setSets((movementSets as any[]).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+      } catch (error) {
+        console.error('Failed to load movement data:', error);
+        router.push('/');
       }
-    }
-    
-    if (!foundMovement) {
-      router.push('/');
-      return;
-    }
-    
-    setMovement(foundMovement);
-    
-    // Set custom rest time or default
-    const defaultRestTimes = { weight: 90, bodyweight: 60, duration: 120, distance: 90, reps_only: 60 };
-    setCustomRestTime(foundMovement.custom_rest_timer || defaultRestTimes[foundMovement.tracking_type!]);
-    
-    // Load sets for this movement
-    const movementSets = persistenceService.getSetsForUserMovement(movementId);
-    setSets(movementSets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+    };
+
+    loadMovementData();
   }, [movementId, router]);
 
   const personalRecords = useMemo(() => {
@@ -108,12 +109,12 @@ export default function MovementTrackingPage() {
 
 
 
-   const handleUpdateSet = (updatedSet: Set) => {
-     const success = persistenceService.saveSet(updatedSet);
-     if (success) {
-       setSets(prev => prev.map(s => s.id === updatedSet.id ? updatedSet : s));
-     }
-   };
+     const handleUpdateSet = async (updatedSet: Set) => {
+    const saved = await HybridStorageManager.saveRecord('sets', updatedSet);
+    if (saved) {
+      setSets(prev => prev.map(s => s.id === updatedSet.id ? updatedSet : s));
+    }
+  };
 
   const handleDeleteSet = (setId: string) => {
     const setToDelete = sets.find(s => s.id === setId);
@@ -123,11 +124,13 @@ export default function MovementTrackingPage() {
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (setToDelete) {
-      const success = persistenceService.deleteSet(setToDelete.id);
-      if (success) {
+      try {
+        await HybridStorageManager.deleteRecord('sets', setToDelete.id);
         setSets(prev => prev.filter(s => s.id !== setToDelete.id));
+      } catch (error) {
+        console.error('Failed to delete set:', error);
       }
     }
     setShowDeleteConfirm(false);
@@ -139,7 +142,7 @@ export default function MovementTrackingPage() {
     setSetToDelete(null);
   };
 
-     const handleDuplicateSet = (originalSet: Set) => {
+     const handleDuplicateSet = async (originalSet: Set) => {
      if (!movement) return;
 
      const duplicatedSet: Set = {
@@ -156,9 +159,9 @@ export default function MovementTrackingPage() {
        created_at: new Date().toISOString(),
      };
 
-     const success = persistenceService.saveSet(duplicatedSet);
-     if (success) {
-       setSets(prev => [duplicatedSet, ...prev]);
+         const saved = await HybridStorageManager.saveRecord('sets', duplicatedSet);
+    if (saved) {
+      setSets(prev => [duplicatedSet, ...prev]);
        // Always ensure timer starts fresh - even if it was previously inactive
        setIsRestTimerActive(false);
        // Use requestAnimationFrame to ensure clean state update
@@ -170,7 +173,7 @@ export default function MovementTrackingPage() {
      }
    };
 
-   const handleQuickLog = (setData: Partial<Set>) => {
+   const handleQuickLog = async (setData: Partial<Set>) => {
      if (!movement) return;
 
      const newSet: Set = {
@@ -188,9 +191,9 @@ export default function MovementTrackingPage() {
        ...setData,
      };
 
-         const success = persistenceService.saveSet(newSet);
-    if (success) {
-      setSets(prev => [newSet, ...prev]);
+                 const saved = await HybridStorageManager.saveRecord('sets', newSet);
+   if (saved) {
+     setSets(prev => [newSet, ...prev]);
       // Always ensure timer starts fresh - even if it was previously inactive
       setIsRestTimerActive(false);
       // Use requestAnimationFrame to ensure clean state update

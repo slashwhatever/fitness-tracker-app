@@ -13,17 +13,28 @@ interface AnalyticsDashboardProps {
 export default function AnalyticsDashboard({ refreshKey = 0 }: AnalyticsDashboardProps) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [totalSets, setTotalSets] = useState(0);
+  const [totalMovements, setTotalMovements] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadAnalyticsData = async () => {
       setIsLoading(true);
       try {
-        const allWorkouts = persistenceService.getWorkouts();
-        const allSets = persistenceService.getSets();
+        const allWorkouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
+        const allSets = await HybridStorageManager.getLocalRecords('sets');
+        
+        // Calculate total movements across all workouts
+        let movementCount = 0;
+        for (const workout of allWorkouts) {
+          const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+            workout_id: workout.id
+          });
+          movementCount += workoutMovements.length;
+        }
         
         setWorkouts(allWorkouts);
         setTotalSets(allSets.length);
+        setTotalMovements(movementCount);
       } catch (error) {
         console.error('Failed to load analytics data test:', error);
       } finally {
@@ -45,9 +56,6 @@ export default function AnalyticsDashboard({ refreshKey = 0 }: AnalyticsDashboar
     }
 
     const totalWorkouts = workouts.length;
-    const totalMovements = workouts.reduce((sum, workout) => 
-      sum + persistenceService.getMovementCountForWorkout(workout.id), 0
-    );
     
     // Calculate this week's workouts
     const oneWeekAgo = new Date();
@@ -58,11 +66,11 @@ export default function AnalyticsDashboard({ refreshKey = 0 }: AnalyticsDashboar
     
     return {
       totalWorkouts,
-      totalMovements,
+      totalMovements: totalMovements,
       totalSets,
       thisWeekWorkouts
     };
-  }, [workouts, totalSets, isLoading]);
+  }, [workouts, totalSets, totalMovements, isLoading]);
 
   if (isLoading) {
     return (

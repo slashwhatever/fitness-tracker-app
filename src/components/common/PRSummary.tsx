@@ -18,15 +18,26 @@ export default function PRSummary() {
   const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
 
   useEffect(() => {
-    const calculatePRs = () => {
-      const workouts = persistenceService.getWorkouts();
-      const sets = persistenceService.getSets();
+    const calculatePRs = async () => {
+      const workouts = await HybridStorageManager.getLocalRecords('workouts');
+      const sets = await HybridStorageManager.getLocalRecords<any>('sets');
       const allMovements: UserMovement[] = [];
       
       // Collect all movements from all workouts
-      workouts.forEach(workout => {
-        allMovements.push(...persistenceService.getMovementsForWorkout(workout.id));
-      });
+      for (const workout of workouts) {
+        // Get workout_movement relationships
+        const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+          workout_id: (workout as any).id
+        });
+        
+        // Get actual UserMovement objects
+        for (const wm of workoutMovements) {
+          const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+          if (movement) {
+            allMovements.push(movement);
+          }
+        }
+      }
 
       const prs: PersonalRecord[] = [];
 

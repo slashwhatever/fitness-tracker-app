@@ -5,8 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Workout } from '@/models/types';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
+import { Workout } from '@/models/types';
 import { useState } from 'react';
 
 interface CreateWorkoutModalProps {
