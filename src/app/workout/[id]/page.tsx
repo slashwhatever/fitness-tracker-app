@@ -26,13 +26,13 @@ export default function WorkoutDetailPage() {
   const reloadMovements = async () => {
     if (!workout) return;
     
-    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+    const workoutMovements = await HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
       workout_id: workout.id
     });
     
     const userMovements: UserMovement[] = [];
     for (const wm of workoutMovements) {
-      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', wm.user_movement_id);
       if (movement) {
         userMovements.push(movement);
       }
@@ -53,14 +53,14 @@ export default function WorkoutDetailPage() {
       setWorkout(foundWorkout);
       
       // Get workout_movement relationships
-      const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      const workoutMovements = await HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
         workout_id: workoutId
       });
       
       // Get the actual UserMovement objects
       const userMovements: UserMovement[] = [];
       for (const wm of workoutMovements) {
-        const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+        const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', wm.user_movement_id);
         if (movement) {
           userMovements.push(movement);
         }
@@ -98,12 +98,12 @@ export default function WorkoutDetailPage() {
     if (!workout) return;
 
     // Find and delete the workout_movement relationship
-    HybridStorageManager.getLocalRecords('workout_movements', {
+    HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
       workout_id: workout.id,
       user_movement_id: movementId
     }).then(workoutMovements => {
       const deletePromises = workoutMovements.map(wm => 
-        HybridStorageManager.deleteRecord('workout_movements', (wm as any).id)
+        HybridStorageManager.deleteRecord('workout_movements', wm.id)
       );
       return Promise.all(deletePromises);
     }).then(() => {
@@ -128,12 +128,12 @@ export default function WorkoutDetailPage() {
     if (!workout) return;
 
     // Find and delete the workout_movement relationship
-    HybridStorageManager.getLocalRecords('workout_movements', {
+    HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
       workout_id: workout.id,
       user_movement_id: movementId
     }).then(workoutMovements => {
       const deletePromises = workoutMovements.map(wm => 
-        HybridStorageManager.deleteRecord('workout_movements', (wm as any).id)
+        HybridStorageManager.deleteRecord('workout_movements', wm.id)
       );
       return Promise.all(deletePromises);
     }).then(() => {

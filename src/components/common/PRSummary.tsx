@@ -3,8 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { UserMovement } from '@/models/types';
-import { formatWeight } from '@/models/types';
+import { formatWeight, Set as WorkoutSet, UserMovement, Workout } from '@/models/types';
 import { useEffect, useState } from 'react';
 
 interface PersonalRecord {
@@ -18,21 +17,21 @@ export default function PRSummary() {
   const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
 
   useEffect(() => {
-    const calculatePRs = async () => {
-      const workouts = await HybridStorageManager.getLocalRecords('workouts');
-      const sets = await HybridStorageManager.getLocalRecords<any>('sets');
+          const calculatePRs = async () => {
+        const workouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
+        const sets = await HybridStorageManager.getLocalRecords<WorkoutSet>('sets');
       const allMovements: UserMovement[] = [];
       
       // Collect all movements from all workouts
       for (const workout of workouts) {
         // Get workout_movement relationships
-        const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-          workout_id: (workout as any).id
+        const workoutMovements = await HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
+          workout_id: workout.id
         });
         
         // Get actual UserMovement objects
         for (const wm of workoutMovements) {
-          const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+          const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', wm.user_movement_id);
           if (movement) {
             allMovements.push(movement);
           }

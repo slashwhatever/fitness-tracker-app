@@ -5,10 +5,8 @@ import QuickSetEntry from '@/components/common/QuickSetEntry';
 import RestTimer from '@/components/common/RestTimer';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { Set, UserMovement } from '@/models/types';
+import { formatWeight, Set, UserMovement } from '@/models/types';
 import { format1RM, getBest1RM } from '@/utils/oneRepMax';
-import { formatWeight as formatWeightFromPrefs } from '@/utils/userPreferences';
-import { formatWeight } from '@/models/types';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -53,7 +51,7 @@ export default function MovementTrackingPage() {
         const movementSets = await HybridStorageManager.getLocalRecords('sets', {
           user_movement_id: movementId
         });
-        setSets((movementSets as any[]).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+        setSets((movementSets as Set[]).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
       } catch (error) {
         console.error('Failed to load movement data:', error);
         router.push('/');

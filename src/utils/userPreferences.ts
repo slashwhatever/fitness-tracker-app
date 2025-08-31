@@ -1,31 +1,31 @@
 import { HybridStorageManager } from "@/lib/storage/HybridStorageManager";
-import { DistanceUnit, WeightUnit } from "@/models/types";
+import { DistanceUnit, UserProfile, WeightUnit } from "@/models/types";
 
 /**
  * Get the user's preferred weight unit from storage
  */
 export async function getUserWeightUnit(): Promise<WeightUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords("user_profiles");
+  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>("user_profiles");
   const profile = profiles[0]; // Assuming single user
-  return (profile as any)?.weight_unit || "lbs";
+  return profile?.weight_unit || "lbs";
 }
 
 /**
  * Get the user's preferred distance unit from storage
  */
 export async function getUserDistanceUnit(): Promise<DistanceUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords("user_profiles");
+  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>("user_profiles");
   const profile = profiles[0]; // Assuming single user
-  return (profile as any)?.distance_unit || "miles";
+  return profile?.distance_unit || "miles";
 }
 
 /**
  * Get the user's default rest timer from storage
  */
 export async function getUserDefaultRestTimer(): Promise<number> {
-  const profiles = await HybridStorageManager.getLocalRecords("user_profiles");
+  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>("user_profiles");
   const profile = profiles[0]; // Assuming single user
-  return (profile as any)?.default_rest_timer || 60;
+  return profile?.default_rest_timer || 60;
 }
 
 /**
