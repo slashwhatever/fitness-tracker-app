@@ -1,5 +1,5 @@
 # ============================================================================
-# NETLIFY CONFIGURATION
+# NETLIFY CONFIGURATION - SINGLE PRODUCTION ENVIRONMENT
 # ============================================================================
 
 [build]
@@ -33,14 +33,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-  conditions = {Role = ["admin"]}
-
-# Security redirects
-[[redirects]]
-  from = "http://fitness-tracking-app.netlify.app/*"
-  to = "https://fitness-tracking-app.netlify.app/:splat"
-  status = 301
-  force = true
 
 # ============================================================================
 # HEADERS FOR SECURITY AND PERFORMANCE
@@ -94,36 +86,6 @@
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 # ============================================================================
-# ENVIRONMENT-SPECIFIC CONFIGURATIONS
-# ============================================================================
-
-# Production environment
-[context.production]
-  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
-  
-[context.production.environment]
-  NODE_ENV = "production"
-  NEXT_PUBLIC_APP_ENV = "production"
-  # Production Supabase credentials will be set via Netlify UI
-
-# Staging environment (deploy-preview)
-[context.deploy-preview]
-  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
-  
-[context.deploy-preview.environment]
-  NODE_ENV = "production"
-  NEXT_PUBLIC_APP_ENV = "staging"
-  # Staging Supabase credentials will be set via Netlify UI
-
-# Branch deploys (develop branch)
-[context.branch-deploy]
-  command = "npm install -g pnpm@8 && pnpm install --frozen-lockfile && pnpm build"
-  
-[context.branch-deploy.environment]
-  NODE_ENV = "production"
-  NEXT_PUBLIC_APP_ENV = "development"
-
-# ============================================================================
 # FUNCTIONS CONFIGURATION
 # ============================================================================
 
@@ -150,22 +112,3 @@
 # Essential files plugin for better caching
 [[plugins]]
   package = "netlify-plugin-cache-nextjs"
-
-# ============================================================================
-# EDGE FUNCTIONS (if needed)
-# ============================================================================
-
-# [[edge_functions]]
-#   function = "auth-middleware"
-#   path = "/dashboard/*"
-
-# ============================================================================
-# SPLIT TESTING (if needed)
-# ============================================================================
-
-# [[split_tests]]
-#   path = "/"
-#   branches = [
-#     { branch = "main", percentage = 90 },
-#     { branch = "feature/new-ui", percentage = 10 }
-#   ]

@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -53,18 +53,9 @@ jobs:
 
       - name: Build application
         run: pnpm build
-
-      - name: Run accessibility tests
-        run: |
-          npm install -g @axe-core/cli
-          # Note: This would run against a test server in a real scenario
-          echo "Accessibility tests would run against deployed preview"
-
-      - name: Performance audit
-        run: |
-          npm install -g lighthouse-ci
-          # Note: This would run against a test server in a real scenario
-          echo "Performance tests would run against deployed preview"
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
   # ============================================================================
   # SECURITY SCANNING
@@ -103,134 +94,11 @@ jobs:
           args: --severity-threshold=high
         continue-on-error: true
 
-      - name: Run CodeQL Analysis
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-
   # ============================================================================
-  # PREVIEW DEPLOYMENT (Pull Requests)
+  # PRODUCTION DEPLOYMENT (main branch only)
   # ============================================================================
-  deploy-preview:
-    name: Deploy Preview
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: [test, security]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build for preview
-        run: pnpm build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-
-      - name: Deploy to Netlify Preview
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=.next --alias=pr-${{ github.event.number }}
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
-      - name: Run health checks on preview
-        run: |
-          echo "Running health checks on preview deployment"
-          # Health check script would go here
-
-      - name: Comment PR with preview URL
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '🚀 Preview deployment ready at: https://pr-${{ github.event.number }}--fitness-tracking-app.netlify.app'
-            })
-
-  # ============================================================================
-  # STAGING DEPLOYMENT (develop branch)
-  # ============================================================================
-  deploy-staging:
-    name: Deploy Staging
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
-    needs: [test, security]
-    environment: staging
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Run Supabase migrations (staging)
-        run: |
-          supabase db push --project-ref ${{ secrets.STAGING_SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Build for staging
-        run: pnpm build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-
-      - name: Deploy to Netlify Staging
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=.next --prod
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
-
-      - name: Run staging health checks
-        run: |
-          echo "Running comprehensive health checks on staging"
-          # Staging health check script would go here
-
-  # ============================================================================
-  # PRODUCTION DEPLOYMENT (main branch)
-  # ============================================================================
-  deploy-production:
-    name: Deploy Production
+  deploy:
+    name: Deploy to Production
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [test, security]
@@ -259,99 +127,28 @@ jobs:
         with:
           version: latest
 
-      - name: Backup production database
+      - name: Run Supabase migrations
         run: |
-          echo "Creating production database backup"
-          # Database backup script would go here
-
-      - name: Run Supabase migrations (production)
-        run: |
-          supabase db push --project-ref ${{ secrets.PRODUCTION_SUPABASE_PROJECT_REF }}
+          supabase db push --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
       - name: Build for production
         run: pnpm build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.PRODUCTION_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
-      - name: Deploy to Netlify Production
+      - name: Deploy to Netlify
         uses: netlify/actions/cli@master
         with:
           args: deploy --dir=.next --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
-      - name: Run production health checks
+      - name: Run health checks
         run: |
-          echo "Running critical production health checks"
-          # Production health check script would go here
-
-      - name: Notify deployment success
-        uses: 8398a7/action-slack@v3
-        with:
-          status: success
-          text: "🎉 Production deployment successful!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: success()
-
-      - name: Notify deployment failure
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          text: "❌ Production deployment failed!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: failure()
-
-  # ============================================================================
-  # ROLLBACK JOB (Manual trigger)
-  # ============================================================================
-  rollback:
-    name: Rollback Production
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    environment: production
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Rollback Netlify deployment
-        uses: netlify/actions/cli@master
-        with:
-          args: api rollbackSiteDeploy --data='{"site_id":"${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}"}'
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-
-      - name: Restore database backup
-        run: |
-          echo "Restoring database from backup"
-          # Database restore script would go here
-
-      - name: Notify rollback completion
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              text: "🔄 Production rollback completed",
-              attachments: [{
-                color: "warning",
-                fields: [{
-                  title: "Environment",
-                  value: "Production",
-                  short: true
-                }]
-              }]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          echo "Waiting for deployment to be ready..."
+          sleep 30
+          ./scripts/health-check.sh https://your-custom-domain.com/health

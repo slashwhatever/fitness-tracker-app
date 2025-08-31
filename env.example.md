@@ -30,11 +30,11 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
 # Supabase Project URL (Public)
 # Get this from your Supabase project dashboard
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_URL=https://your-project-id.supabase.co
 
 # Supabase Anonymous Key (Public)
 # This is safe to expose in client-side code
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_ANON_KEY=your-anon-key-here
 
 # Supabase Service Role Key (Private - Server Only)
 # NEVER expose this in client-side code
@@ -60,9 +60,6 @@ NETLIFY_PRODUCTION_SITE_ID=your-production-site-id
 # MONITORING AND ALERTING
 # ============================================================================
 
-# Slack webhook for deployment notifications
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/your/webhook/url
-
 # Sentry DSN for error tracking (optional)
 NEXT_PUBLIC_SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
 
@@ -81,7 +78,7 @@ SNYK_TOKEN=your-snyk-token
 ```bash
 NEXT_PUBLIC_APP_ENV=development
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+SUPABASE_URL=http://localhost:54321
 DEBUG=true
 ```
 
@@ -90,7 +87,7 @@ DEBUG=true
 ```bash
 NEXT_PUBLIC_APP_ENV=staging
 NEXT_PUBLIC_BASE_URL=https://staging-fitness-app.netlify.app
-NEXT_PUBLIC_SUPABASE_URL=https://staging-project.supabase.co
+SUPABASE_URL=https://staging-project.supabase.co
 ```
 
 ### Production (Netlify Environment Variables)
@@ -98,15 +95,15 @@ NEXT_PUBLIC_SUPABASE_URL=https://staging-project.supabase.co
 ```bash
 NEXT_PUBLIC_APP_ENV=production
 NEXT_PUBLIC_BASE_URL=https://fitness-tracking-app.netlify.app
-NEXT_PUBLIC_SUPABASE_URL=https://production-project.supabase.co
+SUPABASE_URL=https://production-project.supabase.co
 ```
 
 ## Required Variables Checklist
 
 ### For Local Development
 
-- ✅ `NEXT_PUBLIC_SUPABASE_URL`
-- ✅ `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- ✅ `SUPABASE_URL`
+- ✅ `SUPABASE_ANON_KEY`
 
 ### For CI/CD Pipeline
 
@@ -117,7 +114,6 @@ NEXT_PUBLIC_SUPABASE_URL=https://production-project.supabase.co
 
 ### For Monitoring (Optional but Recommended)
 
-- ✅ `SLACK_WEBHOOK_URL`
 - ✅ `NEXT_PUBLIC_SENTRY_DSN`
 
 ## Security Best Practices
@@ -136,18 +132,12 @@ NEXT_PUBLIC_SUPABASE_URL=https://production-project.supabase.co
 
 Add these secrets to your GitHub repository:
 
-- `STAGING_SUPABASE_URL`
-- `STAGING_SUPABASE_ANON_KEY`
-- `STAGING_SUPABASE_PROJECT_REF`
-- `PRODUCTION_SUPABASE_URL`
-- `PRODUCTION_SUPABASE_ANON_KEY`
-- `PRODUCTION_SUPABASE_PROJECT_REF`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_PROJECT_REF`
 - `SUPABASE_ACCESS_TOKEN`
 - `NETLIFY_AUTH_TOKEN`
 - `NETLIFY_SITE_ID`
-- `NETLIFY_STAGING_SITE_ID`
-- `NETLIFY_PRODUCTION_SITE_ID`
-- `SLACK_WEBHOOK_URL`
 - `SNYK_TOKEN`
 
 ### Netlify Environment Variables
@@ -188,8 +178,8 @@ Use this script to validate your environment setup:
 # validate-env.sh
 
 required_vars=(
-  "NEXT_PUBLIC_SUPABASE_URL"
-  "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  "SUPABASE_URL"
+  "SUPABASE_ANON_KEY"
 )
 
 for var in "${required_vars[@]}"; do
