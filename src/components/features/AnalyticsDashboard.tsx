@@ -1,8 +1,8 @@
 'use client';
 
 import AnalyticsCard from '@/components/common/AnalyticsCard';
-import { Workout } from '@/models/types';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
+import { Workout } from '@/models/types';
 import { BarChart3, Calendar, Dumbbell, Target } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 

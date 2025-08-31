@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { UserMovement } from '@/models/types';
 import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
+import { UserMovement } from '@/models/types';
 import { formatWeight } from '@/utils/userPreferences';
 import { useEffect, useState } from 'react';
 

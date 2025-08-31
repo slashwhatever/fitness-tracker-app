@@ -70,9 +70,19 @@ export default function WorkoutDetailPage() {
     };
     await HybridStorageManager.saveRecord('workout_movements', workoutMovement);
     
-    // Update local movements state
-    const updatedMovements = await HybridStorageManager.getWorkoutMovements(workout.id);
-    setMovements(updatedMovements as UserMovement[]);
+    // Update local movements state - reload from storage
+    const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      workout_id: workout.id
+    });
+    
+    const userMovements: UserMovement[] = [];
+    for (const wm of workoutMovements) {
+      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+      if (movement) {
+        userMovements.push(movement);
+      }
+    }
+    setMovements(userMovements);
   };
 
   const handleMovementRemovedFromModal = async (movementId: string) => {
@@ -85,12 +95,22 @@ export default function WorkoutDetailPage() {
     });
     
     for (const wm of workoutMovements) {
-      await HybridStorageManager.deleteRecord('workout_movements', wm.id);
+      await HybridStorageManager.deleteRecord('workout_movements', (wm as any).id);
     }
     
-    // Update local movements state
-    const updatedMovements = await HybridStorageManager.getWorkoutMovements(workout.id);
-    setMovements(updatedMovements as UserMovement[]);
+    // Update local movements state - reload from storage
+    const updatedWorkoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      workout_id: workout.id
+    });
+    
+    const userMovements: UserMovement[] = [];
+    for (const wm of updatedWorkoutMovements) {
+      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+      if (movement) {
+        userMovements.push(movement);
+      }
+    }
+    setMovements(userMovements);
   };
 
   const handleWorkoutUpdated = (updatedWorkout: Workout) => {
@@ -113,12 +133,22 @@ export default function WorkoutDetailPage() {
     });
     
     for (const wm of workoutMovements) {
-      await HybridStorageManager.deleteRecord('workout_movements', wm.id);
+      await HybridStorageManager.deleteRecord('workout_movements', (wm as any).id);
     }
     
-    // Update local movements state
-    const updatedMovements = await HybridStorageManager.getWorkoutMovements(workout.id);
-    setMovements(updatedMovements as UserMovement[]);
+    // Update local movements state - reload from storage
+    const updatedWorkoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
+      workout_id: workout.id
+    });
+    
+    const userMovements: UserMovement[] = [];
+    for (const wm of updatedWorkoutMovements) {
+      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', (wm as any).user_movement_id);
+      if (movement) {
+        userMovements.push(movement);
+      }
+    }
+    setMovements(userMovements);
   };
 
   if (!workout) return null;
