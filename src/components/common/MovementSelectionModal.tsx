@@ -18,7 +18,6 @@ import { useEffect, useMemo, useState } from 'react';
 interface MovementSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onMovementsSelected: (movements: UserMovement[]) => void;
   currentMovements: UserMovement[];
   onMovementAdded: (movement: UserMovement) => void;
   onMovementRemoved: (movementId: string) => void;
@@ -65,7 +64,6 @@ const MovementListItem = ({ movement, selected, onToggle }: {
 export default function MovementSelectionModal({
   isOpen,
   onClose,
-  onMovementsSelected,
   currentMovements,
   onMovementAdded,
   onMovementRemoved,

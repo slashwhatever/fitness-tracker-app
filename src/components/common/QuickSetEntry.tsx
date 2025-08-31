@@ -32,21 +32,6 @@ export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSe
     onQuickLog(setData);
   };
 
-  const handleRepeatLast = () => {
-    if (!lastSet) return;
-    
-    const setData: Partial<Set> = {
-      reps: lastSet.reps,
-      weight: lastSet.weight,
-      duration: lastSet.duration,
-    };
-
-    onQuickLog(setData);
-  };
-
-
-
-
 
   const isValidQuickSet = () => {
     switch (movement.tracking_type) {

@@ -25,8 +25,8 @@ interface HealthCheck {
 }
 
 const handler: Handler = async (
-  event: HandlerEvent,
-  context: HandlerContext
+  _event: HandlerEvent, // eslint-disable-line @typescript-eslint/no-unused-vars
+  _context: HandlerContext // eslint-disable-line @typescript-eslint/no-unused-vars
 ) => {
   const startTime = Date.now();
 
@@ -100,6 +100,7 @@ const handler: Handler = async (
       headers: {
         "Content-Type": "application/json",
         "Cache-Control": "no-cache, no-store, must-revalidate",
+        "X-Health-Status": "unhealthy",
       },
       body: JSON.stringify(
         {

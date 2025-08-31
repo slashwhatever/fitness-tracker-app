@@ -9,11 +9,10 @@ import { useState } from 'react';
 
 interface MovementItemProps {
   movement: UserMovement;
-  index: number;
   onRemove: (movementId: string) => void;
 }
 
-function MovementItem({ movement, index, onRemove }: MovementItemProps) {
+function MovementItem({ movement, onRemove }: MovementItemProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleRemoveClick = (e: React.MouseEvent) => {
@@ -78,13 +77,11 @@ function MovementItem({ movement, index, onRemove }: MovementItemProps) {
 
 interface DraggableMovementListProps {
   movements: UserMovement[];
-  onReorder: (newOrder: UserMovement[]) => void;
   onRemove: (movementId: string) => void;
 }
 
 export default function DraggableMovementList({ 
   movements, 
-  onReorder, 
   onRemove 
 }: DraggableMovementListProps) {
   if (movements.length === 0) {
@@ -115,11 +112,10 @@ export default function DraggableMovementList({
       </div>
 
       <div className="space-y-3">
-        {movements.map((movement, index) => (
+        {movements.map((movement) => (
           <MovementItem
             key={movement.id}
             movement={movement}
-            index={index}
             onRemove={onRemove}
           />
         ))}

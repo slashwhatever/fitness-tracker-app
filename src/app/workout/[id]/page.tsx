@@ -35,17 +35,6 @@ export default function WorkoutDetailPage() {
     setMovements(persistenceService.getMovementsForWorkout(workoutId));
   }, [workoutId, router]);
 
-  const handleMovementsSelected = (newMovements: UserMovement[]) => {
-    // This is now only used for custom movements from the modal
-    if (!workout) return;
-
-    // Add movements to the workout using proper WorkoutMovement relationship
-    persistenceService.addMovementsToWorkout(workout.id, newMovements);
-    
-    // Force re-render by updating the workout state
-    setWorkout({ ...workout });
-  };
-
   const handleMovementAdded = (movement: UserMovement) => {
     if (!workout) return;
 
@@ -71,19 +60,9 @@ export default function WorkoutDetailPage() {
     setIsSettingsModalOpen(false);
   };
 
-  const handleWorkoutDeleted = (workoutId: string) => {
+  const handleWorkoutDeleted = () => {
     // Navigate back to home page after deletion
     router.push('/');
-  };
-
-  const handleReorderMovements = (newOrder: UserMovement[]) => {
-    if (!workout) return;
-
-    // Update the order in persistence
-    persistenceService.updateWorkoutMovementOrder(workout.id, newOrder);
-    
-    // Update local state immediately for responsive UI
-    setMovements(newOrder);
   };
 
   const handleRemoveMovement = (movementId: string) => {
@@ -136,7 +115,6 @@ export default function WorkoutDetailPage() {
             <CardContent>
               <DraggableMovementList
                 movements={movements}
-                onReorder={handleReorderMovements}
                 onRemove={handleRemoveMovement}
               />
             </CardContent>
@@ -146,7 +124,6 @@ export default function WorkoutDetailPage() {
       <MovementSelectionModal
         isOpen={isSelectionModalOpen}
         onClose={() => setIsSelectionModalOpen(false)}
-        onMovementsSelected={handleMovementsSelected}
         currentMovements={movements}
         onMovementAdded={handleMovementAdded}
         onMovementRemoved={handleMovementRemovedFromModal}

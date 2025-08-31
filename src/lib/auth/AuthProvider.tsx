@@ -1,9 +1,9 @@
 'use client';
 
+import { useOptionalSupabase } from '@/lib/providers/SupabaseProvider';
 import { getCurrentSession, onAuthStateChange } from '@/lib/supabase/auth-utils';
 import type { Session, User } from '@supabase/supabase-js';
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useOptionalSupabase } from '@/lib/providers/SupabaseProvider';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
   const { isAvailable } = useOptionalSupabase();
 
-  const refreshSession = async () => {
+  const refreshSession = useCallback(async () => {
     try {
       // Only try to get session if Supabase is available
       if (isAvailable) {
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(null);
       setSession(null);
     }
-  };
+  }, [isAvailable]);
 
   const handleSignOut = async () => {
     try {
@@ -78,7 +78,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       // Listen for auth changes
       const { data: { subscription } } = onAuthStateChange(async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
         
         if (session) {
           setUser(session.user);
@@ -97,7 +96,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error('Failed to set up auth state listener:', error);
     }
-  }, [isAvailable]);
+  }, [isAvailable, refreshSession]);
 
   const value: AuthContextType = {
     user,
