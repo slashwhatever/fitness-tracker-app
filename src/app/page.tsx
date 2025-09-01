@@ -3,7 +3,6 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import WorkoutManagement from '@/components/features/WorkoutManagement';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Library, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -28,40 +27,36 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-background p-8">
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-3xl">
-                  Log Set
-                </CardTitle>
-                <div className="flex space-x-3">
-                  <Button variant="outline" asChild>
-                    <Link href="/analytics" className="flex items-center space-x-2">
-                      <BarChart3 className="w-5 h-5" aria-hidden="true" />
-                      <span>Analytics</span>
-                    </Link>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/library" className="flex items-center space-x-2">
-                      <Library className="w-5 h-5" aria-hidden="true" />
-                      <span>Movement Library</span>
-                    </Link>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <Link href="/settings" className="flex items-center space-x-2">
-                      <Settings className="w-5 h-5" aria-hidden="true" />
-                      <span>Settings</span>
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <WorkoutManagement onWorkoutCreated={handleWorkoutCreated} />
-            </CardContent>
-          </Card>
+      <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+          {/* Header */}
+          <div className="flex flex-col space-y-3 sm:flex-row sm:justify-between sm:items-center sm:space-y-0 p-3 sm:p-4 bg-card rounded-lg border">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+              Log Set
+            </h1>
+            <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+              <Button variant="outline" asChild size="sm" className="justify-start sm:justify-center h-8">
+                <Link href="/analytics" className="flex items-center space-x-2">
+                  <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+                  <span className="text-xs sm:text-sm">Analytics</span>
+                </Link>
+              </Button>
+              <Button variant="outline" asChild size="sm" className="justify-start sm:justify-center h-8">
+                <Link href="/library" className="flex items-center space-x-2">
+                  <Library className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+                  <span className="text-xs sm:text-sm">Movement Library</span>
+                </Link>
+              </Button>
+              <Button variant="outline" asChild size="sm" className="justify-start sm:justify-center h-8">
+                <Link href="/settings" className="flex items-center space-x-2">
+                  <Settings className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+                  <span className="text-xs sm:text-sm">Settings</span>
+                </Link>
+              </Button>
+            </div>
+          </div>
+          
+          <WorkoutManagement onWorkoutCreated={handleWorkoutCreated} />
         </div>
       </main>
     </ProtectedRoute>

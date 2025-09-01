@@ -5,7 +5,7 @@ import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
 import { ArrowLeft, Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -114,52 +114,55 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-background p-8">
-        <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" asChild className="mb-4 -ml-4">
-            <Link href="/" className="flex items-center space-x-1">
+      <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+          <Button variant="ghost" asChild className="-ml-2">
+            <Link href="/" className="flex items-center space-x-2">
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Dashboard</span>
             </Link>
           </Button>
           
-          <Card>
-            <CardHeader>
+          <div className="p-3 sm:p-4 bg-card rounded-lg border">
+            <div className="mb-4">
               <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-3xl">{workout.name}</CardTitle>
-                  {workout.description && (
-                    <p className="text-muted-foreground mt-2">{workout.description}</p>
-                  )}
-                  Workout movements ({workoutMovements.length})
-                </div>
-                <div className="flex space-x-2">
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate">{workout.name}</h1>
+                <div className="flex space-x-2 ml-4">
                   <Button 
                     variant="outline" 
-                    size="icon"
+                    size="sm"
                     onClick={() => setShowMovementModal(true)}
+                    className="flex items-center space-x-1 h-8"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline text-xs">Add</span>
                   </Button>
                   <Button 
                     variant="outline" 
-                    size="icon"
+                    size="sm"
                     onClick={() => setShowSettingsModal(true)}
+                    className="flex items-center space-x-1 h-8"
                   >
-                    <Settings className="w-4 h-4" />
+                    <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden xs:inline text-xs">Settings</span>
                   </Button>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <MovementList
-                key={refreshKey}
-                workoutId={paramsResolved?.id || ''}
-                onMovementAdded={handleMovementAdded}
-                onAddMovementClick={() => setShowMovementModal(true)}
-              />
-            </CardContent>
-          </Card>
+              {workout.description && (
+                <p className="text-muted-foreground mt-1 text-sm">{workout.description}</p>
+              )}
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1">
+                {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            
+            <MovementList
+              key={refreshKey}
+              workoutId={paramsResolved?.id || ''}
+              onMovementAdded={handleMovementAdded}
+              onAddMovementClick={() => setShowMovementModal(true)}
+            />
+          </div>
         </div>
 
             <MovementSelectionModal

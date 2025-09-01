@@ -13,12 +13,11 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { useUpdateSet, useDeleteSet } from '@/hooks/useSets';
+import { useDeleteSet, useUpdateSet } from '@/hooks/useSets';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Set, UserMovement, WeightUnit } from '@/models/types';
+import { Set, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface EditableSetProps {
   set: Set;
@@ -31,7 +30,6 @@ export default function EditableSet({
   movement,
   onDuplicate,
 }: EditableSetProps) {
-  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [reps, setReps] = useState(set.reps?.toString() || '');
   const [weight, setWeight] = useState(set.weight?.toString() || '');
@@ -120,71 +118,68 @@ export default function EditableSet({
 
   return (
     <>
-      <div className="flex justify-between items-center p-4 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
-        <div className="flex items-center space-x-4">
-          <div className="text-sm text-muted-foreground">
-            {new Date(set.created_at).toLocaleDateString()}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer space-y-2 sm:space-y-0">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+          <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+            <span>{new Date(set.created_at).toLocaleDateString()}</span>
+            <span>{new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
-          <div className="text-sm text-muted-foreground">
-            {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </div>
-        </div>
-      
-        <div className="flex items-center space-x-6">
+          
           {/* Set Data Display */}
-          <div className="text-right">
+          <div className="text-left sm:text-right">
             {movement.tracking_type === 'weight' && (
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-foreground">{set.weight}</span>
-                <span className="text-sm text-muted-foreground">{weightUnit}</span>
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <span className="text-lg sm:text-2xl font-bold text-foreground">{set.weight}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">{weightUnit}</span>
                 <span className="text-muted-foreground">×</span>
-                <span className="text-xl font-semibold text-foreground">{set.reps}</span>
-                <span className="text-sm text-muted-foreground">reps</span>
+                <span className="text-base sm:text-xl font-semibold text-foreground">{set.reps}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">reps</span>
               </div>
             )}
             
             {(movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-foreground">{set.reps}</span>
-                <span className="text-sm text-muted-foreground">reps</span>
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <span className="text-lg sm:text-2xl font-bold text-foreground">{set.reps}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">reps</span>
               </div>
             )}
             
             {movement.tracking_type === 'distance' && set.distance && (
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-foreground">{set.distance}</span>
-                <span className="text-sm text-muted-foreground">mi</span>
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <span className="text-lg sm:text-2xl font-bold text-foreground">{set.distance}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">mi</span>
               </div>
             )}
             
             {movement.tracking_type === 'duration' && set.duration && (
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-bold text-foreground">{formatDuration(set.duration)}</span>
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <span className="text-lg sm:text-2xl font-bold text-foreground">{formatDuration(set.duration)}</span>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-2">
-            <Button
-              onClick={handleDuplicate}
-              size="sm"
-              className="bg-green-500 hover:bg-green-600 h-9"
-            >
-              <Copy className="w-4 h-4 mr-1" />
-              Duplicate
-            </Button>
-            
-            <Drawer open={isEditing} onOpenChange={handleDrawerOpenChange}>
-              <DrawerTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-              </DrawerTrigger>
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-2 self-end sm:self-auto">
+          <Button
+            onClick={handleDuplicate}
+            size="sm"
+            className="bg-green-500 hover:bg-green-600 h-8 sm:h-9 text-xs sm:text-sm"
+          >
+            <Copy className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+            <span className="hidden xs:inline">Duplicate</span>
+          </Button>
+          
+          <Drawer open={isEditing} onOpenChange={handleDrawerOpenChange}>
+            <DrawerTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 sm:h-9 sm:w-9"
+              >
+                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+              </Button>
+            </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
                   <DrawerTitle>Edit Set</DrawerTitle>
@@ -193,29 +188,29 @@ export default function EditableSet({
                   </DrawerDescription>
                 </DrawerHeader>
                 
-                <div className="px-4 pb-4 space-y-6">
+                <div className="px-4 pb-4 space-y-4 sm:space-y-6">
                   {movement.tracking_type === 'weight' && (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="edit-weight">Weight</Label>
+                        <Label htmlFor="edit-weight" className="text-sm">Weight</Label>
                         <Input
                           id="edit-weight"
                           type="number"
                           value={weight}
                           onChange={(e) => setWeight(e.target.value)}
-                          className="text-center text-lg"
+                          className="text-center text-base sm:text-lg"
                           min="0"
                           step="0.5"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="edit-reps">Reps</Label>
+                        <Label htmlFor="edit-reps" className="text-sm">Reps</Label>
                         <Input
                           id="edit-reps"
                           type="number"
                           value={reps}
                           onChange={(e) => setReps(e.target.value)}
-                          className="text-center text-lg"
+                          className="text-center text-base sm:text-lg"
                           min="0"
                         />
                       </div>
@@ -224,13 +219,13 @@ export default function EditableSet({
                   
                   {(movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
                     <div className="space-y-2">
-                      <Label htmlFor="edit-reps">Reps</Label>
+                      <Label htmlFor="edit-reps" className="text-sm">Reps</Label>
                       <Input
                         id="edit-reps"
                         type="number"
                         value={reps}
                         onChange={(e) => setReps(e.target.value)}
-                        className="text-center text-lg"
+                        className="text-center text-base sm:text-lg"
                         min="0"
                       />
                     </div>
@@ -238,13 +233,13 @@ export default function EditableSet({
                   
                   {movement.tracking_type === 'distance' && (
                     <div className="space-y-2">
-                      <Label htmlFor="edit-distance">Distance (miles)</Label>
+                      <Label htmlFor="edit-distance" className="text-sm">Distance (miles)</Label>
                       <Input
                         id="edit-distance"
                         type="number"
                         value={distance}
                         onChange={(e) => setDistance(e.target.value)}
-                        className="text-center text-lg"
+                        className="text-center text-base sm:text-lg"
                         min="0"
                         step="0.01"
                       />
@@ -253,25 +248,26 @@ export default function EditableSet({
                   
                   {movement.tracking_type === 'duration' && (
                     <div className="space-y-2">
-                      <Label htmlFor="edit-duration">Duration (seconds)</Label>
+                      <Label htmlFor="edit-duration" className="text-sm">Duration (seconds)</Label>
                       <Input
                         id="edit-duration"
                         type="number"
                         value={duration}
                         onChange={(e) => setDuration(e.target.value)}
-                        className="text-center text-lg"
+                        className="text-center text-base sm:text-lg"
                         min="0"
                       />
                     </div>
                   )}
                   
                   <div className="space-y-2">
-                    <Label htmlFor="edit-notes">Notes (optional)</Label>
+                    <Label htmlFor="edit-notes" className="text-sm">Notes (optional)</Label>
                     <Input
                       id="edit-notes"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="How did it feel?"
+                      className="text-sm sm:text-base"
                     />
                   </div>
                 </div>
@@ -297,14 +293,13 @@ export default function EditableSet({
               onClick={() => deleteSetMutation.mutate(set.id)}
               variant="ghost"
               size="icon"
-              className="text-muted-foreground hover:text-red-500 h-9 w-9"
+              className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
               disabled={deleteSetMutation.isPending}
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </div>
         </div>
-      </div>
-    </>
+        </>
   );
 }

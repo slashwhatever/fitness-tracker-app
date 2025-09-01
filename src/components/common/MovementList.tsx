@@ -78,50 +78,50 @@ export default function MovementList({
             
             return (
               <div key={movement.id} className="bg-muted/50 rounded-lg border">
-                <div className="flex items-center justify-between p-4 hover:bg-muted/10 transition-all">
+                <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/10 transition-all">
                   <Link 
                     href={`/movement/${movement.user_movement_id}`}
-                    className="flex items-center space-x-3 flex-1 cursor-pointer"
+                    className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0"
                   >
-                    <div className="text-sm font-medium text-muted-foreground">
+                    <div className="text-xs sm:text-sm font-medium text-muted-foreground flex-shrink-0">
                       #{index + 1}
                     </div>
-                    <div>
-                      <h3 className="font-medium hover:text-blue-500 transition-colors">
+                    <div className="min-w-0">
+                      <h3 className="font-medium hover:text-blue-500 transition-colors text-sm sm:text-base truncate">
                         {movement.user_movement?.name || 'Unknown Movement'}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                         {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
                         {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
                       </p>
                     </div>
                   </Link>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       asChild
-                      className="text-muted-foreground hover:text-green-500"
+                      className="text-muted-foreground hover:text-green-500 h-8 w-8 sm:h-9 sm:w-9"
                     >
                       <Link href={`/movement/${movement.user_movement_id}`}>
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Link>
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setEditingMovementId(movement.user_movement_id)}
-                      className="text-muted-foreground hover:text-blue-500"
+                      className="text-muted-foreground hover:text-blue-500 h-8 w-8 sm:h-9 sm:w-9"
                     >
-                      <Edit3 className="w-4 h-4" />
+                      <Edit3 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
-                      className="text-muted-foreground hover:text-red-500"
+                      className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </Button>
                   </div>
                 </div>

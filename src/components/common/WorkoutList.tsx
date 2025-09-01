@@ -1,9 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -13,7 +11,7 @@ export interface WorkoutListRef {
   refreshWorkouts: () => Promise<void>;
 }
 
-const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
+const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState<{ id: string; name: string } | null>(null);
 
@@ -61,64 +59,61 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Workouts</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">Loading workouts...</p>
-            </div>
-          ) : workouts.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No workouts created yet.</p>
-              <p className="text-sm text-muted-foreground mt-2">Create your first workout to get started!</p>
-            </div>
-          ) : (
-            <ScrollArea className="h-64">
-              <div className="grid gap-3 pr-4">
-                {workouts.map((workout) => (
-                  <div key={workout.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border hover:bg-muted/10 transition-all cursor-pointer">
+    <div className="space-y-3">
+      <div className="flex items-center space-x-2 px-1">
+        <h2 className="text-base sm:text-lg font-semibold">Your Workouts</h2>
+      </div>
+      
+      {isLoading ? (
+        <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
+          <p className="text-muted-foreground text-sm">Loading workouts...</p>
+        </div>
+      ) : workouts.length === 0 ? (
+        <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
+          <p className="text-muted-foreground text-sm">No workouts created yet.</p>
+          <p className="text-xs text-muted-foreground mt-1">Create your first workout to get started!</p>
+        </div>
+      ) : (
+        <div className="grid gap-2">
+          {workouts.map((workout) => (
+            <div key={workout.id} className="flex items-center justify-between p-3 bg-card rounded-lg border hover:bg-muted/50 transition-all cursor-pointer">
 
-                    <Link href={`/workout/${workout.id}`} className="flex-1">
-                      <div className="text-left">
-                        <h4 className="text-lg font-bold text-foreground">{workout.name}</h4>
-                        {workout.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{workout.description}</p>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-1">
-                          <MovementCount workoutId={workout.id} />
-                        </p>
-                      </div>
-                    </Link>
+              <Link href={`/workout/${workout.id}`} className="flex-1 min-w-0">
+                <div className="text-left">
+                  <h4 className="text-sm sm:text-base font-bold text-foreground truncate">{workout.name}</h4>
+                  {workout.description && (
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{workout.description}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    <MovementCount workoutId={workout.id} />
+                  </p>
+                </div>
+              </Link>
 
-                    <div className="flex items-center space-x-2">
-                      <Link href={`/workout/${workout.id}`}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-9 w-9"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        onClick={(e) => handleDeleteClick(e, workout)}
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground hover:text-red-500 h-9 w-9"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center space-x-1 ml-2">
+                <Link href={`/workout/${workout.id}`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 sm:h-8 sm:w-8"
+                  >
+                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                  </Button>
+                </Link>
+                <Button
+                  onClick={(e) => handleDeleteClick(e, workout)}
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-red-500 h-7 w-7 sm:h-8 sm:w-8"
+                >
+                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                </Button>
               </div>
-            </ScrollArea>
-          )}
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
 
       <ConfirmationModal
         isOpen={showDeleteConfirm}

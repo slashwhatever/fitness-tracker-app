@@ -5,10 +5,10 @@ import EditableSet from '@/components/common/EditableSet';
 import PRSummary from '@/components/common/PRSummary';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
-import { LastSet, UserMovement } from '@/models/types';
+import { LastSet, Set, UserMovement } from '@/models/types';
 import { ArrowLeft, Calendar, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -19,7 +19,6 @@ interface MovementDetailPageProps {
 
 export default function MovementDetailPage({ params }: MovementDetailPageProps) {
   const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
-  const [weightUnit] = useState<string>('lbs');
 
   // Resolve async params
   useEffect(() => {
@@ -31,12 +30,12 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.id || '');
   const createSetMutation = useCreateSet();
 
-  const handleDuplicateSet = async (originalSet: any) => {
+  const handleDuplicateSet = async (originalSet: Set) => {
     try {
       await createSetMutation.mutateAsync({
         user_movement_id: originalSet.user_movement_id,
         workout_id: null, // Not part of a workout
-        set_type: originalSet.set_type,
+        set_type: originalSet.set_type || 'working',
         reps: originalSet.reps,
         weight: originalSet.weight,
         duration: originalSet.duration,
@@ -57,10 +56,6 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   //   }
   // }, [user?.id]);
 
-  const formatWeight = (weight: number | null | undefined) => {
-    if (!weight) return 'N/A';
-    return `${weight} ${weightUnit}`;
-  };
 
   if (loading) {
     return (
@@ -102,11 +97,11 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-background p-8">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
           {/* Header */}
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" asChild>
+          <div className="flex items-center space-x-2">
+            <Button variant="ghost" asChild className="-ml-2">
               <Link href="/" className="flex items-center space-x-2">
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back</span>
@@ -115,104 +110,92 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
           </div>
 
           {/* Movement Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-3">
-                <span className="text-2xl">
-                  {movement.tracking_type === 'weight' ? '🏋️' : 
-                   movement.tracking_type === 'bodyweight' ? '🤸' :
-                   movement.tracking_type === 'duration' ? '⏱️' :
-                   movement.tracking_type === 'distance' ? '🏃' : '💪'}
-                </span>
-                <span>{movement.name}</span>
-              </CardTitle>
-              <CardDescription>
-                <div className="space-y-2">
-                  <div>
-                    <strong>Muscle Groups:</strong> {movement.muscle_groups?.join(', ') || 'Unknown'}
-                  </div>
-                  <div>
-                    <strong>Tracking Type:</strong> {movement.tracking_type}
-                  </div>
-                  {movement.personal_notes && (
-                    <div>
-                      <strong>Notes:</strong> {movement.personal_notes}
-                    </div>
-                  )}
+          <div className="p-3 sm:p-4 bg-card rounded-lg border">
+            <div className="flex items-start space-x-3 mb-3">
+              <span className="text-xl sm:text-2xl">
+                {movement.tracking_type === 'weight' ? '🏋️' : 
+                 movement.tracking_type === 'bodyweight' ? '🤸' :
+                 movement.tracking_type === 'duration' ? '⏱️' :
+                 movement.tracking_type === 'distance' ? '🏃' : '💪'}
+              </span>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold min-w-0 break-words">{movement.name}</h1>
+            </div>
+            <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
+              <div>
+                <span className="font-medium">Muscle Groups:</span> {movement.muscle_groups?.join(', ') || 'Unknown'}
+              </div>
+              <div>
+                <span className="font-medium">Tracking Type:</span> {movement.tracking_type}
+              </div>
+              {movement.personal_notes && (
+                <div>
+                  <span className="font-medium">Notes:</span> <span className="break-words">{movement.personal_notes}</span>
                 </div>
-              </CardDescription>
-            </CardHeader>
-          </Card>
+              )}
+            </div>
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
             {/* Quick Log */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Dumbbell className="w-5 h-5" />
-                  <span>Quick Log</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <QuickSetEntry 
-                  movement={movement}
-                  lastSet={sets[0] as LastSet}
-                  onQuickLog={async (setData) => {
-                    if (movement?.id) {
-                      try {
-                        await createSetMutation.mutateAsync({
-                          user_movement_id: movement.id,
-                          workout_id: null,
-                          reps: setData.reps || null,
-                          weight: setData.weight || null,
-                          duration: setData.duration || null,
-                          distance: setData.distance || null,
-                          notes: setData.notes || null,
-                          set_type: 'working',
-                        });
-                      } catch (error) {
-                        console.error('Failed to save set:', error);
-                      }
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 px-1">
+                <Dumbbell className="w-4 h-4" />
+                <h2 className="text-base sm:text-lg font-semibold">Quick Log</h2>
+              </div>
+              <QuickSetEntry 
+                movement={movement}
+                lastSet={sets[0] as LastSet}
+                onQuickLog={async (setData) => {
+                  if (movement?.id) {
+                    try {
+                      await createSetMutation.mutateAsync({
+                        user_movement_id: movement.id,
+                        workout_id: null,
+                        reps: setData.reps || null,
+                        weight: setData.weight || null,
+                        duration: setData.duration || null,
+                        distance: setData.distance || null,
+                        notes: setData.notes || null,
+                        set_type: 'working',
+                      });
+                    } catch (error) {
+                      console.error('Failed to save set:', error);
                     }
-                  }}
-                />
-              </CardContent>
-            </Card>
+                  }
+                }}
+              />
+            </div>
 
             {/* Personal Records */}
             <PRSummary userMovementId={movement.id} />
           </div>
 
           {/* Set History */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="w-5 h-5" />
-                <span>Set History</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {sets.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-muted-foreground">No sets logged for this movement yet.</p>
-                  <p className="text-sm text-muted-foreground mt-2">Use the quick log above to record your first set!</p>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2 px-1">
+              <Calendar className="w-4 h-4" />
+              <h2 className="text-base sm:text-lg font-semibold">Set History</h2>
+            </div>
+            {sets.length === 0 ? (
+              <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
+                <p className="text-muted-foreground text-sm">No sets logged for this movement yet.</p>
+                <p className="text-xs text-muted-foreground mt-1">Use the quick log above to record your first set!</p>
+              </div>
+            ) : (
+              <ScrollArea className="h-80 sm:h-96">
+                <div className="space-y-2 pr-2 sm:pr-4">
+                  {sets.map((set) => (
+                    <EditableSet
+                      key={set.id}
+                      set={set}
+                      movement={movement as UserMovement}
+                      onDuplicate={handleDuplicateSet}
+                    />
+                  ))}
                 </div>
-              ) : (
-                <ScrollArea className="h-96">
-                  <div className="space-y-3 pr-4">
-                    {sets.map((set) => (
-                      <EditableSet
-                        key={set.id}
-                        set={set}
-                        movement={movement as UserMovement}
-                        onDuplicate={handleDuplicateSet}
-                      />
-                    ))}
-                  </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
+              </ScrollArea>
+            )}
+          </div>
         </div>
       </main>
     </ProtectedRoute>
