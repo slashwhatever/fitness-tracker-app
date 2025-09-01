@@ -8,12 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateUserMovement } from '@/hooks';
 import type { TrackingType } from '@/models/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface CreateCustomMovementModalProps {
   isOpen: boolean;
   onClose: () => void;
   onMovementCreated: (userMovementId: string) => void;
+  initialName?: string;
 }
 
 const MUSCLE_GROUPS = [
@@ -33,14 +34,28 @@ export default function CreateCustomMovementModal({
   isOpen,
   onClose,
   onMovementCreated,
+  initialName = '',
 }: CreateCustomMovementModalProps) {
-  const [name, setName] = useState('');
+  const [name, setName] = useState(initialName);
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([]);
   const [trackingType, setTrackingType] = useState<TrackingType | ''>('');
   const [customRestTimer, setCustomRestTimer] = useState('');
   const [personalNotes, setPersonalNotes] = useState('');
 
   const createUserMovementMutation = useCreateUserMovement();
+
+  // Reset form when modal opens/closes or initialName changes
+  useEffect(() => {
+    if (isOpen) {
+      setName(initialName || '');
+    } else {
+      setName('');
+      setSelectedMuscleGroups([]);
+      setTrackingType('');
+      setCustomRestTimer('');
+      setPersonalNotes('');
+    }
+  }, [isOpen, initialName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,13 +104,13 @@ export default function CreateCustomMovementModal({
     }}>
       <DialogContent className="max-w-md max-h-[85vh] w-[90vw] flex flex-col">
         <DialogHeader className="pb-4">
-          <DialogTitle className="text-xl">Create Custom Movement</DialogTitle>
+          <DialogTitle className="text-xl">Create custom movement</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
           {/* Movement Name */}
-          <div>
-            <Label htmlFor="name">Movement Name *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">Movement name *</Label>
             <Input
               id="name"
               type="text"
@@ -107,16 +122,18 @@ export default function CreateCustomMovementModal({
           </div>
 
           {/* Tracking Type */}
-          <div>
-            <Label htmlFor="trackingType">Tracking Type *</Label>
+          <div className="space-y-2">
+            <Label htmlFor="trackingType" className="text-sm font-medium text-muted-foreground">Tracking type *</Label>
             <Select value={trackingType} onValueChange={(value) => setTrackingType(value as TrackingType)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select tracking type" />
+              <SelectTrigger className="px-4 py-3">
+                <SelectValue placeholder="Select tracking type">
+                  {trackingType && TRACKING_TYPES.find(type => type.value === trackingType)?.label}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {TRACKING_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    <div>
+                  <SelectItem key={type.value} value={type.value} className="px-3 py-2">
+                    <div className="text-left">
                       <div className="font-medium">{type.label}</div>
                       <div className="text-xs text-muted-foreground">{type.description}</div>
                     </div>
@@ -127,8 +144,8 @@ export default function CreateCustomMovementModal({
           </div>
 
           {/* Muscle Groups */}
-          <div>
-            <Label>Muscle Groups * ({selectedMuscleGroups.length} selected)</Label>
+          <div className="space-y-2">
+            <Label htmlFor="muscleGroups" className="text-sm font-medium text-muted-foreground">Muscle groups * ({selectedMuscleGroups.length} selected)</Label>
             <div className="grid grid-cols-2 gap-2 mt-2">
               {MUSCLE_GROUPS.map((group) => (
                 <button
@@ -148,8 +165,8 @@ export default function CreateCustomMovementModal({
           </div>
 
           {/* Custom Rest Timer */}
-          <div>
-            <Label htmlFor="restTimer">Custom Rest Timer (seconds)</Label>
+          <div className="space-y-2">
+            <Label htmlFor="restTimer" className="text-sm font-medium text-muted-foreground">Custom rest timer (seconds)</Label>
             <Input
               id="restTimer"
               type="number"
@@ -161,8 +178,8 @@ export default function CreateCustomMovementModal({
           </div>
 
           {/* Personal Notes */}
-          <div>
-            <Label htmlFor="notes">Personal Notes</Label>
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-sm font-medium text-muted-foreground">Personal notes</Label>
             <Textarea
               id="notes"
               value={personalNotes}

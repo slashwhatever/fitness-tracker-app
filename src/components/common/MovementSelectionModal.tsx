@@ -214,7 +214,7 @@ export default function MovementSelectionModal({
           </p>
         </DialogHeader>
 
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 space-y-4">
           {/* Search Bar */}
           <div className="flex-shrink-0 flex space-x-3">
             <Input
@@ -377,6 +377,7 @@ export default function MovementSelectionModal({
         isOpen={showCustomMovementModal}
         onClose={() => setShowCustomMovementModal(false)}
         onMovementCreated={handleCustomMovementCreated}
+        initialName={searchTerm.trim()}
       />
     </Dialog>
   );

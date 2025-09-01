@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
 import type { UserMovement } from '@/models/types';
-import { Edit3, Plus, Trash2 } from 'lucide-react';
+import { Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface MovementListProps {
@@ -52,13 +52,14 @@ export default function MovementList({
 
   if (movements.length === 0) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-8 border-2 border-dotted border-muted-foreground/30 rounded-lg p-4 flex flex-col items-center justify-center">
+        <SearchX className="mb-4" size={48}/>
         <p className="text-muted-foreground mb-4">No movements added yet.</p>
         <Button onClick={onAddMovementClick} className="flex items-center space-x-2">
           <Plus className="w-4 h-4" />
           <span>Add Movement</span>
         </Button>
-      </div>
+      </div>  
     );
   }
 
