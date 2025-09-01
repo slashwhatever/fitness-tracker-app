@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 // import { useAuth } from '@/lib/auth/AuthProvider'; // Not needed with new hooks
 import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
+import { LastSet } from '@/models/types';
 // import { Set, UserMovement } from '@/models/types'; // Using inferred types from hooks
 // // import { UserPreferences } from '@/utils/userPreferences'; // TODO: Update to use React Query // Temporarily disabled
 import { ArrowLeft, Calendar, Dumbbell } from 'lucide-react';
@@ -139,8 +140,8 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
               </CardHeader>
               <CardContent>
                 <QuickSetEntry 
-                  movement={movement as any}
-                  lastSet={sets[0] as any}
+                  movement={movement}
+                  lastSet={sets[0] as LastSet}
                   onQuickLog={async (setData) => {
                     if (movement?.id) {
                       try {

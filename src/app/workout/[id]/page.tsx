@@ -31,7 +31,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   // Use our new React Query hooks
   const { data: workout, isLoading: loading } = useWorkout(paramsResolved?.id || '');
   const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.id || '');
-  const { data: workoutSettings = {} } = useWorkout(paramsResolved?.id || '');
 
   const handleMovementAdded = async (userMovementId: string) => {
     if (!paramsResolved?.id) return;

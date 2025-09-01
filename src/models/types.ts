@@ -77,6 +77,33 @@ export interface UserMovement {
   updated_at: string;
 }
 
+export interface Movement {
+  id: string;
+  name: string;
+  tracking_type: string;
+}
+
+export interface LastSet {
+  reps?: number;
+  weight?: number;
+  duration?: number;
+  distance?: number;
+}
+
+export interface QuickSetEntryProps {
+  movement: Movement | null;
+  lastSet: LastSet | null;
+  onQuickLog: (data: SetData) => Promise<void>;
+}
+
+export interface SetData {
+  reps: number | null;
+  weight: number | null;
+  duration: number | null;
+  distance: number | null;
+  notes: string | null;
+}
+
 // ============================================================================
 // WORKOUT MANAGEMENT
 // ============================================================================

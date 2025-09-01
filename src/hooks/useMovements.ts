@@ -154,7 +154,7 @@ export function useCreateUserMovement() {
 
       queryClient.setQueryData(
         movementKeys.userMovementsList(user.id),
-        (old: any[]) => [optimisticMovement, ...(old || [])]
+        (old: UserMovement[]) => [optimisticMovement, ...(old || [])]
       );
 
       return { previousUserMovements };
@@ -206,9 +206,9 @@ export function useUpdateUserMovement() {
       // Optimistically update the movement in the list
       queryClient.setQueryData(
         movementKeys.userMovementsList(user.id),
-        (old: any[]) => {
+        (old: UserMovement[]) => {
           if (!old) return old;
-          return old.map((movement: any) => 
+          return old.map((movement: UserMovement) => 
             movement.id === id 
               ? { ...movement, ...updates, updated_at: new Date().toISOString() }
               : movement
@@ -220,7 +220,7 @@ export function useUpdateUserMovement() {
       if (previousMovement) {
         queryClient.setQueryData(
           movementKeys.userMovement(id),
-          (old: any) => ({ ...old, ...updates, updated_at: new Date().toISOString() })
+          (old: UserMovement) => ({ ...old, ...updates, updated_at: new Date().toISOString() })
         );
       }
 
@@ -284,7 +284,7 @@ export function useAddMovementToWorkout() {
 
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(newWorkoutMovement.workout_id),
-        (old: any[]) => {
+        (old: WorkoutMovement[]) => {
           const sortedList = [...(old || []), optimisticMovement].sort((a, b) => 
             (a.order_index || 0) - (b.order_index || 0)
           );
@@ -341,7 +341,7 @@ export function useRemoveMovementFromWorkout() {
       // Optimistically remove the movement
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(workoutId),
-        (old: any[]) => (old || []).filter(wm => wm.user_movement_id !== movementId)
+        (old: WorkoutMovement[]) => (old || []).filter(wm => wm.user_movement_id !== movementId)
       );
 
       return { previousWorkoutMovements };

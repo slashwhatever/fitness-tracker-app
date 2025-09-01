@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
-import type { UserMovement } from '@/models/types';
+import type { TrackingType, UserMovement } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -28,7 +28,7 @@ export default function MovementSelectionModal({
   const [processingMovements, setProcessingMovements] = useState<Set<string>>(new Set());
 
   // Fetch movement templates from database instead of local file
-  const { data: movementTemplates = [], isLoading: templatesLoading } = useMovementTemplates();
+  const { data: movementTemplates = [] } = useMovementTemplates();
   
   // Use our React Query hooks
   const { data: userMovements = [] } = useUserMovements();
@@ -80,7 +80,7 @@ export default function MovementSelectionModal({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [userMovements, searchTerm]);
 
-  const handleMovementToggle = async (movementId: string, movementData: UserMovement | any) => {
+  const handleMovementToggle = async (movementId: string, movementData: UserMovement | { id: string; name: string; muscle_groups: string[]; tracking_type: TrackingType; experience_level?: string; instructions?: string | null }) => {
     // Prevent double-clicks and concurrent operations
     if (processingMovements.has(movementId)) {
       return;
@@ -109,12 +109,12 @@ export default function MovementSelectionModal({
         // Always create a new user movement from library templates
         const isTemplate = 'experience_level' in movementData;
         if (isTemplate) {
-          const template = movementData as any; // Template from database
+          const template = movementData as { id: string; name: string; muscle_groups: string[]; tracking_type: TrackingType; instructions?: string | null };
           const newUserMovement = await createUserMovementMutation.mutateAsync({
             template_id: template.id,
             name: template.name,
             muscle_groups: template.muscle_groups,
-            tracking_type: template.tracking_type,
+            tracking_type: template.tracking_type as TrackingType,
             personal_notes: template.instructions, // templates use 'instructions', user_movements use 'personal_notes'
           });
           userMovementId = newUserMovement.id;

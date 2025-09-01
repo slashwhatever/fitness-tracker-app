@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMovementTemplates } from '@/hooks/useMovements';
-import { ExperienceLevel } from '@/models/types';
+import { ExperienceLevel, MovementTemplate } from '@/models/types';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
@@ -48,7 +48,7 @@ export default function MovementLibraryPage() {
       .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
   }, [movementTemplates, searchTerm, muscleGroupFilter, experienceLevelFilter]);
 
-  const handleMovementClick = (movement: any) => {
+  const handleMovementClick = (movement: MovementTemplate) => {
     // TODO: Handle movement selection (for Story 1.4)
     console.log('Selected movement:', movement);
   };

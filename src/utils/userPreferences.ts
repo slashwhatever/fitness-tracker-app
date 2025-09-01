@@ -1,1 +1,1 @@
-export default function() { return null; } // Temporarily disabled
+export default function getUserPreferences() { return null; } // Temporarily disabled

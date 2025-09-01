@@ -15,7 +15,7 @@ export interface WorkoutListRef {
 
 const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [workoutToDelete, setWorkoutToDelete] = useState<any>(null);
+  const [workoutToDelete, setWorkoutToDelete] = useState<{ id: string; name: string } | null>(null);
 
   // Use our new React Query hooks
   const { data: workouts = [], isLoading, refetch } = useWorkouts();
@@ -34,7 +34,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
     },
   }));
 
-  const handleDeleteClick = (e: React.MouseEvent, workout: any) => {
+  const handleDeleteClick = (e: React.MouseEvent, workout: { id: string; name: string }) => {
     e.preventDefault(); // Prevent navigation
     e.stopPropagation();
     setWorkoutToDelete(workout);

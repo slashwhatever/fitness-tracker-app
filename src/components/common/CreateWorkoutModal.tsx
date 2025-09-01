@@ -7,12 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 import { useCreateWorkout } from '@/hooks';
+import { Workout } from '@/models/types';
 import { useState } from 'react';
 
 interface CreateWorkoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onWorkoutCreated: (workout: any) => void;
+  onWorkoutCreated: (workout: Workout) => void;
 }
 
 export default function CreateWorkoutModal({

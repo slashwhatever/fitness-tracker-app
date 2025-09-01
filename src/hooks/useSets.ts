@@ -1,22 +1,23 @@
-'use client';
+"use client";
 
-import { createClient } from '@/lib/supabase/client';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Tables, TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
+import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-type Set = Tables<'sets'>;
-type SetInsert = TablesInsert<'sets'>;
-type SetUpdate = TablesUpdate<'sets'>;
+type SetInsert = TablesInsert<"sets">;
+type SetUpdate = TablesUpdate<"sets">;
 
 // Query keys
 const setKeys = {
-  all: ['sets'] as const,
-  lists: () => [...setKeys.all, 'list'] as const,
+  all: ["sets"] as const,
+  lists: () => [...setKeys.all, "list"] as const,
   list: (userId: string) => [...setKeys.lists(), userId] as const,
-  byMovement: (userId: string, movementId: string) => [...setKeys.lists(), userId, 'movement', movementId] as const,
-  byWorkout: (workoutId: string) => [...setKeys.lists(), 'workout', workoutId] as const,
-  details: () => [...setKeys.all, 'detail'] as const,
+  byMovement: (userId: string, movementId: string) =>
+    [...setKeys.lists(), userId, "movement", movementId] as const,
+  byWorkout: (workoutId: string) =>
+    [...setKeys.lists(), "workout", workoutId] as const,
+  details: () => [...setKeys.all, "detail"] as const,
   detail: (id: string) => [...setKeys.details(), id] as const,
 };
 
@@ -26,18 +27,20 @@ export function useSets() {
   const supabase = createClient();
 
   return useQuery({
-    queryKey: setKeys.list(user?.id || ''),
+    queryKey: setKeys.list(user?.id || ""),
     queryFn: async () => {
       if (!user?.id) return [];
-      
+
       const { data, error } = await supabase
-        .from('sets')
-        .select(`
+        .from("sets")
+        .select(
+          `
           *,
           user_movement:user_movements(*)
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -52,19 +55,21 @@ export function useSetsByMovement(movementId: string) {
   const supabase = createClient();
 
   return useQuery({
-    queryKey: setKeys.byMovement(user?.id || '', movementId),
+    queryKey: setKeys.byMovement(user?.id || "", movementId),
     queryFn: async () => {
       if (!user?.id) return [];
-      
+
       const { data, error } = await supabase
-        .from('sets')
-        .select(`
+        .from("sets")
+        .select(
+          `
           *,
           user_movement:user_movements(*)
-        `)
-        .eq('user_id', user.id)
-        .eq('user_movement_id', movementId)
-        .order('created_at', { ascending: false });
+        `
+        )
+        .eq("user_id", user.id)
+        .eq("user_movement_id", movementId)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -81,13 +86,15 @@ export function useSetsByWorkout(workoutId: string) {
     queryKey: setKeys.byWorkout(workoutId),
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('sets')
-        .select(`
+        .from("sets")
+        .select(
+          `
           *,
           user_movement:user_movements(*)
-        `)
-        .eq('workout_id', workoutId)
-        .order('created_at');
+        `
+        )
+        .eq("workout_id", workoutId)
+        .order("created_at");
 
       if (error) throw error;
       return data;
@@ -103,19 +110,21 @@ export function useCreateSet() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async (set: Omit<SetInsert, 'user_id'>) => {
-      if (!user?.id) throw new Error('User not authenticated');
+    mutationFn: async (set: Omit<SetInsert, "user_id">) => {
+      if (!user?.id) throw new Error("User not authenticated");
 
       const { data, error } = await supabase
-        .from('sets')
+        .from("sets")
         .insert({
           ...set,
           user_id: user.id,
         })
-        .select(`
+        .select(
+          `
           *,
           user_movement:user_movements(*)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
@@ -124,12 +133,12 @@ export function useCreateSet() {
     onSuccess: (data) => {
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });
-        queryClient.invalidateQueries({ 
-          queryKey: setKeys.byMovement(user.id, data.user_movement_id) 
+        queryClient.invalidateQueries({
+          queryKey: setKeys.byMovement(user.id, data.user_movement_id),
         });
         if (data.workout_id) {
-          queryClient.invalidateQueries({ 
-            queryKey: setKeys.byWorkout(data.workout_id) 
+          queryClient.invalidateQueries({
+            queryKey: setKeys.byWorkout(data.workout_id),
           });
         }
       }
@@ -146,13 +155,15 @@ export function useUpdateSet() {
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: SetUpdate }) => {
       const { data, error } = await supabase
-        .from('sets')
+        .from("sets")
         .update(updates)
-        .eq('id', id)
-        .select(`
+        .eq("id", id)
+        .select(
+          `
           *,
           user_movement:user_movements(*)
-        `)
+        `
+        )
         .single();
 
       if (error) throw error;
@@ -161,12 +172,12 @@ export function useUpdateSet() {
     onSuccess: (data) => {
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });
-        queryClient.invalidateQueries({ 
-          queryKey: setKeys.byMovement(user.id, data.user_movement_id) 
+        queryClient.invalidateQueries({
+          queryKey: setKeys.byMovement(user.id, data.user_movement_id),
         });
         if (data.workout_id) {
-          queryClient.invalidateQueries({ 
-            queryKey: setKeys.byWorkout(data.workout_id) 
+          queryClient.invalidateQueries({
+            queryKey: setKeys.byWorkout(data.workout_id),
           });
         }
         queryClient.setQueryData(setKeys.detail(data.id), data);
@@ -185,15 +196,12 @@ export function useDeleteSet() {
     mutationFn: async (setId: string) => {
       // First get the set data to know which queries to invalidate
       const { data: setData } = await supabase
-        .from('sets')
-        .select('user_movement_id, workout_id')
-        .eq('id', setId)
+        .from("sets")
+        .select("user_movement_id, workout_id")
+        .eq("id", setId)
         .single();
 
-      const { error } = await supabase
-        .from('sets')
-        .delete()
-        .eq('id', setId);
+      const { error } = await supabase.from("sets").delete().eq("id", setId);
 
       if (error) throw error;
       return { setId, setData };
@@ -201,12 +209,12 @@ export function useDeleteSet() {
     onSuccess: ({ setId, setData }) => {
       if (user?.id && setData) {
         queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });
-        queryClient.invalidateQueries({ 
-          queryKey: setKeys.byMovement(user.id, setData.user_movement_id) 
+        queryClient.invalidateQueries({
+          queryKey: setKeys.byMovement(user.id, setData.user_movement_id),
         });
         if (setData.workout_id) {
-          queryClient.invalidateQueries({ 
-            queryKey: setKeys.byWorkout(setData.workout_id) 
+          queryClient.invalidateQueries({
+            queryKey: setKeys.byWorkout(setData.workout_id),
           });
         }
         queryClient.removeQueries({ queryKey: setKeys.detail(setId) });

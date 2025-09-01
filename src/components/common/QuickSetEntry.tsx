@@ -5,35 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { QuickSetEntryProps, SetData } from '@/models/types';
 import { Save } from 'lucide-react';
 import { useState } from 'react';
-
-interface Movement {
-  id: string;
-  name: string;
-  tracking_type: string;
-}
-
-interface LastSet {
-  reps?: number;
-  weight?: number;
-  duration?: number;
-  distance?: number;
-}
-
-interface QuickSetEntryProps {
-  movement: Movement | null;
-  lastSet: LastSet | null;
-  onQuickLog: (data: SetData) => Promise<void>;
-}
-
-interface SetData {
-  reps: number | null;
-  weight: number | null;
-  duration: number | null;
-  distance: number | null;
-  notes: string | null;
-}
 
 export default function QuickSetEntry({ 
   movement, 

@@ -103,7 +103,7 @@ export function useCreateWorkout() {
 
       queryClient.setQueryData(
         workoutKeys.list(user.id),
-        (old: any[]) => [optimisticWorkout, ...(old || [])]
+        (old: Workout[]) => [optimisticWorkout, ...(old || [])]
       );
 
       return { previousWorkouts };
@@ -178,7 +178,7 @@ export function useDeleteWorkout() {
       // Optimistically remove the workout
       queryClient.setQueryData(
         workoutKeys.list(user.id),
-        (old: any[]) => (old || []).filter((workout: any) => workout.id !== workoutId)
+        (old: Workout[]) => (old || []).filter((workout: Workout) => workout.id !== workoutId)
       );
 
       return { previousWorkouts };
