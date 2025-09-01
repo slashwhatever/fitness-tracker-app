@@ -1,142 +1,221 @@
 'use client';
 
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { Set, UserMovement, WeightUnit } from '@/models/types';
-import { UserPreferences } from '@/utils/userPreferences';
-import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Save } from 'lucide-react';
+import { useState } from 'react';
 
-interface QuickSetEntryProps {
-  movement: UserMovement;
-  lastSet?: Set;
-  onQuickLog: (setData: Partial<Set>) => void;
+interface Movement {
+  id: string;
+  name: string;
+  tracking_type: string;
 }
 
-export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSetEntryProps) {
-  const { user } = useAuth();
-  const [quickReps, setQuickReps] = useState(lastSet?.reps || 0);
-  const [quickWeight, setQuickWeight] = useState(lastSet?.weight || 0);
-  const [quickDuration, setQuickDuration] = useState(lastSet?.duration || 0);
-  const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
+interface LastSet {
+  reps?: number;
+  weight?: number;
+  duration?: number;
+  distance?: number;
+}
 
-  useEffect(() => {
-    const loadWeightUnit = async () => {
-      if (user?.id) {
-        const unit = await UserPreferences.getWeightUnit(user.id);
-        setWeightUnit(unit as WeightUnit);
-      }
-    };
-    loadWeightUnit();
-  }, [user?.id]);
+interface QuickSetEntryProps {
+  movement: Movement | null;
+  lastSet: LastSet | null;
+  onQuickLog: (data: SetData) => Promise<void>;
+}
 
-  const handleQuickLog = () => {
-    const setData: Partial<Set> = {
-      ...(movement.tracking_type === 'weight' && { 
-        reps: quickReps || undefined, 
-        weight: quickWeight || undefined 
-      }),
-      ...(movement.tracking_type === 'bodyweight' && { 
-        reps: quickReps || undefined 
-      }),
-      ...(movement.tracking_type === 'duration' && { 
-        duration: quickDuration || undefined 
-      })
-    };
+interface SetData {
+  reps: number | null;
+  weight: number | null;
+  duration: number | null;
+  distance: number | null;
+  notes: string | null;
+}
 
-    onQuickLog(setData);
-  };
+export default function QuickSetEntry({ 
+  movement, 
+  lastSet, 
+  onQuickLog 
+}: QuickSetEntryProps) {
+  const [setData, setSetData] = useState<SetData>({
+    reps: lastSet?.reps || null,
+    weight: lastSet?.weight || null,
+    duration: lastSet?.duration || null,
+    distance: lastSet?.distance || null,
+    notes: '',
+  });
+  const [isLogging, setIsLogging] = useState(false);
 
-
-  const isValidQuickSet = () => {
-    switch (movement.tracking_type) {
-      case 'weight':
-        return quickReps > 0 && quickWeight > 0;
-      case 'bodyweight':
-        return quickReps > 0;
-      case 'duration':
-        return quickDuration > 0;
-      default:
-        return false;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLogging(true);
+    
+    try {
+      await onQuickLog(setData);
+      // Reset form after successful logging
+      setSetData({
+        reps: setData.reps, // Keep same values for next set
+        weight: setData.weight,
+        duration: setData.duration,
+        distance: setData.distance,
+        notes: '',
+      });
+    } catch (error) {
+      console.error('Failed to log set:', error);
+    } finally {
+      setIsLogging(false);
     }
   };
 
+  if (!movement) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-muted-foreground">No movement selected</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <div className="bg-slate-800 border border-slate-600 rounded-lg p-4 mb-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-slate-50">Quick Entry</h3>
-      </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Quick Log - {movement.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Weight tracking */}
+          {(movement.tracking_type === 'weight' || movement.tracking_type === 'bodyweight') && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="reps">Reps</Label>
+                <Input
+                  id="reps"
+                  type="number"
+                  value={setData.reps || ''}
+                  onChange={(e) => setSetData(prev => ({ 
+                    ...prev, 
+                    reps: e.target.value ? parseInt(e.target.value) : null 
+                  }))}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+              {movement.tracking_type === 'weight' && (
+                <div>
+                  <Label htmlFor="weight">Weight (lbs)</Label>
+                  <Input
+                    id="weight"
+                    type="number"
+                    step="0.25"
+                    value={setData.weight || ''}
+                    onChange={(e) => setSetData(prev => ({ 
+                      ...prev, 
+                      weight: e.target.value ? parseFloat(e.target.value) : null 
+                    }))}
+                    placeholder="0"
+                    min="0"
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        {movement.tracking_type === 'weight' && (
-          <>
+          {/* Duration tracking */}
+          {movement.tracking_type === 'duration' && (
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Weight ({weightUnit})
-              </label>
-              <input
+              <Label htmlFor="duration">Duration (seconds)</Label>
+              <Input
+                id="duration"
                 type="number"
-                value={quickWeight || ''}
-                onChange={(e) => setQuickWeight(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-700 text-slate-50 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={setData.duration || ''}
+                onChange={(e) => setSetData(prev => ({ 
+                  ...prev, 
+                  duration: e.target.value ? parseInt(e.target.value) : null 
+                }))}
+                placeholder="0"
                 min="0"
-                step="5"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Reps
-              </label>
-              <input
-                type="number"
-                value={quickReps || ''}
-                onChange={(e) => setQuickReps(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-700 text-slate-50 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                min="1"
-              />
-            </div>
-          </>
-        )}
-        
-        {movement.tracking_type === 'bodyweight' && (
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Reps
-            </label>
-            <input
-              type="number"
-              value={quickReps || ''}
-              onChange={(e) => setQuickReps(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-700 text-slate-50 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              min="1"
-            />
-          </div>
-        )}
-        
-        {movement.tracking_type === 'duration' && (
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
-              Duration (seconds)
-            </label>
-            <input
-              type="number"
-              value={quickDuration || ''}
-              onChange={(e) => setQuickDuration(Number(e.target.value))}
-              className="w-full px-3 py-2 bg-slate-700 text-slate-50 border border-slate-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              min="1"
-            />
-          </div>
-        )}
-        
-        <div className="flex items-end">
-          <button
-            onClick={handleQuickLog}
-            disabled={!isValidQuickSet()}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-          >
-            Quick Log
-          </button>
-        </div>
-      </div>
+          )}
 
-    </div>
+          {/* Distance tracking */}
+          {movement.tracking_type === 'distance' && (
+            <div>
+              <Label htmlFor="distance">Distance (miles)</Label>
+              <Input
+                id="distance"
+                type="number"
+                step="0.01"
+                value={setData.distance || ''}
+                onChange={(e) => setSetData(prev => ({ 
+                  ...prev, 
+                  distance: e.target.value ? parseFloat(e.target.value) : null 
+                }))}
+                placeholder="0"
+                min="0"
+              />
+            </div>
+          )}
+
+          {/* Reps only */}
+          {movement.tracking_type === 'reps_only' && (
+            <div>
+              <Label htmlFor="reps">Reps</Label>
+              <Input
+                id="reps"
+                type="number"
+                value={setData.reps || ''}
+                onChange={(e) => setSetData(prev => ({ 
+                  ...prev, 
+                  reps: e.target.value ? parseInt(e.target.value) : null 
+                }))}
+                placeholder="0"
+                min="0"
+              />
+            </div>
+          )}
+
+          {/* Notes */}
+          <div>
+            <Label htmlFor="notes">Notes (optional)</Label>
+            <Textarea
+              id="notes"
+              value={setData.notes || ''}
+              onChange={(e) => setSetData(prev => ({ 
+                ...prev, 
+                notes: e.target.value || null 
+              }))}
+              placeholder="How did it feel?"
+              rows={2}
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            disabled={isLogging}
+            className="w-full flex items-center space-x-2"
+          >
+            <Save className="w-4 h-4" />
+            <span>{isLogging ? 'Logging...' : 'Log Set'}</span>
+          </Button>
+        </form>
+
+        {lastSet && (
+          <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+            <p className="text-sm font-medium mb-1">Previous Set:</p>
+            <p className="text-sm text-muted-foreground">
+              {lastSet.reps && `${lastSet.reps} reps`}
+              {lastSet.weight && ` × ${lastSet.weight} lbs`}
+              {lastSet.duration && `${lastSet.duration}s`}
+              {lastSet.distance && `${lastSet.distance} mi`}
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

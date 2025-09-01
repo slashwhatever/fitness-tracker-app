@@ -1,4 +1,5 @@
-import { supabaseClient, type Database } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
+import type { Database } from "@/lib/supabase/types";
 import type {
   CreateUserMovementRequest,
   PersonalRecord,
@@ -11,10 +12,7 @@ type Tables = Database["public"]["Tables"];
 
 export class SupabaseService {
   private static getClient() {
-    if (!supabaseClient) {
-      throw new Error("Supabase client not available");
-    }
-    return supabaseClient;
+    return createClient();
   }
 
   // ============================================================================
@@ -317,25 +315,21 @@ export class SupabaseService {
 
   static async saveWorkoutMovement(
     workoutMovement: Tables["workout_movements"]["Insert"]
-  ): Promise<Tables["workout_movements"]["Row"] | null> {
-    try {
-      const client = this.getClient();
-      const { data, error } = await client
-        .from("workout_movements")
-        .insert(workoutMovement)
-        .select()
-        .single();
+  ): Promise<Tables["workout_movements"]["Row"]> {
+    const client = this.getClient();
+    const { data, error } = await client
+      .from("workout_movements")
+      .insert(workoutMovement)
+      .select()
+      .single();
 
-      if (error) {
-        console.error("Error saving workout movement:", error);
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      console.error("Error in saveWorkoutMovement:", error);
-      return null;
+    if (error) {
+      console.error("Error saving workout movement:", error);
+      // Throw the actual Supabase error so retry logic can catch it
+      throw error;
     }
+
+    return data;
   }
 
   static async deleteWorkoutMovement(

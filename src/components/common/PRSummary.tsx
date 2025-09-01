@@ -1,51 +1,19 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { PersonalRecord, Set } from '@/models/types';
-import { SupabaseService } from '@/services/supabaseService';
-import { Trophy } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { usePersonalRecordsByMovement } from '@/hooks';
+import { Trophy, TrendingUp } from 'lucide-react';
 
 interface PRSummaryProps {
   userMovementId: string;
-  className?: string;
 }
 
-export default function PRSummary({ userMovementId, className = '' }: PRSummaryProps) {
-  const { user } = useAuth();
-  const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
-  const [recentSets, setRecentSets] = useState<Set[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function PRSummary({ userMovementId }: PRSummaryProps) {
+  const { data: personalRecords = [], isLoading } = usePersonalRecordsByMovement(userMovementId);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user?.id) return;
-      
-      setLoading(true);
-      try {
-        // Load personal records for this user
-        const allPRs = await SupabaseService.getPersonalRecords(user.id);
-        const movementPRs = allPRs.filter(pr => pr.user_movement_id === userMovementId);
-        setPersonalRecords(movementPRs);
-
-        // Load recent sets for this movement
-        const sets = await SupabaseService.getSetsByMovement(user.id, userMovementId);
-        setRecentSets(sets.slice(0, 5)); // Last 5 sets
-      } catch (error) {
-        console.error('Error loading PR data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, [userMovementId, user?.id]);
-
-  if (loading) {
+  if (isLoading) {
     return (
-      <Card className={className}>
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Trophy className="w-5 h-5" />
@@ -53,72 +21,120 @@ export default function PRSummary({ userMovementId, className = '' }: PRSummaryP
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Loading personal records...</p>
         </CardContent>
       </Card>
     );
   }
 
-  const getTypeIcon = (type: string) => {
+  if (personalRecords.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Trophy className="w-5 h-5" />
+            <span>Personal Records</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-center py-8">
+          <Trophy className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+          <p className="text-muted-foreground mb-2">No personal records yet</p>
+          <p className="text-sm text-muted-foreground">
+            Keep logging sets to track your progress!
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Group records by type
+  const recordsByType = personalRecords.reduce((acc: Record<string, typeof personalRecords>, record: typeof personalRecords[0]) => {
+    if (!acc[record.record_type]) {
+      acc[record.record_type] = [];
+    }
+    acc[record.record_type].push(record);
+    return acc;
+  }, {});
+
+  const getRecordIcon = (type: string) => {
     switch (type) {
-      case 'weight':
-        return (
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        );
-      case 'reps':
-        return (
-          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-        );
-      case 'time':
-        return (
-          <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
+      case 'max_weight':
+        return '🏋️';
+      case 'max_reps':
+        return '🔥';
+      case 'max_duration':
+        return '⏱️';
+      case 'max_volume':
+        return '💪';
       default:
-        return null;
+        return '🏆';
+    }
+  };
+
+  const getRecordLabel = (type: string) => {
+    switch (type) {
+      case 'max_weight':
+        return 'Max Weight';
+      case 'max_reps':
+        return 'Max Reps';
+      case 'max_duration':
+        return 'Max Duration';
+      case 'max_volume':
+        return 'Max Volume';
+      default:
+        return 'Record';
+    }
+  };
+
+  const formatValue = (type: string, value: number) => {
+    switch (type) {
+      case 'max_weight':
+        return `${value} lbs`;
+      case 'max_reps':
+        return `${value} reps`;
+      case 'max_duration':
+        return `${value}s`;
+      case 'max_volume':
+        return `${value} lbs`;
+      default:
+        return `${value}`;
     }
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Personal Records</CardTitle>
+        <CardTitle className="flex items-center space-x-2">
+          <Trophy className="w-5 h-5" />
+          <span>Personal Records</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-      
-                      {personalRecords.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No personal records yet.</p>
-            <p className="text-sm text-muted-foreground mt-2">Start logging sets to track your PRs!</p>
-          </div>
-        ) : (
-          <div className="space-y-4 pb-4">
-              {personalRecords.map((pr, index) => (
-                <div key={`${pr.user_movement_id}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">{getTypeIcon(pr.record_type)}</span>
-                    <div>
-                      <p className="font-medium">Personal Record</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(pr.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
+        <div className="space-y-4">
+          {Object.entries(recordsByType).map(([type, records]: [string, typeof personalRecords]) => {
+            const latestRecord = records[0]; // Assuming records are sorted by date
+            return (
+              <div key={type} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{getRecordIcon(type)}</span>
+                  <div>
+                    <p className="font-medium">{getRecordLabel(type)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(latestRecord.achieved_at).toLocaleDateString()}
+                    </p>
                   </div>
-                  <Badge variant="secondary">
-                    {pr.value}
-                  </Badge>
                 </div>
-              ))}
-            </div>
-        )}
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg font-bold">
+                    {formatValue(type, latestRecord.value)}
+                  </span>
+                  <TrendingUp className="w-4 h-4 text-green-500" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-

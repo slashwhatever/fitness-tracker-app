@@ -6,9 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { movementLibrary } from '@/data/movementLibrary';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import type { CreateUserMovementRequest, MovementTemplate, UserMovement } from '@/models/types';
-import { SupabaseService } from '@/services/supabaseService';
+import { useUserMovements, useWorkoutMovements, useCreateUserMovement, useAddMovementToWorkout, useRemoveMovementFromWorkout } from '@/hooks';
+import type { MovementTemplate, UserMovement } from '@/models/types';
 import { Check } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -16,117 +15,146 @@ interface MovementSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   workoutId: string;
-  onMovementAdded: (userMovementId: string) => void;
 }
 
 export default function MovementSelectionModal({
   isOpen,
   onClose,
   workoutId,
-  onMovementAdded,
 }: MovementSelectionModalProps) {
-  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMovements, setSelectedMovements] = useState<Set<string>>(new Set());
-  const [userMovements, setUserMovements] = useState<UserMovement[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  const loadUserMovements = async () => {
-    if (!user?.id) return;
-    
-    try {
-      const movements = await SupabaseService.getUserMovements(user.id);
-      setUserMovements(movements);
-    } catch (error) {
-      console.error('Error loading user movements:', error);
-    }
-  };
+  // Use our new React Query hooks
+  const { data: userMovements = [] } = useUserMovements();
+  const { data: workoutMovements = [] } = useWorkoutMovements(workoutId);
+  const createUserMovementMutation = useCreateUserMovement();
+  const addMovementToWorkoutMutation = useAddMovementToWorkout();
+  const removeMovementFromWorkoutMutation = useRemoveMovementFromWorkout();
+
+  // Pre-select movements that are already in this workout
+  const workoutMovementIdsString = useMemo(() => 
+    workoutMovements.map(wm => wm.user_movement_id).sort().join(','), 
+    [workoutMovements]
+  );
 
   useEffect(() => {
-    if (isOpen) {
-      loadUserMovements();
+    if (!isOpen) {
+      setSelectedMovements(new Set());
+      return;
     }
-  }, [isOpen, user?.id]);
+
+    const ids = workoutMovementIdsString ? workoutMovementIdsString.split(',').filter(Boolean) : [];
+    if (ids.length > 0) {
+      setSelectedMovements(new Set(ids));
+    } else {
+      setSelectedMovements(new Set());
+    }
+  }, [isOpen, workoutMovementIdsString]);
 
   const filteredLibrary = useMemo(() => {
+    // Get template IDs that user already has as custom movements
+    const existingTemplateIds = new Set(
+      userMovements
+        .filter(um => um.template_id)
+        .map(um => um.template_id!)
+    );
+
     return movementLibrary
-      .filter(movement =>
-        movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movement.muscle_groups.some(group =>
-          group.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      )
+      .filter(movement => {
+        // Don't show library movements that user already has as custom movements
+        if (existingTemplateIds.has(movement.id)) {
+          return false;
+        }
+        
+        // Apply search filter
+        return movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+               movement.muscle_groups.some(group =>
+                 group.toLowerCase().includes(searchTerm.toLowerCase())
+               );
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [searchTerm]);
+  }, [searchTerm, userMovements]);
 
   const filteredUserMovements = useMemo(() => {
     return userMovements
       .filter(movement =>
         movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        movement.muscle_groups.some(group =>
+        movement.muscle_groups?.some(group =>
           group.toLowerCase().includes(searchTerm.toLowerCase())
         )
       )
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [userMovements, searchTerm]);
 
-  const handleMovementToggle = async (movementId: string, movementData: MovementTemplate) => {
-    if (!user?.id) return;
-
-    setLoading(true);
+  const handleMovementToggle = async (movementId: string, movementData: MovementTemplate | UserMovement | any) => {
     try {
       if (selectedMovements.has(movementId)) {
-        // Deselect movement
+        // Optimistically update UI immediately
         setSelectedMovements(prev => {
           const newSet = new Set(prev);
           newSet.delete(movementId);
           return newSet;
         });
+
+        // Deselect movement - remove from workout
+        await removeMovementFromWorkoutMutation.mutateAsync({ 
+          workoutId, 
+          movementId 
+        });
       } else {
-        // Select movement - find existing user_movement or create one
+        // Select movement - add to workout
         let userMovementId = movementId;
         
-        // Check if this is a template movement
-        const isTemplate = movementLibrary.some(m => m.id === movementId);
-        
+        // Check if this is a template movement and create user movement if needed
+        const isTemplate = 'experience_level' in movementData;
         if (isTemplate) {
-          // First, check if user already has this movement
           const existingUserMovement = userMovements.find(um => um.template_id === movementId);
           
           if (existingUserMovement) {
-            // Use existing user movement
             userMovementId = existingUserMovement.id;
           } else {
             // Create new user movement from template
-            const template = movementLibrary.find(m => m.id === movementId);
-            if (template) {
-              const userMovementRequest: CreateUserMovementRequest = {
-                template_id: template.id,
-                name: template.name,
-                muscle_groups: template.muscle_groups,
-                tracking_type: template.tracking_type,
-                personal_notes: template.instructions || undefined,
-              };
-
-              const savedUserMovement = await SupabaseService.saveUserMovement(user.id, userMovementRequest);
-              if (savedUserMovement) {
-                userMovementId = savedUserMovement.id;
-                setUserMovements(prev => [...prev, savedUserMovement]); // Add to local state
-              } else {
-                throw new Error('Failed to create user movement');
-              }
-            }
+            const template = movementData as MovementTemplate;
+            const newUserMovement = await createUserMovementMutation.mutateAsync({
+              template_id: template.id,
+              name: template.name,
+              muscle_groups: template.muscle_groups,
+              tracking_type: template.tracking_type,
+              personal_notes: template.instructions,
+            });
+            userMovementId = newUserMovement.id;
           }
         }
 
-        // Add to workout
+        // Check if movement is already in workout to avoid duplicates
+        const isAlreadyInWorkout = workoutMovements.some(wm => wm.user_movement_id === userMovementId);
+        const isAlreadySelected = selectedMovements.has(userMovementId);
+        
+        if (isAlreadyInWorkout || isAlreadySelected) {
+          console.warn('Movement already in workout or selected, skipping add operation');
+          setSelectedMovements(prev => new Set([...prev, userMovementId]));
+          return;
+        }
+
+        // Optimistically update UI immediately
         setSelectedMovements(prev => new Set([...prev, userMovementId]));
-        onMovementAdded(userMovementId);
+
+        // Calculate next order index to avoid duplicates
+        const maxOrderIndex = workoutMovements.reduce((max, wm) => 
+          Math.max(max, wm.order_index || 0), -1
+        );
+        const nextOrderIndex = maxOrderIndex + 1;
+
+        // Add to workout
+        await addMovementToWorkoutMutation.mutateAsync({
+          workout_id: workoutId,
+          user_movement_id: userMovementId,
+          order_index: nextOrderIndex,
+        });
       }
     } catch (error) {
       console.error('Error toggling movement:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -172,20 +200,7 @@ export default function MovementSelectionModal({
                             ? 'bg-primary/10 border-primary' 
                             : 'border-border hover:border-accent-foreground/20'
                         }`}
-                        onClick={() => {
-                          // For existing user movements, we don't need to create a new one
-                          setSelectedMovements(prev => {
-                            const newSet = new Set(prev);
-                            if (newSet.has(movement.id)) {
-                              newSet.delete(movement.id);
-                            } else {
-                              newSet.add(movement.id);
-                              // Defer callback to avoid state update during render
-                              setTimeout(() => onMovementAdded(movement.id), 0);
-                            }
-                            return newSet;
-                          });
-                        }}
+                        onClick={() => handleMovementToggle(movement.id, movement)}
                       >
                         <div className="flex items-center space-x-3 flex-1">
                           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
@@ -233,17 +248,30 @@ export default function MovementSelectionModal({
                           ? 'bg-primary/10 border-primary' 
                           : 'border-border hover:border-accent-foreground/20'
                       }`}
-                      onClick={() => handleMovementToggle(movement.id, movement)}
+                      onClick={() => {
+                        // For library movements, find the corresponding user_movement_id
+                        const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                        const userMovementId = existingUserMovement?.id || movement.id;
+                        handleMovementToggle(userMovementId, movement);
+                      }}
                     >
                       <div className="flex items-center space-x-3 flex-1">
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                          selectedMovements.has(movement.id)
-                            ? 'bg-primary border-primary' 
-                            : 'border-muted-foreground/30'
-                        }`}>
-                          {selectedMovements.has(movement.id) && (
-                            <Check className="w-3 h-3 text-primary-foreground" />
-                          )}
+                                                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                            (() => {
+                              const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                              const userMovementId = existingUserMovement?.id || movement.id;
+                              return selectedMovements.has(userMovementId);
+                            })()
+                              ? 'bg-primary border-primary' 
+                              : 'border-muted-foreground/30'
+                          }`}>
+                            {(() => {
+                              const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                              const userMovementId = existingUserMovement?.id || movement.id;
+                              return selectedMovements.has(userMovementId);
+                            })() && (
+                              <Check className="w-3 h-3 text-primary-foreground" />
+                            )}
                         </div>
                         
                         <div className="flex-1 min-w-0">

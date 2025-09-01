@@ -5,9 +5,7 @@ import DraggableMovementList from '@/components/common/DraggableMovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { Workout } from '@/models/types';
-import { SupabaseService } from '@/services/supabaseService';
+import { useWorkout, useAddMovementToWorkout, useWorkoutMovements } from '@/hooks';
 import { ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -17,40 +15,62 @@ interface WorkoutDetailPageProps {
 }
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
-  const { user } = useAuth();
-  const [workout, setWorkout] = useState<Workout | null>(null);
-  const [loading, setLoading] = useState(true);
   const [showMovementModal, setShowMovementModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
+  const [addingMovements, setAddingMovements] = useState<Set<string>>(new Set());
+
+  const addMovementToWorkoutMutation = useAddMovementToWorkout();
 
   // Resolve async params
   useEffect(() => {
     params.then(setParamsResolved);
   }, [params]);
 
-  useEffect(() => {
-    if (!paramsResolved?.id || !user?.id) return;
+  // Use our new React Query hooks
+  const { data: workout, isLoading: loading } = useWorkout(paramsResolved?.id || '');
+  const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.id || '');
+
+  const handleMovementAdded = async (userMovementId: string) => {
+    if (!paramsResolved?.id) return;
     
-    const loadWorkout = async () => {
-      try {
-        const workoutData = await SupabaseService.getWorkout(paramsResolved.id);
-        setWorkout(workoutData);
-      } catch (error) {
-        console.error('Error loading workout:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadWorkout();
-  }, [paramsResolved?.id, user?.id]);
-
-  const handleMovementAdded = () => {
-    // Trigger refresh of movements
-    if (paramsResolved?.id) {
-      // Force re-render by updating a key or calling a refresh method
+    // Check if movement is already in workout to avoid duplicates
+    const isAlreadyInWorkout = workoutMovements.some(wm => wm.user_movement_id === userMovementId);
+    if (isAlreadyInWorkout) {
+      console.log('🚫 Movement already in workout, skipping');
+      return;
     }
-    setShowMovementModal(false);
+    
+    if (addingMovements.has(userMovementId)) {
+      console.log('🚫 Already adding this movement, skipping');
+      return;
+    }
+
+    // Add to pending set immediately to prevent double-adds
+    setAddingMovements(prev => new Set([...prev, userMovementId]));
+
+    try {
+      console.log('🔄 Adding movement to workout:', { userMovementId, workoutId: paramsResolved.id });
+      
+      await addMovementToWorkoutMutation.mutateAsync({
+        workout_id: paramsResolved.id,
+        user_movement_id: userMovementId,
+        order_index: 0, // The mutation will handle finding the right order
+      });
+      
+      console.log('✅ Movement added successfully');
+      // Force refresh of the movements list
+      setRefreshKey(prev => prev + 1);
+    } catch (error) {
+      console.error('❌ Error adding movement to workout:', error);
+    } finally {
+      // Remove from pending set
+      setAddingMovements(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(userMovementId);
+        return newSet;
+      });
+    }
   };
 
   if (loading) {
@@ -124,6 +144,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             </CardHeader>
             <CardContent>
               <DraggableMovementList
+                key={refreshKey}
                 workoutId={paramsResolved?.id || ''}
                 onMovementAdded={handleMovementAdded}
                 onAddMovementClick={() => setShowMovementModal(true)}
@@ -132,12 +153,15 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           </Card>
         </div>
 
-        <MovementSelectionModal
-          isOpen={showMovementModal}
-          onClose={() => setShowMovementModal(false)}
-          workoutId={paramsResolved?.id || ''}
-          onMovementAdded={handleMovementAdded}
-        />
+                    <MovementSelectionModal
+              isOpen={showMovementModal}
+              onClose={() => {
+                setShowMovementModal(false);
+                // Force refresh when modal closes to show any changes
+                setRefreshKey(prev => prev + 1);
+              }}
+              workoutId={paramsResolved?.id || ''}
+            />
       </main>
     </ProtectedRoute>
   );

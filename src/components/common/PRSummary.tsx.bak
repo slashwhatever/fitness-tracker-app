@@ -1,0 +1,8 @@
+// Temporarily disabled during refactor
+interface PRSummaryProps {
+  userMovementId: string;
+}
+
+export default function PRSummary({ userMovementId }: PRSummaryProps) { 
+  return <div>Personal Records - Coming Soon (Movement: {userMovementId})</div>; 
+}

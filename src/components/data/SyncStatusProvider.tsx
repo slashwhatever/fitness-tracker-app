@@ -1,39 +1,13 @@
-'use client';
-
-import { useSyncStatus } from '@/hooks/useSyncStatus';
-import React, { createContext, useContext } from 'react';
-
-interface SyncStatus {
-  isOnline: boolean;
-  supabaseConnected: boolean;
-  lastSyncTime: string | null;
-  pendingOperations: number;
+// Temporarily disabled during refactor
+export default function SyncStatusProvider({ children }: { children: React.ReactNode }) { 
+  return <>{children}</>; 
 }
-
-interface SyncContextType {
-  syncStatus: SyncStatus;
-  refreshStatus: () => Promise<void>;
-  triggerManualSync: () => Promise<{ success: boolean; message: string }>;
-  clearFailedOperations: () => Promise<void>;
-  retryFailedOperations: () => Promise<void>;
-}
-
-const SyncContext = createContext<SyncContextType | undefined>(undefined);
-
-export function SyncStatusProvider({ children }: { children: React.ReactNode }) {
-  const syncData = useSyncStatus();
-
-  return (
-    <SyncContext.Provider value={syncData}>
-      {children}
-    </SyncContext.Provider>
-  );
-}
-
 export function useSyncContext() {
-  const context = useContext(SyncContext);
-  if (context === undefined) {
-    throw new Error('useSyncContext must be used within a SyncStatusProvider');
-  }
-  return context;
+  return { 
+    syncStatus: { isOnline: true, lastSync: null }, 
+    refreshStatus: () => {}, 
+    triggerManualSync: () => Promise.resolve({ success: true, message: "mock" }), 
+    clearFailedOperations: () => {}, 
+    retryFailedOperations: () => {}
+  }; 
 }
