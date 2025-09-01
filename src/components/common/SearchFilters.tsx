@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { experienceLevels, muscleGroups } from '@/data/movementLibrary';
 import { ExperienceLevel } from '@/models/types';
 import { useState } from 'react';
 
@@ -11,12 +10,20 @@ interface SearchFiltersProps {
   onSearchChange: (search: string) => void;
   onMuscleGroupFilter: (muscle_group: string | null) => void;
   onExperienceLevelFilter: (level: ExperienceLevel | null) => void;
+  muscleGroups?: string[]; // Now passed as props
+  experienceLevels?: ExperienceLevel[]; // Now passed as props
 }
+
+// Default fallbacks if props not provided
+const DEFAULT_EXPERIENCE_LEVELS: ExperienceLevel[] = ['Beginner', 'Intermediate', 'Advanced'];
+const DEFAULT_MUSCLE_GROUPS: string[] = ['Back', 'Biceps', 'Cardio', 'Chest', 'Core', 'Forearms', 'Full Body', 'Legs', 'Shoulders', 'Triceps'];
 
 export default function SearchFilters({
   onSearchChange,
   onMuscleGroupFilter,
   onExperienceLevelFilter,
+  muscleGroups = DEFAULT_MUSCLE_GROUPS,
+  experienceLevels = DEFAULT_EXPERIENCE_LEVELS,
 }: SearchFiltersProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);

@@ -30,10 +30,10 @@ export interface MovementTemplate {
   muscle_groups: string[]; // Reverted: back to array for multiple muscle groups
   tracking_type: TrackingType;
   experience_level: ExperienceLevel;
-  instructions?: string;
-  tags?: string[]; // Optional field for movement library data
-  created_at?: string; // Optional field for movement library data
-  updated_at?: string; // Optional field for movement library data
+  instructions: string | null; // Match database schema
+  tags: string[] | null; // Match database schema
+  created_at: string; // Always present in database
+  updated_at: string; // Always present in database
 }
 
 // ============================================================================

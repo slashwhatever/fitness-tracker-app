@@ -10,16 +10,38 @@ type UserMovementInsert = TablesInsert<'user_movements'>;
 type UserMovementUpdate = TablesUpdate<'user_movements'>;
 type WorkoutMovement = Tables<'workout_movements'>;
 type WorkoutMovementInsert = TablesInsert<'workout_movements'>;
+type MovementTemplate = Tables<'movement_templates'>;
 
 // Query keys
 const movementKeys = {
   all: ['movements'] as const,
+  templates: () => [...movementKeys.all, 'templates'] as const,
   userMovements: () => [...movementKeys.all, 'user'] as const,
   userMovementsList: (userId: string) => [...movementKeys.userMovements(), userId] as const,
   userMovement: (id: string) => [...movementKeys.userMovements(), id] as const,
   workoutMovements: () => [...movementKeys.all, 'workout'] as const,
   workoutMovementsList: (workoutId: string) => [...movementKeys.workoutMovements(), workoutId] as const,
 };
+
+// Get all movement templates from database (replaces local TypeScript file)
+export function useMovementTemplates() {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: movementKeys.templates(),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('movement_templates')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      return data as MovementTemplate[];
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes - templates don't change often
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+}
 
 // Get all user movements
 export function useUserMovements() {
@@ -331,7 +353,7 @@ export function useRemoveMovementFromWorkout() {
         context?.previousWorkoutMovements
       );
     },
-    onSettled: ({ workoutId }) => {
+    onSettled: (data, error, { workoutId }) => {
       // Always refetch after error or success
       queryClient.invalidateQueries({ 
         queryKey: movementKeys.workoutMovementsList(workoutId) 

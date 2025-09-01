@@ -1,14 +1,13 @@
 'use client';
 
+import CreateCustomMovementModal from '@/components/common/CreateCustomMovementModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import CreateCustomMovementModal from '@/components/common/CreateCustomMovementModal';
-import { movementLibrary } from '@/data/movementLibrary';
-import { useAddMovementToWorkout, useCreateUserMovement, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
-import type { MovementTemplate, UserMovement } from '@/models/types';
+import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
+import type { UserMovement } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -28,7 +27,10 @@ export default function MovementSelectionModal({
   const [showCustomMovementModal, setShowCustomMovementModal] = useState(false);
   const [processingMovements, setProcessingMovements] = useState<Set<string>>(new Set());
 
-  // Use our new React Query hooks
+  // Fetch movement templates from database instead of local file
+  const { data: movementTemplates = [], isLoading: templatesLoading } = useMovementTemplates();
+  
+  // Use our React Query hooks
   const { data: userMovements = [] } = useUserMovements();
   const { data: workoutMovements = [] } = useWorkoutMovements(workoutId);
   const createUserMovementMutation = useCreateUserMovement();
@@ -56,7 +58,7 @@ export default function MovementSelectionModal({
   }, [isOpen, workoutMovementIdsString]);
 
   const filteredLibrary = useMemo(() => {
-    return movementLibrary
+    return movementTemplates
       .filter(movement => {
         // Apply search filter only
         return movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,7 +67,7 @@ export default function MovementSelectionModal({
                );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [searchTerm]);
+  }, [movementTemplates, searchTerm]);
 
   const filteredUserMovements = useMemo(() => {
     return userMovements
@@ -78,7 +80,7 @@ export default function MovementSelectionModal({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [userMovements, searchTerm]);
 
-  const handleMovementToggle = async (movementId: string, movementData: MovementTemplate | UserMovement | any) => {
+  const handleMovementToggle = async (movementId: string, movementData: UserMovement | any) => {
     // Prevent double-clicks and concurrent operations
     if (processingMovements.has(movementId)) {
       return;
@@ -107,13 +109,13 @@ export default function MovementSelectionModal({
         // Always create a new user movement from library templates
         const isTemplate = 'experience_level' in movementData;
         if (isTemplate) {
-          const template = movementData as MovementTemplate;
+          const template = movementData as any; // Template from database
           const newUserMovement = await createUserMovementMutation.mutateAsync({
             template_id: template.id,
             name: template.name,
             muscle_groups: template.muscle_groups,
             tracking_type: template.tracking_type,
-            personal_notes: template.instructions,
+            personal_notes: template.instructions, // templates use 'instructions', user_movements use 'personal_notes'
           });
           userMovementId = newUserMovement.id;
         }
