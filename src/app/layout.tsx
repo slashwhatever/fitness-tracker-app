@@ -1,5 +1,6 @@
-import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { SyncStatusProvider } from "@/components/data/SyncStatusProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { SupabaseProvider } from "@/lib/providers/SupabaseProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -33,7 +34,9 @@ export default function RootLayout({
         <ErrorBoundary>
           <SupabaseProvider>
             <AuthProvider>
-              {children}
+              <SyncStatusProvider>
+                {children}
+              </SyncStatusProvider>
             </AuthProvider>
           </SupabaseProvider>
         </ErrorBoundary>

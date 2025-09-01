@@ -1,104 +1,58 @@
-import { HybridStorageManager } from "@/lib/storage/HybridStorageManager";
-import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { SupabaseService } from "@/services/supabaseService";
+import { useEffect, useState } from "react";
 
 interface SyncStatus {
-  pendingOperations: number;
-  lastSyncTime: string | null;
   isOnline: boolean;
-  hasErrors: boolean;
-  errorCount: number;
-  isLoading: boolean;
+  supabaseConnected: boolean;
+  lastSyncTime: string | null;
+  pendingOperations: number;
 }
 
-interface SyncActions {
-  triggerSync: () => Promise<void>;
-  retryFailedOperations: () => Promise<void>;
-  clearFailedOperations: () => Promise<void>;
-  refreshStatus: () => Promise<void>;
-}
-
-export function useSyncStatus(): [SyncStatus, SyncActions] {
-  const [status, setStatus] = useState<SyncStatus>({
-    pendingOperations: 0,
+export function useSyncStatus() {
+  const { user } = useAuth();
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>({
+    isOnline: typeof navigator !== "undefined" ? navigator.onLine : false,
+    supabaseConnected: false,
     lastSyncTime: null,
-    isOnline: navigator.onLine,
-    hasErrors: false,
-    errorCount: 0,
-    isLoading: true,
+    pendingOperations: 0,
   });
 
-  const refreshStatus = useCallback(async () => {
-    try {
-      const syncStatus = await HybridStorageManager.getSyncStatus();
-      setStatus(() => ({
-        ...syncStatus,
-        isLoading: false,
-      }));
-    } catch (error) {
-      console.error("Failed to refresh sync status:", error);
-      setStatus((prev) => ({
-        ...prev,
-        isLoading: false,
-      }));
-    }
-  }, []);
+  const refreshStatus = async () => {
+    const isOnline =
+      typeof navigator !== "undefined" ? navigator.onLine : false;
 
-  const triggerSync = useCallback(async () => {
-    setStatus((prev) => ({ ...prev, isLoading: true }));
+    // Test Supabase connection
+    let supabaseConnected = false;
     try {
-      const result = await HybridStorageManager.triggerManualSync();
-      console.log("Manual sync result:", result);
-      await refreshStatus();
+      if (user?.id) {
+        await SupabaseService.getUserProfile(user.id);
+        supabaseConnected = true;
+      }
     } catch (error) {
-      console.error("Manual sync failed:", error);
-      setStatus((prev) => ({ ...prev, isLoading: false }));
+      console.error("Supabase connection test failed:", error);
+      supabaseConnected = false;
     }
-  }, [refreshStatus]);
 
-  const retryFailedOperations = useCallback(async () => {
-    setStatus((prev) => ({ ...prev, isLoading: true }));
-    try {
-      const result = await HybridStorageManager.retryFailedOperations();
-      console.log("Retry failed operations result:", result);
-      await refreshStatus();
-    } catch (error) {
-      console.error("Retry failed operations failed:", error);
-      setStatus((prev) => ({ ...prev, isLoading: false }));
-    }
-  }, [refreshStatus]);
+    setSyncStatus({
+      isOnline,
+      supabaseConnected,
+      lastSyncTime: new Date().toISOString(),
+      pendingOperations: 0, // No pending operations in direct Supabase mode
+    });
+  };
 
-  const clearFailedOperations = useCallback(async () => {
-    setStatus((prev) => ({ ...prev, isLoading: true }));
-    try {
-      await HybridStorageManager.clearFailedOperations();
-      await refreshStatus();
-    } catch (error) {
-      console.error("Clear failed operations failed:", error);
-      setStatus((prev) => ({ ...prev, isLoading: false }));
-    }
-  }, [refreshStatus]);
-
-  // Listen for online/offline events
   useEffect(() => {
-    const handleOnline = () => {
-      setStatus((prev) => ({ ...prev, isOnline: true }));
-      // Trigger automatic sync when coming back online
-      HybridStorageManager.processBackgroundSync().then(() => {
-        refreshStatus();
-      });
-    };
+    refreshStatus();
 
-    const handleOffline = () => {
-      setStatus((prev) => ({ ...prev, isOnline: false }));
-    };
+    // Listen for online/offline events
+    const handleOnline = () => refreshStatus();
+    const handleOffline = () => refreshStatus();
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    // Initial status load
-    refreshStatus();
-
-    // Set up periodic status refresh (every 30 seconds)
+    // Periodic status refresh
     const interval = setInterval(refreshStatus, 30000);
 
     return () => {
@@ -106,14 +60,34 @@ export function useSyncStatus(): [SyncStatus, SyncActions] {
       window.removeEventListener("offline", handleOffline);
       clearInterval(interval);
     };
-  }, [refreshStatus]);
+  }, [user?.id]);
 
-  const actions: SyncActions = {
-    triggerSync,
-    retryFailedOperations,
-    clearFailedOperations,
-    refreshStatus,
+  const triggerManualSync = async () => {
+    // In direct Supabase mode, manual sync just tests the connection
+    await refreshStatus();
+    return {
+      success: syncStatus.supabaseConnected,
+      message: syncStatus.supabaseConnected
+        ? "Connected to Supabase"
+        : "Connection failed",
+    };
   };
 
-  return [status, actions];
+  const clearFailedOperations = async () => {
+    // No failed operations in direct Supabase mode
+    await refreshStatus();
+  };
+
+  const retryFailedOperations = async () => {
+    // No failed operations to retry in direct Supabase mode
+    await refreshStatus();
+  };
+
+  return {
+    syncStatus,
+    refreshStatus,
+    triggerManualSync,
+    clearFailedOperations,
+    retryFailedOperations,
+  };
 }

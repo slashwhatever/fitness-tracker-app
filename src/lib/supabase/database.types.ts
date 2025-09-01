@@ -52,7 +52,7 @@ export type Database = {
           experience_level: Database["public"]["Enums"]["experience_level"]
           id: string
           instructions: string | null
-          muscle_group: string
+          muscle_groups: string[]
           name: string
           tags: string[] | null
           tracking_type: Database["public"]["Enums"]["tracking_type"]
@@ -63,7 +63,7 @@ export type Database = {
           experience_level: Database["public"]["Enums"]["experience_level"]
           id?: string
           instructions?: string | null
-          muscle_group: string
+          muscle_groups?: string[]
           name: string
           tags?: string[] | null
           tracking_type: Database["public"]["Enums"]["tracking_type"]
@@ -74,7 +74,7 @@ export type Database = {
           experience_level?: Database["public"]["Enums"]["experience_level"]
           id?: string
           instructions?: string | null
-          muscle_group?: string
+          muscle_groups?: string[]
           name?: string
           tags?: string[] | null
           tracking_type?: Database["public"]["Enums"]["tracking_type"]
@@ -258,7 +258,7 @@ export type Database = {
           id: string
           last_used_at: string | null
           manual_1rm: number | null
-          muscle_group: string
+          muscle_groups: string[]
           name: string
           personal_notes: string | null
           template_id: string | null
@@ -273,7 +273,7 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
-          muscle_group: string
+          muscle_groups?: string[]
           name: string
           personal_notes?: string | null
           template_id?: string | null
@@ -288,7 +288,7 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
-          muscle_group?: string
+          muscle_groups?: string[]
           name?: string
           personal_notes?: string | null
           template_id?: string | null
@@ -320,30 +320,36 @@ export type Database = {
           created_at: string
           default_rest_timer: number
           display_name: string
+          distance_unit: string
           id: string
           notification_preferences: Json
           privacy_settings: Json
           updated_at: string
+          weight_unit: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           default_rest_timer?: number
           display_name: string
+          distance_unit?: string
           id: string
           notification_preferences?: Json
           privacy_settings?: Json
           updated_at?: string
+          weight_unit?: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           default_rest_timer?: number
           display_name?: string
+          distance_unit?: string
           id?: string
           notification_preferences?: Json
           privacy_settings?: Json
           updated_at?: string
+          weight_unit?: string
         }
         Relationships: []
       }

@@ -56,6 +56,8 @@ CREATE TABLE public.user_profiles (
   display_name TEXT NOT NULL,
   avatar_url TEXT,
   default_rest_timer INTEGER NOT NULL DEFAULT 90,
+  weight_unit TEXT NOT NULL DEFAULT 'lbs',
+  distance_unit TEXT NOT NULL DEFAULT 'miles',
   notification_preferences JSONB NOT NULL DEFAULT '{
     "rest_timer": true,
     "workout_reminders": true,

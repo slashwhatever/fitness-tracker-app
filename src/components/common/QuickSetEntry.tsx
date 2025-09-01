@@ -1,24 +1,32 @@
 'use client';
 
+import { useAuth } from '@/lib/auth/AuthProvider';
 import { Set, UserMovement, WeightUnit } from '@/models/types';
-import { getUserWeightUnit } from '@/utils/userPreferences';
+import { UserPreferences } from '@/utils/userPreferences';
 import { useEffect, useState } from 'react';
 
 interface QuickSetEntryProps {
   movement: UserMovement;
   lastSet?: Set;
-  onQuickLog: (set: Partial<Set>) => void;
+  onQuickLog: (setData: Partial<Set>) => void;
 }
 
 export default function QuickSetEntry({ movement, lastSet, onQuickLog }: QuickSetEntryProps) {
+  const { user } = useAuth();
   const [quickReps, setQuickReps] = useState(lastSet?.reps || 0);
   const [quickWeight, setQuickWeight] = useState(lastSet?.weight || 0);
   const [quickDuration, setQuickDuration] = useState(lastSet?.duration || 0);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
 
   useEffect(() => {
-    getUserWeightUnit().then(setWeightUnit);
-  }, []);
+    const loadWeightUnit = async () => {
+      if (user?.id) {
+        const unit = await UserPreferences.getWeightUnit(user.id);
+        setWeightUnit(unit as WeightUnit);
+      }
+    };
+    loadWeightUnit();
+  }, [user?.id]);
 
   const handleQuickLog = () => {
     const setData: Partial<Set> = {

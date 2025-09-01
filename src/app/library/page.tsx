@@ -21,12 +21,14 @@ export default function MovementLibraryPage() {
         // Search filter
         const matchesSearch = searchTerm === '' || 
           movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          movement.muscle_groups.some(group => group.toLowerCase().includes(searchTerm.toLowerCase()));
+          movement.muscle_groups.some(group => 
+            group.toLowerCase().includes(searchTerm.toLowerCase())
+          );
 
         // Muscle group filter
         const matchesMuscleGroup = muscleGroupFilter === null || 
           movement.muscle_groups.includes(muscleGroupFilter);
-
+          
         // Experience level filter
         const matchesExperienceLevel = experienceLevelFilter === null || 
           movement.experience_level === experienceLevelFilter;

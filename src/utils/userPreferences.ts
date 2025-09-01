@@ -1,59 +1,45 @@
-import { HybridStorageManager } from "@/lib/storage/HybridStorageManager";
-import { DistanceUnit, UserProfile, WeightUnit } from "@/models/types";
+import type { Database } from "@/lib/supabase/client";
+import { SupabaseService } from "@/services/supabaseService";
 
-/**
- * Get the user's preferred weight unit from storage
- */
-export async function getUserWeightUnit(): Promise<WeightUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>(
-    "user_profiles"
-  );
-  const profile = profiles[0]; // Assuming single user
-  return profile?.weight_unit || "lbs";
-}
+type UserProfile = Database["public"]["Tables"]["user_profiles"]["Row"];
 
-/**
- * Get the user's preferred distance unit from storage
- */
-export async function getUserDistanceUnit(): Promise<DistanceUnit> {
-  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>(
-    "user_profiles"
-  );
-  const profile = profiles[0]; // Assuming single user
-  return profile?.distance_unit || "miles";
-}
+export class UserPreferences {
+  static async getProfile(userId: string): Promise<UserProfile | null> {
+    return await SupabaseService.getUserProfile(userId);
+  }
 
-/**
- * Get the user's default rest timer from storage
- */
-export async function getUserDefaultRestTimer(): Promise<number> {
-  const profiles = await HybridStorageManager.getLocalRecords<UserProfile>(
-    "user_profiles"
-  );
-  const profile = profiles[0]; // Assuming single user
-  return profile?.default_rest_timer || 60;
-}
+  static async updateProfile(
+    userId: string,
+    updates: Partial<UserProfile>
+  ): Promise<UserProfile | null> {
+    const current = await this.getProfile(userId);
+    if (!current) return null;
 
-/**
- * Format weight with user's preferred unit
- */
-export async function formatWeight(weight: number): Promise<string> {
-  const unit = await getUserWeightUnit();
-  return `${weight} ${unit}`;
-}
+    const updatedProfile = {
+      ...current,
+      ...updates,
+      updated_at: new Date().toISOString(),
+    };
 
-/**
- * Format distance with user's preferred unit
- */
-export async function formatDistance(distance: number): Promise<string> {
-  const unit = await getUserDistanceUnit();
-  return `${distance} ${unit}`;
-}
+    return await SupabaseService.saveUserProfile(updatedProfile);
+  }
 
-/**
- * Get weight unit label for forms
- */
-export async function getWeightUnitLabel(): Promise<string> {
-  const unit = await getUserWeightUnit();
-  return unit === "lbs" ? "Weight (lbs)" : "Weight (kg)";
+  // Convenience methods for specific preferences
+  static async getWeightUnit(userId: string): Promise<string> {
+    const profile = await this.getProfile(userId);
+    return profile?.weight_unit || "lbs";
+  }
+
+  static async getDistanceUnit(userId: string): Promise<string> {
+    const profile = await this.getProfile(userId);
+    return profile?.distance_unit || "miles";
+  }
+
+  static async setWeightUnit(userId: string, unit: string): Promise<void> {
+    await this.updateProfile(userId, { weight_unit: unit });
+  }
+
+  static async setDistanceUnit(userId: string, unit: string): Promise<void> {
+    await this.updateProfile(userId, { distance_unit: unit });
+  }
 }

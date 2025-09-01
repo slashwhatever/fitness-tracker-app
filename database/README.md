@@ -6,22 +6,29 @@ This directory contains the database schema and migration files for the fitness 
 
 - `01-initial-schema.sql` - Complete initial database setup including tables, indexes, RLS policies, and seed data
 
-## Setup Instructions
+## Database Setup Steps
 
-### First Time Setup
+To set up your Supabase database, run these SQL scripts in order through the Supabase SQL Editor:
 
-1. **Go to your Supabase project dashboard**
-2. **Navigate to SQL Editor**
-3. **Copy and paste the contents of `01-initial-schema.sql`**
-4. **Click "Run"** to execute the schema
+### Step 1: Initial Schema
 
-This will create:
+Run `01-initial-schema.sql` to create all tables, enums, and basic structure.
 
-- All necessary tables and relationships
-- Row Level Security (RLS) policies for data protection
-- Performance indexes
-- Automatic timestamp triggers
-- Seed data with common exercises
+### Step 2: Migrate to Muscle Groups Array
+
+Run `02-migrate-to-muscle-groups-array-safe.sql` to update muscle_group columns to muscle_groups arrays.
+
+### Step 3: Fix RLS Policies
+
+Run `03-fix-rls-policies-safe.sql` to set up Row Level Security policies.
+
+### Step 4: Add User Profile Unit Preferences
+
+Run `05-add-user-profile-units.sql` to add weight_unit and distance_unit columns to user_profiles.
+
+### Step 5: Create User Profile & Seed Movements
+
+Run `04-create-user-profile-and-seed-movements-fixed.sql` to create your user profile and seed movement templates.
 
 ### Database Structure
 

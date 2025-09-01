@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
+import { useAuth } from '@/lib/auth/AuthProvider';
 import { Workout } from '@/models/types';
+import { SupabaseService } from '@/services/supabaseService';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
@@ -15,6 +16,7 @@ export interface WorkoutListRef {
 }
 
 const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
+  const { user } = useAuth();
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState<Workout | null>(null);
@@ -24,24 +26,28 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
     return movementCounts[workoutId] || 0;
   };
 
-  // Load workouts from storage
+  // Load workouts from Supabase
   const loadWorkouts = async () => {
-    const savedWorkouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
-    // Sort workouts by created date (newest first)
-    const sortedWorkouts = savedWorkouts.sort((a, b) => 
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-    setWorkouts(sortedWorkouts);
-    
-    // Load movement counts for each workout
-    const counts: Record<string, number> = {};
-    for (const workout of savedWorkouts) {
-      const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-        workout_id: workout.id
-      });
-      counts[workout.id] = workoutMovements.length;
+    if (!user?.id) return;
+
+    try {
+      const savedWorkouts = await SupabaseService.getWorkouts(user.id);
+      // Sort workouts by created date (newest first)
+      const sortedWorkouts = savedWorkouts.sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setWorkouts(sortedWorkouts);
+      
+      // Load movement counts for each workout
+      const counts: Record<string, number> = {};
+      for (const workout of savedWorkouts) {
+        const workoutMovements = await SupabaseService.getWorkoutMovements(workout.id);
+        counts[workout.id] = workoutMovements.length;
+      }
+      setMovementCounts(counts);
+    } catch (error) {
+      console.error('Error loading workouts:', error);
     }
-    setMovementCounts(counts);
   };
 
   // Expose refresh function to parent
@@ -51,7 +57,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
 
   useEffect(() => {
     loadWorkouts();
-  }, []);
+  }, [user?.id]);
 
   const handleDeleteClick = (e: React.MouseEvent, workout: Workout) => {
     e.preventDefault(); // Prevent navigation
@@ -62,8 +68,10 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
 
   const handleConfirmDelete = async () => {
     if (workoutToDelete) {
-      await HybridStorageManager.deleteRecord('workouts', workoutToDelete.id);
-      setWorkouts(workouts.filter(w => w.id !== workoutToDelete.id));
+      const success = await SupabaseService.deleteWorkout(workoutToDelete.id);
+      if (success) {
+        setWorkouts(workouts.filter(w => w.id !== workoutToDelete.id));
+      }
       setWorkoutToDelete(null);
     }
     setShowDeleteConfirm(false);

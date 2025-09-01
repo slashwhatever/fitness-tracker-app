@@ -1,52 +1,49 @@
 'use client';
 
 import AnalyticsCard from '@/components/common/AnalyticsCard';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { Workout } from '@/models/types';
+import { useAuth } from '@/lib/auth/AuthProvider';
+import { PersonalRecord, Set, UserMovement, Workout } from '@/models/types';
+import { SupabaseService } from '@/services/supabaseService';
 import { BarChart3, Calendar, Dumbbell, Target } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
-interface AnalyticsDashboardProps {
-  refreshKey?: number;
-}
-
-export default function AnalyticsDashboard({ refreshKey = 0 }: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard() {
+  const { user } = useAuth();
   const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [totalSets, setTotalSets] = useState(0);
-  const [totalMovements, setTotalMovements] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [sets, setSets] = useState<Set[]>([]);
+  const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
+  const [userMovements, setUserMovements] = useState<UserMovement[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadAnalyticsData = async () => {
-      setIsLoading(true);
+      if (!user?.id) return;
+      
+      setLoading(true);
       try {
-        const allWorkouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
-        const allSets = await HybridStorageManager.getLocalRecords('sets');
-        
-        // Calculate total movements across all workouts
-        let movementCount = 0;
-        for (const workout of allWorkouts) {
-          const workoutMovements = await HybridStorageManager.getLocalRecords('workout_movements', {
-            workout_id: workout.id
-          });
-          movementCount += workoutMovements.length;
-        }
-        
-        setWorkouts(allWorkouts);
-        setTotalSets(allSets.length);
-        setTotalMovements(movementCount);
+        const [workoutsData, setsData, prsData, movementsData] = await Promise.all([
+          SupabaseService.getWorkouts(user.id),
+          SupabaseService.getSets(user.id),
+          SupabaseService.getPersonalRecords(user.id),
+          SupabaseService.getUserMovements(user.id),
+        ]);
+
+        setWorkouts(workoutsData);
+        setSets(setsData);
+        setPersonalRecords(prsData);
+        setUserMovements(movementsData);
       } catch (error) {
-        console.error('Failed to load analytics data test:', error);
+        console.error('Error loading analytics data:', error);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
     loadAnalyticsData();
-  }, [refreshKey]);
+  }, [user?.id]);
 
   const analytics = useMemo(() => {
-    if (isLoading) {
+    if (loading) {
       return {
         totalWorkouts: 0,
         totalMovements: 0,
@@ -56,23 +53,21 @@ export default function AnalyticsDashboard({ refreshKey = 0 }: AnalyticsDashboar
     }
 
     const totalWorkouts = workouts.length;
-    
-    // Calculate this week's workouts
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    const thisWeekWorkouts = workouts.filter(w => 
-      new Date(w.created_at) >= oneWeekAgo
+    const thisWeekStart = new Date();
+    thisWeekStart.setDate(thisWeekStart.getDate() - 7);
+    const thisWeekWorkouts = workouts.filter(workout => 
+      new Date(workout.created_at) >= thisWeekStart
     ).length;
-    
+
     return {
       totalWorkouts,
-      totalMovements: totalMovements,
-      totalSets,
+      totalMovements: userMovements.length,
+      totalSets: sets.length,
       thisWeekWorkouts
     };
-  }, [workouts, totalSets, totalMovements, isLoading]);
+  }, [workouts, userMovements, sets, loading]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (

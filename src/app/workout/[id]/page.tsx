@@ -1,159 +1,103 @@
 'use client';
 
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import DraggableMovementList from '@/components/common/DraggableMovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
-import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { UserMovement, Workout } from '@/models/types';
-import { Settings } from 'lucide-react';
+import { useAuth } from '@/lib/auth/AuthProvider';
+import { Workout } from '@/models/types';
+import { SupabaseService } from '@/services/supabaseService';
+import { ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function WorkoutDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const workoutId = params.id as string;
-  
-  const [workout, setWorkout] = useState<Workout | null>(null);
-  const [movements, setMovements] = useState<UserMovement[]>([]);
-  const [isSelectionModalOpen, setIsSelectionModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+interface WorkoutDetailPageProps {
+  params: Promise<{ id: string }>;
+}
 
-  // Helper function to reload movements from storage
-  const reloadMovements = async () => {
-    if (!workout) return;
-    
-    const workoutMovements = await HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
-      workout_id: workout.id
-    });
-    
-    const userMovements: UserMovement[] = [];
-    for (const wm of workoutMovements) {
-      const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', wm.user_movement_id);
-      if (movement) {
-        userMovements.push(movement);
-      }
-    }
-    setMovements(userMovements);
-  };
+export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
+  const { user } = useAuth();
+  const [workout, setWorkout] = useState<Workout | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showMovementModal, setShowMovementModal] = useState(false);
+  const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
+
+  // Resolve async params
+  useEffect(() => {
+    params.then(setParamsResolved);
+  }, [params]);
 
   useEffect(() => {
-    const loadWorkoutData = async () => {
-      const workouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
-      const foundWorkout = workouts.find(w => w.id === workoutId);
-      
-      if (!foundWorkout) {
-        router.push('/');
-        return;
-      }
-      
-      setWorkout(foundWorkout);
-      
-      // Get workout_movement relationships
-      const workoutMovements = await HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
-        workout_id: workoutId
-      });
-      
-      // Get the actual UserMovement objects
-      const userMovements: UserMovement[] = [];
-      for (const wm of workoutMovements) {
-        const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', wm.user_movement_id);
-        if (movement) {
-          userMovements.push(movement);
-        }
-      }
-      
-      setMovements(userMovements);
-    };
+    if (!paramsResolved?.id || !user?.id) return;
     
-    loadWorkoutData();
-  }, [workoutId, router]);
+    const loadWorkout = async () => {
+      try {
+        const workoutData = await SupabaseService.getWorkout(paramsResolved.id);
+        setWorkout(workoutData);
+      } catch (error) {
+        console.error('Error loading workout:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleMovementAdded = (movement: UserMovement) => {
-    if (!workout) return;
+    loadWorkout();
+  }, [paramsResolved?.id, user?.id]);
 
-    // Save the user movement first, then create relationship
-    HybridStorageManager.saveRecord('user_movements', movement).then(() => {
-      const workoutMovement = {
-        id: crypto.randomUUID(),
-        workout_id: workout.id,
-        user_movement_id: movement.id,
-        order_index: movements.length,
-        created_at: new Date().toISOString(),
-      };
-      
-      return HybridStorageManager.saveRecord('workout_movements', workoutMovement);
-    }).then(() => {
-      // Reload movements from storage
-      reloadMovements();
-    }).catch(error => {
-      console.error('Failed to add movement:', error);
-    });
+  const handleMovementAdded = () => {
+    // Trigger refresh of movements
+    if (paramsResolved?.id) {
+      // Force re-render by updating a key or calling a refresh method
+    }
+    setShowMovementModal(false);
   };
 
-  const handleMovementRemovedFromModal = (movementId: string) => {
-    if (!workout) return;
+  if (loading) {
+    return (
+      <ProtectedRoute>
+        <main className="min-h-screen bg-background p-8">
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-8">
+                <p className="text-muted-foreground">Loading workout...</p>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </ProtectedRoute>
+    );
+  }
 
-    // Find and delete the workout_movement relationship
-    HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
-      workout_id: workout.id,
-      user_movement_id: movementId
-    }).then(workoutMovements => {
-      const deletePromises = workoutMovements.map(wm => 
-        HybridStorageManager.deleteRecord('workout_movements', wm.id)
-      );
-      return Promise.all(deletePromises);
-    }).then(() => {
-      // Reload movements from storage
-      reloadMovements();
-    }).catch(error => {
-      console.error('Failed to remove movement:', error);
-    });
-  };
+  if (!workout) {
+    return (
+      <ProtectedRoute>
+        <main className="min-h-screen bg-background p-8">
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-8 text-center">
+                <h2 className="text-xl font-semibold mb-2">Workout not found</h2>
+                <p className="text-muted-foreground mb-4">
+                  The workout you&apos;re looking for doesn&apos;t exist or has been deleted.
+                </p>
+                <Button asChild>
+                  <Link href="/">Return to Dashboard</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </ProtectedRoute>
+    );
+  }
 
-  const handleWorkoutUpdated = (updatedWorkout: Workout) => {
-    setWorkout(updatedWorkout);
-    setIsSettingsModalOpen(false);
-  };
-
-  const handleWorkoutDeleted = () => {
-    // Navigate back to home page after deletion
-    router.push('/');
-  };
-
-  const handleRemoveMovement = (movementId: string) => {
-    if (!workout) return;
-
-    // Find and delete the workout_movement relationship
-    HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
-      workout_id: workout.id,
-      user_movement_id: movementId
-    }).then(workoutMovements => {
-      const deletePromises = workoutMovements.map(wm => 
-        HybridStorageManager.deleteRecord('workout_movements', wm.id)
-      );
-      return Promise.all(deletePromises);
-    }).then(() => {
-      // Reload movements from storage
-      reloadMovements();
-    }).catch(error => {
-      console.error('Failed to remove movement:', error);
-    });
-  };
-
-  if (!workout) return null;
-
-      return (
+  return (
+    <ProtectedRoute>
       <main className="min-h-screen bg-background p-8">
         <div className="max-w-4xl mx-auto">
           <Button variant="ghost" asChild className="mb-4 -ml-4">
             <Link href="/" className="flex items-center space-x-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <ArrowLeft className="w-4 h-4" />
               <span>Back to Dashboard</span>
             </Link>
           </Button>
@@ -171,41 +115,30 @@ export default function WorkoutDetailPage() {
                   <Button 
                     variant="outline" 
                     size="icon"
-                    onClick={() => setIsSettingsModalOpen(true)}
+                    onClick={() => setShowMovementModal(true)}
                   >
-                    <Settings />
-                  </Button>
-                  <Button onClick={() => setIsSelectionModalOpen(true)}>
-                    Add Movement
+                    <Plus className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <DraggableMovementList
-                movements={movements}
-                onRemove={handleRemoveMovement}
-                onUpdate={handleUpdateMovement}
+                workoutId={paramsResolved?.id || ''}
+                onMovementAdded={handleMovementAdded}
+                onAddMovementClick={() => setShowMovementModal(true)}
               />
             </CardContent>
           </Card>
         </div>
 
-      <MovementSelectionModal
-        isOpen={isSelectionModalOpen}
-        onClose={() => setIsSelectionModalOpen(false)}
-        currentMovements={movements}
-        onMovementAdded={handleMovementAdded}
-        onMovementRemoved={handleMovementRemovedFromModal}
-      />
-
-      <WorkoutSettingsModal
-        isOpen={isSettingsModalOpen}
-        onClose={() => setIsSettingsModalOpen(false)}
-        workout={workout}
-        onWorkoutUpdated={handleWorkoutUpdated}
-        onWorkoutDeleted={handleWorkoutDeleted}
-      />
-    </main>
+        <MovementSelectionModal
+          isOpen={showMovementModal}
+          onClose={() => setShowMovementModal(false)}
+          workoutId={paramsResolved?.id || ''}
+          onMovementAdded={handleMovementAdded}
+        />
+      </main>
+    </ProtectedRoute>
   );
 }

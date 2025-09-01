@@ -13,8 +13,9 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/lib/auth/AuthProvider';
 import { Set, UserMovement, WeightUnit } from '@/models/types';
-import { getUserWeightUnit, getWeightUnitLabel } from '@/utils/userPreferences';
+import { UserPreferences } from '@/utils/userPreferences';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -23,66 +24,79 @@ interface EditableSetProps {
   movement: UserMovement;
   onUpdate: (updatedSet: Set) => void;
   onDelete: (setId: string) => void;
-  onDuplicate: (set: Set) => void;
+  onDuplicate: (originalSet: Set) => void;
 }
 
-export default function EditableSet({ set, movement, onUpdate, onDelete, onDuplicate }: EditableSetProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [editReps, setEditReps] = useState(set.reps || 0);
-  const [editWeight, setEditWeight] = useState(set.weight || 0);
-  const [editDuration, setEditDuration] = useState(set.duration || 0);
+export default function EditableSet({
+  set,
+  movement,
+  onUpdate,
+  onDelete,
+  onDuplicate,
+}: EditableSetProps) {
+  const { user } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
-  const [weightUnitLabel, setWeightUnitLabel] = useState('Weight (lbs)');
+  const [reps, setReps] = useState(set.reps?.toString() || '');
+  const [weight, setWeight] = useState(set.weight?.toString() || '');
+  const [duration, setDuration] = useState('');
+  const [distance, setDistance] = useState(set.distance?.toString() || '');
+  const [notes, setNotes] = useState(set.notes || '');
 
   useEffect(() => {
-    getUserWeightUnit().then(setWeightUnit);
-    getWeightUnitLabel().then(setWeightUnitLabel);
-  }, []);
+    const loadWeightUnit = async () => {
+      if (user?.id) {
+        const unit = await UserPreferences.getWeightUnit(user.id);
+        setWeightUnit(unit as WeightUnit);
+      }
+    };
+    loadWeightUnit();
+  }, [user?.id]);
 
   const handleSave = () => {
     const updatedSet: Set = {
       ...set,
       ...(movement.tracking_type === 'weight' && { 
-        reps: editReps || undefined, 
-        weight: editWeight || undefined 
+        reps: reps ? Number(reps) : undefined, 
+        weight: weight ? Number(weight) : undefined 
       }),
       ...(movement.tracking_type === 'bodyweight' && { 
-        reps: editReps || undefined 
+        reps: reps ? Number(reps) : undefined 
       }),
       ...(movement.tracking_type === 'duration' && { 
-        duration: editDuration || undefined 
+        duration: duration ? Number(duration) : undefined 
       })
     };
 
     onUpdate(updatedSet);
-    setIsDrawerOpen(false);
+    setIsEditing(false);
   };
 
   const handleCancel = () => {
-    setEditReps(set.reps || 0);
-    setEditWeight(set.weight || 0);
-    setEditDuration(set.duration || 0);
-    setIsDrawerOpen(false);
+    setReps(set.reps?.toString() || '');
+    setWeight(set.weight?.toString() || '');
+    setDuration('');
+    setIsEditing(false);
   };
 
   const handleDrawerOpenChange = (open: boolean) => {
-    setIsDrawerOpen(open);
+    setIsEditing(open);
     if (open) {
       // Reset form values when opening the drawer
-      setEditReps(set.reps || 0);
-      setEditWeight(set.weight || 0);
-      setEditDuration(set.duration || 0);
+      setReps(set.reps?.toString() || '');
+      setWeight(set.weight?.toString() || '');
+      setDuration('');
     }
   };
 
   const isValidEdit = () => {
     switch (movement.tracking_type) {
       case 'weight':
-        return editReps > 0 && editWeight > 0;
+        return reps && weight;
       case 'bodyweight':
-        return editReps > 0;
+        return reps;
       case 'duration':
-        return editDuration > 0;
+        return duration;
       default:
         return false;
     }
@@ -148,7 +162,7 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
               Duplicate
             </Button>
             
-            <Drawer open={isDrawerOpen} onOpenChange={handleDrawerOpenChange}>
+            <Drawer open={isEditing} onOpenChange={handleDrawerOpenChange}>
               <DrawerTrigger asChild>
                 <Button
                   variant="ghost"
@@ -170,12 +184,12 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
                   {movement.tracking_type === 'weight' && (
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="edit-weight">{weightUnitLabel}</Label>
+                        <Label htmlFor="edit-weight">Weight</Label>
                         <Input
                           id="edit-weight"
                           type="number"
-                          value={editWeight}
-                          onChange={(e) => setEditWeight(Number(e.target.value))}
+                          value={weight}
+                          onChange={(e) => setWeight(e.target.value)}
                           className="text-center text-lg"
                           min="0"
                           step="0.5"
@@ -186,8 +200,8 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
                         <Input
                           id="edit-reps"
                           type="number"
-                          value={editReps}
-                          onChange={(e) => setEditReps(Number(e.target.value))}
+                          value={reps}
+                          onChange={(e) => setReps(e.target.value)}
                           className="text-center text-lg"
                           min="0"
                         />
@@ -201,8 +215,8 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
                       <Input
                         id="edit-reps"
                         type="number"
-                        value={editReps}
-                        onChange={(e) => setEditReps(Number(e.target.value))}
+                        value={reps}
+                        onChange={(e) => setReps(e.target.value)}
                         className="text-center text-lg"
                         min="0"
                       />
@@ -215,8 +229,8 @@ export default function EditableSet({ set, movement, onUpdate, onDelete, onDupli
                       <Input
                         id="edit-duration"
                         type="number"
-                        value={editDuration}
-                        onChange={(e) => setEditDuration(Number(e.target.value))}
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
                         className="text-center text-lg"
                         min="0"
                       />

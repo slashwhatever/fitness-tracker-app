@@ -5,8 +5,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
+import { useAuth } from '@/lib/auth/AuthProvider';
 import { Workout } from '@/models/types';
+import { SupabaseService } from '@/services/supabaseService';
 import { useState } from 'react';
 
 interface CreateWorkoutModalProps {
@@ -15,67 +16,53 @@ interface CreateWorkoutModalProps {
   onWorkoutCreated: (workout: Workout) => void;
 }
 
-export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }: CreateWorkoutModalProps) {
-  const [title, setTitle] = useState('');
+export default function CreateWorkoutModal({
+  isOpen,
+  onClose,
+  onWorkoutCreated,
+}: CreateWorkoutModalProps) {
+  const { user } = useAuth();
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!title.trim()) {
-      setError('Workout title is required');
-      return;
-    }
+  const handleCreate = async () => {
+    if (!name.trim() || !user?.id) return;
 
-    setIsLoading(true);
-    setError('');
-
+    setIsCreating(true);
     try {
-      const newWorkout: Workout = {
+      const newWorkout = {
         id: crypto.randomUUID(),
-        user_id: 'user', // TODO: Get actual user ID
-        name: title.trim(),
+        user_id: user.id,
+        name: name.trim(),
         description: description.trim() || null,
         default_rest_timer: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
-      const savedWorkout = await HybridStorageManager.saveRecord('workouts', newWorkout);
-      const success = !!savedWorkout;
-      
-      if (success) {
-        onWorkoutCreated(newWorkout);
-        handleClose();
-      } else {
-        setError('Failed to save workout. Please try again.');
+      const savedWorkout = await SupabaseService.saveWorkout(newWorkout);
+      if (savedWorkout) {
+        onWorkoutCreated(savedWorkout);
+        setName('');
+        setDescription('');
+        onClose();
       }
     } catch (error) {
-      console.error('Workout creation error:', error);
-      setError('An unexpected error occurred. Please try again.');
+      console.error('Failed to create workout:', error);
     } finally {
-      setIsLoading(false);
+      setIsCreating(false);
     }
   };
 
-  const handleClose = () => {
-    setTitle('');
-    setDescription('');
-    setError('');
-    setIsLoading(false);
-    onClose();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Create New Workout</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={(e) => { e.preventDefault(); handleCreate(); }} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="title">
               Workout Title *
@@ -83,10 +70,10 @@ export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }
             <Input
               type="text"
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter workout title"
-              disabled={isLoading}
+              disabled={isCreating}
               required
             />
           </div>
@@ -101,30 +88,24 @@ export default function CreateWorkoutModal({ isOpen, onClose, onWorkoutCreated }
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter workout description"
               rows={3}
-              disabled={isLoading}
+              disabled={isCreating}
             />
           </div>
-
-          {error && (
-            <div className="text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md p-3">
-              {error}
-            </div>
-          )}
 
           <div className="flex justify-end space-x-3 pt-4">
             <Button
               type="button"
               variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
+              onClick={onClose}
+              disabled={isCreating}
             >
               Cancel
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || !title.trim()}
+              disabled={isCreating || !name.trim()}
             >
-              {isLoading ? 'Creating...' : 'Create Workout'}
+              {isCreating ? 'Creating...' : 'Create Workout'}
             </Button>
           </div>
         </form>

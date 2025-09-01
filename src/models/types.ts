@@ -12,17 +12,28 @@ export type TrackingType =
   | "distance"
   | "reps_only";
 export type ExperienceLevel = "Beginner" | "Intermediate" | "Advanced";
+export type MuscleGroup =
+  | "Chest"
+  | "Back"
+  | "Legs"
+  | "Shoulders"
+  | "Biceps"
+  | "Triceps"
+  | "Core"
+  | "Cardio"
+  | "Full Body"
+  | "Forearms";
 
 export interface MovementTemplate {
   id: string;
   name: string;
-  muscle_groups: string[];
+  muscle_groups: string[]; // Reverted: back to array for multiple muscle groups
   tracking_type: TrackingType;
   experience_level: ExperienceLevel;
-  instructions: string | null;
-  tags: string[];
-  created_at: string;
-  updated_at: string;
+  instructions?: string;
+  tags?: string[]; // Optional field for movement library data
+  created_at?: string; // Optional field for movement library data
+  updated_at?: string; // Optional field for movement library data
 }
 
 // ============================================================================
@@ -56,7 +67,7 @@ export interface UserMovement {
   user_id: string;
   template_id: string | null; // References MovementTemplate.id
   name: string;
-  muscle_groups: string[];
+  muscle_groups: string[]; // Reverted: back to array for multiple muscle groups
   tracking_type: TrackingType;
   custom_rest_timer?: number; // Movement-specific timer override
   personal_notes?: string;

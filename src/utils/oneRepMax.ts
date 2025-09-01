@@ -1,91 +1,49 @@
 import { Set } from "@/models/types";
-import { getUserWeightUnit } from "./userPreferences";
+import { UserPreferences } from "./userPreferences";
 
 /**
  * Calculate estimated 1 Rep Max using the Brzycki formula
- * Formula: 1RM = Weight × (36 / (37 - Reps))
- * Valid for reps between 1-36
+ * 1RM = weight / (1.0278 - (0.0278 × reps))
  */
-export function calculateOneRepMax(
-  weight: number,
-  reps: number
-): number | null {
-  // Validate inputs
-  if (!weight || !reps || weight <= 0 || reps <= 0) {
-    return null;
-  }
-
-  // Brzycki formula is only valid for reps 1-36
-  if (reps > 36) {
-    return null;
-  }
-
-  // If reps = 1, the weight is already the 1RM
-  if (reps === 1) {
-    return weight;
-  }
-
-  // Brzycki formula
-  const oneRM = weight * (36 / (37 - reps));
-
-  // Round to nearest 0.5 for practical purposes
-  return Math.round(oneRM * 2) / 2;
+export function calculate1RM(weight: number, reps: number): number {
+  if (reps <= 1) return weight;
+  return weight / (1.0278 - 0.0278 * reps);
 }
 
 /**
- * Find the best estimated 1RM from a collection of sets
- * Returns the highest calculated 1RM, not necessarily from the heaviest weight
+ * Format 1RM for display with proper weight unit
+ */
+export async function format1RM(
+  oneRM: number,
+  userId: string
+): Promise<string> {
+  const unit = await UserPreferences.getWeightUnit(userId);
+  return `${Math.round(oneRM)} ${unit}`;
+}
+
+/**
+ * Get the best 1RM from a collection of sets
  */
 export function getBest1RM(
   sets: Set[]
 ): { oneRM: number; fromSet: Set } | null {
-  if (!sets || sets.length === 0) {
-    return null;
-  }
+  const validSets = sets.filter(
+    (set) => set.weight && set.reps && set.reps > 0
+  );
+  if (validSets.length === 0) return null;
 
-  let best1RM = 0;
+  let bestOneRM = 0;
   let bestSet: Set | null = null;
 
-  for (const set of sets) {
-    if (set.weight && set.reps) {
-      const estimated1RM = calculateOneRepMax(set.weight, set.reps);
-
-      if (estimated1RM && estimated1RM > best1RM) {
-        best1RM = estimated1RM;
-        bestSet = set;
-      }
+  for (const set of validSets) {
+    const oneRM = calculate1RM(set.weight!, set.reps!);
+    if (oneRM > bestOneRM) {
+      bestOneRM = oneRM;
+      bestSet = set;
     }
   }
 
-  if (bestSet && best1RM > 0) {
-    return {
-      oneRM: best1RM,
-      fromSet: bestSet,
-    };
-  }
-
-  return null;
-}
-
-/**
- * Format 1RM for display with appropriate precision (sync version with default unit)
- */
-export function format1RM(oneRM: number): string {
-  if (oneRM % 1 === 0) {
-    return `${oneRM} lbs`;
-  }
-  return `${oneRM.toFixed(1)} lbs`;
-}
-
-/**
- * Format 1RM for display with user's preferred unit (async version)
- */
-export async function format1RMWithUnit(oneRM: number): Promise<string> {
-  const unit = await getUserWeightUnit();
-  if (oneRM % 1 === 0) {
-    return `${oneRM} ${unit}`;
-  }
-  return `${oneRM.toFixed(1)} ${unit}`;
+  return bestSet ? { oneRM: bestOneRM, fromSet: bestSet } : null;
 }
 
 /**

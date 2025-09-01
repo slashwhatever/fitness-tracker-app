@@ -1,157 +1,109 @@
-"use client";
+'use client';
 
+import { useSyncContext } from '@/components/data/SyncStatusProvider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSyncStatus } from '@/hooks/useSyncStatus';
 import {
     AlertCircle,
     CheckCircle,
-    Clock,
-    Loader2,
     RefreshCw,
     Wifi,
-    WifiOff
+    WifiOff,
 } from 'lucide-react';
 
-interface SyncStatusIndicatorProps {
-  variant?: 'compact' | 'detailed';
-  showActions?: boolean;
-}
-
-export function SyncStatusIndicator({ 
-  variant = 'compact', 
-  showActions = false 
-}: SyncStatusIndicatorProps) {
-  const [status, actions] = useSyncStatus();
-
-  const formatLastSync = (lastSyncTime: string | null) => {
-    if (!lastSyncTime) return 'Never';
-    
-    const date = new Date(lastSyncTime);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    
-    return date.toLocaleDateString();
-  };
-
-  const getStatusColor = () => {
-    if (!status.isOnline) return 'text-red-500';
-    if (status.hasErrors) return 'text-yellow-500';
-    if (status.pendingOperations > 0) return 'text-blue-500';
-    return 'text-green-500';
-  };
+export default function SyncStatusIndicator() {
+  const { syncStatus, refreshStatus, triggerManualSync } = useSyncContext();
 
   const getStatusIcon = () => {
-    if (status.isLoading) return <Loader2 className="h-4 w-4 animate-spin" />;
-    if (!status.isOnline) return <WifiOff className="h-4 w-4" />;
-    if (status.hasErrors) return <AlertCircle className="h-4 w-4" />;
-    if (status.pendingOperations > 0) return <Clock className="h-4 w-4" />;
-    return <CheckCircle className="h-4 w-4" />;
+    if (!syncStatus.isOnline) {
+      return <WifiOff className="w-4 h-4 text-red-500" />;
+    }
+    if (!syncStatus.supabaseConnected) {
+      return <AlertCircle className="w-4 h-4 text-orange-500" />;
+    }
+    return <CheckCircle className="w-4 h-4 text-green-500" />;
   };
 
   const getStatusText = () => {
-    if (!status.isOnline) return 'Offline';
-    if (status.hasErrors) return `${status.errorCount} sync errors`;
-    if (status.pendingOperations > 0) return `${status.pendingOperations} pending`;
-    return 'Synced';
+    if (!syncStatus.isOnline) {
+      return 'Offline';
+    }
+    if (!syncStatus.supabaseConnected) {
+      return 'Connection Issues';
+    }
+    return 'Connected';
   };
 
-  if (variant === 'compact') {
-    return (
-      <div className="flex items-center gap-2">
-        <div className={`flex items-center gap-1 ${getStatusColor()}`}>
-          {getStatusIcon()}
-          <span className="text-sm font-medium">{getStatusText()}</span>
-        </div>
-        
-        {status.isOnline && (
-          <Badge variant="outline" className="text-xs">
-            {status.isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-          </Badge>
-        )}
-      </div>
-    );
-  }
+  const getStatusVariant = (): "default" | "secondary" | "destructive" | "outline" => {
+    if (!syncStatus.isOnline) return 'destructive';
+    if (!syncStatus.supabaseConnected) return 'outline';
+    return 'default';
+  };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          {getStatusIcon()}
-          Sync Status
+        <CardTitle className="flex items-center justify-between">
+          <span className="text-lg">Connection Status</span>
+          <Badge variant={getStatusVariant()} className="flex items-center space-x-1">
+            {getStatusIcon()}
+            <span>{getStatusText()}</span>
+          </Badge>
         </CardTitle>
       </CardHeader>
-      
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div className="text-muted-foreground">Connection</div>
-            <div className={`flex items-center gap-1 font-medium ${getStatusColor()}`}>
-              {status.isOnline ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-              {status.isOnline ? 'Online' : 'Offline'}
-            </div>
+          <div className="flex items-center space-x-2">
+            {syncStatus.isOnline ? (
+              <Wifi className="w-4 h-4 text-green-500" />
+            ) : (
+              <WifiOff className="w-4 h-4 text-red-500" />
+            )}
+            <span className="text-muted-foreground">
+              {syncStatus.isOnline ? 'Online' : 'Offline'}
+            </span>
           </div>
           
-          <div>
-            <div className="text-muted-foreground">Pending</div>
-            <div className="font-medium">
-              {status.pendingOperations} operations
-            </div>
-          </div>
-          
-          <div>
-            <div className="text-muted-foreground">Errors</div>
-            <div className={`font-medium ${status.hasErrors ? 'text-red-500' : ''}`}>
-              {status.errorCount} errors
-            </div>
-          </div>
-          
-          <div>
-            <div className="text-muted-foreground">Last Sync</div>
-            <div className="font-medium">
-              {formatLastSync(status.lastSyncTime)}
-            </div>
+          <div className="flex items-center space-x-2">
+            {syncStatus.supabaseConnected ? (
+              <CheckCircle className="w-4 h-4 text-green-500" />
+            ) : (
+              <AlertCircle className="w-4 h-4 text-red-500" />
+            )}
+            <span className="text-muted-foreground">
+              {syncStatus.supabaseConnected ? 'Supabase OK' : 'Supabase Error'}
+            </span>
           </div>
         </div>
 
-        {showActions && (
-          <div className="flex gap-2 pt-2 border-t">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={actions.triggerSync}
-              disabled={!status.isOnline || status.isLoading}
-              className="flex-1"
-            >
-              {status.isLoading ? (
-                <Loader2 className="h-3 w-3 animate-spin mr-1" />
-              ) : (
-                <RefreshCw className="h-3 w-3 mr-1" />
-              )}
-              Sync Now
-            </Button>
-            
-            {status.hasErrors && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={actions.retryFailedOperations}
-                disabled={status.isLoading}
-                className="flex-1"
-              >
-                Retry Errors
-              </Button>
-            )}
-          </div>
+        {syncStatus.lastSyncTime && (
+          <p className="text-xs text-muted-foreground">
+            Last checked: {new Date(syncStatus.lastSyncTime).toLocaleTimeString()}
+          </p>
         )}
+
+        <div className="flex space-x-2">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={refreshStatus}
+            className="flex items-center space-x-1"
+          >
+            <RefreshCw className="w-3 h-3" />
+            <span>Refresh</span>
+          </Button>
+          
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={triggerManualSync}
+            className="flex items-center space-x-1"
+          >
+            <CheckCircle className="w-3 h-3" />
+            <span>Test Connection</span>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

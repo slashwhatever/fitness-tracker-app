@@ -30,7 +30,7 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
             <h3 className="font-semibold text-lg">{movement.name}</h3>
-            <p className="text-muted-foreground text-sm">{movement.muscle_groups.join(', ')}</p>
+            <p className="text-muted-foreground text-sm">{movement.muscle_groups?.join(', ') || 'Unknown'}</p>
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-lg">{getTrackingTypeIcon(movement.tracking_type)}</span>

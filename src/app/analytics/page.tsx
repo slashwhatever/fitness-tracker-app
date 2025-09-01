@@ -1,7 +1,6 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import PRSummary from '@/components/common/PRSummary';
 import { SyncStatusProvider } from '@/components/data/SyncStatusProvider';
 import AnalyticsDashboard from '@/components/features/AnalyticsDashboard';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 
 export default function AnalyticsPage() {
-
   return (
     <ProtectedRoute>
       <SyncStatusProvider>
@@ -39,11 +37,6 @@ export default function AnalyticsPage() {
               <CardContent className="space-y-6">
                 {/* Analytics Dashboard */}
                 <AnalyticsDashboard />
-
-                {/* Personal Records */}
-                <div className="grid grid-cols-1 gap-6">
-                  <PRSummary />
-                </div>
               </CardContent>
             </Card>
           </div>

@@ -1,81 +1,64 @@
 'use client';
 
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DistanceUnit, UserProfile, WeightUnit } from '@/models/types';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { ArrowLeft, Save } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth/AuthProvider';
+import { DistanceUnit, WeightUnit } from '@/models/types';
+import { UserPreferences } from '@/utils/userPreferences';
+import { Save, Settings as SettingsIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
-  const router = useRouter();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const { user } = useAuth();
   const [displayName, setDisplayName] = useState('');
-  const [defaultRestTimer, setDefaultRestTimer] = useState(60);
   const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
   const [distanceUnit, setDistanceUnit] = useState<DistanceUnit>('miles');
+  const [defaultRestTimer, setDefaultRestTimer] = useState<number>(90);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
 
+  // Load user preferences on component mount
   useEffect(() => {
-    const loadProfile = async () => {
-      // Load current user profile
-      const profiles = await HybridStorageManager.getLocalRecords<UserProfile>('user_profiles');
-      const profile = profiles[0]; // Assuming single user
-      if (profile) {
-        setUserProfile(profile);
-        setDisplayName(profile.display_name || '');
-        setDefaultRestTimer(profile.default_rest_timer);
-        setWeightUnit(profile.weight_unit || 'lbs');
-        setDistanceUnit(profile.distance_unit || 'miles');
-      } else {
-      // Create default profile if none exists
-      const defaultProfile: UserProfile = {
-        id: 'default-user',
-        display_name: '',
-        default_rest_timer: 60,
-        weight_unit: 'lbs',
-        distance_unit: 'miles',
-        privacy_settings: {
-          profile_visibility: 'private',
-          workout_sharing: false,
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      await HybridStorageManager.saveRecord('user_profiles', defaultProfile);
-      setUserProfile(defaultProfile);
-    }
+    const loadUserData = async () => {
+      if (!user?.id) return;
+
+      try {
+        const profile = await UserPreferences.getProfile(user.id);
+        if (profile) {
+          setDisplayName(profile.display_name || '');
+          setWeightUnit((profile.weight_unit as WeightUnit) || 'lbs');
+          setDistanceUnit((profile.distance_unit as DistanceUnit) || 'miles');
+          setDefaultRestTimer(profile.default_rest_timer || 90);
+        }
+      } catch (error) {
+        console.error('Failed to load user settings:', error);
+      }
     };
-    
-    loadProfile();
-  }, []);
+
+    loadUserData();
+  }, [user?.id]);
 
   const handleSave = async () => {
-    if (!userProfile) return;
+    if (!user?.id) return;
 
     setIsSaving(true);
     try {
-      const updatedProfile: UserProfile = {
-        ...userProfile,
+      await UserPreferences.updateProfile(user.id, {
         display_name: displayName.trim() || undefined,
-        default_rest_timer: defaultRestTimer,
         weight_unit: weightUnit,
         distance_unit: distanceUnit,
-        updated_at: new Date().toISOString(),
-      };
+        default_rest_timer: defaultRestTimer,
+      });
 
-      await HybridStorageManager.saveRecord('user_profiles', updatedProfile);
-      setUserProfile(updatedProfile);
-      
-      // Show success feedback and navigate back
-      router.back();
+      setSaveMessage('Settings saved successfully!');
+      setTimeout(() => setSaveMessage(''), 3000);
     } catch (error) {
       console.error('Failed to save settings:', error);
+      setSaveMessage('Failed to save settings. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -92,11 +75,11 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
-          <Link href="/">
+          <ProtectedRoute>
             <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
+              <SettingsIcon className="w-5 h-5" />
             </Button>
-          </Link>
+          </ProtectedRoute>
           <h1 className="text-2xl font-bold">Settings</h1>
         </div>
       </div>

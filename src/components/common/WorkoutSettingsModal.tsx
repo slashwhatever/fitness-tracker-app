@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TIMER_PRESETS, Workout } from '@/models/types';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
+import { SupabaseService } from '@/services/supabaseService';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -29,49 +29,45 @@ export default function WorkoutSettingsModal({
 }: WorkoutSettingsModalProps) {
   const [name, setName] = useState(workout.name);
   const [description, setDescription] = useState(workout.description || '');
-  const [restTimer, setRestTimer] = useState(workout.default_rest_timer?.toString() || 'none');
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [defaultRestTimer, setDefaultRestTimer] = useState(workout.default_rest_timer?.toString() || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleSave = async () => {
-    if (!name.trim()) return;
-
     setIsSaving(true);
-    
-    const updatedWorkout: Workout = {
-      ...workout,
-      name: name.trim(),
-      description: description.trim() || null,
-      default_rest_timer: restTimer && restTimer !== 'none' ? parseInt(restTimer) : null,
-      updated_at: new Date().toISOString(),
-    };
+    try {
+      const updates = {
+        name: name.trim(),
+        description: description.trim() || null,
+        default_rest_timer: defaultRestTimer ? parseInt(defaultRestTimer) : null,
+        updated_at: new Date().toISOString(),
+      };
 
-    // Save to storage
-    await HybridStorageManager.saveRecord('workouts', updatedWorkout);
-    
-    // Notify parent component
-    onWorkoutUpdated(updatedWorkout);
-    
-    setIsSaving(false);
-    onClose();
+      const updatedWorkout = await SupabaseService.updateWorkout(workout.id, updates);
+      if (updatedWorkout) {
+        onWorkoutUpdated(updatedWorkout);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Failed to save workout settings:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDelete = async () => {
-    // Delete from storage
-    await HybridStorageManager.deleteRecord('workouts', workout.id);
-    
-    // Notify parent component
-    onWorkoutDeleted(workout.id);
-    
-    setShowDeleteConfirm(false);
-    onClose();
+    const success = await SupabaseService.deleteWorkout(workout.id);
+    if (success) {
+      onWorkoutDeleted(workout.id);
+      onClose();
+    }
   };
 
   const handleClose = () => {
     // Reset form to original values
     setName(workout.name);
     setDescription(workout.description || '');
-    setRestTimer(workout.default_rest_timer?.toString() || 'none');
+    setDefaultRestTimer(workout.default_rest_timer?.toString() || '');
     setShowDeleteConfirm(false);
     onClose();
   };
@@ -111,7 +107,7 @@ export default function WorkoutSettingsModal({
             {/* Rest Timer */}
             <div className="space-y-2">
               <Label htmlFor="rest-timer">Default Rest Timer</Label>
-              <Select value={restTimer} onValueChange={setRestTimer}>
+              <Select value={defaultRestTimer} onValueChange={setDefaultRestTimer}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select rest timer (optional)" />
                 </SelectTrigger>

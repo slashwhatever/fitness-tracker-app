@@ -1,118 +1,63 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { HybridStorageManager } from '@/lib/storage/HybridStorageManager';
-import { formatWeight, UserMovement, Workout, Set as WorkoutSet } from '@/models/types';
+import { useAuth } from '@/lib/auth/AuthProvider';
+import { PersonalRecord, Set } from '@/models/types';
+import { SupabaseService } from '@/services/supabaseService';
+import { Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-interface PersonalRecord {
-  movementName: string;
-  value: string;
-  type: 'weight' | 'reps' | 'time';
-  date: string;
+interface PRSummaryProps {
+  userMovementId: string;
+  className?: string;
 }
 
-export default function PRSummary() {
+export default function PRSummary({ userMovementId, className = '' }: PRSummaryProps) {
+  const { user } = useAuth();
   const [personalRecords, setPersonalRecords] = useState<PersonalRecord[]>([]);
+  const [recentSets, setRecentSets] = useState<Set[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-          const calculatePRs = async () => {
-        const workouts = await HybridStorageManager.getLocalRecords<Workout>('workouts');
-        const sets = await HybridStorageManager.getLocalRecords<WorkoutSet>('sets');
-      const allMovements: UserMovement[] = [];
+    const loadData = async () => {
+      if (!user?.id) return;
       
-      // Collect all movements from all workouts
-      for (const workout of workouts) {
-        // Get workout_movement relationships
-        const workoutMovements = await HybridStorageManager.getLocalRecords<{id: string, workout_id: string, user_movement_id: string}>('workout_movements', {
-          workout_id: workout.id
-        });
-        
-        // Get actual UserMovement objects
-        for (const wm of workoutMovements) {
-          const movement = await HybridStorageManager.getLocalRecord<UserMovement>('user_movements', wm.user_movement_id);
-          if (movement) {
-            allMovements.push(movement);
-          }
-        }
+      setLoading(true);
+      try {
+        // Load personal records for this user
+        const allPRs = await SupabaseService.getPersonalRecords(user.id);
+        const movementPRs = allPRs.filter(pr => pr.user_movement_id === userMovementId);
+        setPersonalRecords(movementPRs);
+
+        // Load recent sets for this movement
+        const sets = await SupabaseService.getSetsByMovement(user.id, userMovementId);
+        setRecentSets(sets.slice(0, 5)); // Last 5 sets
+      } catch (error) {
+        console.error('Error loading PR data:', error);
+      } finally {
+        setLoading(false);
       }
-
-      const prs: PersonalRecord[] = [];
-
-      // Calculate PRs for each unique movement
-      const movementMap = new Map<string, UserMovement>();
-      allMovements.forEach(movement => {
-        if (!movementMap.has(movement.name)) {
-          movementMap.set(movement.name, movement);
-        }
-      });
-
-      movementMap.forEach((movement) => {
-        const movementSets = sets.filter(set => 
-          allMovements.some(m => m.id === set.user_movement_id && m.name === movement.name)
-        );
-
-        if (movementSets.length === 0) return;
-
-        let pr: PersonalRecord | null = null;
-
-        switch (movement.tracking_type) {
-          case 'weight':
-            const maxWeightSet = movementSets.reduce((max, set) => 
-              (set.weight || 0) > (max.weight || 0) ? set : max
-            );
-            if (maxWeightSet.weight) {
-              pr = {
-                movementName: movement.name,
-                value: `${formatWeight(maxWeightSet.weight)} lbs × ${maxWeightSet.reps || 1}`,
-                type: 'weight',
-                date: new Date(maxWeightSet.created_at).toLocaleDateString()
-              };
-            }
-            break;
-          case 'bodyweight':
-            const maxRepsSet = movementSets.reduce((max, set) => 
-              (set.reps || 0) > (max.reps || 0) ? set : max
-            );
-            if (maxRepsSet.reps) {
-              pr = {
-                movementName: movement.name,
-                value: `${maxRepsSet.reps} reps`,
-                type: 'reps',
-                date: new Date(maxRepsSet.created_at).toLocaleDateString()
-              };
-            }
-            break;
-          case 'duration':
-            const maxTimeSet = movementSets.reduce((max, set) => 
-              (set.duration || 0) > (max.duration || 0) ? set : max
-            );
-            if (maxTimeSet.duration) {
-              const mins = Math.floor(maxTimeSet.duration / 60);
-              const secs = maxTimeSet.duration % 60;
-              pr = {
-                movementName: movement.name,
-                value: `${mins}:${secs.toString().padStart(2, '0')}`,
-                type: 'time',
-                date: new Date(maxTimeSet.created_at).toLocaleDateString()
-              };
-            }
-            break;
-        }
-
-        if (pr) {
-          prs.push(pr);
-        }
-      });
-
-      // Sort by date (most recent first) and take top 5
-      prs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      setPersonalRecords(prs.slice(0, 5));
     };
 
-    calculatePRs();
-  }, []);
+    loadData();
+  }, [userMovementId, user?.id]);
+
+  if (loading) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Trophy className="w-5 h-5" />
+            <span>Personal Records</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">Loading...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -152,27 +97,28 @@ export default function PRSummary() {
             <p className="text-sm text-muted-foreground mt-2">Start logging sets to track your PRs!</p>
           </div>
         ) : (
-          <ScrollArea className="h-[400px]">
-            <div className="space-y-4 pb-4">
+          <div className="space-y-4 pb-4">
               {personalRecords.map((pr, index) => (
-                <div key={`${pr.movementName}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={`${pr.user_movement_id}-${index}`} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
-                    {getTypeIcon(pr.type)}
+                    <span className="text-lg">{getTypeIcon(pr.record_type)}</span>
                     <div>
-                      <p className="font-medium">{pr.movementName}</p>
-                      <p className="text-sm text-muted-foreground">{pr.date}</p>
+                      <p className="font-medium">Personal Record</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(pr.created_at).toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-lg">{pr.value}</p>
-                    <p className="text-xs text-muted-foreground uppercase">PR</p>
-                  </div>
+                  <Badge variant="secondary">
+                    {pr.value}
+                  </Badge>
                 </div>
               ))}
             </div>
-          </ScrollArea>
         )}
       </CardContent>
     </Card>
   );
 }
+
+

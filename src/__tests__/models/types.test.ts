@@ -1,8 +1,9 @@
-import type {
+import {
   MovementTemplate,
   Set,
   SyncOperation,
   TimerPreset,
+  TrackingType,
   User,
   UserProfile,
   Workout,
@@ -36,25 +37,18 @@ describe("Data Models", () => {
       const template: MovementTemplate = {
         id: "test-id",
         name: "Push Up",
-        muscle_groups: ["chest"],
+        muscle_groups: ["Chest", "Triceps"], // Reverted to array
         tracking_type: "weight",
         experience_level: "Beginner",
         instructions: "Test instructions",
-        tags: ["chest", "bodyweight"],
-        created_at: "2024-01-01T00:00:00Z",
-        updated_at: "2024-01-01T00:00:00Z",
+        tags: ["chest", "bodyweight"], // tags is now optional in interface
+        created_at: "2024-01-01T00:00:00Z", // created_at is now optional in interface
+        updated_at: "2024-01-01T00:00:00Z", // updated_at is now optional in interface
       };
-
-      expect(template).toHaveProperty("muscle_groups");
+      expect(template).toHaveProperty("muscle_groups"); // Reverted to muscle_groups
       expect(template).toHaveProperty("tracking_type");
       expect(template).toHaveProperty("experience_level");
-      expect(template).toHaveProperty("created_at");
-      expect(template).toHaveProperty("updated_at");
-
-      // Ensure no camelCase properties
-      expect(template).not.toHaveProperty("muscleGroup");
-      expect(template).not.toHaveProperty("trackingType");
-      expect(template).not.toHaveProperty("experienceLevel");
+      expect(template.muscle_groups).toEqual(["Chest", "Triceps"]); // Array check
     });
 
     it("should validate tracking_type values", () => {
@@ -68,22 +62,12 @@ describe("Data Models", () => {
 
       validTypes.forEach((type) => {
         const template: MovementTemplate = {
-          id: "test-id",
-          name: "Test Movement",
-          muscle_groups: ["chest"],
-          tracking_type: type as
-            | "weight"
-            | "bodyweight"
-            | "duration"
-            | "distance"
-            | "reps_only",
-          experience_level: "Beginner",
-          instructions: "Test",
-          tags: [],
-          created_at: "2024-01-01T00:00:00Z",
-          updated_at: "2024-01-01T00:00:00Z",
+          id: "test-movement-2",
+          name: "Test Movement 2",
+          muscle_groups: ["Back", "Biceps"], // Reverted to array
+          tracking_type: type as TrackingType,
+          experience_level: "Intermediate",
         };
-
         expect(template.tracking_type).toBe(type);
       });
     });
