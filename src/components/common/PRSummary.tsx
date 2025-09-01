@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePersonalRecordsByMovement } from '@/hooks';
-import { Trophy, TrendingUp } from 'lucide-react';
+import { TrendingUp, Trophy } from 'lucide-react';
 
 interface PRSummaryProps {
   userMovementId: string;

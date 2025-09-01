@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { movementLibrary } from '@/data/movementLibrary';
-import { useUserMovements, useWorkoutMovements, useCreateUserMovement, useAddMovementToWorkout, useRemoveMovementFromWorkout } from '@/hooks';
+import { useAddMovementToWorkout, useCreateUserMovement, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
 import type { MovementTemplate, UserMovement } from '@/models/types';
 import { Check } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';

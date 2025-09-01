@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useWorkoutMovements, useRemoveMovementFromWorkout } from '@/hooks';
-import { Trash2, Plus } from 'lucide-react';
+import { useRemoveMovementFromWorkout, useWorkoutMovements } from '@/hooks';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface DraggableMovementListProps {
   workoutId: string;

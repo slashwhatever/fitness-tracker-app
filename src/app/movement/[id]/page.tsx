@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 // import { useAuth } from '@/lib/auth/AuthProvider'; // Not needed with new hooks
-import { useUserMovement, useSetsByMovement, useCreateSet } from '@/hooks';
+import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
 // import { Set, UserMovement } from '@/models/types'; // Using inferred types from hooks
 // // import { UserPreferences } from '@/utils/userPreferences'; // TODO: Update to use React Query // Temporarily disabled
 import { ArrowLeft, Calendar, Dumbbell } from 'lucide-react';

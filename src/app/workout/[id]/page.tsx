@@ -5,7 +5,7 @@ import DraggableMovementList from '@/components/common/DraggableMovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useWorkout, useAddMovementToWorkout, useWorkoutMovements } from '@/hooks';
+import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
 import { ArrowLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
