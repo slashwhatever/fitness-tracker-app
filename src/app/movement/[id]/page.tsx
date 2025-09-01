@@ -1,16 +1,14 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import EditableSet from '@/components/common/EditableSet';
 import PRSummary from '@/components/common/PRSummary';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-// import { useAuth } from '@/lib/auth/AuthProvider'; // Not needed with new hooks
 import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
-import { LastSet } from '@/models/types';
-// import { Set, UserMovement } from '@/models/types'; // Using inferred types from hooks
-// // import { UserPreferences } from '@/utils/userPreferences'; // TODO: Update to use React Query // Temporarily disabled
+import { LastSet, UserMovement } from '@/models/types';
 import { ArrowLeft, Calendar, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -32,6 +30,23 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   const { data: movement, isLoading: movementLoading } = useUserMovement(paramsResolved?.id || '');
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.id || '');
   const createSetMutation = useCreateSet();
+
+  const handleDuplicateSet = async (originalSet: any) => {
+    try {
+      await createSetMutation.mutateAsync({
+        user_movement_id: originalSet.user_movement_id,
+        workout_id: null, // Not part of a workout
+        set_type: originalSet.set_type,
+        reps: originalSet.reps,
+        weight: originalSet.weight,
+        duration: originalSet.duration,
+        distance: originalSet.distance,
+        notes: originalSet.notes,
+      });
+    } catch (error) {
+      console.error('Failed to duplicate set:', error);
+    }
+  };
 
   const loading = movementLoading || !movement;
 
@@ -183,24 +198,15 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                   <p className="text-sm text-muted-foreground mt-2">Use the quick log above to record your first set!</p>
                 </div>
               ) : (
-                <ScrollArea className="h-64">
+                <ScrollArea className="h-96">
                   <div className="space-y-3 pr-4">
                     {sets.map((set) => (
-                      <div key={set.id} className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
-                        <div className="space-y-1">
-                          <div className="text-sm font-medium">
-                            {set.reps} reps × {formatWeight(set.weight)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(set.created_at).toLocaleDateString()} at {new Date(set.created_at).toLocaleTimeString()}
-                          </div>
-                        </div>
-                        {set.notes && (
-                          <div className="text-xs text-muted-foreground max-w-32 truncate">
-                            {set.notes}
-                          </div>
-                        )}
-                      </div>
+                      <EditableSet
+                        key={set.id}
+                        set={set}
+                        movement={movement as UserMovement}
+                        onDuplicate={handleDuplicateSet}
+                      />
                     ))}
                   </div>
                 </ScrollArea>

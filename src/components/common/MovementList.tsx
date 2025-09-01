@@ -4,8 +4,10 @@ import EditMovementModal from '@/components/common/EditMovementModal';
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
+import { useSetsByWorkout } from '@/hooks/useSets';
 import type { UserMovement } from '@/models/types';
 import { Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 interface MovementListProps {
@@ -19,6 +21,7 @@ export default function MovementList({
   onAddMovementClick 
 }: MovementListProps) {
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
+  const { data: workoutSets = [] } = useSetsByWorkout(workoutId);
   const removeMovementMutation = useRemoveMovementFromWorkout();
   const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
   const [deletingMovement, setDeletingMovement] = useState<{ id: string; name: string } | null>(null);
@@ -44,6 +47,10 @@ export default function MovementList({
     }
   };
 
+  const getMovementSets = (userMovementId: string) => {
+    return workoutSets.filter(set => set.user_movement_id === userMovementId);
+  };
+
   if (isLoading) {
     return (
       <p className="text-muted-foreground">Loading movements...</p>
@@ -66,44 +73,61 @@ export default function MovementList({
   return (
     <>
         <div className="space-y-3">
-          {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => (
-            <div 
-              key={movement.id} 
-              className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border hover:bg-muted/10 transition-all cursor-pointer"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="text-sm font-medium text-muted-foreground">
-                  #{index + 1}
-                </div>
-                <div>
-                  <h3 className="font-medium">
-                    {movement.user_movement?.name || 'Unknown Movement'}
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
-                  </p>
+          {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => {
+            const movementSets = getMovementSets(movement.user_movement_id);
+            
+            return (
+              <div key={movement.id} className="bg-muted/50 rounded-lg border">
+                <div className="flex items-center justify-between p-4 hover:bg-muted/10 transition-all">
+                  <Link 
+                    href={`/movement/${movement.user_movement_id}`}
+                    className="flex items-center space-x-3 flex-1 cursor-pointer"
+                  >
+                    <div className="text-sm font-medium text-muted-foreground">
+                      #{index + 1}
+                    </div>
+                    <div>
+                      <h3 className="font-medium hover:text-blue-500 transition-colors">
+                        {movement.user_movement?.name || 'Unknown Movement'}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
+                        {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
+                      </p>
+                    </div>
+                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                      className="text-muted-foreground hover:text-green-500"
+                    >
+                      <Link href={`/movement/${movement.user_movement_id}`}>
+                        <Plus className="w-4 h-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditingMovementId(movement.user_movement_id)}
+                      className="text-muted-foreground hover:text-blue-500"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
+                      className="text-muted-foreground hover:text-red-500"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setEditingMovementId(movement.user_movement_id)}
-                  className="text-muted-foreground hover:text-blue-500"
-                >
-                  <Edit3 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
-                  className="text-muted-foreground hover:text-red-500"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
       <EditMovementModal
