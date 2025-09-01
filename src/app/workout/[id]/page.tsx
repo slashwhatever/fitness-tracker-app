@@ -3,10 +3,11 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
+import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -19,7 +20,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
   const [addingMovements, setAddingMovements] = useState<Set<string>>(new Set());
-
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const addMovementToWorkoutMutation = useAddMovementToWorkout();
 
   // Resolve async params
@@ -30,6 +31,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   // Use our new React Query hooks
   const { data: workout, isLoading: loading } = useWorkout(paramsResolved?.id || '');
   const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.id || '');
+  const { data: workoutSettings = {} } = useWorkout(paramsResolved?.id || '');
 
   const handleMovementAdded = async (userMovementId: string) => {
     if (!paramsResolved?.id) return;
@@ -130,6 +132,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                   {workout.description && (
                     <p className="text-muted-foreground mt-2">{workout.description}</p>
                   )}
+                  Workout movements ({workoutMovements.length})
                 </div>
                 <div className="flex space-x-2">
                   <Button 
@@ -138,6 +141,13 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                     onClick={() => setShowMovementModal(true)}
                   >
                     <Plus className="w-4 h-4" />
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setShowSettingsModal(true)}
+                  >
+                    <Settings className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -161,6 +171,21 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                 setRefreshKey(prev => prev + 1);
               }}
               workoutId={paramsResolved?.id || ''}
+            />
+
+            <WorkoutSettingsModal
+              isOpen={showSettingsModal}
+              onClose={() => {
+                setShowSettingsModal(false);
+                setRefreshKey(prev => prev + 1);
+              }}
+              workout={workout}
+              onWorkoutUpdated={() => {
+                setRefreshKey(prev => prev + 1);
+              }}
+              onWorkoutDeleted={() => {
+                setRefreshKey(prev => prev + 1);
+              }}
             />
       </main>
     </ProtectedRoute>

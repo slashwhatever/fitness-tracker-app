@@ -34,7 +34,7 @@ export default function Dashboard() {
             <CardHeader>
               <div className="flex justify-between items-center">
                 <CardTitle className="text-3xl">
-                  Fitness Tracking App
+                  Log Set
                 </CardTitle>
                 <div className="flex space-x-3">
                   <Button variant="outline" asChild>

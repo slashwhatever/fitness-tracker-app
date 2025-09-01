@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useWorkouts, useDeleteWorkout, useWorkoutMovements } from '@/hooks';
+import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { forwardRef, useImperativeHandle, useState } from 'react';
@@ -79,7 +79,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
             <ScrollArea className="h-64">
               <div className="grid gap-3 pr-4">
                 {workouts.map((workout) => (
-                  <div key={workout.id} className="flex justify-between items-center p-4 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
+                  <div key={workout.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border hover:bg-muted/10 transition-all cursor-pointer">
 
                     <Link href={`/workout/${workout.id}`} className="flex-1">
                       <div className="text-left">

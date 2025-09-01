@@ -2,7 +2,6 @@
 
 import EditMovementModal from '@/components/common/EditMovementModal';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
 import type { UserMovement } from '@/models/types';
@@ -47,48 +46,29 @@ export default function MovementList({
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-muted-foreground">Loading movements...</p>
-        </CardContent>
-      </Card>
+      <p className="text-muted-foreground">Loading movements...</p>
     );
   }
 
   if (movements.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Workout Movements</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center py-8">
-          <p className="text-muted-foreground mb-4">No movements added yet.</p>
-          <Button onClick={onAddMovementClick} className="flex items-center space-x-2">
-            <Plus className="w-4 h-4" />
-            <span>Add Movement</span>
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="text-center py-8">
+        <p className="text-muted-foreground mb-4">No movements added yet.</p>
+        <Button onClick={onAddMovementClick} className="flex items-center space-x-2">
+          <Plus className="w-4 h-4" />
+          <span>Add Movement</span>
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle>Workout Movements ({movements.length})</CardTitle>
-          <Button onClick={onAddMovementClick} size="sm" className="flex items-center space-x-2">
-            <Plus className="w-4 h-4" />
-            <span>Add Movement</span>
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
+    <>
         <div className="space-y-3">
           {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => (
             <div 
               key={movement.id} 
-              className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border"
+              className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border hover:bg-muted/10 transition-all cursor-pointer"
             >
               <div className="flex items-center space-x-3">
                 <div className="text-sm font-medium text-muted-foreground">
@@ -124,16 +104,13 @@ export default function MovementList({
             </div>
           ))}
         </div>
-      </CardContent>
 
-      {/* Edit Movement Modal */}
       <EditMovementModal
         isOpen={!!editingMovementId}
         onClose={() => setEditingMovementId(null)}
         movement={editingMovement as UserMovement | null}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={!!deletingMovement}
         onClose={() => setDeletingMovement(null)}
@@ -145,6 +122,6 @@ export default function MovementList({
         variant="destructive"
         isLoading={removeMovementMutation.isPending}
       />
-    </Card>
+      </>
   );
 }
