@@ -109,7 +109,42 @@ export function useCreateUserMovement() {
       if (error) throw error;
       return data as UserMovement;
     },
-    onSuccess: () => {
+    onMutate: async (newMovement) => {
+      if (!user?.id) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: movementKeys.userMovementsList(user.id) });
+
+      // Snapshot the previous value
+      const previousUserMovements = queryClient.getQueryData(movementKeys.userMovementsList(user.id));
+
+      // Optimistically update to the new value
+      const optimisticMovement = {
+        id: `temp-${Date.now()}`,
+        ...newMovement,
+        user_id: user.id,
+        usage_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        last_used_at: null,
+        manual_1rm: null,
+      };
+
+      queryClient.setQueryData(
+        movementKeys.userMovementsList(user.id),
+        (old: any[]) => [optimisticMovement, ...(old || [])]
+      );
+
+      return { previousUserMovements };
+    },
+    onError: (err, newMovement, context) => {
+      // If the mutation fails, roll back
+      if (user?.id) {
+        queryClient.setQueryData(movementKeys.userMovementsList(user.id), context?.previousUserMovements);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: movementKeys.userMovementsList(user.id) });
       }
@@ -135,10 +170,56 @@ export function useUpdateUserMovement() {
       if (error) throw error;
       return data as UserMovement;
     },
-    onSuccess: (data) => {
+    onMutate: async ({ id, updates }) => {
+      if (!user?.id) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: movementKeys.userMovementsList(user.id) });
+      await queryClient.cancelQueries({ queryKey: movementKeys.userMovement(id) });
+
+      // Snapshot the previous values
+      const previousUserMovements = queryClient.getQueryData(movementKeys.userMovementsList(user.id));
+      const previousMovement = queryClient.getQueryData(movementKeys.userMovement(id));
+
+      // Optimistically update the movement in the list
+      queryClient.setQueryData(
+        movementKeys.userMovementsList(user.id),
+        (old: any[]) => {
+          if (!old) return old;
+          return old.map((movement: any) => 
+            movement.id === id 
+              ? { ...movement, ...updates, updated_at: new Date().toISOString() }
+              : movement
+          );
+        }
+      );
+
+      // Optimistically update the individual movement
+      if (previousMovement) {
+        queryClient.setQueryData(
+          movementKeys.userMovement(id),
+          (old: any) => ({ ...old, ...updates, updated_at: new Date().toISOString() })
+        );
+      }
+
+      return { previousUserMovements, previousMovement };
+    },
+    onError: (err, { id }, context) => {
+      // If the mutation fails, roll back
+      if (user?.id && context) {
+        if (context.previousUserMovements) {
+          queryClient.setQueryData(movementKeys.userMovementsList(user.id), context.previousUserMovements);
+        }
+        if (context.previousMovement) {
+          queryClient.setQueryData(movementKeys.userMovement(id), context.previousMovement);
+        }
+      }
+    },
+    onSettled: (data, error, { id }) => {
+      // Always refetch after error or success
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: movementKeys.userMovementsList(user.id) });
-        queryClient.setQueryData(movementKeys.userMovement(data.id), data);
+        queryClient.invalidateQueries({ queryKey: movementKeys.userMovement(id) });
       }
     },
   });
@@ -173,7 +254,7 @@ export function useAddMovementToWorkout() {
 
       // Optimistically update to the new value
       const optimisticMovement = {
-        id: `temp-${Date.now()}`, // Temporary ID
+        id: `temp-${Date.now()}-${Math.random()}`, // Unique temporary ID
         ...newWorkoutMovement,
         created_at: new Date().toISOString(),
         user_movement: null, // Will be populated by real response
@@ -181,7 +262,12 @@ export function useAddMovementToWorkout() {
 
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(newWorkoutMovement.workout_id),
-        (old: any[]) => [...(old || []), optimisticMovement]
+        (old: any[]) => {
+          const sortedList = [...(old || []), optimisticMovement].sort((a, b) => 
+            (a.order_index || 0) - (b.order_index || 0)
+          );
+          return sortedList;
+        }
       );
 
       // Return a context object with the snapshotted value

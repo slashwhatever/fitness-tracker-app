@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import CreateCustomMovementModal from '@/components/common/CreateCustomMovementModal';
 import { movementLibrary } from '@/data/movementLibrary';
 import { useAddMovementToWorkout, useCreateUserMovement, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
 import type { MovementTemplate, UserMovement } from '@/models/types';
-import { Check } from 'lucide-react';
+import { Check, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface MovementSelectionModalProps {
@@ -24,6 +25,8 @@ export default function MovementSelectionModal({
 }: MovementSelectionModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMovements, setSelectedMovements] = useState<Set<string>>(new Set());
+  const [showCustomMovementModal, setShowCustomMovementModal] = useState(false);
+  const [processingMovements, setProcessingMovements] = useState<Set<string>>(new Set());
 
   // Use our new React Query hooks
   const { data: userMovements = [] } = useUserMovements();
@@ -53,28 +56,16 @@ export default function MovementSelectionModal({
   }, [isOpen, workoutMovementIdsString]);
 
   const filteredLibrary = useMemo(() => {
-    // Get template IDs that user already has as custom movements
-    const existingTemplateIds = new Set(
-      userMovements
-        .filter(um => um.template_id)
-        .map(um => um.template_id!)
-    );
-
     return movementLibrary
       .filter(movement => {
-        // Don't show library movements that user already has as custom movements
-        if (existingTemplateIds.has(movement.id)) {
-          return false;
-        }
-        
-        // Apply search filter
+        // Apply search filter only
         return movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                movement.muscle_groups.some(group =>
                  group.toLowerCase().includes(searchTerm.toLowerCase())
                );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [searchTerm, userMovements]);
+  }, [searchTerm]);
 
   const filteredUserMovements = useMemo(() => {
     return userMovements
@@ -88,6 +79,13 @@ export default function MovementSelectionModal({
   }, [userMovements, searchTerm]);
 
   const handleMovementToggle = async (movementId: string, movementData: MovementTemplate | UserMovement | any) => {
+    // Prevent double-clicks and concurrent operations
+    if (processingMovements.has(movementId)) {
+      return;
+    }
+
+    setProcessingMovements(prev => new Set([...prev, movementId]));
+
     try {
       if (selectedMovements.has(movementId)) {
         // Optimistically update UI immediately
@@ -106,25 +104,18 @@ export default function MovementSelectionModal({
         // Select movement - add to workout
         let userMovementId = movementId;
         
-        // Check if this is a template movement and create user movement if needed
+        // Always create a new user movement from library templates
         const isTemplate = 'experience_level' in movementData;
         if (isTemplate) {
-          const existingUserMovement = userMovements.find(um => um.template_id === movementId);
-          
-          if (existingUserMovement) {
-            userMovementId = existingUserMovement.id;
-          } else {
-            // Create new user movement from template
-            const template = movementData as MovementTemplate;
-            const newUserMovement = await createUserMovementMutation.mutateAsync({
-              template_id: template.id,
-              name: template.name,
-              muscle_groups: template.muscle_groups,
-              tracking_type: template.tracking_type,
-              personal_notes: template.instructions,
-            });
-            userMovementId = newUserMovement.id;
-          }
+          const template = movementData as MovementTemplate;
+          const newUserMovement = await createUserMovementMutation.mutateAsync({
+            template_id: template.id,
+            name: template.name,
+            muscle_groups: template.muscle_groups,
+            tracking_type: template.tracking_type,
+            personal_notes: template.instructions,
+          });
+          userMovementId = newUserMovement.id;
         }
 
         // Check if movement is already in workout to avoid duplicates
@@ -140,11 +131,13 @@ export default function MovementSelectionModal({
         // Optimistically update UI immediately
         setSelectedMovements(prev => new Set([...prev, userMovementId]));
 
-        // Calculate next order index to avoid duplicates
-        const maxOrderIndex = workoutMovements.reduce((max, wm) => 
-          Math.max(max, wm.order_index || 0), -1
+        // Calculate next order index with buffer for concurrent operations
+        const maxOrderIndex = Math.max(
+          ...workoutMovements.map(wm => wm.order_index || 0),
+          ...Array.from(processingMovements).map((_, index) => workoutMovements.length + index),
+          -1
         );
-        const nextOrderIndex = maxOrderIndex + 1;
+        const nextOrderIndex = maxOrderIndex + processingMovements.size + 1;
 
         // Add to workout
         await addMovementToWorkoutMutation.mutateAsync({
@@ -155,6 +148,53 @@ export default function MovementSelectionModal({
       }
     } catch (error) {
       console.error('Error toggling movement:', error);
+      // Revert optimistic update on error
+      if (!selectedMovements.has(movementId)) {
+        setSelectedMovements(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(movementId);
+          return newSet;
+        });
+      } else {
+        setSelectedMovements(prev => new Set([...prev, movementId]));
+      }
+    } finally {
+      setProcessingMovements(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(movementId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleCustomMovementCreated = async (userMovementId: string) => {
+    // Close custom movement modal
+    setShowCustomMovementModal(false);
+    
+    // Automatically add the new custom movement to the workout
+    const maxOrderIndex = workoutMovements.reduce((max, wm) => 
+      Math.max(max, wm.order_index || 0), -1
+    );
+    const nextOrderIndex = maxOrderIndex + 1;
+
+    try {
+      // Optimistically update UI immediately
+      setSelectedMovements(prev => new Set([...prev, userMovementId]));
+
+      // Add to workout
+      await addMovementToWorkoutMutation.mutateAsync({
+        workout_id: workoutId,
+        user_movement_id: userMovementId,
+        order_index: nextOrderIndex,
+      });
+    } catch (error) {
+      console.error('Error adding custom movement to workout:', error);
+      // Remove from selected if failed
+      setSelectedMovements(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(userMovementId);
+        return newSet;
+      });
     }
   };
 
@@ -174,14 +214,23 @@ export default function MovementSelectionModal({
 
         <div className="flex-1 flex flex-col min-h-0">
           {/* Search Bar */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex space-x-3">
             <Input
               type="text"
               placeholder="Search movements..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full"
+              className="flex-1"
             />
+            <Button 
+              type="button"
+              variant="outline"
+              onClick={() => setShowCustomMovementModal(true)}
+              className="flex items-center space-x-2 whitespace-nowrap"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Custom</span>
+            </Button>
           </div>
 
           {/* Movement Lists */}
@@ -200,7 +249,7 @@ export default function MovementSelectionModal({
                             ? 'bg-primary/10 border-primary' 
                             : 'border-border hover:border-accent-foreground/20'
                         }`}
-                        onClick={() => handleMovementToggle(movement.id, movement)}
+                        onClick={() => !processingMovements.has(movement.id) && handleMovementToggle(movement.id, movement)}
                       >
                         <div className="flex items-center space-x-3 flex-1">
                           <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
@@ -249,6 +298,7 @@ export default function MovementSelectionModal({
                           : 'border-border hover:border-accent-foreground/20'
                       }`}
                       onClick={() => {
+                        if (processingMovements.has(movement.id)) return;
                         // For library movements, find the corresponding user_movement_id
                         const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
                         const userMovementId = existingUserMovement?.id || movement.id;
@@ -319,6 +369,13 @@ export default function MovementSelectionModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Custom Movement Creation Modal */}
+      <CreateCustomMovementModal
+        isOpen={showCustomMovementModal}
+        onClose={() => setShowCustomMovementModal(false)}
+        onMovementCreated={handleCustomMovementCreated}
+      />
     </Dialog>
   );
 }

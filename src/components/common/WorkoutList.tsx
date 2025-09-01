@@ -49,6 +49,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
         setShowDeleteConfirm(false);
       } catch (error) {
         console.error('Failed to delete workout:', error);
+        // Don't close modal on error so user can retry
       }
     }
   };
@@ -132,6 +133,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((props, ref) => {
         confirmText="Delete Workout"
         cancelText="Cancel"
         variant="destructive"
+        isLoading={deleteWorkoutMutation.isPending}
       />
     </>
   );

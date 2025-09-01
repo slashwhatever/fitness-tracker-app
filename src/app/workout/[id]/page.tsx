@@ -1,7 +1,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import DraggableMovementList from '@/components/common/DraggableMovementList';
+import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -143,7 +143,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <DraggableMovementList
+              <MovementList
                 key={refreshKey}
                 workoutId={paramsResolved?.id || ''}
                 onMovementAdded={handleMovementAdded}
@@ -153,7 +153,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           </Card>
         </div>
 
-                    <MovementSelectionModal
+            <MovementSelectionModal
               isOpen={showMovementModal}
               onClose={() => {
                 setShowMovementModal(false);

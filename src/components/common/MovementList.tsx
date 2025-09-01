@@ -1,29 +1,45 @@
 'use client';
 
+import EditMovementModal from '@/components/common/EditMovementModal';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRemoveMovementFromWorkout, useWorkoutMovements } from '@/hooks';
-import { Plus, Trash2 } from 'lucide-react';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
+import type { UserMovement } from '@/models/types';
+import { Edit3, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
-interface DraggableMovementListProps {
+interface MovementListProps {
   workoutId: string;
   onMovementAdded: (userMovementId: string) => Promise<void>;
   onAddMovementClick: () => void;
 }
 
-export default function DraggableMovementList({ 
+export default function MovementList({ 
   workoutId, 
   onAddMovementClick 
-}: DraggableMovementListProps) {
+}: MovementListProps) {
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
   const removeMovementMutation = useRemoveMovementFromWorkout();
+  const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
+  const [deletingMovement, setDeletingMovement] = useState<{ id: string; name: string } | null>(null);
+  
+  // Get the movement data for editing
+  const { data: editingMovement } = useUserMovement(editingMovementId || '');
 
-  const handleRemoveMovement = async (movementId: string) => {
+  const handleDeleteClick = (movementId: string, movementName: string) => {
+    setDeletingMovement({ id: movementId, name: movementName });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingMovement) return;
+
     try {
       await removeMovementMutation.mutateAsync({ 
         workoutId, 
-        movementId 
+        movementId: deletingMovement.id 
       });
+      setDeletingMovement(null);
     } catch (error) {
       console.error('Failed to remove movement:', error);
     }
@@ -87,19 +103,48 @@ export default function DraggableMovementList({
                   </p>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemoveMovement(movement.user_movement_id)}
-                disabled={removeMovementMutation.isPending}
-                className="text-muted-foreground hover:text-red-500"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setEditingMovementId(movement.user_movement_id)}
+                  className="text-muted-foreground hover:text-blue-500"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
+                  className="text-muted-foreground hover:text-red-500"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
       </CardContent>
+
+      {/* Edit Movement Modal */}
+      <EditMovementModal
+        isOpen={!!editingMovementId}
+        onClose={() => setEditingMovementId(null)}
+        movement={editingMovement as UserMovement | null}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!deletingMovement}
+        onClose={() => setDeletingMovement(null)}
+        onConfirm={handleConfirmDelete}
+        title="Remove Movement from Workout"
+        description={`Are you sure you want to remove "${deletingMovement?.name}" from this workout? This will not delete the movement from your library, just remove it from this workout.`}
+        confirmText="Remove Movement"
+        cancelText="Keep Movement"
+        variant="destructive"
+        isLoading={removeMovementMutation.isPending}
+      />
     </Card>
   );
 }
