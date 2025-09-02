@@ -13,7 +13,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
 import { Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -105,10 +105,10 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           <div className="max-w-4xl mx-auto">
             <Card>
               <CardContent className="p-8 text-center">
-                <h2 className="text-xl font-semibold mb-2">Workout not found</h2>
-                <p className="text-muted-foreground mb-4">
+                <CardTitle>Workout not found</CardTitle>
+                <CardDescription className="text-muted-foreground mb-4">
                   The workout you&apos;re looking for doesn&apos;t exist or has been deleted.
-                </p>
+                </CardDescription>
                 <Button asChild>
                   <Link href="/">Return to Dashboard</Link>
                 </Button>
