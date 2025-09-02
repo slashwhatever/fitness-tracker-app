@@ -12,9 +12,9 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { getExperienceLevelVariant } from '@/lib/utils/typeHelpers';
 import type { TrackingType, UserMovement } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -67,16 +67,28 @@ export default function MovementSelectionModal({
   }, [isOpen, workoutMovementIdsString]);
 
   const filteredLibrary = useMemo(() => {
+    // Get template IDs that users already have custom movements for
+    const usedTemplateIds = new Set(
+      userMovements
+        .filter(userMovement => userMovement.template_id)
+        .map(userMovement => userMovement.template_id)
+    );
+
     return movementTemplates
       .filter(movement => {
-        // Apply search filter only
+        // Filter out templates that user already has custom movements for
+        if (usedTemplateIds.has(movement.id)) {
+          return false;
+        }
+
+        // Apply search filter
         return movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                movement.muscle_groups.some(group =>
                  group.toLowerCase().includes(searchTerm.toLowerCase())
                );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [movementTemplates, searchTerm]);
+  }, [movementTemplates, searchTerm, userMovements]);
 
   const filteredUserMovements = useMemo(() => {
     return userMovements
@@ -210,7 +222,7 @@ export default function MovementSelectionModal({
   };
 
   const SearchAndContent = ({ className = "" }: { className?: string }) => (
-    <div className={`flex-1 flex flex-col min-h-0 space-y-4 ${className}`}>
+    <div className={`flex flex-col space-y-4 overflow-hidden ${className}`}>
       {/* Search Bar */}
       <div className="flex-shrink-0 flex space-x-3">
         <Input
@@ -232,7 +244,7 @@ export default function MovementSelectionModal({
       </div>
 
       {/* Movement Lists */}
-      <ScrollArea className="h-72 -mr-4 pr-4">
+      <div className="flex-1 min-h-0 overflow-y-auto pr-4">
         <div className="space-y-4 pb-4">
           {/* User's Custom Movements */}
           {filteredUserMovements.length > 0 && (
@@ -336,11 +348,9 @@ export default function MovementSelectionModal({
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2 flex-shrink-0">
-                    <Badge variant="secondary" className="text-xs">
+                  <Badge variant={getExperienceLevelVariant(movement.experience_level)}> 
                       {movement.experience_level}
                     </Badge>
-                  </div>
                 </div>
               ))}
             </div>
@@ -352,8 +362,8 @@ export default function MovementSelectionModal({
             <p className="text-muted-foreground">No movements found matching your search.</p>
           </div>
         )}
-      </ScrollArea>
-    </div>
+        </div>
+      </div>
   );
 
   const FooterContent = () => (
@@ -377,16 +387,18 @@ export default function MovementSelectionModal({
             onClose();
           }
         }}>
-          <DialogContent className="max-w-3xl max-h-[85vh] w-[90vw] flex flex-col">
-            <DialogHeader className="pb-4">
+          <DialogContent className="max-w-3xl h-[85vh] w-[90vw] flex flex-col">
+            <DialogHeader className="pb-4 flex-shrink-0">
               <DialogTitle className="text-xl">Add Movements to Workout</DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground">
                 Select exercises from the library to add to your workout
               </DialogDescription>
             </DialogHeader>
 
-            <SearchAndContent />
-            <FooterContent />
+            <SearchAndContent className="flex-1 min-h-0" />
+            <div className="flex-shrink-0">
+              <FooterContent />
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -408,12 +420,12 @@ export default function MovementSelectionModal({
           onClose();
         }
       }}>
-        <DrawerContent>
-          <DrawerHeader className="text-left">
+        <DrawerContent className="h-[90vh] flex flex-col">
+          <DrawerHeader className="text-left flex-shrink-0">
             <DrawerTitle>Add Movements to Workout</DrawerTitle>
           </DrawerHeader>
-          <SearchAndContent className="px-4" />
-          <DrawerFooter className="pt-2">
+          <SearchAndContent className="px-4 flex-1 min-h-0" />
+          <DrawerFooter className="pt-2 flex-shrink-0">
             <FooterContent />
           </DrawerFooter>
         </DrawerContent>
