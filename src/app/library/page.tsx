@@ -11,7 +11,6 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useMovementTemplates } from '@/hooks/useMovements';
 import { ExperienceLevel, MovementTemplate } from '@/models/types';
 import { useMemo, useState } from 'react';

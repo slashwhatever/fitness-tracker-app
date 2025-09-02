@@ -3,10 +3,9 @@
 import CreateCustomMovementModal from '@/components/common/CreateCustomMovementModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
@@ -210,177 +209,215 @@ export default function MovementSelectionModal({
     }
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) {
-        onClose();
-      }
-    }}>
-      <DialogContent className="max-w-3xl max-h-[85vh] w-[90vw] flex flex-col">
-        <DialogHeader className="pb-4">
-          <DialogTitle className="text-xl">Add Movements to Workout</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            Select exercises from the library to add to your workout
-          </p>
-        </DialogHeader>
+  const SearchAndContent = ({ className = "" }: { className?: string }) => (
+    <div className={`flex-1 flex flex-col min-h-0 space-y-4 ${className}`}>
+      {/* Search Bar */}
+      <div className="flex-shrink-0 flex space-x-3">
+        <Input
+          type="text"
+          placeholder="Search movements..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex-1"
+        />
+        <Button 
+          type="button"
+          variant="outline"
+          onClick={() => setShowCustomMovementModal(true)}
+          className="flex items-center space-x-2 whitespace-nowrap"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Custom</span>
+        </Button>
+      </div>
 
-        <div className="flex-1 flex flex-col min-h-0 space-y-4">
-          {/* Search Bar */}
-          <div className="flex-shrink-0 flex space-x-3">
-            <Input
-              type="text"
-              placeholder="Search movements..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1"
-            />
-            <Button 
-              type="button"
-              variant="outline"
-              onClick={() => setShowCustomMovementModal(true)}
-              className="flex items-center space-x-2 whitespace-nowrap"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Custom</span>
-            </Button>
-          </div>
-
-          {/* Movement Lists */}
-          <ScrollArea className="h-72 -mr-4 pr-4">
-            <div className="space-y-4 pb-4">
-              {/* User's Custom Movements */}
-              {filteredUserMovements.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-2">My Movements</h3>
-                  <div className="space-y-2">
-                    {filteredUserMovements.map((movement) => (
-                      <div
-                        key={movement.id}
-                        className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
-                          selectedMovements.has(movement.id) 
-                            ? 'bg-primary/10 border-primary' 
-                            : 'border-border hover:border-accent-foreground/20'
-                        }`}
-                        onClick={() => !processingMovements.has(movement.id) && handleMovementToggle(movement.id, movement)}
-                      >
-                        <div className="flex items-center space-x-3 flex-1">
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                            selectedMovements.has(movement.id)
-                              ? 'bg-primary border-primary' 
-                              : 'border-muted-foreground/30'
-                          }`}>
-                            {selectedMovements.has(movement.id) && (
-                              <Check className="w-3 h-3 text-primary-foreground" />
-                            )}
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-lg">
-                                {movement.tracking_type === 'weight' ? '🏋️' : 
-                                 movement.tracking_type === 'bodyweight' ? '🤸' :
-                                 movement.tracking_type === 'duration' ? '⏱️' :
-                                 movement.tracking_type === 'distance' ? '🏃' : '💪'}
-                              </span>
-                              <h3 className="font-medium text-sm truncate">{movement.name}</h3>
-                            </div>
-                            <p className="text-xs text-muted-foreground">{movement.muscle_groups?.join(', ') || 'Unknown'}</p>
-                          </div>
-                        </div>
-                        
-                        <Badge variant="outline" className="text-xs">
-                          Custom
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Movement Library */}
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground mb-2">Movement Library</h3>
-                <div className="space-y-2">
-                  {filteredLibrary.map((movement) => (
-                    <div
-                      key={movement.id}
-                      className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
-                        selectedMovements.has(movement.id) 
-                          ? 'bg-primary/10 border-primary' 
-                          : 'border-border hover:border-accent-foreground/20'
-                      }`}
-                      onClick={() => {
-                        if (processingMovements.has(movement.id)) return;
-                        // For library movements, find the corresponding user_movement_id
-                        const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
-                        const userMovementId = existingUserMovement?.id || movement.id;
-                        handleMovementToggle(userMovementId, movement);
-                      }}
-                    >
-                      <div className="flex items-center space-x-3 flex-1">
-                                                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                            (() => {
-                              const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
-                              const userMovementId = existingUserMovement?.id || movement.id;
-                              return selectedMovements.has(userMovementId);
-                            })()
-                              ? 'bg-primary border-primary' 
-                              : 'border-muted-foreground/30'
-                          }`}>
-                            {(() => {
-                              const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
-                              const userMovementId = existingUserMovement?.id || movement.id;
-                              return selectedMovements.has(userMovementId);
-                            })() && (
-                              <Check className="w-3 h-3 text-primary-foreground" />
-                            )}
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-lg">
-                              {movement.tracking_type === 'weight' ? '🏋️' : 
-                               movement.tracking_type === 'bodyweight' ? '🤸' :
-                               movement.tracking_type === 'duration' ? '⏱️' :
-                               movement.tracking_type === 'distance' ? '🏃' : '💪'}
-                            </span>
-                            <h3 className="font-medium text-sm truncate">{movement.name}</h3>
-                          </div>
-                          <p className="text-xs text-muted-foreground">{movement.muscle_groups?.join(', ') || 'Unknown'}</p>
-                        </div>
+      {/* Movement Lists */}
+      <ScrollArea className="h-72 -mr-4 pr-4">
+        <div className="space-y-4 pb-4">
+          {/* User's Custom Movements */}
+          {filteredUserMovements.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-2">My Movements</h3>
+              <div className="space-y-2">
+                {filteredUserMovements.map((movement) => (
+                  <div
+                    key={movement.id}
+                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
+                      selectedMovements.has(movement.id) 
+                        ? 'bg-primary/10 border-primary' 
+                        : 'border-border hover:border-accent-foreground/20'
+                    }`}
+                    onClick={() => !processingMovements.has(movement.id) && handleMovementToggle(movement.id, movement)}
+                  >
+                    <div className="flex items-center space-x-3 flex-1">
+                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                        selectedMovements.has(movement.id)
+                          ? 'bg-primary border-primary' 
+                          : 'border-muted-foreground/30'
+                      }`}>
+                        {selectedMovements.has(movement.id) && (
+                          <Check className="w-3 h-3 text-primary-foreground" />
+                        )}
                       </div>
                       
-                      <div className="flex items-center space-x-2 flex-shrink-0">
-                        <Badge variant="secondary" className="text-xs">
-                          {movement.experience_level}
-                        </Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">
+                            {movement.tracking_type === 'weight' ? '🏋️' : 
+                             movement.tracking_type === 'bodyweight' ? '🤸' :
+                             movement.tracking_type === 'duration' ? '⏱️' :
+                             movement.tracking_type === 'distance' ? '🏃' : '💪'}
+                          </span>
+                          <h3 className="font-medium text-sm truncate">{movement.name}</h3>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{movement.muscle_groups?.join(', ') || 'Unknown'}</p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                    
+                    <Badge variant="outline" className="text-xs">
+                      Custom
+                    </Badge>
+                  </div>
+                ))}
               </div>
             </div>
-            
-            {filteredLibrary.length === 0 && filteredUserMovements.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No movements found matching your search.</p>
-              </div>
-            )}
-          </ScrollArea>
+          )}
 
-          {/* Footer */}
-          <div className="flex-shrink-0 flex justify-between items-center pt-4 border-t bg-background">
-            <div className="text-sm text-muted-foreground">
-              {selectedMovements.size} movement{selectedMovements.size !== 1 ? 's' : ''} in workout
-            </div>
-            <div className="flex space-x-3">
-              <Button onClick={onClose}>
-                Done
-              </Button>
+          {/* Movement Library */}
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2">Movement Library</h3>
+            <div className="space-y-2">
+              {filteredLibrary.map((movement) => (
+                <div
+                  key={movement.id}
+                  className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
+                    selectedMovements.has(movement.id) 
+                      ? 'bg-primary/10 border-primary' 
+                      : 'border-border hover:border-accent-foreground/20'
+                  }`}
+                  onClick={() => {
+                    if (processingMovements.has(movement.id)) return;
+                    // For library movements, find the corresponding user_movement_id
+                    const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                    const userMovementId = existingUserMovement?.id || movement.id;
+                    handleMovementToggle(userMovementId, movement);
+                  }}
+                >
+                  <div className="flex items-center space-x-3 flex-1">
+                    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                        (() => {
+                          const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                          const userMovementId = existingUserMovement?.id || movement.id;
+                          return selectedMovements.has(userMovementId);
+                        })()
+                          ? 'bg-primary border-primary' 
+                          : 'border-muted-foreground/30'
+                      }`}>
+                        {(() => {
+                          const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                          const userMovementId = existingUserMovement?.id || movement.id;
+                          return selectedMovements.has(userMovementId);
+                        })() && (
+                          <Check className="w-3 h-3 text-primary-foreground" />
+                        )}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">
+                          {movement.tracking_type === 'weight' ? '🏋️' : 
+                           movement.tracking_type === 'bodyweight' ? '🤸' :
+                           movement.tracking_type === 'duration' ? '⏱️' :
+                           movement.tracking_type === 'distance' ? '🏃' : '💪'}
+                        </span>
+                        <h3 className="font-medium text-sm truncate">{movement.name}</h3>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{movement.muscle_groups?.join(', ') || 'Unknown'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 flex-shrink-0">
+                    <Badge variant="secondary" className="text-xs">
+                      {movement.experience_level}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </DialogContent>
+        
+        {filteredLibrary.length === 0 && filteredUserMovements.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">No movements found matching your search.</p>
+          </div>
+        )}
+      </ScrollArea>
+    </div>
+  );
+
+  const FooterContent = () => (
+    <div className="flex justify-between items-center pt-4 border-t bg-background">
+      <div className="text-sm text-muted-foreground">
+        {selectedMovements.size} movement{selectedMovements.size !== 1 ? 's' : ''} in workout
+      </div>
+      <div className="flex space-x-3">
+        <Button onClick={onClose}>
+          Done
+        </Button>
+      </div>
+    </div>
+  );
+
+  if (isDesktop) {
+    return (
+      <>
+        <Dialog open={isOpen} onOpenChange={(open) => {
+          if (!open) {
+            onClose();
+          }
+        }}>
+          <DialogContent className="max-w-3xl max-h-[85vh] w-[90vw] flex flex-col">
+            <DialogHeader className="pb-4">
+              <DialogTitle className="text-xl">Add Movements to Workout</DialogTitle>
+              <DialogDescription className="text-sm text-muted-foreground">
+                Select exercises from the library to add to your workout
+              </DialogDescription>
+            </DialogHeader>
+
+            <SearchAndContent />
+            <FooterContent />
+          </DialogContent>
+        </Dialog>
+
+        {/* Custom Movement Creation Modal */}
+        <CreateCustomMovementModal
+          isOpen={showCustomMovementModal}
+          onClose={() => setShowCustomMovementModal(false)}
+          onMovementCreated={handleCustomMovementCreated}
+          initialName={searchTerm.trim()}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Drawer open={isOpen} onOpenChange={(open) => {
+        if (!open) {
+          onClose();
+        }
+      }}>
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Add Movements to Workout</DrawerTitle>
+          </DrawerHeader>
+          <SearchAndContent className="px-4" />
+          <DrawerFooter className="pt-2">
+            <FooterContent />
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       {/* Custom Movement Creation Modal */}
       <CreateCustomMovementModal
@@ -389,7 +426,7 @@ export default function MovementSelectionModal({
         onMovementCreated={handleCustomMovementCreated}
         initialName={searchTerm.trim()}
       />
-    </Dialog>
+    </>
   );
 }
 
