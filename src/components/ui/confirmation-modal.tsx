@@ -57,11 +57,6 @@ export function ConfirmationModal({
     </div>
   );
 
-  const DescriptionContent = () => (
-    <div className="text-left mt-2 text-muted-foreground">
-      {description}
-    </div>
-  );
 
   const FooterButtons = ({ className = "" }: { className?: string }) => (
     <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 gap-2 ${className}`}>
@@ -93,7 +88,7 @@ export function ConfirmationModal({
               <HeaderContent />
             </DialogTitle>
             <DialogDescription>
-              <DescriptionContent />
+              {description}
             </DialogDescription>
           </DialogHeader>
           
@@ -113,7 +108,7 @@ export function ConfirmationModal({
             <HeaderContent />
           </DrawerTitle>
           <DrawerDescription>
-            <DescriptionContent />
+            {description}
           </DrawerDescription>
         </DrawerHeader>
         
