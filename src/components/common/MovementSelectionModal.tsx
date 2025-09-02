@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { getExperienceLevelVariant } from '@/lib/utils/typeHelpers';
-import type { TrackingType, UserMovement } from '@/models/types';
+import type { TrackingType, UserMovement, MovementTemplate } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -25,20 +25,30 @@ interface MovementSelectionModalProps {
   workoutId: string;
 }
 
+// Type alias for user movements as returned from database
+type DatabaseUserMovement = Omit<UserMovement, 'custom_rest_timer' | 'personal_notes' | 'manual_1rm'> & {
+  custom_rest_timer: number | null;
+  personal_notes: string | null;
+  manual_1rm: number | null;
+  created_at: string;
+  last_used_at: string | null;
+  updated_at: string;
+};
+
 interface SearchAndContentProps {
   className?: string;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   setShowCustomMovementModal: (value: boolean) => void;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
-  filteredUserMovements: any[];
-  filteredLibrary: any[];
+  filteredUserMovements: DatabaseUserMovement[];
+  filteredLibrary: MovementTemplate[];
   selectedMovements: Set<string>;
-  handleMovementToggle: (movementId: string, movementData: any) => void;
-  userMovements: any[];
+  handleMovementToggle: (movementId: string, movementData: DatabaseUserMovement | MovementTemplate) => void;
+  userMovements: DatabaseUserMovement[];
 }
 
-const SearchAndContent = React.memo(({ 
+const SearchAndContent = React.memo(function SearchAndContent({ 
   className = "", 
   searchTerm, 
   setSearchTerm, 
@@ -49,7 +59,8 @@ const SearchAndContent = React.memo(({
   selectedMovements,
   handleMovementToggle,
   userMovements
-}: SearchAndContentProps) => (
+}: SearchAndContentProps) {
+  return (
   <div className={`flex flex-col space-y-4 overflow-hidden ${className}`}>
     {/* Search Bar */}
     <div className="flex-shrink-0 flex space-x-3">
@@ -191,7 +202,8 @@ const SearchAndContent = React.memo(({
       )}
     </div>
   </div>
-));
+  );
+});
 
 export default function MovementSelectionModal({
   isOpen,
@@ -270,7 +282,7 @@ export default function MovementSelectionModal({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [userMovements, searchTerm]);
 
-  const handleMovementToggle = useCallback((movementId: string, movementData: UserMovement | { id: string; name: string; muscle_groups: string[]; tracking_type: TrackingType; experience_level?: string; instructions?: string | null }) => {
+  const handleMovementToggle = useCallback((movementId: string, movementData: DatabaseUserMovement | MovementTemplate) => {
     // Save current scroll position
     const scrollTop = scrollContainerRef.current?.scrollTop || 0;
     

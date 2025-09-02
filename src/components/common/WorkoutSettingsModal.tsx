@@ -5,7 +5,6 @@ import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
