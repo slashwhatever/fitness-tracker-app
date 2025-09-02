@@ -27,7 +27,7 @@ export default function WorkoutManagement({ onWorkoutCreated }: WorkoutManagemen
     <div className="space-y-3 sm:space-y-4">
       {/* Quick Actions */}
       <div className="space-y-3">
-        <div className="flex items-center space-x-2 px-1">
+        <div className="flex items-center space-x-2">
           <h2 className="text-base sm:text-lg font-semibold">Workout Management</h2>
         </div>
         

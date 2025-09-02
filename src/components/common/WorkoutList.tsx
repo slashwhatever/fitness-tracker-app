@@ -60,7 +60,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   return (
     <>
     <div className="space-y-3">
-      <div className="flex items-center space-x-2 px-1">
+      <div className="flex items-center space-x-2">
         <h2 className="text-base sm:text-lg font-semibold">Your Workouts</h2>
       </div>
       

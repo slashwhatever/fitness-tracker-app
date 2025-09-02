@@ -4,9 +4,18 @@ import CreateCustomMovementModal from '@/components/common/CreateCustomMovementM
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { TrackingType, UserMovement } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -26,6 +35,7 @@ export default function MovementSelectionModal({
   const [selectedMovements, setSelectedMovements] = useState<Set<string>>(new Set());
   const [showCustomMovementModal, setShowCustomMovementModal] = useState(false);
   const [processingMovements, setProcessingMovements] = useState<Set<string>>(new Set());
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Fetch movement templates from database instead of local file
   const { data: movementTemplates = [] } = useMovementTemplates();

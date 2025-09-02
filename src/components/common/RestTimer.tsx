@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface RestTimerProps {
   isActive: boolean;
@@ -114,66 +116,84 @@ export default function RestTimer({ isActive, duration, onComplete, onSkip }: Re
   if (!isActive) return null;
 
   return (
-    <div className={`bg-slate-800 rounded-lg shadow-md p-6 border-2 transition-colors ${
-      isComplete ? 'border-green-500 bg-green-900' : 
-      isWarning ? 'border-yellow-500 bg-yellow-900' : 
-      'border-blue-500'
+    <div className={`bg-card rounded-lg shadow-md p-4 sm:p-6 border-2 transition-colors ${
+      isComplete ? 'border-green-500 bg-green-50 dark:bg-green-900' : 
+      isWarning ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900' : 
+      'border-primary'
     }`}>
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-slate-50 mb-2">
+        <h3 className="text-lg font-semibold text-foreground mb-2">
           {isComplete ? 'Rest Complete!' : 'Rest Timer'}
         </h3>
         
-        <div className={`text-6xl font-bold mb-4 ${
+        <div className={`text-4xl sm:text-6xl font-bold mb-4 ${
           isComplete ? 'text-green-600' : 
           isWarning ? 'text-yellow-600' : 
-          'text-blue-600'
+          'text-primary'
         }`}>
           {formatTime(Math.max(0, timeLeft))}
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div className="w-full bg-muted rounded-full h-2 mb-4">
           <div 
             className={`h-2 rounded-full transition-all duration-1000 ${
               isComplete ? 'bg-green-500' : 
               isWarning ? 'bg-yellow-500' : 
-              'bg-blue-500'
+              'bg-primary'
             }`}
             style={{ width: `${Math.min(100, progressPercentage)}%` }}
           />
         </div>
 
         {/* Controls */}
-        <div className="flex justify-center space-x-3">
+        <div className="flex justify-center gap-2">
           {!isComplete && (
             <>
-              <button
+              <Button
                 onClick={togglePause}
-                className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 transition-colors"
+                variant="secondary"
+                size="sm"
+                className="h-10 w-10 p-0 sm:w-auto sm:px-4"
               >
-                {isPaused ? 'Resume' : 'Pause'}
-              </button>
-              <button
+                {isPaused ? (
+                  <>
+                    <Play className="h-4 w-4" />
+                    <span className="hidden sm:inline sm:ml-2">Resume</span>
+                  </>
+                ) : (
+                  <>
+                    <Pause className="h-4 w-4" />
+                    <span className="hidden sm:inline sm:ml-2">Pause</span>
+                  </>
+                )}
+              </Button>
+              <Button
                 onClick={handleReset}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                variant="outline"
+                size="sm"
+                className="h-10 w-10 p-0 sm:w-auto sm:px-4"
               >
-                Reset
-              </button>
+                <RotateCcw className="h-4 w-4" />
+                <span className="hidden sm:inline sm:ml-2">Reset</span>
+              </Button>
             </>
           )}
-          <button
+          <Button
             onClick={handleSkip}
-            className={`px-4 py-2 text-white rounded-md transition-colors ${
-              isComplete ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
-            }`}
+            variant={isComplete ? "default" : "destructive"}
+            size="sm"
+            className="h-10 w-10 p-0 sm:w-auto sm:px-4"
           >
-            {isComplete ? 'Continue' : 'Skip'}
-          </button>
+            <SkipForward className="h-4 w-4" />
+            <span className="hidden sm:inline sm:ml-2">
+              {isComplete ? 'Continue' : 'Skip'}
+            </span>
+          </Button>
         </div>
 
         {isPaused && (
-          <p className="text-sm text-gray-600 mt-2">Timer is paused</p>
+          <p className="text-sm text-muted-foreground mt-2">Timer is paused</p>
         )}
       </div>
     </div>

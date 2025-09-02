@@ -54,10 +54,6 @@ export interface UserProfile {
   default_rest_timer: number; // Global timer preference in seconds
   weight_unit: WeightUnit; // Preferred weight unit
   distance_unit: DistanceUnit; // Preferred distance unit
-  privacy_settings: {
-    profile_visibility: "public" | "private";
-    workout_sharing: boolean;
-  };
   created_at: string;
   updated_at: string;
 }

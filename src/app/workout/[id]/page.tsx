@@ -4,10 +4,18 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
-import { ArrowLeft, Plus, Settings } from 'lucide-react';
+import { Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -116,44 +124,50 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     <ProtectedRoute>
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
         <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
-          <Button variant="ghost" asChild className="-ml-2">
-            <Link href="/" className="flex items-center space-x-2">
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Dashboard</span>
-            </Link>
-          </Button>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{workout?.name || 'Workout'}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
           
-          <div className="p-3 sm:p-4 bg-card rounded-lg border">
-            <div className="mb-4">
-              <div className="flex justify-between items-start">
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate">{workout.name}</h1>
+              <div className="flex justify-between items-center space-y-2">
+                <div className="flex flex-col space-y-4">
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate mb-0">{workout.name}</h1>
+                  {workout.description && (
+                    <p className="text-muted-foreground mt-1 text-sm">{workout.description}</p>
+                  )}
+                  <p className="text-muted-foreground text-xs sm:text-sm mt-0">
+                    {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+
                 <div className="flex space-x-2 ml-4">
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setShowMovementModal(true)}
-                    className="flex items-center space-x-1 h-8"
+                    className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
                   >
-                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden xs:inline text-xs">Add</span>
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline text-xs">Add</span>
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => setShowSettingsModal(true)}
-                    className="flex items-center space-x-1 h-8"
+                    className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
                   >
-                    <Settings className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden xs:inline text-xs">Settings</span>
+                    <Settings className="w-4 h-4" />
+                    <span className="hidden sm:inline text-xs">Settings</span>
                   </Button>
                 </div>
               </div>
-              {workout.description && (
-                <p className="text-muted-foreground mt-1 text-sm">{workout.description}</p>
-              )}
-              <p className="text-muted-foreground text-xs sm:text-sm mt-1">
-                {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
-              </p>
             </div>
             
             <MovementList
@@ -162,10 +176,8 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               onMovementAdded={handleMovementAdded}
               onAddMovementClick={() => setShowMovementModal(true)}
             />
-          </div>
-        </div>
 
-            <MovementSelectionModal
+        <MovementSelectionModal
               isOpen={showMovementModal}
               onClose={() => {
                 setShowMovementModal(false);

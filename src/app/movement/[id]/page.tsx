@@ -2,14 +2,23 @@
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import EditableSet from '@/components/common/EditableSet';
-import PRSummary from '@/components/common/PRSummary';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
+import RestTimer from '@/components/common/RestTimer';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
-import { LastSet, Set, UserMovement } from '@/models/types';
-import { ArrowLeft, Calendar, Dumbbell } from 'lucide-react';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { LastSet, Set, UserMovement, getEffectiveRestTimer } from '@/models/types';
+import { Calendar, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -19,6 +28,8 @@ interface MovementDetailPageProps {
 
 export default function MovementDetailPage({ params }: MovementDetailPageProps) {
   const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
+  const [isRestTimerActive, setIsRestTimerActive] = useState(false);
+  const [restTimerDuration, setRestTimerDuration] = useState(90); // Default 90 seconds
 
   // Resolve async params
   useEffect(() => {
@@ -28,6 +39,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   // Use our new React Query hooks
   const { data: movement, isLoading: movementLoading } = useUserMovement(paramsResolved?.id || '');
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.id || '');
+  const { data: userProfile } = useUserProfile();
   const createSetMutation = useCreateSet();
 
   const handleDuplicateSet = async (originalSet: Set) => {
@@ -42,9 +54,35 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
         distance: originalSet.distance,
         notes: originalSet.notes,
       });
+      // Start rest timer after duplicating a set
+      startRestTimer();
     } catch (error) {
       console.error('Failed to duplicate set:', error);
     }
+  };
+
+  const startRestTimer = () => {
+    if (userProfile && movement) {
+      const duration = getEffectiveRestTimer(
+        { default_rest_timer: userProfile.default_rest_timer || undefined },
+        undefined, // No workout context on movement detail page
+        { custom_rest_timer: movement.custom_rest_timer || undefined }
+      );
+      
+      if (duration) {
+        setRestTimerDuration(duration);
+        setIsRestTimerActive(true);
+      }
+    }
+  };
+
+  const handleRestTimerComplete = () => {
+    // Timer completed, just deactivate it
+    setIsRestTimerActive(false);
+  };
+
+  const handleRestTimerSkip = () => {
+    setIsRestTimerActive(false);
   };
 
   const loading = movementLoading || !movement;
@@ -100,17 +138,20 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
         <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
           {/* Header */}
-          <div className="flex items-center space-x-2">
-            <Button variant="ghost" asChild className="-ml-2">
-              <Link href="/" className="flex items-center space-x-2">
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
-              </Link>
-            </Button>
-          </div>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{movement?.name || 'Movement'}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           {/* Movement Info */}
-          <div className="p-3 sm:p-4 bg-card rounded-lg border">
+          <div className="flex flex-col space-y-4">
             <div className="flex items-start space-x-3 mb-3">
               <span className="text-xl sm:text-2xl">
                 {movement.tracking_type === 'weight' ? '🏋️' : 
@@ -144,7 +185,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
               </div>
               <QuickSetEntry 
                 movement={movement}
-                lastSet={sets[0] as LastSet}
+                lastSet={sets.length > 0 ? sets[0] as LastSet : null}
                 onQuickLog={async (setData) => {
                   if (movement?.id) {
                     try {
@@ -158,6 +199,8 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                         notes: setData.notes || null,
                         set_type: 'working',
                       });
+                      // Start rest timer after successfully logging a set
+                      startRestTimer();
                     } catch (error) {
                       console.error('Failed to save set:', error);
                     }
@@ -167,8 +210,20 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             </div>
 
             {/* Personal Records */}
-            <PRSummary userMovementId={movement.id} />
+            {/* <PRSummary userMovementId={movement.id} /> */}
           </div>
+
+          {/* Rest Timer */}
+          {isRestTimerActive && (
+            <div className="space-y-3">
+              <RestTimer
+                isActive={isRestTimerActive}
+                duration={restTimerDuration}
+                onComplete={handleRestTimerComplete}
+                onSkip={handleRestTimerSkip}
+              />
+            </div>
+          )}
 
           {/* Set History */}
           <div className="space-y-3">

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import {
   Drawer,
   DrawerClose,
@@ -31,6 +32,7 @@ export default function EditableSet({
   onDuplicate,
 }: EditableSetProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [reps, setReps] = useState(set.reps?.toString() || '');
   const [weight, setWeight] = useState(set.weight?.toString() || '');
   const [duration, setDuration] = useState(set.duration?.toString() || '');
@@ -114,6 +116,24 @@ export default function EditableSet({
 
   const handleDuplicate = () => {
     onDuplicate(set);
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteSetMutation.mutateAsync(set.id);
+      setShowDeleteConfirm(false);
+    } catch (error) {
+      console.error('Failed to delete set:', error);
+      // Keep modal open on error so user can retry
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
   };
 
   return (
@@ -290,16 +310,27 @@ export default function EditableSet({
             </Drawer>
             
             <Button
-              onClick={() => deleteSetMutation.mutate(set.id)}
+              onClick={handleDeleteClick}
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
-              disabled={deleteSetMutation.isPending}
             >
               <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </div>
         </div>
+
+        <ConfirmationModal
+          isOpen={showDeleteConfirm}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          title="Delete Set"
+          description={`Are you sure you want to delete this set from ${new Date(set.created_at).toLocaleDateString()} at ${new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}? This action cannot be undone.`}
+          confirmText="Delete Set"
+          cancelText="Cancel"
+          variant="destructive"
+          isLoading={deleteSetMutation.isPending}
+        />
         </>
   );
 }
