@@ -2,11 +2,20 @@
 
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateUserMovement } from '@/hooks';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { TrackingType } from '@/models/types';
 import { useEffect, useState } from 'react';
 
@@ -43,6 +52,7 @@ export default function CreateCustomMovementModal({
   const [personalNotes, setPersonalNotes] = useState('');
 
   const createUserMovementMutation = useCreateUserMovement();
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Reset form when modal opens/closes or initialName changes
   useEffect(() => {
@@ -96,113 +106,143 @@ export default function CreateCustomMovementModal({
     );
   };
 
+  const FormContent = ({ className = "" }: { className?: string }) => (
+    <div className={`space-y-4 min-h-0 ${className}`}>
+      {/* Movement Name */}
+      <div className="space-y-2">
+        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">Movement name *</Label>
+        <Input
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g., Barbell Bench Press"
+          required
+        />
+      </div>
+
+      {/* Tracking Type */}
+      <div className="space-y-2">
+        <Label htmlFor="trackingType" className="text-sm font-medium text-muted-foreground">Tracking type *</Label>
+        <Select value={trackingType} onValueChange={(value) => setTrackingType(value as TrackingType)}>
+          <SelectTrigger className="px-4 py-3">
+            <SelectValue placeholder="Select tracking type">
+              {trackingType && TRACKING_TYPES.find(type => type.value === trackingType)?.label}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {TRACKING_TYPES.map((type) => (
+              <SelectItem key={type.value} value={type.value} className="px-3 py-2">
+                <div className="text-left">
+                  <div className="font-medium">{type.label}</div>
+                  <div className="text-xs text-muted-foreground">{type.description}</div>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Muscle Groups */}
+      <div className="space-y-2">
+        <Label htmlFor="muscleGroups" className="text-sm font-medium text-muted-foreground">Muscle groups * ({selectedMuscleGroups.length} selected)</Label>
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {MUSCLE_GROUPS.map((group) => (
+            <button
+              key={group}
+              type="button"
+              onClick={() => handleMuscleGroupToggle(group)}
+              className={`p-2 text-sm rounded-md border transition-colors ${
+                selectedMuscleGroups.includes(group)
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-background border-border hover:bg-accent'
+              }`}
+            >
+              {group}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Rest Timer */}
+      <div className="space-y-2">
+        <Label htmlFor="restTimer" className="text-sm font-medium text-muted-foreground">Custom rest timer (seconds)</Label>
+        <Input
+          id="restTimer"
+          type="number"
+          value={customRestTimer}
+          onChange={(e) => setCustomRestTimer(e.target.value)}
+          placeholder="e.g., 120"
+          min="0"
+        />
+      </div>
+
+      {/* Personal Notes */}
+      <div className="space-y-2">
+        <Label htmlFor="notes" className="text-sm font-medium text-muted-foreground">Personal notes</Label>
+        <Textarea
+          id="notes"
+          value={personalNotes}
+          onChange={(e) => setPersonalNotes(e.target.value)}
+          placeholder="Any personal notes about this movement..."
+          rows={3}
+        />
+      </div>
+    </div>
+  );
+
+  const ActionButtons = () => (
+    <div className="flex justify-between items-center pt-4 border-t">
+      <Button type="button" variant="outline" onClick={handleClose}>
+        Cancel
+      </Button>
+      <Button 
+        type="submit" 
+        disabled={!name.trim() || !trackingType || selectedMuscleGroups.length === 0 || createUserMovementMutation.isPending}
+      >
+        {createUserMovementMutation.isPending ? 'Creating...' : 'Create Movement'}
+      </Button>
+    </div>
+  );
+
+  if (isDesktop) {
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        if (!open) {
+          handleClose();
+        }
+      }}>
+        <DialogContent className="max-w-md max-h-[85vh] w-[90vw] flex flex-col">
+          <DialogHeader className="pb-4">
+            <DialogTitle className="text-xl">Create custom movement</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+            <FormContent />
+            <ActionButtons />
+          </form>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
+    <Drawer open={isOpen} onOpenChange={(open) => {
       if (!open) {
         handleClose();
       }
     }}>
-      <DialogContent className="max-w-md max-h-[85vh] w-[90vw] flex flex-col">
-        <DialogHeader className="pb-4">
-          <DialogTitle className="text-xl">Create custom movement</DialogTitle>
-        </DialogHeader>
-
+      <DrawerContent>
+        <DrawerHeader className="text-left">
+          <DrawerTitle>Create custom movement</DrawerTitle>
+        </DrawerHeader>
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
-          {/* Movement Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">Movement name *</Label>
-            <Input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g., Barbell Bench Press"
-              required
-            />
-          </div>
-
-          {/* Tracking Type */}
-          <div className="space-y-2">
-            <Label htmlFor="trackingType" className="text-sm font-medium text-muted-foreground">Tracking type *</Label>
-            <Select value={trackingType} onValueChange={(value) => setTrackingType(value as TrackingType)}>
-              <SelectTrigger className="px-4 py-3">
-                <SelectValue placeholder="Select tracking type">
-                  {trackingType && TRACKING_TYPES.find(type => type.value === trackingType)?.label}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {TRACKING_TYPES.map((type) => (
-                  <SelectItem key={type.value} value={type.value} className="px-3 py-2">
-                    <div className="text-left">
-                      <div className="font-medium">{type.label}</div>
-                      <div className="text-xs text-muted-foreground">{type.description}</div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Muscle Groups */}
-          <div className="space-y-2">
-            <Label htmlFor="muscleGroups" className="text-sm font-medium text-muted-foreground">Muscle groups * ({selectedMuscleGroups.length} selected)</Label>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {MUSCLE_GROUPS.map((group) => (
-                <button
-                  key={group}
-                  type="button"
-                  onClick={() => handleMuscleGroupToggle(group)}
-                  className={`p-2 text-sm rounded-md border transition-colors ${
-                    selectedMuscleGroups.includes(group)
-                      ? 'bg-primary text-primary-foreground border-primary'
-                      : 'bg-background border-border hover:bg-accent'
-                  }`}
-                >
-                  {group}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Custom Rest Timer */}
-          <div className="space-y-2">
-            <Label htmlFor="restTimer" className="text-sm font-medium text-muted-foreground">Custom rest timer (seconds)</Label>
-            <Input
-              id="restTimer"
-              type="number"
-              value={customRestTimer}
-              onChange={(e) => setCustomRestTimer(e.target.value)}
-              placeholder="e.g., 120"
-              min="0"
-            />
-          </div>
-
-          {/* Personal Notes */}
-          <div className="space-y-2">
-            <Label htmlFor="notes" className="text-sm font-medium text-muted-foreground">Personal notes</Label>
-            <Textarea
-              id="notes"
-              value={personalNotes}
-              onChange={(e) => setPersonalNotes(e.target.value)}
-              placeholder="Any personal notes about this movement..."
-              rows={3}
-            />
-          </div>
-
-          {/* Footer Buttons */}
-          <div className="flex-shrink-0 flex justify-between items-center pt-4 border-t">
-            <Button type="button" variant="outline" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={!name.trim() || !trackingType || selectedMuscleGroups.length === 0 || createUserMovementMutation.isPending}
-            >
-              {createUserMovementMutation.isPending ? 'Creating...' : 'Create Movement'}
-            </Button>
-          </div>
+          <FormContent className="px-4" />
+          <DrawerFooter className="pt-2">
+            <ActionButtons />
+          </DrawerFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }

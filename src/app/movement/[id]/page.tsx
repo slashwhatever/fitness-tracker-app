@@ -176,7 +176,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-3 sm:gap-4">
             {/* Quick Log */}
             <div className="space-y-3">
               <div className="flex items-center space-x-2 px-1">
@@ -215,7 +215,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
 
           {/* Rest Timer */}
           {isRestTimerActive && (
-            <div className="space-y-3">
+            <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
               <RestTimer
                 isActive={isRestTimerActive}
                 duration={restTimerDuration}
@@ -226,7 +226,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
           )}
 
           {/* Set History */}
-          <div className="space-y-3">
+          <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
             <div className="flex items-center space-x-2 px-1">
               <Calendar className="w-4 h-4" />
               <h2 className="text-base sm:text-lg font-semibold">Set History</h2>

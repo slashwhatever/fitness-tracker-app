@@ -72,7 +72,7 @@ export default function MovementList({
 
   return (
     <>
-        <div className="space-y-3">
+        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
           {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => {
             const movementSets = getMovementSets(movement.user_movement_id);
             

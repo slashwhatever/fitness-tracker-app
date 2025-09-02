@@ -22,6 +22,24 @@ export default function QuickSetEntry({
   });
   const [isLogging, setIsLogging] = useState(false);
 
+  const isFormValid = (): boolean => {
+    if (!movement) return false;
+    
+    switch (movement.tracking_type) {
+      case 'weight':
+      case 'bodyweight':
+        return setData.reps !== null && setData.reps > 0;
+      case 'duration':
+        return setData.duration !== null && setData.duration > 0;
+      case 'distance':
+        return setData.distance !== null && setData.distance > 0;
+      case 'reps_only':
+        return setData.reps !== null && setData.reps > 0;
+      default:
+        return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLogging(true);
@@ -169,7 +187,7 @@ export default function QuickSetEntry({
 
         <Button 
           type="submit" 
-          disabled={isLogging}
+          disabled={isLogging || !isFormValid()}
           className="w-full flex items-center justify-center space-x-2 h-9"
         >
           <Save className="w-3 h-3 sm:w-4 sm:h-4" />
