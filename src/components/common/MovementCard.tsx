@@ -21,7 +21,7 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
 
   return (
     <Card 
-      className={`cursor-pointer transition-all hover:shadow-md ${
+      className={`cursor-pointer transition-all hover:shadow-md py-2 ${
         selected ? 'ring-2 ring-primary' : ''
       }`}
       onClick={handleClick}

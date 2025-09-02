@@ -61,9 +61,6 @@ export default function SearchFilters({
     <div className="space-y-4">
       {/* Search Input */}
       <div>
-        <Label htmlFor="search" className="text-sm font-medium mb-1">
-          Search Exercises
-        </Label>
         <div className="relative">
           <Input
             type="text"
