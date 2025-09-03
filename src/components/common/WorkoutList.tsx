@@ -2,10 +2,12 @@
 
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { forwardRef, useImperativeHandle, useState } from 'react';
+import { Typography } from './Typography';
 
 export interface WorkoutListRef {
   refreshWorkouts: () => Promise<void>;
@@ -61,17 +63,29 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
     <>
     <div className="space-y-3">
       <div className="flex items-center space-x-2">
-        <h2 className="text-base sm:text-lg font-semibold">Your Workouts</h2>
+        <Typography variant="title2">Your workouts</Typography>
       </div>
       
       {isLoading ? (
-        <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
-          <p className="text-muted-foreground text-sm">Loading workouts...</p>
+        <div className="grid gap-2">
+          {[...Array(3)].map((_, index) => (
+            <div key={index} className="flex items-center justify-between p-3 bg-card rounded-lg border">
+              <div className="flex-1 min-w-0">
+                <Skeleton className="h-4 w-32 mb-2" />
+                <Skeleton className="h-3 w-48 mb-1" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+              <div className="flex items-center space-x-1 ml-2">
+                <Skeleton className="h-7 w-7 sm:h-8 sm:w-8 rounded" />
+                <Skeleton className="h-7 w-7 sm:h-8 sm:w-8 rounded" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : workouts.length === 0 ? (
         <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
-          <p className="text-muted-foreground text-sm">No workouts created yet.</p>
-          <p className="text-xs text-muted-foreground mt-1">Create your first workout to get started!</p>
+          <Typography variant="body">No workouts created yet.</Typography>
+          <Typography variant="caption">Create your first workout to get started!</Typography>
         </div>
       ) : (
         <div className="grid gap-2">
@@ -80,13 +94,13 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
 
               <Link href={`/workout/${workout.id}`} className="flex-1 min-w-0">
                 <div className="text-left">
-                  <h4 className="text-sm sm:text-base font-bold text-foreground truncate">{workout.name}</h4>
+                  <Typography variant="title3">{workout.name}</Typography>
                   {workout.description && (
-                    <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2">{workout.description}</p>
+                    <Typography variant="caption">{workout.description}</Typography>
                   )}
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <Typography variant="caption">
                     <MovementCount workoutId={workout.id} />
-                  </p>
+                  </Typography>
                 </div>
               </Link>
 
@@ -97,7 +111,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                     size="icon"
                     className="h-7 w-7 sm:h-8 sm:w-8"
                   >
-                    <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <ChevronRight  />
                   </Button>
                 </Link>
                 <Button
@@ -106,7 +120,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                   size="icon"
                   className="text-muted-foreground hover:text-red-500 h-7 w-7 sm:h-8 sm:w-8"
                 >
-                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Trash2  />
                 </Button>
               </div>
             </div>

@@ -4,6 +4,8 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import EditableSet from '@/components/common/EditableSet';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import RestTimer from '@/components/common/RestTimer';
+import { Typography } from '@/components/common/Typography';
+import Loading from '@/components/Loading';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -99,13 +101,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
     return (
       <ProtectedRoute>
         <main className="min-h-screen bg-background p-8">
-          <div className="max-w-4xl mx-auto">
-            <Card>
-              <CardContent className="p-8">
-                <p className="text-muted-foreground">Loading movement details...</p>
-              </CardContent>
-            </Card>
-          </div>
+          <Loading title="Loading movement details..." subtitle="Please wait while we load the movement details." />
         </main>
       </ProtectedRoute>
     );
@@ -118,10 +114,10 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
           <div className="max-w-4xl mx-auto">
             <Card>
               <CardContent className="p-8 text-center">
-                <h2 className="text-xl font-semibold mb-2">Movement not found</h2>
-                <p className="text-muted-foreground mb-4">
+                <Typography variant="title2">Movement not found</Typography>
+                <Typography variant="caption">
                   The movement you&apos;re looking for doesn&apos;t exist or has been deleted.
-                </p>
+                </Typography>
                 <Button asChild>
                   <Link href="/">Return to Dashboard</Link>
                 </Button>
@@ -152,26 +148,22 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
 
           {/* Movement Info */}
           <div className="flex flex-col space-y-4">
-            <div className="flex items-start space-x-3 mb-3">
+            <div className="flex items-center space-x-3 mb-3 ">
               <span className="text-xl sm:text-2xl">
                 {movement.tracking_type === 'weight' ? '🏋️' : 
                  movement.tracking_type === 'bodyweight' ? '🤸' :
                  movement.tracking_type === 'duration' ? '⏱️' :
                  movement.tracking_type === 'distance' ? '🏃' : '💪'}
               </span>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold min-w-0 break-words">{movement.name}</h1>
+              <Typography variant="title1" className="min-w-0 break-words">{movement.name}</Typography>
             </div>
             <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
-              <div>
-                <span className="font-medium">Muscle Groups:</span> {movement.muscle_groups?.join(', ') || 'Unknown'}
-              </div>
-              <div>
-                <span className="font-medium">Tracking Type:</span> {movement.tracking_type}
-              </div>
+                <Typography variant="caption">Muscle groups: {movement.muscle_groups?.join(', ') || 'Unknown'}</Typography>
+                <Typography variant="caption">Tracking type: {movement.tracking_type}</Typography>
               {movement.personal_notes && (
-                <div>
-                  <span className="font-medium">Notes:</span> <span className="break-words">{movement.personal_notes}</span>
-                </div>
+                <>  
+                  <Typography variant="caption" className="break-words">Notes: {movement.personal_notes}</Typography>
+                </>
               )}
             </div>
           </div>
@@ -181,7 +173,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             <div className="space-y-3">
               <div className="flex items-center space-x-2 px-1">
                 <Dumbbell className="w-4 h-4" />
-                <h2 className="text-base sm:text-lg font-semibold">Quick Log</h2>
+                <Typography variant="title2">Quick Log</Typography>
               </div>
               <QuickSetEntry 
                 movement={movement}
@@ -229,12 +221,12 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
           <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
             <div className="flex items-center space-x-2 px-1">
               <Calendar className="w-4 h-4" />
-              <h2 className="text-base sm:text-lg font-semibold">Set History</h2>
+              <Typography variant="title2">Set History</Typography>
             </div>
             {sets.length === 0 ? (
               <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
-                <p className="text-muted-foreground text-sm">No sets logged for this movement yet.</p>
-                <p className="text-xs text-muted-foreground mt-1">Use the quick log above to record your first set!</p>
+                <Typography variant="caption">No sets logged for this movement yet.</Typography>
+                <Typography variant="footnote">Use the quick log above to record your first set!</Typography>
               </div>
             ) : (
               <ScrollArea className="h-80 sm:h-96">

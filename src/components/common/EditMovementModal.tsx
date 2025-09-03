@@ -108,8 +108,8 @@ export default function EditMovementModal({
   const FormContent = ({ className = "" }: { className?: string }) => (
     <div className={`space-y-4 min-h-0 ${className}`}>
       {/* Movement Name */}
-      <div>
-        <Label htmlFor="name">Movement Name *</Label>
+      <div className="space-y-2">
+        <Label htmlFor="name">Movement name *</Label>
         <Input
           id="name"
           type="text"
@@ -121,16 +121,18 @@ export default function EditMovementModal({
       </div>
 
       {/* Tracking Type */}
-      <div>
-        <Label htmlFor="trackingType">Tracking Type *</Label>
+      <div className="space-y-2">
+        <Label htmlFor="trackingType" className="text-sm font-medium text-muted-foreground">Tracking type *</Label>
         <Select value={trackingType} onValueChange={(value) => setTrackingType(value as TrackingType)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select tracking type" />
+          <SelectTrigger className="px-4 py-3">
+            <SelectValue placeholder="Select tracking type">
+              {trackingType && TRACKING_TYPES.find(type => type.value === trackingType)?.label}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {TRACKING_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                <div>
+              <SelectItem key={type.value} value={type.value} className="px-3 py-2">
+                <div className="text-left">
                   <div className="font-medium">{type.label}</div>
                   <div className="text-xs text-muted-foreground">{type.description}</div>
                 </div>
@@ -141,12 +143,13 @@ export default function EditMovementModal({
       </div>
 
       {/* Muscle Groups */}
-      <div>
-        <Label>Muscle Groups * ({selectedMuscleGroups.length} selected)</Label>
+      <div className="space-y-2">
+      <Label htmlFor="muscleGroups" className="text-sm font-medium text-muted-foreground">Muscle groups * ({selectedMuscleGroups.length} selected)</Label>
         <div className="grid grid-cols-2 gap-2 mt-2">
           {MUSCLE_GROUPS.map((group) => (
-            <button
+            <Button
               key={group}
+              variant="ghost"
               type="button"
               onClick={() => handleMuscleGroupToggle(group)}
               className={`p-2 text-sm rounded-md border transition-colors ${
@@ -156,14 +159,14 @@ export default function EditMovementModal({
               }`}
             >
               {group}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Custom Rest Timer */}
-      <div>
-        <Label htmlFor="restTimer">Custom Rest Timer (seconds)</Label>
+      <div className="space-y-2">
+      <Label htmlFor="restTimer" className="text-sm font-medium text-muted-foreground">Custom rest timer (seconds)</Label>
         <Input
           id="restTimer"
           type="number"
@@ -175,8 +178,8 @@ export default function EditMovementModal({
       </div>
 
       {/* Personal Notes */}
-      <div>
-        <Label htmlFor="notes">Personal Notes</Label>
+      <div className="space-y-2">
+      <Label htmlFor="notes" className="text-sm font-medium text-muted-foreground">Personal notes</Label>
         <Textarea
           id="notes"
           value={personalNotes}
@@ -238,13 +241,15 @@ export default function EditMovementModal({
         handleClose();
       }
     }}>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>Edit Movement</DrawerTitle>
+      <DrawerContent className="h-[95vh] flex flex-col">
+        <DrawerHeader className="text-left flex-shrink-0">
+          <DrawerTitle>Edit movement</DrawerTitle>
         </DrawerHeader>
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
-          <FormContent className="px-4" />
-          <DrawerFooter className="pt-2">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto px-4">
+            <FormContent />
+          </div>
+          <DrawerFooter className="pt-2 flex-shrink-0">
             <ActionButtons />
           </DrawerFooter>
         </form>

@@ -1,7 +1,9 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Typography } from '@/components/common/Typography';
 import WorkoutManagement from '@/components/features/WorkoutManagement';
+import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Library, Settings } from 'lucide-react';
@@ -16,12 +18,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Loading...</h2>
-          <p className="text-muted-foreground">Please wait while we set up your dashboard</p>
-        </div>
-      </div>
+      <Loading />
     );
   }
 
@@ -31,26 +28,26 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
           {/* Header */}
           <div className="flex justify-between items-center">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+            <Typography variant="title1">
               Log Set
-            </h1>
+            </Typography>
             <div className="flex flex-row space-x-2">
               <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
                 <Link href="/analytics" className="flex items-center sm:space-x-2">
                   <BarChart3 className="w-4 h-4" aria-hidden="true" />
-                  <span className="hidden sm:inline text-xs sm:text-sm">Analytics</span>
+                  <Typography className="hidden sm:inline text-xs sm:text-sm"variant="caption">Analytics</Typography>
                 </Link>
               </Button>
               <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
                 <Link href="/library" className="flex items-center sm:space-x-2">
                   <Library className="w-4 h-4" aria-hidden="true" />
-                  <span className="hidden sm:inline text-xs sm:text-sm">Movement Library</span>
+                  <Typography className="hidden sm:inline text-xs sm:text-sm"variant="caption">Movement Library</Typography>
                 </Link>
               </Button>
               <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
                 <Link href="/settings" className="flex items-center sm:space-x-2">
                   <Settings className="w-4 h-4" aria-hidden="true" />
-                  <span className="hidden sm:inline text-xs sm:text-sm">Settings</span>
+                  <Typography className="hidden sm:inline text-xs sm:text-sm"variant="caption">Settings</Typography>
                 </Link>
               </Button>
             </div>

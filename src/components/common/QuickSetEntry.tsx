@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { QuickSetEntryProps, SetData } from '@/models/types';
 import { Save } from 'lucide-react';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ export default function QuickSetEntry({
   lastSet, 
   onQuickLog 
 }: QuickSetEntryProps) {
+  const { data: userProfile } = useUserProfile();
   const [setData, setSetData] = useState<SetData>({
     reps: lastSet?.reps || null,
     weight: lastSet?.weight || null,
@@ -21,6 +23,13 @@ export default function QuickSetEntry({
     notes: '',
   });
   const [isLogging, setIsLogging] = useState(false);
+  
+  const weightUnit = userProfile?.weight_unit || 'lbs';
+  const distanceUnit = userProfile?.distance_unit || 'miles';
+  
+  const getDistanceUnitAbbreviation = (unit: string) => {
+    return unit === 'miles' ? 'mi' : 'km';
+  };
 
   const isFormValid = (): boolean => {
     if (!movement) return false;
@@ -133,7 +142,7 @@ export default function QuickSetEntry({
         {/* Distance tracking */}
         {movement.tracking_type === 'distance' && (
           <div className="space-y-2">
-            <Label htmlFor="distance" className="text-xs sm:text-sm">Distance (miles)</Label>
+            <Label htmlFor="distance" className="text-xs sm:text-sm">Distance ({distanceUnit})</Label>
             <Input
               id="distance"
               type="number"
@@ -190,7 +199,7 @@ export default function QuickSetEntry({
           disabled={isLogging || !isFormValid()}
           className="w-full flex items-center justify-center space-x-2 h-9"
         >
-          <Save className="w-3 h-3 sm:w-4 sm:h-4" />
+          <Save  />
           <span className="text-sm">{isLogging ? 'Logging...' : 'Log Set'}</span>
         </Button>
       </form>
@@ -200,9 +209,9 @@ export default function QuickSetEntry({
           <p className="text-xs font-medium mb-1">Previous Set:</p>
           <p className="text-xs text-muted-foreground">
             {lastSet.reps && `${lastSet.reps} reps`}
-            {lastSet.weight && ` × ${lastSet.weight} lbs`}
+            {lastSet.weight && ` × ${lastSet.weight} ${weightUnit}`}
             {lastSet.duration && `${lastSet.duration}s`}
-            {lastSet.distance && `${lastSet.distance} mi`}
+            {lastSet.distance && `${lastSet.distance} ${getDistanceUnitAbbreviation(distanceUnit)}`}
           </p>
         </div>
       )}

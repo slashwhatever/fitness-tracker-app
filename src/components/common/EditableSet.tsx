@@ -19,6 +19,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { Set, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { Typography } from './Typography';
 
 interface EditableSetProps {
   set: Set;
@@ -44,6 +45,7 @@ export default function EditableSet({
   const deleteSetMutation = useDeleteSet();
   
   const weightUnit = userProfile?.weight_unit || 'lbs';
+  const distanceUnit = userProfile?.distance_unit || 'miles';
 
   const handleSave = async () => {
     const updates: Partial<Set> = {};
@@ -114,6 +116,10 @@ export default function EditableSet({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const getDistanceUnitAbbreviation = (unit: string) => {
+    return unit === 'miles' ? 'mi' : 'km';
+  };
+
   const handleDuplicate = () => {
     onDuplicate(set);
   };
@@ -141,39 +147,39 @@ export default function EditableSet({
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer space-y-2 sm:space-y-0">
         <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
-            <span>{new Date(set.created_at).toLocaleDateString()}</span>
-            <span>{new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <Typography variant="caption">{new Date(set.created_at).toLocaleDateString()}</Typography>
+            <Typography variant="caption">{new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Typography>
           </div>
           
           {/* Set Data Display */}
           <div className="text-left sm:text-right">
             {movement.tracking_type === 'weight' && (
               <div className="flex items-center space-x-1 sm:space-x-2">
-                <span className="text-lg sm:text-2xl font-bold text-foreground">{set.weight}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground">{weightUnit}</span>
-                <span className="text-muted-foreground">×</span>
-                <span className="text-base sm:text-xl font-semibold text-foreground">{set.reps}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground">reps</span>
+                <Typography variant="title2">{set.reps || 0}</Typography>
+                <Typography variant="caption">reps</Typography>
+                <Typography variant="caption">×</Typography>
+                <Typography variant="title2">{set.weight || 0}</Typography>
+                <Typography variant="caption">{weightUnit}</Typography>
               </div>
             )}
             
             {(movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
               <div className="flex items-center space-x-1 sm:space-x-2">
-                <span className="text-lg sm:text-2xl font-bold text-foreground">{set.reps}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground">reps</span>
+                <Typography variant="title2">{set.reps}</Typography>
+                <Typography variant="caption">reps</Typography>
               </div>
             )}
             
             {movement.tracking_type === 'distance' && set.distance && (
               <div className="flex items-center space-x-1 sm:space-x-2">
-                <span className="text-lg sm:text-2xl font-bold text-foreground">{set.distance}</span>
-                <span className="text-xs sm:text-sm text-muted-foreground">mi</span>
+                <Typography variant="title2">{set.distance}</Typography>
+                <Typography variant="caption">{getDistanceUnitAbbreviation(distanceUnit)}</Typography>
               </div>
             )}
             
             {movement.tracking_type === 'duration' && set.duration && (
               <div className="flex items-center space-x-1 sm:space-x-2">
-                <span className="text-lg sm:text-2xl font-bold text-foreground">{formatDuration(set.duration)}</span>
+                <Typography variant="title2">{formatDuration(set.duration)}</Typography>
               </div>
             )}
           </div>
@@ -186,8 +192,8 @@ export default function EditableSet({
             size="sm"
             className="bg-green-500 hover:bg-green-600 h-8 sm:h-9 text-xs sm:text-sm"
           >
-            <Copy className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-            <span className="hidden xs:inline">Duplicate</span>
+            <Copy  />
+            <Typography variant="caption" className="hidden xs:inline">Duplicate</Typography>
           </Button>
           
           <Drawer open={isEditing} onOpenChange={handleDrawerOpenChange}>
@@ -197,7 +203,7 @@ export default function EditableSet({
                 size="icon"
                 className="h-8 w-8 sm:h-9 sm:w-9"
               >
-                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Edit/>
               </Button>
             </DrawerTrigger>
               <DrawerContent>
@@ -253,7 +259,7 @@ export default function EditableSet({
                   
                   {movement.tracking_type === 'distance' && (
                     <div className="space-y-2">
-                      <Label htmlFor="edit-distance" className="text-sm">Distance (miles)</Label>
+                      <Label htmlFor="edit-distance" className="text-sm">Distance ({distanceUnit})</Label>
                       <Input
                         id="edit-distance"
                         type="number"
@@ -315,7 +321,7 @@ export default function EditableSet({
               size="icon"
               className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
             >
-              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+              <Trash2  />
             </Button>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import { RegisterForm } from '@/components/auth/RegisterForm';
+import Loading from '@/components/Loading';
 import { Suspense } from 'react';
 
 interface RegisterPageProps {
@@ -13,7 +14,9 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+          <Loading />
+        }>
           <RegisterForm redirectTo={params.redirectTo} />
         </Suspense>
       </div>

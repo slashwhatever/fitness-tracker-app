@@ -3,7 +3,9 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
+import { Typography } from '@/components/common/Typography';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
+import Loading from '@/components/Loading';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -86,13 +88,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     return (
       <ProtectedRoute>
         <main className="min-h-screen bg-background p-8">
-          <div className="max-w-4xl mx-auto">
-            <Card>
-              <CardContent className="p-8">
-                <p className="text-muted-foreground">Loading workout...</p>
-              </CardContent>
-            </Card>
-          </div>
+          <Loading title="Loading workout..." subtitle="Please wait while we load the workout." />
         </main>
       </ProtectedRoute>
     );
@@ -138,13 +134,13 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           
               <div className="flex justify-between items-center space-y-2">
                 <div className="flex flex-col space-y-4">
-                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold truncate mb-0">{workout.name}</h1>
+                  <Typography variant="title1" className="truncate mb-0">{workout.name}</Typography>
                   {workout.description && (
-                    <p className="text-muted-foreground mt-1 text-sm">{workout.description}</p>
+                    <Typography variant="caption" className="mt-1">{workout.description}</Typography>
                   )}
-                  <p className="text-muted-foreground text-xs sm:text-sm mt-0">
+                  <Typography variant="caption" className="mt-0">
                     {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
-                  </p>
+                  </Typography>
                 </div>
 
                 <div className="flex space-x-2 ml-4">
@@ -155,7 +151,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                     className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
                   >
                     <Plus className="w-4 h-4" />
-                    <span className="hidden sm:inline text-xs">Add</span>
+                    <Typography variant="caption" className="hidden sm:inline">Add</Typography>
                   </Button>
                   <Button 
                     variant="outline" 
@@ -164,7 +160,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                     className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
                   >
                     <Settings className="w-4 h-4" />
-                    <span className="hidden sm:inline text-xs">Settings</span>
+                    <Typography variant="caption" className="hidden sm:inline">Settings</Typography>
                   </Button>
                 </div>
               </div>
@@ -175,6 +171,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               workoutId={paramsResolved?.id || ''}
               onMovementAdded={handleMovementAdded}
               onAddMovementClick={() => setShowMovementModal(true)}
+              expectedCount={workoutMovements.length || 2}
             />
 
         <MovementSelectionModal

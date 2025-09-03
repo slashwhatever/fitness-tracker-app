@@ -3,22 +3,26 @@
 import EditMovementModal from '@/components/common/EditMovementModal';
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
 import { useSetsByWorkout } from '@/hooks/useSets';
 import type { UserMovement } from '@/models/types';
 import { Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { Typography } from './Typography';
 
 interface MovementListProps {
   workoutId: string;
   onMovementAdded: (userMovementId: string) => Promise<void>;
   onAddMovementClick: () => void;
+  expectedCount?: number; // Number of movements we expect to load
 }
 
 export default function MovementList({ 
   workoutId, 
-  onAddMovementClick 
+  onAddMovementClick,
+  expectedCount = 2
 }: MovementListProps) {
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
   const { data: workoutSets = [] } = useSetsByWorkout(workoutId);
@@ -53,7 +57,26 @@ export default function MovementList({
 
   if (isLoading) {
     return (
-      <p className="text-muted-foreground">Loading movements...</p>
+      <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+        {[...Array(expectedCount)].map((_, index) => (
+          <div key={index} className="bg-muted/50 rounded-lg border">
+            <div className="flex items-center justify-between p-3 sm:p-4">
+              <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                <Skeleton className="w-6 h-4" />
+                <div className="min-w-0 flex-1">
+                  <Skeleton className="h-4 w-32 sm:w-40 mb-1" />
+                  <Skeleton className="h-3 w-24 sm:w-32" />
+                </div>
+              </div>
+              <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
+                <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
+                <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
+                <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     );
   }
 
@@ -83,17 +106,17 @@ export default function MovementList({
                     href={`/movement/${movement.user_movement_id}`}
                     className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0"
                   >
-                    <div className="text-xs sm:text-sm font-medium text-muted-foreground flex-shrink-0">
+                    <Typography variant="caption" className="flex-shrink-0">
                       #{index + 1}
-                    </div>
+                    </Typography>
                     <div className="min-w-0">
-                      <h3 className="font-medium hover:text-blue-500 transition-colors text-sm sm:text-base truncate">
+                      <Typography variant="title3" className="truncate">
                         {movement.user_movement?.name || 'Unknown Movement'}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+                      </Typography>
+                      <Typography variant="caption" className="line-clamp-2">
                         {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
                         {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
-                      </p>
+                      </Typography>
                     </div>
                   </Link>
                   <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
@@ -104,7 +127,7 @@ export default function MovementList({
                       className="text-muted-foreground hover:text-green-500 h-8 w-8 sm:h-9 sm:w-9"
                     >
                       <Link href={`/movement/${movement.user_movement_id}`}>
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <Plus  />
                       </Link>
                     </Button>
                     <Button
@@ -113,7 +136,7 @@ export default function MovementList({
                       onClick={() => setEditingMovementId(movement.user_movement_id)}
                       className="text-muted-foreground hover:text-blue-500 h-8 w-8 sm:h-9 sm:w-9"
                     >
-                      <Edit3 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Edit3  />
                     </Button>
                     <Button
                       variant="ghost"
@@ -121,7 +144,7 @@ export default function MovementList({
                       onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
                       className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
                     >
-                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <Trash2  />
                     </Button>
                   </div>
                 </div>

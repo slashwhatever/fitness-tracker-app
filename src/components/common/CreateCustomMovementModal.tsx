@@ -231,13 +231,15 @@ export default function CreateCustomMovementModal({
         handleClose();
       }
     }}>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
+      <DrawerContent className="h-[95vh] flex flex-col">
+        <DrawerHeader className="text-left flex-shrink-0">
           <DrawerTitle>Create custom movement</DrawerTitle>
         </DrawerHeader>
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
-          <FormContent className="px-4" />
-          <DrawerFooter className="pt-2">
+        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto px-4">
+            <FormContent />
+          </div>
+          <DrawerFooter className="pt-2 flex-shrink-0">
             <ActionButtons />
           </DrawerFooter>
         </form>

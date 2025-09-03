@@ -2,6 +2,8 @@
 
 import MovementCard from '@/components/common/MovementCard';
 import SearchFilters from '@/components/common/SearchFilters';
+import { Typography } from '@/components/common/Typography';
+import Loading from '@/components/Loading';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -108,15 +110,15 @@ export default function MovementLibraryPage() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">Movement Library</h1>
-          <p className="text-muted-foreground mt-2">
+          <Typography variant="title1">Movement library</Typography>
+          <Typography variant="caption">
             Browse and discover exercises for your workouts
-          </p>
+          </Typography>
         </div>
 
         {/* Search and Filters */}
         <div className="flex items-center space-x-2">
-          <h2 className="text-base sm:text-lg font-semibold">Search & Filters</h2>
+          <Typography variant="title2">Search & Filters</Typography>
         </div>
 
         <SearchFilters
@@ -129,29 +131,21 @@ export default function MovementLibraryPage() {
 
         {/* Movement Grid */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold">
+          <Typography variant="title2">
             Exercises ({isLoading ? '...' : filteredMovements.length})
-          </h1>
-          <div className="text-sm text-muted-foreground">
+          </Typography>
+          <Typography variant="caption">
             {isLoading ? 'Loading...' : 
               filteredMovements.length === movementTemplates.length 
                 ? 'Showing all exercises' 
                 : `Filtered from ${movementTemplates.length} total exercises`
             }
-          </div>
+          </Typography>
 
         </div>
         {isLoading ? (
           <div className="text-center py-12">
-            <div className="text-muted-foreground mb-4">
-              <svg className="w-16 h-16 mx-auto animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium mb-2">Loading exercises...</h3>
-            <p className="text-muted-foreground">
-              Please wait while we fetch the movement library.
-            </p>
+            <Loading title="Loading exercises..." subtitle="Please wait while we fetch the movement library." />
           </div>
         ) : filteredMovements.length === 0 ? (
           <div className="text-center py-12">
@@ -160,10 +154,10 @@ export default function MovementLibraryPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium mb-2">No exercises found</h3>
-            <p className="text-muted-foreground">
+            <Typography variant="title3">No exercises found</Typography>
+            <Typography variant="caption">
               Try adjusting your search terms or filters to find what you&apos;re looking for.
-            </p>
+            </Typography>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

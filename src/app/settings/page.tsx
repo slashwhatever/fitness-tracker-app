@@ -1,6 +1,8 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { Typography } from '@/components/common/Typography';
+import Loading from '@/components/Loading';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -85,11 +87,7 @@ export default function SettingsPage() {
     return (
       <ProtectedRoute>
         <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading your settings...</p>
-            </div>
-          </div>
+          <Loading title="Loading your settings..." subtitle="Please wait while we load your settings." />
         </main>
       </ProtectedRoute>
     );
@@ -112,10 +110,10 @@ export default function SettingsPage() {
           </Breadcrumb>
 
           <div className="mb-6">
-            <h1 className="text-xl sm:text-2xl font-bold mb-2">Settings</h1>
-            <p className="text-muted-foreground text-sm">
+            <Typography variant="title2">Settings</Typography>
+            <Typography variant="caption">
               Manage your profile preferences and workout settings
-            </p>
+            </Typography>
           </div>
 
 
@@ -123,7 +121,7 @@ export default function SettingsPage() {
           {/* Profile Section */}
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold mb-3">Profile</h2>
+              <Typography variant="title3">Profile</Typography>
             </div>
 
             <div className="space-y-2">
@@ -134,16 +132,16 @@ export default function SettingsPage() {
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Enter your display name"
               />
-              <p className="text-xs text-muted-foreground">
+              <Typography variant="caption">
                 This name will be displayed on your profile
-              </p>
+              </Typography>
             </div>
           </div>
 
           {/* Workout Preferences */}
           <div className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold mb-3">Workout Preferences</h2>
+              <Typography variant="title3">Workout Preferences</Typography>
             </div>
 
             <div className="space-y-2">
@@ -161,9 +159,9 @@ export default function SettingsPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">
+              <Typography variant="caption">
                 This timer will be used for all movements unless overridden
-              </p>
+              </Typography>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
