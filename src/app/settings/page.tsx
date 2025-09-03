@@ -24,7 +24,9 @@ import {
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { DistanceUnit, TIMER_PRESETS, UserProfile, WeightUnit } from '@/models/types';
 import { SupabaseService } from '@/services/supabaseService';
-import { Save } from 'lucide-react';
+import { signOut } from '@/lib/supabase/auth-utils';
+import { LogOut, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
@@ -36,6 +38,8 @@ export default function SettingsPage() {
   const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
   const [distanceUnit, setDistanceUnit] = useState<DistanceUnit>('miles');
   const [isSaving, setIsSaving] = useState(false);
+  
+  const router = useRouter();
 
   // Populate form when profile data loads
   useEffect(() => {
@@ -80,6 +84,19 @@ export default function SettingsPage() {
       setWeightUnit((userProfile.weight_unit as WeightUnit) || 'lbs');
       setDistanceUnit((userProfile.distance_unit as DistanceUnit) || 'miles');
       
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut();
+      if (error) {
+        console.error('Failed to sign out:', error);
+      } else {
+        router.push('/auth');
+      }
+    } catch (error) {
+      console.error('Unexpected error during sign out:', error);
     }
   };
 
@@ -194,18 +211,26 @@ export default function SettingsPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col-reverse sm:flex-row gap-3 pt-6 border-t">
-            <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
-              Reset Changes
-            </Button>
-            <Button 
-              onClick={handleSave} 
-              disabled={isSaving}
-              className="w-full sm:w-auto"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {isSaving ? 'Saving...' : 'Save Settings'}
-            </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-between pt-6 border-t">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 order-2 sm:order-1">
+              <Button variant="outline" onClick={handleSignOut} className="w-full sm:w-auto text-red-600 hover:text-red-700 border-red-200 hover:border-red-300">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+            <div className="flex flex-col-reverse sm:flex-row gap-3 order-1 sm:order-2">
+              <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
+                Reset Changes
+              </Button>
+              <Button 
+                onClick={handleSave} 
+                disabled={isSaving}
+                className="w-full sm:w-auto"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {isSaving ? 'Saving...' : 'Save Settings'}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

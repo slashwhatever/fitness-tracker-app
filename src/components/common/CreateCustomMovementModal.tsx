@@ -147,8 +147,9 @@ export default function CreateCustomMovementModal({
         <Label htmlFor="muscleGroups" className="text-sm font-medium text-muted-foreground">Muscle groups * ({selectedMuscleGroups.length} selected)</Label>
         <div className="grid grid-cols-2 gap-2 mt-2">
           {MUSCLE_GROUPS.map((group) => (
-            <button
+            <Button
               key={group}
+              variant="ghost"
               type="button"
               onClick={() => handleMuscleGroupToggle(group)}
               className={`p-2 text-sm rounded-md border transition-colors ${
@@ -158,7 +159,7 @@ export default function CreateCustomMovementModal({
               }`}
             >
               {group}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

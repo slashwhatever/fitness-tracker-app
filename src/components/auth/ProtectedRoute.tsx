@@ -21,9 +21,13 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!loading && !user) {
-      // Store the current path to redirect back after login
+      // Store the current path to redirect back after login, unless it's a sensitive page
       const currentPath = window.location.pathname + window.location.search;
-      const loginUrl = `${redirectTo}?redirectTo=${encodeURIComponent(currentPath)}`;
+      const shouldRedirectBack = !currentPath.includes('/settings') && !currentPath.includes('/logout');
+      
+      const loginUrl = shouldRedirectBack 
+        ? `${redirectTo}?redirectTo=${encodeURIComponent(currentPath)}`
+        : redirectTo;
       router.push(loginUrl);
     }
   }, [user, loading, router, redirectTo]);

@@ -132,72 +132,72 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             </BreadcrumbList>
           </Breadcrumb>
           
-              <div className="flex justify-between items-center space-y-2">
-                <div className="flex flex-col space-y-4">
-                  <Typography variant="title1" className="truncate mb-0">{workout.name}</Typography>
-                  {workout.description && (
-                    <Typography variant="caption" className="mt-1">{workout.description}</Typography>
-                  )}
-                  <Typography variant="caption" className="mt-0">
-                    {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
-                  </Typography>
-                </div>
-
-                <div className="flex space-x-2 ml-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowMovementModal(true)}
-                    className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <Typography variant="caption" className="hidden sm:inline">Add</Typography>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowSettingsModal(true)}
-                    className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
-                  >
-                    <Settings className="w-4 h-4" />
-                    <Typography variant="caption" className="hidden sm:inline">Settings</Typography>
-                  </Button>
-                </div>
-              </div>
+          <div className="flex justify-between items-center space-y-2">
+            <div className="flex flex-col space-y-4">
+              <Typography variant="title1" className="truncate mb-0">{workout.name}</Typography>
+              {workout.description && (
+                <Typography variant="caption" className="mt-1">{workout.description}</Typography>
+              )}
+              <Typography variant="caption" className="mt-0">
+                {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
+              </Typography>
             </div>
-            
-            <MovementList
-              key={refreshKey}
-              workoutId={paramsResolved?.id || ''}
-              onMovementAdded={handleMovementAdded}
-              onAddMovementClick={() => setShowMovementModal(true)}
-              expectedCount={workoutMovements.length || 2}
-            />
 
-        <MovementSelectionModal
-              isOpen={showMovementModal}
-              onClose={() => {
-                setShowMovementModal(false);
-                // Force refresh when modal closes to show any changes
-                setRefreshKey(prev => prev + 1);
-              }}
-              workoutId={paramsResolved?.id || ''}
-            />
+            <div className="flex space-x-2 ml-4">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowMovementModal(true)}
+                className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
+              >
+                <Plus className="w-4 h-4" />
+                <Typography variant="caption" className="hidden sm:inline">Add</Typography>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowSettingsModal(true)}
+                className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
+              >
+                <Settings className="w-4 h-4" />
+                <Typography variant="caption" className="hidden sm:inline">Settings</Typography>
+              </Button>
+            </div>
+          </div>
+          
+          <MovementList
+            key={refreshKey}
+            workoutId={paramsResolved?.id || ''}
+            onMovementAdded={handleMovementAdded}
+            onAddMovementClick={() => setShowMovementModal(true)}
+            expectedCount={workoutMovements.length || 2}
+          />
 
-            <WorkoutSettingsModal
-              isOpen={showSettingsModal}
-              onClose={() => {
-                setShowSettingsModal(false);
-                setRefreshKey(prev => prev + 1);
-              }}
-              workout={workout}
-              onWorkoutUpdated={() => {
-                setRefreshKey(prev => prev + 1);
-              }}
-              onWorkoutDeleted={() => {
-                setRefreshKey(prev => prev + 1);
-              }}
-            />
+          <MovementSelectionModal
+            isOpen={showMovementModal}
+            onClose={() => {
+              setShowMovementModal(false);
+              // Force refresh when modal closes to show any changes
+              setRefreshKey(prev => prev + 1);
+            }}
+            workoutId={paramsResolved?.id || ''}
+          />
+
+          <WorkoutSettingsModal
+            isOpen={showSettingsModal}
+            onClose={() => {
+              setShowSettingsModal(false);
+              setRefreshKey(prev => prev + 1);
+            }}
+            workout={workout}
+            onWorkoutUpdated={() => {
+              setRefreshKey(prev => prev + 1);
+            }}
+            onWorkoutDeleted={() => {
+              setRefreshKey(prev => prev + 1);
+            }}
+          />
+        </div>
       </main>
     </ProtectedRoute>
   );

@@ -1,6 +1,8 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { TimerProvider } from "@/contexts/TimerContext";
+import TimerBanner from "@/components/common/TimerBanner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -33,7 +35,10 @@ export default function RootLayout({
         <ErrorBoundary>
           <ReactQueryClientProvider>
             <AuthProvider>
-              {children}
+              <TimerProvider>
+                <TimerBanner />
+                {children}
+              </TimerProvider>
             </AuthProvider>
           </ReactQueryClientProvider>
         </ErrorBoundary>

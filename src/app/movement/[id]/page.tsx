@@ -3,7 +3,6 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import EditableSet from '@/components/common/EditableSet';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
-import RestTimer from '@/components/common/RestTimer';
 import { Typography } from '@/components/common/Typography';
 import Loading from '@/components/Loading';
 import {
@@ -19,6 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { useTimer } from '@/contexts/TimerContext';
 import { LastSet, Set, UserMovement, getEffectiveRestTimer } from '@/models/types';
 import { Calendar, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
@@ -30,8 +30,6 @@ interface MovementDetailPageProps {
 
 export default function MovementDetailPage({ params }: MovementDetailPageProps) {
   const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
-  const [isRestTimerActive, setIsRestTimerActive] = useState(false);
-  const [restTimerDuration, setRestTimerDuration] = useState(90); // Default 90 seconds
 
   // Resolve async params
   useEffect(() => {
@@ -43,6 +41,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.id || '');
   const { data: userProfile } = useUserProfile();
   const createSetMutation = useCreateSet();
+  const { startTimer } = useTimer();
 
   const handleDuplicateSet = async (originalSet: Set) => {
     try {
@@ -57,13 +56,13 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
         notes: originalSet.notes,
       });
       // Start rest timer after duplicating a set
-      startRestTimer();
+      startRestTimerWithSettings();
     } catch (error) {
       console.error('Failed to duplicate set:', error);
     }
   };
 
-  const startRestTimer = () => {
+  const startRestTimerWithSettings = () => {
     if (userProfile && movement) {
       const duration = getEffectiveRestTimer(
         { default_rest_timer: userProfile.default_rest_timer || undefined },
@@ -72,19 +71,9 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
       );
       
       if (duration) {
-        setRestTimerDuration(duration);
-        setIsRestTimerActive(true);
+        startTimer(duration);
       }
     }
-  };
-
-  const handleRestTimerComplete = () => {
-    // Timer completed, just deactivate it
-    setIsRestTimerActive(false);
-  };
-
-  const handleRestTimerSkip = () => {
-    setIsRestTimerActive(false);
   };
 
   const loading = movementLoading || !movement;
@@ -192,7 +181,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                         set_type: 'working',
                       });
                       // Start rest timer after successfully logging a set
-                      startRestTimer();
+                      startRestTimerWithSettings();
                     } catch (error) {
                       console.error('Failed to save set:', error);
                     }
@@ -205,17 +194,6 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             {/* <PRSummary userMovementId={movement.id} /> */}
           </div>
 
-          {/* Rest Timer */}
-          {isRestTimerActive && (
-            <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
-              <RestTimer
-                isActive={isRestTimerActive}
-                duration={restTimerDuration}
-                onComplete={handleRestTimerComplete}
-                onSkip={handleRestTimerSkip}
-              />
-            </div>
-          )}
 
           {/* Set History */}
           <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">

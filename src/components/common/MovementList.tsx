@@ -57,7 +57,7 @@ export default function MovementList({
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+      <div className="grid gap-2">
         {[...Array(expectedCount)].map((_, index) => (
           <div key={index} className="bg-muted/50 rounded-lg border">
             <div className="flex items-center justify-between p-3 sm:p-4">
@@ -95,63 +95,63 @@ export default function MovementList({
 
   return (
     <>
-        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
-          {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => {
-            const movementSets = getMovementSets(movement.user_movement_id);
-            
-            return (
-              <div key={movement.id} className="bg-muted/50 rounded-lg border">
-                <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/10 transition-all">
-                  <Link 
-                    href={`/movement/${movement.user_movement_id}`}
-                    className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0"
-                  >
-                    <Typography variant="caption" className="flex-shrink-0">
-                      #{index + 1}
+      <div className="grid gap-2">
+        {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => {
+          const movementSets = getMovementSets(movement.user_movement_id);
+          
+          return (
+            <div key={movement.id} className="bg-muted/50 rounded-lg border">
+              <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/10 transition-all">
+                <Link 
+                  href={`/movement/${movement.user_movement_id}`}
+                  className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0"
+                >
+                  <Typography variant="caption" className="flex-shrink-0">
+                    #{index + 1}
+                  </Typography>
+                  <div className="min-w-0">
+                    <Typography variant="title3" className="truncate">
+                      {movement.user_movement?.name || 'Unknown Movement'}
                     </Typography>
-                    <div className="min-w-0">
-                      <Typography variant="title3" className="truncate">
-                        {movement.user_movement?.name || 'Unknown Movement'}
-                      </Typography>
-                      <Typography variant="caption" className="line-clamp-2">
-                        {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
-                        {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
-                      </Typography>
-                    </div>
-                  </Link>
-                  <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      asChild
-                      className="text-muted-foreground hover:text-green-500 h-8 w-8 sm:h-9 sm:w-9"
-                    >
-                      <Link href={`/movement/${movement.user_movement_id}`}>
-                        <Plus  />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditingMovementId(movement.user_movement_id)}
-                      className="text-muted-foreground hover:text-blue-500 h-8 w-8 sm:h-9 sm:w-9"
-                    >
-                      <Edit3  />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
-                      className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
-                    >
-                      <Trash2  />
-                    </Button>
+                    <Typography variant="caption" className="line-clamp-2">
+                      {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
+                      {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
+                    </Typography>
                   </div>
+                </Link>
+                <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="text-muted-foreground hover:text-green-500 h-8 w-8 sm:h-9 sm:w-9"
+                  >
+                    <Link href={`/movement/${movement.user_movement_id}`}>
+                      <Plus  />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEditingMovementId(movement.user_movement_id)}
+                    className="text-muted-foreground hover:text-blue-500 h-8 w-8 sm:h-9 sm:w-9"
+                  >
+                    <Edit3  />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
+                    className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
+                  >
+                    <Trash2  />
+                  </Button>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
 
       <EditMovementModal
         isOpen={!!editingMovementId}
@@ -170,6 +170,6 @@ export default function MovementList({
         variant="destructive"
         isLoading={removeMovementMutation.isPending}
       />
-      </>
+    </>
   );
 }

@@ -6,7 +6,7 @@ import WorkoutManagement from '@/components/features/WorkoutManagement';
 import Loading from '@/components/Loading';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/AuthProvider';
-import { BarChart3, Library, Settings } from 'lucide-react';
+import { BarChart3, Dumbbell, Library, Settings } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Dashboard() {
@@ -28,9 +28,12 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
           {/* Header */}
           <div className="flex justify-between items-center">
-            <Typography variant="title1">
-              Log Set
-            </Typography>
+            <div className="flex items-center space-x-2">
+              <Dumbbell className="w-6 h-6" aria-hidden="true" />
+              <Typography variant="title1">
+                Log Set
+              </Typography>
+            </div>
             <div className="flex flex-row space-x-2">
               <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
                 <Link href="/analytics" className="flex items-center sm:space-x-2">

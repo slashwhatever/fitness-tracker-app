@@ -12,14 +12,13 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useDeleteSet, useUpdateSet } from '@/hooks/useSets';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Set, UserMovement } from '@/models/types';
+import { Set, UserMovement, SetData } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Typography } from './Typography';
+import SetEntryForm from './SetEntryForm';
 
 interface EditableSetProps {
   set: Set;
@@ -34,11 +33,6 @@ export default function EditableSet({
 }: EditableSetProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [reps, setReps] = useState(set.reps?.toString() || '');
-  const [weight, setWeight] = useState(set.weight?.toString() || '');
-  const [duration, setDuration] = useState(set.duration?.toString() || '');
-  const [distance, setDistance] = useState(set.distance?.toString() || '');
-  const [notes, setNotes] = useState(set.notes || '');
 
   const { data: userProfile } = useUserProfile();
   const updateSetMutation = useUpdateSet();
@@ -47,23 +41,14 @@ export default function EditableSet({
   const weightUnit = userProfile?.weight_unit || 'lbs';
   const distanceUnit = userProfile?.distance_unit || 'miles';
 
-  const handleSave = async () => {
-    const updates: Partial<Set> = {};
-    
-    if (movement.tracking_type === 'weight') {
-      updates.reps = reps ? Number(reps) : null;
-      updates.weight = weight ? Number(weight) : null;
-    } else if (movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') {
-      updates.reps = reps ? Number(reps) : null;
-    } else if (movement.tracking_type === 'duration') {
-      updates.duration = duration ? Number(duration) : null;
-    } else if (movement.tracking_type === 'distance') {
-      updates.distance = distance ? Number(distance) : null;
-    }
-    
-    if (notes !== set.notes) {
-      updates.notes = notes || null;
-    }
+  const handleSave = async (setData: SetData) => {
+    const updates: Partial<Set> = {
+      reps: setData.reps,
+      weight: setData.weight,
+      duration: setData.duration,
+      distance: setData.distance,
+      notes: setData.notes,
+    };
 
     try {
       await updateSetMutation.mutateAsync({ id: set.id, updates });
@@ -73,42 +58,10 @@ export default function EditableSet({
     }
   };
 
-  const handleCancel = () => {
-    setReps(set.reps?.toString() || '');
-    setWeight(set.weight?.toString() || '');
-    setDuration(set.duration?.toString() || '');
-    setDistance(set.distance?.toString() || '');
-    setNotes(set.notes || '');
-    setIsEditing(false);
-  };
-
   const handleDrawerOpenChange = (open: boolean) => {
     setIsEditing(open);
-    if (open) {
-      // Reset form values when opening the drawer
-      setReps(set.reps?.toString() || '');
-      setWeight(set.weight?.toString() || '');
-      setDuration(set.duration?.toString() || '');
-      setDistance(set.distance?.toString() || '');
-      setNotes(set.notes || '');
-    }
   };
 
-  const isValidEdit = () => {
-    switch (movement.tracking_type) {
-      case 'weight':
-        return reps && weight;
-      case 'bodyweight':
-      case 'reps_only':
-        return reps;
-      case 'duration':
-        return duration;
-      case 'distance':
-        return distance;
-      default:
-        return false;
-    }
-  };
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -206,7 +159,7 @@ export default function EditableSet({
                 <Edit/>
               </Button>
             </DrawerTrigger>
-              <DrawerContent>
+              <DrawerContent className="h-[95vh]">
                 <DrawerHeader>
                   <DrawerTitle>Edit Set</DrawerTitle>
                   <DrawerDescription>
@@ -214,100 +167,25 @@ export default function EditableSet({
                   </DrawerDescription>
                 </DrawerHeader>
                 
-                <div className="px-4 pb-4 space-y-4 sm:space-y-6">
-                  {movement.tracking_type === 'weight' && (
-                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="edit-weight" className="text-sm">Weight</Label>
-                        <Input
-                          id="edit-weight"
-                          type="number"
-                          value={weight}
-                          onChange={(e) => setWeight(e.target.value)}
-                          className="text-center text-base sm:text-lg"
-                          min="0"
-                          step="0.5"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="edit-reps" className="text-sm">Reps</Label>
-                        <Input
-                          id="edit-reps"
-                          type="number"
-                          value={reps}
-                          onChange={(e) => setReps(e.target.value)}
-                          className="text-center text-base sm:text-lg"
-                          min="0"
-                        />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {(movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-reps" className="text-sm">Reps</Label>
-                      <Input
-                        id="edit-reps"
-                        type="number"
-                        value={reps}
-                        onChange={(e) => setReps(e.target.value)}
-                        className="text-center text-base sm:text-lg"
-                        min="0"
-                      />
-                    </div>
-                  )}
-                  
-                  {movement.tracking_type === 'distance' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-distance" className="text-sm">Distance ({distanceUnit})</Label>
-                      <Input
-                        id="edit-distance"
-                        type="number"
-                        value={distance}
-                        onChange={(e) => setDistance(e.target.value)}
-                        className="text-center text-base sm:text-lg"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
-                  )}
-                  
-                  {movement.tracking_type === 'duration' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="edit-duration" className="text-sm">Duration (seconds)</Label>
-                      <Input
-                        id="edit-duration"
-                        type="number"
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                        className="text-center text-base sm:text-lg"
-                        min="0"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-notes" className="text-sm">Notes (optional)</Label>
-                    <Input
-                      id="edit-notes"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="How did it feel?"
-                      className="text-sm sm:text-base"
-                    />
-                  </div>
+                <div className="flex-1 overflow-y-auto">
+                  <SetEntryForm
+                    movement={movement}
+                    initialData={{
+                      reps: set.reps,
+                      weight: set.weight,
+                      duration: set.duration,
+                      distance: set.distance,
+                      notes: set.notes || '',
+                    }}
+                    onSave={handleSave}
+                    isLoading={updateSetMutation.isPending}
+                    saveButtonText="Save Changes"
+                  />
                 </div>
                 
                 <DrawerFooter>
-                  <Button
-                    onClick={handleSave}
-                    disabled={!isValidEdit() || updateSetMutation.isPending}
-                    className="bg-green-500 hover:bg-green-600"
-                  >
-                    {updateSetMutation.isPending ? 'Saving...' : 'Save Changes'}
-                  </Button>
                   <DrawerClose asChild>
-                    <Button variant="outline" onClick={handleCancel}>
+                    <Button variant="outline">
                       Cancel
                     </Button>
                   </DrawerClose>
