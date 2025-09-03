@@ -22,13 +22,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 interface WorkoutDetailPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ workoutId: string }>;
 }
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [showMovementModal, setShowMovementModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
+  const [paramsResolved, setParamsResolved] = useState<{ workoutId: string } | null>(null);
   const [addingMovements, setAddingMovements] = useState<Set<string>>(new Set());
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const addMovementToWorkoutMutation = useAddMovementToWorkout();
@@ -39,11 +39,11 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   }, [params]);
 
   // Use our new React Query hooks
-  const { data: workout, isLoading: loading } = useWorkout(paramsResolved?.id || '');
-  const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.id || '');
+  const { data: workout, isLoading: loading } = useWorkout(paramsResolved?.workoutId || '');
+  const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.workoutId || '');
 
   const handleMovementAdded = async (userMovementId: string) => {
-    if (!paramsResolved?.id) return;
+    if (!paramsResolved?.workoutId) return;
     
     // Check if movement is already in workout to avoid duplicates
     const isAlreadyInWorkout = workoutMovements.some(wm => wm.user_movement_id === userMovementId);
@@ -61,10 +61,10 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     setAddingMovements(prev => new Set([...prev, userMovementId]));
 
     try {
-      console.log('🔄 Adding movement to workout:', { userMovementId, workoutId: paramsResolved.id });
+      console.log('🔄 Adding movement to workout:', { userMovementId, workoutId: paramsResolved.workoutId });
       
       await addMovementToWorkoutMutation.mutateAsync({
-        workout_id: paramsResolved.id,
+        workout_id: paramsResolved.workoutId,
         user_movement_id: userMovementId,
         order_index: 0, // The mutation will handle finding the right order
       });
@@ -167,7 +167,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           
           <MovementList
             key={refreshKey}
-            workoutId={paramsResolved?.id || ''}
+            workoutId={paramsResolved?.workoutId || ''}
             onMovementAdded={handleMovementAdded}
             onAddMovementClick={() => setShowMovementModal(true)}
             expectedCount={workoutMovements.length || 2}
@@ -180,7 +180,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               // Force refresh when modal closes to show any changes
               setRefreshKey(prev => prev + 1);
             }}
-            workoutId={paramsResolved?.id || ''}
+            workoutId={paramsResolved?.workoutId || ''}
           />
 
           <WorkoutSettingsModal

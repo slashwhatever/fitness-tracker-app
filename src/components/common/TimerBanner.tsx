@@ -1,8 +1,8 @@
 'use client';
 
-import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTimer } from '@/contexts/TimerContext';
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 
 export default function TimerBanner() {
   const {
@@ -85,7 +85,7 @@ export default function TimerBanner() {
         className={`absolute bottom-0 left-0 h-1 transition-all duration-1000 ${
           isComplete ? 'bg-green-300' : 
           isWarning ? 'bg-yellow-300' : 
-          'bg-white/50'
+          'bg-blue-500'
         }`}
         style={{ width: `${Math.min(100, progressPercentage)}%` }}
       />

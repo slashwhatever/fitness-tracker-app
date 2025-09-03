@@ -10,26 +10,24 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
+  BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useCreateSet, useSetsByMovement, useUserMovement } from '@/hooks';
-import { useUserProfile } from '@/hooks/useUserProfile';
 import { useTimer } from '@/contexts/TimerContext';
+import { useCreateSet, useSetsByMovement, useUserMovement, useWorkout } from '@/hooks';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { LastSet, Set, UserMovement, getEffectiveRestTimer } from '@/models/types';
 import { Calendar, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 interface MovementDetailPageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ workoutId: string; movementId: string }>;
 }
 
 export default function MovementDetailPage({ params }: MovementDetailPageProps) {
-  const [paramsResolved, setParamsResolved] = useState<{ id: string } | null>(null);
+  const [paramsResolved, setParamsResolved] = useState<{ workoutId: string; movementId: string } | null>(null);
 
   // Resolve async params
   useEffect(() => {
@@ -37,8 +35,9 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   }, [params]);
 
   // Use our new React Query hooks
-  const { data: movement, isLoading: movementLoading } = useUserMovement(paramsResolved?.id || '');
-  const { data: sets = [] } = useSetsByMovement(paramsResolved?.id || '');
+  const { data: movement, isLoading: movementLoading } = useUserMovement(paramsResolved?.movementId || '');
+  const { data: sets = [] } = useSetsByMovement(paramsResolved?.movementId || '');
+  const { data: workout, isLoading: workoutLoading } = useWorkout(paramsResolved?.workoutId || '');
   const { data: userProfile } = useUserProfile();
   const createSetMutation = useCreateSet();
   const { startTimer } = useTimer();
@@ -76,7 +75,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
     }
   };
 
-  const loading = movementLoading || !movement;
+  const loading = movementLoading || workoutLoading || !movement || !workout;
 
   // TODO: Implement weight unit preferences with React Query hooks
   // useEffect(() => {
@@ -122,7 +121,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
     <ProtectedRoute>
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
         <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
-          {/* Header */}
+          {/* Breadcrumbs */}
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -130,7 +129,11 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{movement?.name || 'Movement'}</BreadcrumbPage>
+                <BreadcrumbLink href={`/workout/${paramsResolved?.workoutId}`}>
+                  <span className="max-w-[150px] truncate block">
+                    {workout?.name || 'Workout'}
+                  </span>
+                </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -168,10 +171,10 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                 movement={movement}
                 lastSet={sets.length > 0 ? sets[0] as LastSet : null}
                 onQuickLog={async (setData) => {
-                  if (movement?.id) {
+                  if (paramsResolved?.movementId) {
                     try {
                       await createSetMutation.mutateAsync({
-                        user_movement_id: movement.id,
+                        user_movement_id: paramsResolved.movementId,
                         workout_id: null,
                         reps: setData.reps || null,
                         weight: setData.weight || null,
@@ -207,18 +210,16 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                 <Typography variant="footnote">Use the quick log above to record your first set!</Typography>
               </div>
             ) : (
-              <ScrollArea className="h-80 sm:h-96">
-                <div className="space-y-2 pr-2 sm:pr-4">
-                  {sets.map((set) => (
-                    <EditableSet
-                      key={set.id}
-                      set={set}
-                      movement={movement as UserMovement}
-                      onDuplicate={handleDuplicateSet}
-                    />
-                  ))}
-                </div>
-              </ScrollArea>
+              <div className="space-y-2">
+                {sets.map((set) => (
+                  <EditableSet
+                    key={set.id}
+                    set={set}
+                    movement={movement as UserMovement}
+                    onDuplicate={handleDuplicateSet}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>

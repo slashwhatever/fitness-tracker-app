@@ -14,11 +14,11 @@ import {
 } from '@/components/ui/drawer';
 import { useDeleteSet, useUpdateSet } from '@/hooks/useSets';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Set, UserMovement, SetData } from '@/models/types';
+import { Set, SetData, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { Typography } from './Typography';
 import SetEntryForm from './SetEntryForm';
+import { Typography } from './Typography';
 
 interface EditableSetProps {
   set: Set;

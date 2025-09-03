@@ -103,30 +103,27 @@ export default function MovementList({
             <div key={movement.id} className="bg-muted/50 rounded-lg border">
               <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/10 transition-all">
                 <Link 
-                  href={`/movement/${movement.user_movement_id}`}
-                  className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0"
+                  href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
+                  className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0 overflow-hidden"
                 >
-                  <Typography variant="caption" className="flex-shrink-0">
-                    #{index + 1}
-                  </Typography>
-                  <div className="min-w-0">
-                    <Typography variant="title3" className="truncate">
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <Typography variant="title3" className="truncate block">
                       {movement.user_movement?.name || 'Unknown Movement'}
                     </Typography>
-                    <Typography variant="caption" className="line-clamp-2">
+                    <Typography variant="caption" className="line-clamp-2 block">
                       {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
                       {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
                     </Typography>
                   </div>
                 </Link>
-                <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
+                <div className="flex items-center space-x-1 sm:space-x-2 ml-2 flex-shrink-0">
                   <Button
                     variant="ghost"
                     size="sm"
                     asChild
                     className="text-muted-foreground hover:text-green-500 h-8 w-8 sm:h-9 sm:w-9"
                   >
-                    <Link href={`/movement/${movement.user_movement_id}`}>
+                    <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}>
                       <Plus  />
                     </Link>
                   </Button>
