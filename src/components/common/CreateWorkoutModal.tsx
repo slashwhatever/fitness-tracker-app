@@ -17,7 +17,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useCreateWorkout } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { Workout } from '@/models/types';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface CreateWorkoutModalProps {
   isOpen: boolean;
@@ -53,6 +53,15 @@ export default function CreateWorkoutModal({
     }
   };
 
+  // Memoized event handlers to prevent input focus loss
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  }, []);
+
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
+  }, []);
+
   const FormContent = ({ className = "" }: { className?: string }) => (
     <form onSubmit={(e) => { e.preventDefault(); handleCreate(); }} className={`space-y-4 ${className}`}>
       <div className="space-y-2">
@@ -63,7 +72,7 @@ export default function CreateWorkoutModal({
           type="text"
           id="title"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleNameChange}
           placeholder="Enter workout title"
           disabled={createWorkoutMutation.isPending}
           required
@@ -77,7 +86,7 @@ export default function CreateWorkoutModal({
         <Textarea
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={handleDescriptionChange}
           placeholder="Enter workout description"
           rows={3}
           disabled={createWorkoutMutation.isPending}

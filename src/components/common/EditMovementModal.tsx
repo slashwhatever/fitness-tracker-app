@@ -1,5 +1,9 @@
 'use client';
 
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
@@ -10,13 +14,11 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUpdateUserMovement } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { TrackingType, UserMovement } from '@/models/types';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 interface EditMovementModalProps {
   isOpen: boolean;
@@ -37,45 +39,77 @@ const TRACKING_TYPES = [
   { value: 'reps_only' as TrackingType, label: 'Reps Only', description: 'Just track repetitions' },
 ];
 
+// Zod schema for form validation
+const formSchema = z.object({
+  name: z.string().min(1, "Movement name is required").min(2, "Movement name must be at least 2 characters"),
+  muscle_groups: z.array(z.string()).min(1, "At least one muscle group must be selected"),
+  tracking_type: z.enum(["weight", "bodyweight", "duration", "distance", "reps_only"]),
+  custom_rest_timer: z.string().optional().refine((val) => {
+    if (!val || val === '') return true;
+    const num = parseInt(val);
+    return !isNaN(num) && num >= 0;
+  }, "Rest timer must be a valid number (0 or greater)"),
+  personal_notes: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 export default function EditMovementModal({
   isOpen,
   onClose,
   movement,
 }: EditMovementModalProps) {
-  const [name, setName] = useState('');
-  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<string[]>([]);
-  const [trackingType, setTrackingType] = useState<TrackingType | ''>('');
-  const [customRestTimer, setCustomRestTimer] = useState('');
-  const [personalNotes, setPersonalNotes] = useState('');
-
   const updateUserMovementMutation = useUpdateUserMovement();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  // Initialize form when movement changes
-  useEffect(() => {
-    if (movement) {
-      setName(movement.name);
-      setSelectedMuscleGroups(movement.muscle_groups || []);
-      setTrackingType(movement.tracking_type);
-      setCustomRestTimer(movement.custom_rest_timer?.toString() || '');
-      setPersonalNotes(movement.personal_notes || '');
-    }
-  }, [movement]);
+  // Initialize form with React Hook Form and Zod validation using uncontrolled components
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    setValue,
+    getValues,
+    watch,
+    reset,
+  } = useForm<FormData>({
+    resolver: standardSchemaResolver(formSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      name: "",
+      muscle_groups: [],
+      tracking_type: "weight",
+      custom_rest_timer: "",
+      personal_notes: "",
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!movement || !name.trim() || !trackingType || selectedMuscleGroups.length === 0) return;
+  const watchMuscleGroups = watch("muscle_groups");
+
+  // Populate form when movement changes
+  useEffect(() => {
+    if (movement && isOpen) {
+      reset({
+        name: movement.name,
+        muscle_groups: movement.muscle_groups || [],
+        tracking_type: movement.tracking_type,
+        custom_rest_timer: movement.custom_rest_timer?.toString() || "",
+        personal_notes: movement.personal_notes || "",
+      });
+    }
+  }, [movement, isOpen, reset]);
+
+  const onSubmit = handleSubmit(async (values: FormData) => {
+    if (!movement) return;
 
     try {
       await updateUserMovementMutation.mutateAsync({
         id: movement.id,
         updates: {
-          name: name.trim(),
-          muscle_groups: selectedMuscleGroups,
-          tracking_type: trackingType,
-          custom_rest_timer: customRestTimer ? parseInt(customRestTimer) : null,
-          personal_notes: personalNotes.trim() || null,
+          name: values.name.trim(),
+          muscle_groups: values.muscle_groups,
+          tracking_type: values.tracking_type,
+          custom_rest_timer: values.custom_rest_timer ? parseInt(values.custom_rest_timer) : null,
+          personal_notes: values.personal_notes?.trim() || null,
         },
       });
 
@@ -83,24 +117,26 @@ export default function EditMovementModal({
     } catch (error) {
       console.error('Error updating movement:', error);
     }
-  };
+  });
 
   const handleClose = () => {
-    // Reset form
-    setName('');
-    setSelectedMuscleGroups([]);
-    setTrackingType('');
-    setCustomRestTimer('');
-    setPersonalNotes('');
+    // Reset to empty values when closing
+    reset({
+      name: "",
+      muscle_groups: [],
+      tracking_type: "weight",
+      custom_rest_timer: "",
+      personal_notes: "",
+    });
     onClose();
   };
 
   const handleMuscleGroupToggle = (group: string) => {
-    setSelectedMuscleGroups(prev => 
-      prev.includes(group) 
-        ? prev.filter(g => g !== group)
-        : [...prev, group]
-    );
+    const currentGroups = getValues("muscle_groups");
+    const newGroups = currentGroups.includes(group)
+      ? currentGroups.filter(g => g !== group)
+      : [...currentGroups, group];
+    setValue("muscle_groups", newGroups, { shouldValidate: true });
   };
 
   if (!movement) return null;
@@ -109,43 +145,46 @@ export default function EditMovementModal({
     <div className={`space-y-4 min-h-0 ${className}`}>
       {/* Movement Name */}
       <div className="space-y-2">
-        <Label htmlFor="name">Movement name *</Label>
-        <Input
+        <label htmlFor="name" className="text-sm font-medium">
+          Movement name *
+        </label>
+        <Input 
           id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Barbell Bench Press"
-          required
+          placeholder="e.g., Barbell Bench Press" 
+          {...register("name")}
         />
+        {errors.name && (
+          <p className="text-sm text-destructive">{errors.name.message}</p>
+        )}
       </div>
 
       {/* Tracking Type */}
       <div className="space-y-2">
-        <Label htmlFor="trackingType" className="text-sm font-medium text-muted-foreground">Tracking type *</Label>
-        <Select value={trackingType} onValueChange={(value) => setTrackingType(value as TrackingType)}>
-          <SelectTrigger className="px-4 py-3">
-            <SelectValue placeholder="Select tracking type">
-              {trackingType && TRACKING_TYPES.find(type => type.value === trackingType)?.label}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {TRACKING_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value} className="px-3 py-2">
-                <div className="text-left">
-                  <div className="font-medium">{type.label}</div>
-                  <div className="text-xs text-muted-foreground">{type.description}</div>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <label htmlFor="tracking_type" className="text-sm font-medium text-muted-foreground">
+          Tracking type *
+        </label>
+        <select 
+          id="tracking_type"
+          {...register("tracking_type")}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {TRACKING_TYPES.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label} - {type.description}
+            </option>
+          ))}
+        </select>
+        {errors.tracking_type && (
+          <p className="text-sm text-destructive">{errors.tracking_type.message}</p>
+        )}
       </div>
 
       {/* Muscle Groups */}
       <div className="space-y-2">
-      <Label htmlFor="muscleGroups" className="text-sm font-medium text-muted-foreground">Muscle groups * ({selectedMuscleGroups.length} selected)</Label>
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        <label className="text-sm font-medium text-muted-foreground">
+          Muscle groups * ({watchMuscleGroups?.length || 0} selected)
+        </label>
+        <div className="grid grid-cols-2 gap-2">
           {MUSCLE_GROUPS.map((group) => (
             <Button
               key={group}
@@ -153,7 +192,7 @@ export default function EditMovementModal({
               type="button"
               onClick={() => handleMuscleGroupToggle(group)}
               className={`p-2 text-sm rounded-md border transition-colors ${
-                selectedMuscleGroups.includes(group)
+                watchMuscleGroups?.includes(group)
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-background border-border hover:bg-accent'
               }`}
@@ -162,31 +201,42 @@ export default function EditMovementModal({
             </Button>
           ))}
         </div>
+        {errors.muscle_groups && (
+          <p className="text-sm text-destructive">{errors.muscle_groups.message}</p>
+        )}
       </div>
 
       {/* Custom Rest Timer */}
       <div className="space-y-2">
-      <Label htmlFor="restTimer" className="text-sm font-medium text-muted-foreground">Custom rest timer (seconds)</Label>
-        <Input
-          id="restTimer"
-          type="number"
-          value={customRestTimer}
-          onChange={(e) => setCustomRestTimer(e.target.value)}
-          placeholder="e.g., 120"
+        <label htmlFor="custom_rest_timer" className="text-sm font-medium text-muted-foreground">
+          Custom rest timer (seconds)
+        </label>
+        <Input 
+          id="custom_rest_timer"
+          type="number" 
+          placeholder="e.g., 120" 
           min="0"
+          {...register("custom_rest_timer")}
         />
+        {errors.custom_rest_timer && (
+          <p className="text-sm text-destructive">{errors.custom_rest_timer.message}</p>
+        )}
       </div>
 
       {/* Personal Notes */}
       <div className="space-y-2">
-      <Label htmlFor="notes" className="text-sm font-medium text-muted-foreground">Personal notes</Label>
-        <Textarea
-          id="notes"
-          value={personalNotes}
-          onChange={(e) => setPersonalNotes(e.target.value)}
+        <label htmlFor="personal_notes" className="text-sm font-medium text-muted-foreground">
+          Personal notes
+        </label>
+        <Textarea 
+          id="personal_notes"
           placeholder="Any personal notes about this movement..."
           rows={3}
+          {...register("personal_notes")}
         />
+        {errors.personal_notes && (
+          <p className="text-sm text-destructive">{errors.personal_notes.message}</p>
+        )}
       </div>
 
       {/* Display template info if movement is based on a template */}
@@ -207,7 +257,7 @@ export default function EditMovementModal({
       </Button>
       <Button 
         type="submit" 
-        disabled={!name.trim() || !trackingType || selectedMuscleGroups.length === 0 || updateUserMovementMutation.isPending}
+        disabled={!isValid || updateUserMovementMutation.isPending}
       >
         {updateUserMovementMutation.isPending ? 'Saving...' : 'Save Changes'}
       </Button>
@@ -223,10 +273,10 @@ export default function EditMovementModal({
       }}>
         <DialogContent className="max-w-md max-h-[85vh] w-[90vw] flex flex-col">
           <DialogHeader className="pb-4">
-            <DialogTitle className="text-xl">Edit Movement</DialogTitle>
+            <DialogTitle className="text-xl">Edit movement</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+          <form onSubmit={onSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
             <FormContent />
             <ActionButtons />
           </form>
@@ -245,7 +295,7 @@ export default function EditMovementModal({
         <DrawerHeader className="text-left flex-shrink-0">
           <DrawerTitle>Edit movement</DrawerTitle>
         </DrawerHeader>
-        <form onSubmit={handleSubmit} className="flex-1 flex flex-col min-h-0">
+        <form onSubmit={onSubmit} className="flex-1 flex flex-col min-h-0">
           <div className="flex-1 overflow-y-auto px-4">
             <FormContent />
           </div>

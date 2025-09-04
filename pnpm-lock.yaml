@@ -20,6 +20,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.1.0)
+      '@hookform/resolvers':
+        specifier: ^5.2.1
+        version: 5.2.1(react-hook-form@7.62.0(react@19.1.0))
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -47,6 +50,9 @@ importers:
       '@radix-ui/react-tabs':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@standard-schema/spec':
+        specifier: ^1.0.0
+        version: 1.0.0
       '@supabase-cache-helpers/postgrest-react-query':
         specifier: ^1.13.5
         version: 1.13.5(@supabase/postgrest-js@1.21.3)(@tanstack/react-query@5.85.6(react@19.1.0))(react@19.1.0)
@@ -62,6 +68,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.85.6
         version: 5.85.6(@tanstack/react-query@5.85.6(react@19.1.0))(react@19.1.0)
+      '@typeschema/main':
+        specifier: ^0.14.1
+        version: 0.14.1(@types/json-schema@7.0.15)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -83,6 +92,9 @@ importers:
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
+      react-hook-form:
+        specifier: ^7.62.0
+        version: 7.62.0(react@19.1.0)
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
@@ -92,6 +104,9 @@ importers:
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      zod:
+        specifier: ^4.1.5
+        version: 4.1.5
     devDependencies:
       '@axe-core/react':
         specifier: ^4.10.2
@@ -616,6 +631,11 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@hookform/resolvers@5.2.1':
+    resolution: {integrity: sha512-u0+6X58gkjMcxur1wRWokA7XsiiBJ6aK17aPZxhkoYiK5J+HcTx0Vhu9ovXe6H+dVpO6cjrn2FkJTryXEMlryQ==}
+    peerDependencies:
+      react-hook-form: ^7.55.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -1395,6 +1415,12 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
+
   '@supabase-cache-helpers/postgrest-core@0.12.2':
     resolution: {integrity: sha512-l98ByGn0dLWP/oq+pIEF3cUEeZ/+efP+gnWnrnXq8izgvhCORYSxSpJHRykNTMVUuRsbkLBS6z3JYf+X7Gkg2A==}
     peerDependencies:
@@ -1660,6 +1686,76 @@ packages:
 
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
+
+  '@typeschema/core@0.14.0':
+    resolution: {integrity: sha512-Ia6PtZHcL3KqsAWXjMi5xIyZ7XMH4aSnOQes8mfMLx+wGFGtGRNlwe6Y7cYvX+WfNK67OL0/HSe9t8QDygV0/w==}
+    peerDependencies:
+      '@types/json-schema': ^7.0.15
+    peerDependenciesMeta:
+      '@types/json-schema':
+        optional: true
+
+  '@typeschema/main@0.14.1':
+    resolution: {integrity: sha512-ReYIFVmMawLn3rq6+fBhiDFH1LrolQd+kKcuglCgnMip20ou2h2YEuIcDoLJ1tQ/RQnBTPyfvs+BwEytW9YVDg==}
+    peerDependencies:
+      '@typeschema/arktype': 0.14.0
+      '@typeschema/class-validator': 0.3.0
+      '@typeschema/deepkit': 0.14.0
+      '@typeschema/effect': 0.14.0
+      '@typeschema/fastest-validator': 0.2.0
+      '@typeschema/function': 0.14.0
+      '@typeschema/io-ts': 0.14.0
+      '@typeschema/joi': 0.14.0
+      '@typeschema/json': 0.14.0
+      '@typeschema/ow': 0.14.0
+      '@typeschema/runtypes': 0.14.0
+      '@typeschema/superstruct': 0.14.0
+      '@typeschema/suretype': 0.2.0
+      '@typeschema/typebox': 0.14.0
+      '@typeschema/valibot': 0.14.0
+      '@typeschema/valita': 0.2.0
+      '@typeschema/vine': 0.2.0
+      '@typeschema/yup': 0.14.0
+      '@typeschema/zod': 0.14.0
+    peerDependenciesMeta:
+      '@typeschema/arktype':
+        optional: true
+      '@typeschema/class-validator':
+        optional: true
+      '@typeschema/deepkit':
+        optional: true
+      '@typeschema/effect':
+        optional: true
+      '@typeschema/fastest-validator':
+        optional: true
+      '@typeschema/function':
+        optional: true
+      '@typeschema/io-ts':
+        optional: true
+      '@typeschema/joi':
+        optional: true
+      '@typeschema/json':
+        optional: true
+      '@typeschema/ow':
+        optional: true
+      '@typeschema/runtypes':
+        optional: true
+      '@typeschema/superstruct':
+        optional: true
+      '@typeschema/suretype':
+        optional: true
+      '@typeschema/typebox':
+        optional: true
+      '@typeschema/valibot':
+        optional: true
+      '@typeschema/valita':
+        optional: true
+      '@typeschema/vine':
+        optional: true
+      '@typeschema/yup':
+        optional: true
+      '@typeschema/zod':
+        optional: true
 
   '@typescript-eslint/eslint-plugin@8.41.0':
     resolution: {integrity: sha512-8fz6oa6wEKZrhXWro/S3n2eRJqlRcIa6SlDh59FXJ5Wp5XRZ8B9ixpJDcjadHq47hMx0u+HW6SNa6LjJQ6NLtw==}
@@ -4042,6 +4138,12 @@ packages:
     peerDependencies:
       react: ^19.1.0
 
+  react-hook-form@7.62.0:
+    resolution: {integrity: sha512-7KWFejc98xqG/F4bAxpL41NB3o1nnvQO1RWZT3TqRZYL8RryQETGfEdVnJN2fy1crCiBLLjkRBVK05j24FxJGA==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -4775,6 +4877,9 @@ packages:
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
+  zod@4.1.5:
+    resolution: {integrity: sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg==}
+
 snapshots:
 
   '@adobe/css-tools@4.4.4': {}
@@ -5197,6 +5302,11 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@hookform/resolvers@5.2.1(react-hook-form@7.62.0(react@19.1.0))':
+    dependencies:
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.62.0(react@19.1.0)
 
   '@humanfs/core@0.19.1': {}
 
@@ -6064,6 +6174,10 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
+  '@standard-schema/spec@1.0.0': {}
+
+  '@standard-schema/utils@0.3.0': {}
+
   '@supabase-cache-helpers/postgrest-core@0.12.2(@supabase/postgrest-js@1.21.3)':
     dependencies:
       '@supabase/postgrest-js': 1.21.3
@@ -6351,6 +6465,16 @@ snapshots:
     dependencies:
       '@types/node': 20.19.11
     optional: true
+
+  '@typeschema/core@0.14.0(@types/json-schema@7.0.15)':
+    optionalDependencies:
+      '@types/json-schema': 7.0.15
+
+  '@typeschema/main@0.14.1(@types/json-schema@7.0.15)':
+    dependencies:
+      '@typeschema/core': 0.14.0(@types/json-schema@7.0.15)
+    transitivePeerDependencies:
+      - '@types/json-schema'
 
   '@typescript-eslint/eslint-plugin@8.41.0(@typescript-eslint/parser@8.41.0(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2))(eslint@9.34.0(jiti@2.5.1))(typescript@5.9.2)':
     dependencies:
@@ -9165,6 +9289,10 @@ snapshots:
       react: 19.1.0
       scheduler: 0.26.0
 
+  react-hook-form@7.62.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+
   react-is@16.13.1: {}
 
   react-is@17.0.2: {}
@@ -10019,3 +10147,5 @@ snapshots:
       readable-stream: 4.7.0
 
   zod@3.25.76: {}
+
+  zod@4.1.5: {}

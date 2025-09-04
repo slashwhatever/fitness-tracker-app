@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Movement, SetData, UserMovement } from '@/models/types';
 import { Check, Minus, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface SetEntryFormProps {
   movement: UserMovement | Movement;
@@ -71,7 +71,7 @@ export default function SetEntryForm({
     });
   };
 
-  const handleInputChange = (field: keyof SetData, value: string) => {
+  const handleInputChange = useCallback((field: keyof SetData, value: string) => {
     setSetData(prev => ({
       ...prev,
       [field]: value === '' ? null : 
@@ -79,7 +79,28 @@ export default function SetEntryForm({
                field === 'reps' || field === 'duration' ? parseInt(value) || null :
                parseFloat(value) || null
     }));
-  };
+  }, []);
+
+  // Memoized event handlers to prevent input focus loss
+  const handleRepsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('reps', e.target.value);
+  }, [handleInputChange]);
+
+  const handleWeightChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('weight', e.target.value);
+  }, [handleInputChange]);
+
+  const handleDurationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('duration', e.target.value);
+  }, [handleInputChange]);
+
+  const handleDistanceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('distance', e.target.value);
+  }, [handleInputChange]);
+
+  const handleNotesChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('notes', e.target.value);
+  }, [handleInputChange]);
 
   const isFormValid = (): boolean => {
     if (!movement) return false;
@@ -119,7 +140,7 @@ export default function SetEntryForm({
                   type="number"
                   inputMode="numeric"
                   value={setData.reps || ''}
-                  onChange={(e) => handleInputChange('reps', e.target.value)}
+                  onChange={handleRepsChange}
                   className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
                   min="0"
                   placeholder="0"
@@ -163,7 +184,7 @@ export default function SetEntryForm({
                     type="number"
                     inputMode="decimal"
                     value={setData.weight || ''}
-                    onChange={(e) => handleInputChange('weight', e.target.value)}
+                    onChange={handleWeightChange}
                     className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
                     min="0"
                     step="0.25"
@@ -211,7 +232,7 @@ export default function SetEntryForm({
                 type="number"
                 inputMode="numeric"
                 value={setData.duration || ''}
-                onChange={(e) => handleInputChange('duration', e.target.value)}
+                onChange={handleDurationChange}
                 className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full"
                 min="0"
                 placeholder="0"
@@ -250,7 +271,7 @@ export default function SetEntryForm({
                 type="number"
                 inputMode="decimal"
                 value={setData.distance || ''}
-                onChange={(e) => handleInputChange('distance', e.target.value)}
+                onChange={handleDistanceChange}
                 className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full"
                 min="0"
                 step="0.1"
@@ -287,7 +308,7 @@ export default function SetEntryForm({
           <Input
             type="text"
             value={setData.notes || ''}
-            onChange={(e) => handleInputChange('notes', e.target.value)}
+            onChange={handleNotesChange}
             placeholder="Add note"
             className="text-center text-lg bg-transparent border-0 border-b border-muted-foreground/30 rounded-none focus:border-primary focus:ring-0"
           />
