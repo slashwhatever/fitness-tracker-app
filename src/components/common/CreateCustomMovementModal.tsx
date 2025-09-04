@@ -14,6 +14,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateUserMovement } from '@/hooks';
@@ -143,9 +144,9 @@ export default function CreateCustomMovementModal({
     <div className={`space-y-4 min-h-0 ${className}`}>
       {/* Movement Name */}
       <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium">
+        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
           Movement name *
-        </label>
+        </Label>
         <Input 
           id="name"
           placeholder="e.g., Barbell Bench Press" 
@@ -158,20 +159,28 @@ export default function CreateCustomMovementModal({
 
       {/* Tracking Type */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="tracking_type" className="text-sm font-medium text-muted-foreground">
           Tracking type *
-        </label>
+        </Label>
         <Select 
           value={watch("tracking_type")} 
           onValueChange={(value) => setValue("tracking_type", value as TrackingType)}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select tracking type" />
+            <SelectValue placeholder="Select tracking type">
+              {watch("tracking_type") ? 
+                TRACKING_TYPES.find(t => t.value === watch("tracking_type"))?.label : 
+                "Select tracking type"
+              }
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {TRACKING_TYPES.map((type) => (
               <SelectItem key={type.value} value={type.value}>
-                {type.label} - {type.description}
+                <div className="flex flex-col items-start">
+                  <div className="font-medium">{type.label}</div>
+                  <div className="text-sm text-muted-foreground">{type.description}</div>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -183,9 +192,9 @@ export default function CreateCustomMovementModal({
 
       {/* Muscle Groups */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-muted-foreground">
+        <Label className="text-sm font-medium text-muted-foreground">
           Muscle groups * ({watchMuscleGroups?.length || 0} selected)
-        </label>
+        </Label>
         <div className="grid grid-cols-2 gap-2">
           {MUSCLE_GROUPS.map((group) => (
             <Button
@@ -210,9 +219,9 @@ export default function CreateCustomMovementModal({
 
       {/* Custom Rest Timer */}
       <div className="space-y-2">
-        <label htmlFor="custom_rest_timer" className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="custom_rest_timer" className="text-sm font-medium text-muted-foreground">
           Custom rest timer (seconds)
-        </label>
+        </Label>
         <Input 
           id="custom_rest_timer"
           type="number" 
@@ -227,9 +236,9 @@ export default function CreateCustomMovementModal({
 
       {/* Personal Notes */}
       <div className="space-y-2">
-        <label htmlFor="personal_notes" className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="personal_notes" className="text-sm font-medium text-muted-foreground">
           Personal notes
-        </label>
+        </Label>
         <Textarea 
           id="personal_notes"
           placeholder="Any personal notes about this movement..."
@@ -264,7 +273,7 @@ export default function CreateCustomMovementModal({
           handleClose();
         }
       }}>
-        <DialogContent className="max-w-md max-h-[85vh] w-[90vw] flex flex-col">
+        <DialogContent className="max-w-md max-h-[90vh] w-[90vw] flex flex-col">
           <DialogHeader className="pb-4">
             <DialogTitle className="text-xl">Create custom movement</DialogTitle>
           </DialogHeader>
@@ -284,7 +293,7 @@ export default function CreateCustomMovementModal({
         handleClose();
       }
     }}>
-      <DrawerContent className="h-[95vh] flex flex-col">
+      <DrawerContent className="!max-h-[95vh] flex flex-col">
         <DrawerHeader className="text-left flex-shrink-0">
           <DrawerTitle>Create custom movement</DrawerTitle>
         </DrawerHeader>

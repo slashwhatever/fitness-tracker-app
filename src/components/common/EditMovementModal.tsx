@@ -20,6 +20,7 @@ import { useUpdateUserMovement } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { TrackingType, UserMovement } from '@/models/types';
 import { useEffect } from 'react';
+import { Label } from "../ui/label";
 
 interface EditMovementModalProps {
   isOpen: boolean;
@@ -146,9 +147,9 @@ export default function EditMovementModal({
     <div className={`space-y-4 min-h-0 ${className}`}>
       {/* Movement Name */}
       <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium">
+        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
           Movement name *
-        </label>
+        </Label>
         <Input 
           id="name"
           placeholder="e.g., Barbell Bench Press" 
@@ -161,20 +162,28 @@ export default function EditMovementModal({
 
       {/* Tracking Type */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="tracking_type" className="text-sm font-medium text-muted-foreground">
           Tracking type *
-        </label>
+        </Label>
         <Select 
           value={watch("tracking_type")} 
           onValueChange={(value) => setValue("tracking_type", value as TrackingType)}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select tracking type" />
+            <SelectValue placeholder="Select tracking type">
+              {watch("tracking_type") ? 
+                TRACKING_TYPES.find(t => t.value === watch("tracking_type"))?.label : 
+                "Select tracking type"
+              }
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {TRACKING_TYPES.map((type) => (
               <SelectItem key={type.value} value={type.value}>
-                {type.label} - {type.description}
+                <div className="flex flex-col items-start">
+                  <div className="font-medium">{type.label}</div>
+                  <div className="text-sm text-muted-foreground">{type.description}</div>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -186,9 +195,9 @@ export default function EditMovementModal({
 
       {/* Muscle Groups */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="muscle_groups" className="text-sm font-medium text-muted-foreground">
           Muscle groups * ({watchMuscleGroups?.length || 0} selected)
-        </label>
+        </Label>
         <div className="grid grid-cols-2 gap-2">
           {MUSCLE_GROUPS.map((group) => (
             <Button
@@ -213,9 +222,9 @@ export default function EditMovementModal({
 
       {/* Custom Rest Timer */}
       <div className="space-y-2">
-        <label htmlFor="custom_rest_timer" className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="custom_rest_timer" className="text-sm font-medium text-muted-foreground">
           Custom rest timer (seconds)
-        </label>
+        </Label>
         <Input 
           id="custom_rest_timer"
           type="number" 
@@ -230,9 +239,9 @@ export default function EditMovementModal({
 
       {/* Personal Notes */}
       <div className="space-y-2">
-        <label htmlFor="personal_notes" className="text-sm font-medium text-muted-foreground">
+        <Label htmlFor="personal_notes" className="text-sm font-medium text-muted-foreground">
           Personal notes
-        </label>
+        </Label>
         <Textarea 
           id="personal_notes"
           placeholder="Any personal notes about this movement..."
@@ -296,7 +305,7 @@ export default function EditMovementModal({
         handleClose();
       }
     }}>
-      <DrawerContent className="h-[95vh] flex flex-col">
+      <DrawerContent className="!max-h-[95vh] flex flex-col">
         <DrawerHeader className="text-left flex-shrink-0">
           <DrawerTitle>Edit movement</DrawerTitle>
         </DrawerHeader>

@@ -97,7 +97,7 @@ export default function MovementList({
   return (
     <>
       <div className="grid gap-2">
-        {movements.map((movement: { id: string; user_movement_id: string; user_movement?: { name?: string; muscle_groups?: string[] } }, index: number) => {
+        {movements.map((movement) => {
           const movementSets = getMovementSets(movement.user_movement_id);
           
           return (

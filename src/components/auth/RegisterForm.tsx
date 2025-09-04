@@ -11,6 +11,7 @@ import { signUpWithEmail } from '@/lib/supabase/auth-utils';
 import { Check, Eye, EyeOff, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { Label } from "../ui/label";
 
 interface RegisterFormProps {
   redirectTo?: string;
@@ -39,7 +40,7 @@ const formSchema = z.object({
     .regex(/\d/, "Password must contain at least one number"),
   confirmPassword: z.string().min(1, "Please confirm your password"),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
+  message: "Passwords do not masdtch",
   path: ["confirmPassword"],
 });
 
@@ -71,7 +72,6 @@ export function RegisterForm({ }: RegisterFormProps) {
 
   // Watch password for real-time validation feedback
   const watchedPassword = watch("password");
-  const watchedConfirmPassword = watch("confirmPassword");
 
   const passwordValidation = useMemo(() => {
     return passwordRequirements.map(req => ({
@@ -79,9 +79,6 @@ export function RegisterForm({ }: RegisterFormProps) {
       valid: req.test(watchedPassword || "")
     }));
   }, [watchedPassword]);
-
-  const isPasswordValid = passwordValidation.every(req => req.valid);
-  const passwordsMatch = watchedPassword === watchedConfirmPassword && watchedPassword && watchedPassword.length > 0;
 
   const onSubmit = handleSubmit(async (values: FormData) => {
     setLoading(true);
@@ -159,9 +156,9 @@ export function RegisterForm({ }: RegisterFormProps) {
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="displayName" className="text-sm font-medium">
+            <Label htmlFor="displayName" className="text-sm font-medium text-muted-foreground">
               Display Name
-            </label>
+            </Label>
             <Input
               id="displayName"
               type="text"
@@ -176,9 +173,9 @@ export function RegisterForm({ }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <Label htmlFor="email" className="text-sm font-medium text-muted-foreground">
               Email
-            </label>
+            </Label>
             <Input
               id="email"
               type="email"
@@ -193,9 +190,9 @@ export function RegisterForm({ }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+            <Label htmlFor="password" className="text-sm font-medium text-muted-foreground">
               Password
-            </label>
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -243,9 +240,9 @@ export function RegisterForm({ }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium">
+            <Label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">
               Confirm Password
-            </label>
+            </Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
@@ -274,17 +271,6 @@ export function RegisterForm({ }: RegisterFormProps) {
             </div>
             {errors.confirmPassword && (
               <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-            )}
-            
-            {watchedConfirmPassword && (
-              <div className={`text-xs flex items-center gap-2 ${passwordsMatch ? 'text-green-600' : 'text-red-500'}`}>
-                {passwordsMatch ? (
-                  <Check className="h-3 w-3" />
-                ) : (
-                  <X className="h-3 w-3" />
-                )}
-                {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
-              </div>
             )}
           </div>
 

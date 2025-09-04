@@ -448,7 +448,7 @@ export default function MovementSelectionModal({
   return (
     <>
       <Drawer open={isOpen}>
-        <DrawerContent className="h-[90vh] flex flex-col">
+        <DrawerContent className="!max-h-[95vh] flex flex-col">
           <DrawerHeader className="text-left flex-shrink-0">
             <DrawerTitle>Add movements to workout</DrawerTitle>
           </DrawerHeader>

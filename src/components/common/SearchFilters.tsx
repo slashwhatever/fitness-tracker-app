@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
 import { ExperienceLevel } from '@/models/types';
 import { useEffect } from 'react';
 
@@ -37,7 +38,6 @@ export default function SearchFilters({
   const {
     register,
     setValue,
-    getValues,
     watch,
     reset,
   } = useForm<FiltersFormData>({
@@ -111,7 +111,7 @@ export default function SearchFilters({
       <div className="space-y-3">
         {/* Muscle Group Filters */}
         <div>
-          <label className="text-sm font-medium mb-2">Muscle Group</label>
+          <Label htmlFor="muscle_group" className="text-sm font-medium text-muted-foreground">Muscle Group</Label>
           <div className="flex flex-wrap gap-2">
             {muscleGroups.map((muscleGroup) => (
               <Button
@@ -129,7 +129,7 @@ export default function SearchFilters({
 
         {/* Experience Level Filters */}
         <div>
-          <label className="text-sm font-medium mb-2">Experience Level</label>
+          <Label className="text-sm font-medium text-muted-foreground">Experience Level</Label>
           <div className="flex flex-wrap gap-2">
             {experienceLevels.map((level) => (
               <Button

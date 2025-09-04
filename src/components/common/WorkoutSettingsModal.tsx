@@ -22,6 +22,7 @@ import { TIMER_PRESETS, Workout } from '@/models/types';
 import { SupabaseService } from '@/services/supabaseService';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Label } from "../ui/label";
 
 interface WorkoutSettingsModalProps {
   isOpen: boolean;
@@ -131,9 +132,9 @@ export default function WorkoutSettingsModal({
     <div className={`space-y-4 ${className}`}>
       {/* Workout Name */}
       <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium">
+        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
           Workout Name *
-        </label>
+        </Label>
         <Input
           id="name"
           placeholder="Enter workout name"
@@ -146,9 +147,9 @@ export default function WorkoutSettingsModal({
 
       {/* Description */}
       <div className="space-y-2">
-        <label htmlFor="description" className="text-sm font-medium">
+        <Label htmlFor="description" className="text-sm font-medium text-muted-foreground">
           Description
-        </label>
+        </Label>
         <Textarea
           id="description"
           placeholder="Optional workout description"
@@ -162,21 +163,36 @@ export default function WorkoutSettingsModal({
 
       {/* Rest Timer */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">
+        <Label htmlFor="default_rest_timer" className="text-sm font-medium text-muted-foreground">
           Default Rest Timer
-        </label>
+        </Label>
         <Select 
           value={watch("default_rest_timer") || "none"} 
           onValueChange={(value) => setValue("default_rest_timer", value === "none" ? "" : value)}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select rest timer" />
+            <SelectValue placeholder="Select rest timer">
+              {(() => {
+                const timerValue = watch("default_rest_timer");
+                if (!timerValue || timerValue === "none") return "No Timer";
+                const preset = TIMER_PRESETS.find(p => p.seconds.toString() === timerValue);
+                return preset ? preset.label : "Select rest timer";
+              })()}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="none">No default timer</SelectItem>
+            <SelectItem value="none">
+              <div className="flex flex-col items-start">
+                <div className="font-medium">No Timer</div>
+                <div className="text-sm text-muted-foreground">Don&apos;t set a default rest timer</div>
+              </div>
+            </SelectItem>
             {TIMER_PRESETS.map((preset) => (
               <SelectItem key={preset.seconds} value={preset.seconds.toString()}>
-                {preset.label} ({preset.seconds}s)
+                <div className="flex flex-col items-start">
+                  <div className="font-medium">{preset.label}</div>
+                  <div className="text-sm text-muted-foreground">{preset.seconds} seconds</div>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
@@ -250,7 +266,7 @@ export default function WorkoutSettingsModal({
   return (
     <>
       <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent>
+        <DrawerContent className="!max-h-[95vh] flex flex-col">
           <DrawerHeader className="text-left">
             <DrawerTitle>Workout settings</DrawerTitle>
           </DrawerHeader>

@@ -155,7 +155,7 @@ export default function EditableSet({
                 <Typography variant="body">Edit</Typography>
               </ResponsiveButton>
             </DrawerTrigger>
-            <DrawerContent className="h-[95vh]">
+            <DrawerContent className="!max-h-[95vh]">
               <DrawerHeader>
                 <DrawerTitle>Edit Set</DrawerTitle>
                 <DrawerDescription>

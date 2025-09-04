@@ -7,12 +7,12 @@ import { z } from "zod";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label";
 import { signInWithEmail } from '@/lib/supabase/auth-utils';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-
 interface LoginFormProps {
   redirectTo?: string;
 }
@@ -82,9 +82,9 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
+            <Label className="text-sm font-medium text-muted-foreground">
               Email
-            </label>
+            </Label>
             <Input
               id="email"
               type="email"
@@ -99,9 +99,9 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+            <Label htmlFor="password" className="text-sm font-medium text-muted-foreground">
               Password
-            </label>
+            </Label>
             <div className="relative">
               <Input
                 id="password"

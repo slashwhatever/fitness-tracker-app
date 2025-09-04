@@ -1,6 +1,6 @@
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VariantProps } from "class-variance-authority";
-import { Button, buttonVariants } from "../ui/button";
 
 type ResponsiveButtonSizes = 'sm' | 'lg' | 'icon' | 'default';
 
@@ -49,7 +49,7 @@ const colorMap: Record<ResponsiveButtonColors, {
 
 type ResponsiveButtonProps = {
   children: React.ReactNode;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   size?: ResponsiveButtonSizes;
   color: ResponsiveButtonColors;
   className?: string;
@@ -60,14 +60,14 @@ VariantProps<typeof buttonVariants> & {
   asChild?: boolean
 }
 
-export const ResponsiveButton = ({ children, icon: Icon, size = 'default', color, className, variant = 'ghost', onClick, ...props }: ResponsiveButtonProps) => {
+export const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', onClick, ...props }: ResponsiveButtonProps) => {
   const colors = colorMap[color];
   const hoverTextColor = color === 'primary' ? 'sm:hover:!text-primary-foreground' : 'sm:hover:!text-white';
   
   return (
     <Button
       variant={variant}
-      size="icon"
+      size={size}
       className={cn(
         // Base mobile styles: square button with colored icon
         colors.text, 
