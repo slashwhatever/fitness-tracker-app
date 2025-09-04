@@ -149,12 +149,14 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                 onClick={() => setShowMovementModal(true)}
                 icon={Plus}
                 color="primary"
+                variant="outline"
               >
                 <Typography variant="body">Add</Typography>
               </ResponsiveButton>
               <ResponsiveButton 
                 icon={Settings}
                 color="primary"
+                variant="outline"
                 onClick={() => setShowSettingsModal(true)}
               >
                 <Typography variant="body">Settings</Typography>

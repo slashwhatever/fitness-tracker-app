@@ -15,6 +15,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { TIMER_PRESETS, Workout } from '@/models/types';
@@ -60,6 +61,8 @@ export default function WorkoutSettingsModal({
     handleSubmit,
     formState: { errors, isValid },
     reset,
+    watch,
+    setValue,
   } = useForm<FormData>({
     resolver: standardSchemaResolver(formSchema),
     mode: "onSubmit",
@@ -159,21 +162,25 @@ export default function WorkoutSettingsModal({
 
       {/* Rest Timer */}
       <div className="space-y-2">
-        <label htmlFor="default_rest_timer" className="text-sm font-medium">
+        <label className="text-sm font-medium">
           Default Rest Timer
         </label>
-        <select 
-          id="default_rest_timer"
-          {...register("default_rest_timer")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        <Select 
+          value={watch("default_rest_timer") || "none"} 
+          onValueChange={(value) => setValue("default_rest_timer", value === "none" ? "" : value)}
         >
-          <option value="none">No default timer</option>
-          {TIMER_PRESETS.map((preset) => (
-            <option key={preset.seconds} value={preset.seconds.toString()}>
-              {preset.label} ({preset.seconds}s)
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select rest timer" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">No default timer</SelectItem>
+            {TIMER_PRESETS.map((preset) => (
+              <SelectItem key={preset.seconds} value={preset.seconds.toString()}>
+                {preset.label} ({preset.seconds}s)
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {errors.default_rest_timer && (
           <p className="text-sm text-destructive">{errors.default_rest_timer.message}</p>
         )}

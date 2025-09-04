@@ -18,6 +18,7 @@ import { getExperienceLevelVariant } from '@/lib/utils/typeHelpers';
 import type { MovementTemplate, TrackingType, UserMovement } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Typography } from './Typography';
 
 interface MovementSelectionModalProps {
   isOpen: boolean;
@@ -88,7 +89,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
         {/* User's Custom Movements */}
         {filteredUserMovements.length > 0 && (
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-2">My Movements</h3>
+            <Typography variant="caption" className="mb-2">My movements</Typography>
             <div className="space-y-2">
               {filteredUserMovements.map((movement) => (
                 <div
@@ -136,7 +137,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
 
         {/* Movement Library */}
         <div>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-2">Movement Library</h3>
+          <Typography variant="caption" className="mb-2">Movement Library</Typography>
           <div className="space-y-2">
             {filteredLibrary.map((movement) => (
               <div
@@ -187,8 +188,8 @@ const SearchAndContent = React.memo(function SearchAndContent({
                 </div>
                 
                 <Badge variant={getExperienceLevelVariant(movement.experience_level)}> 
-                    {movement.experience_level}
-                  </Badge>
+                  {movement.experience_level}
+                </Badge>
               </div>
             ))}
           </div>

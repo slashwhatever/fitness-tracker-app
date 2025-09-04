@@ -14,6 +14,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useUpdateUserMovement } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -160,20 +161,24 @@ export default function EditMovementModal({
 
       {/* Tracking Type */}
       <div className="space-y-2">
-        <label htmlFor="tracking_type" className="text-sm font-medium text-muted-foreground">
+        <label className="text-sm font-medium text-muted-foreground">
           Tracking type *
         </label>
-        <select 
-          id="tracking_type"
-          {...register("tracking_type")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        <Select 
+          value={watch("tracking_type")} 
+          onValueChange={(value) => setValue("tracking_type", value as TrackingType)}
         >
-          {TRACKING_TYPES.map((type) => (
-            <option key={type.value} value={type.value}>
-              {type.label} - {type.description}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select tracking type" />
+          </SelectTrigger>
+          <SelectContent>
+            {TRACKING_TYPES.map((type) => (
+              <SelectItem key={type.value} value={type.value}>
+                {type.label} - {type.description}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {errors.tracking_type && (
           <p className="text-sm text-destructive">{errors.tracking_type.message}</p>
         )}

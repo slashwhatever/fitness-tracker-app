@@ -1,7 +1,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import EditableSet from '@/components/common/EditableSet';
+import GroupedSetHistory from '@/components/common/GroupedSetHistory';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import { Typography } from '@/components/common/Typography';
 import Loading from '@/components/Loading';
@@ -204,23 +204,11 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
               <Calendar className="w-4 h-4" />
               <Typography variant="title2">Set history</Typography>
             </div>
-            {sets.length === 0 ? (
-              <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
-                <Typography variant="caption">No sets logged for this movement yet.</Typography>
-                <Typography variant="footnote">Use the quick log above to record your first set!</Typography>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {sets.map((set) => (
-                  <EditableSet
-                    key={set.id}
-                    set={set}
-                    movement={movement as UserMovement}
-                    onDuplicate={handleDuplicateSet}
-                  />
-                ))}
-              </div>
-            )}
+            <GroupedSetHistory
+              sets={sets}
+              movement={movement as UserMovement}
+              onDuplicate={handleDuplicateSet}
+            />
           </div>
         </div>
       </main>

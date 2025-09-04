@@ -98,15 +98,10 @@ export default function EditableSet({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
-        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 flex-1 min-w-0">
-          <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
-            <Typography variant="caption">{new Date(set.created_at).toLocaleDateString()}</Typography>
-            <Typography variant="caption">{new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Typography>
-          </div>
-          
+      <div className="flex flex-row justify-between items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all">
+        <div className="flex-1 min-w-0">
           {/* Set Data Display */}
-          <div className="text-left sm:text-right">
+          <div className="text-left">
             {movement.tracking_type === 'weight' && (
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <Typography variant="title2">{set.reps || 0}</Typography>

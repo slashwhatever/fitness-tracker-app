@@ -35,17 +35,17 @@ export default function Dashboard() {
               </Typography>
             </div>
             <div className="flex flex-row space-x-2">
-              <ResponsiveButton color="primary" asChild icon={BarChart3}>
+              <ResponsiveButton color="primary" asChild icon={BarChart3} variant="outline">
                 <Link href="/analytics" className="flex items-center sm:space-x-2">
                   <Typography variant="body">Analytics</Typography>
                 </Link>
               </ResponsiveButton>
-              <ResponsiveButton color="primary" asChild icon={Library}>
+              <ResponsiveButton color="primary" asChild icon={Library} variant="outline">
                 <Link href="/library" className="flex items-center sm:space-x-2">
                   <Typography variant="body">Movement Library</Typography>
                 </Link>
               </ResponsiveButton>
-              <ResponsiveButton color="primary" asChild icon={Settings}>
+              <ResponsiveButton color="primary" asChild icon={Settings} variant="outline">
                 <Link href="/settings" className="flex items-center sm:space-x-2">
                   <Typography variant="body">Settings</Typography>
                 </Link>

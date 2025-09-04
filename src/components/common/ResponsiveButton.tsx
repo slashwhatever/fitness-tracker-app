@@ -53,19 +53,20 @@ type ResponsiveButtonProps = {
   size?: ResponsiveButtonSizes;
   color: ResponsiveButtonColors;
   className?: string;
+  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'secondary' | 'destructive';
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 } & React.ComponentProps<"button"> &
 VariantProps<typeof buttonVariants> & {
   asChild?: boolean
 }
 
-export const ResponsiveButton = ({ children, icon: Icon, size = 'default', color, className, onClick, ...props }: ResponsiveButtonProps) => {
+export const ResponsiveButton = ({ children, icon: Icon, size = 'default', color, className, variant = 'ghost', onClick, ...props }: ResponsiveButtonProps) => {
   const colors = colorMap[color];
   const hoverTextColor = color === 'primary' ? 'sm:hover:!text-primary-foreground' : 'sm:hover:!text-white';
   
   return (
     <Button
-      variant="ghost"
+      variant={variant}
       size="icon"
       className={cn(
         // Base mobile styles: square button with colored icon
