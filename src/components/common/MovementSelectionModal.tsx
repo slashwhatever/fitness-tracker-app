@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { getExperienceLevelVariant } from '@/lib/utils/typeHelpers';
-import type { TrackingType, UserMovement, MovementTemplate } from '@/models/types';
+import type { MovementTemplate, TrackingType, UserMovement } from '@/models/types';
 import { Check, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -449,7 +449,7 @@ export default function MovementSelectionModal({
       <Drawer open={isOpen}>
         <DrawerContent className="h-[90vh] flex flex-col">
           <DrawerHeader className="text-left flex-shrink-0">
-            <DrawerTitle>Add Movements to Workout</DrawerTitle>
+            <DrawerTitle>Add movements to workout</DrawerTitle>
           </DrawerHeader>
           <SearchAndContent 
             className="px-4 flex-1 min-h-0"

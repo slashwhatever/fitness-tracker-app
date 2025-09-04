@@ -50,7 +50,7 @@ export default function TimerBanner() {
               <Button
                 onClick={isPaused ? resumeTimer : pauseTimer}
                 variant="ghost"
-                size="sm"
+                size="icon"
                 className="h-8 w-8 p-0 hover:bg-white/20 text-inherit"
               >
                 {isPaused ? (
@@ -62,7 +62,7 @@ export default function TimerBanner() {
               <Button
                 onClick={resetTimer}
                 variant="ghost"
-                size="sm"
+                size="icon"
                 className="h-8 w-8 p-0 hover:bg-white/20 text-inherit"
               >
                 <RotateCcw className="h-4 w-4" />
@@ -72,7 +72,7 @@ export default function TimerBanner() {
           <Button
             onClick={skipTimer}
             variant="ghost"
-            size="sm"
+            size="icon"
             className="h-8 w-8 p-0 hover:bg-white/20 text-inherit"
           >
             <SkipForward className="h-4 w-4" />

@@ -138,7 +138,7 @@ export default function WorkoutSettingsModal({
         className="flex items-center justify-center space-x-2 w-full sm:w-auto"
       >
         <Trash2 className="w-4 h-4" />
-        <span>Delete Workout</span>
+        Delete workout
       </Button>
 
       <div className="flex flex-col-reverse sm:flex-row gap-2">
@@ -150,7 +150,7 @@ export default function WorkoutSettingsModal({
           disabled={!name.trim() || isSaving}
           className="w-full sm:w-auto"
         >
-          {isSaving ? 'Saving...' : 'Save Changes'}
+          {isSaving ? 'Saving...' : 'Save changes'}
         </Button>
       </div>
     </div>
@@ -162,7 +162,7 @@ export default function WorkoutSettingsModal({
         <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Workout Settings</DialogTitle>
+              <DialogTitle>Workout settings</DialogTitle>
             </DialogHeader>
             <FormContent />
             <ActionButtons />
@@ -173,8 +173,8 @@ export default function WorkoutSettingsModal({
           isOpen={showDeleteConfirm}
           onClose={() => setShowDeleteConfirm(false)}
           onConfirm={handleDelete}
-          title="Delete Workout"
-          description={`Are you sure you want to delete "${workout.name}"? This will permanently remove the workout and all its movements. This action cannot be undone.`}
+          title="Delete workout"
+          description={`Are you sure you want to delete "${workout.name}"? This will permanently remove the workout. This action cannot be undone.`}
           confirmText="Delete Workout"
           cancelText="Cancel"
           variant="destructive"
@@ -188,7 +188,7 @@ export default function WorkoutSettingsModal({
       <Drawer open={isOpen} onOpenChange={(open) => !open && handleClose()}>
         <DrawerContent>
           <DrawerHeader className="text-left">
-            <DrawerTitle>Workout Settings</DrawerTitle>
+            <DrawerTitle>Workout settings</DrawerTitle>
           </DrawerHeader>
           <FormContent className="px-4" />
           <DrawerFooter className="pt-2">
@@ -201,8 +201,8 @@ export default function WorkoutSettingsModal({
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
-        title="Delete Workout"
-        description={`Are you sure you want to delete "${workout.name}"? This will permanently remove the workout and all its movements. This action cannot be undone.`}
+        title="Delete workout"
+        description={`Are you sure you want to delete "${workout.name}"? This will permanently remove the workout. This action cannot be undone.`}
         confirmText="Delete Workout"
         cancelText="Cancel"
         variant="destructive"

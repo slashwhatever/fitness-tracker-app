@@ -108,19 +108,21 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                 <Link href={`/workout/${workout.id}`}>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 sm:h-8 sm:w-8"
+                    size="sm"
+                    className="text-blue-500 hover:text-blue-500 sm:text-muted-foreground"
                   >
                     <ChevronRight  />
+                    <Typography variant="body" className="hidden sm:inline">View</Typography>
                   </Button>
                 </Link>
                 <Button
                   onClick={(e) => handleDeleteClick(e, workout)}
                   variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-red-500 h-7 w-7 sm:h-8 sm:w-8"
+                  size="sm"
+                  className="text-red-500 hover:text-red-500 sm:text-muted-foreground"
                 >
                   <Trash2  />
+                  <Typography variant="body" className="hidden sm:inline">Delete</Typography>
                 </Button>
               </div>
             </div>

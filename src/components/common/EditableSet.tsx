@@ -141,14 +141,16 @@ export default function EditableSet({
         {/* Action Buttons */}
         <div className="flex items-center space-x-2 self-end sm:self-auto">
           <Button
+            variant="ghost"
+            size="icon"
             onClick={handleDuplicate}
-            size="sm"
-            className="bg-green-500 hover:bg-green-600 h-8 sm:h-9 text-xs sm:text-sm"
+            className="text-green-500 hover:text-green-500 sm:text-muted-foreground"
           >
             <Copy  />
-            <Typography variant="caption" className="hidden xs:inline">Duplicate</Typography>
+            <Typography variant="body" className="hidden sm:inline">Duplicate</Typography>
           </Button>
-          
+
+
           <Drawer open={isEditing} onOpenChange={handleDrawerOpenChange}>
             <DrawerTrigger asChild>
               <Button
@@ -157,64 +159,66 @@ export default function EditableSet({
                 className="h-8 w-8 sm:h-9 sm:w-9"
               >
                 <Edit/>
+                <Typography variant="body" className="hidden sm:inline">Edit</Typography>
               </Button>
             </DrawerTrigger>
-              <DrawerContent className="h-[95vh]">
-                <DrawerHeader>
-                  <DrawerTitle>Edit Set</DrawerTitle>
-                  <DrawerDescription>
-                    Modify the values for this set from {new Date(set.created_at).toLocaleDateString()} at {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </DrawerDescription>
-                </DrawerHeader>
-                
-                <div className="flex-1 overflow-y-auto">
-                  <SetEntryForm
-                    movement={movement}
-                    initialData={{
-                      reps: set.reps,
-                      weight: set.weight,
-                      duration: set.duration,
-                      distance: set.distance,
-                      notes: set.notes || '',
-                    }}
-                    onSave={handleSave}
-                    isLoading={updateSetMutation.isPending}
-                    saveButtonText="Save Changes"
-                  />
-                </div>
-                
-                <DrawerFooter>
-                  <DrawerClose asChild>
-                    <Button variant="outline">
-                      Cancel
-                    </Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              </DrawerContent>
-            </Drawer>
-            
-            <Button
-              onClick={handleDeleteClick}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
-            >
-              <Trash2  />
-            </Button>
-          </div>
+            <DrawerContent className="h-[95vh]">
+              <DrawerHeader>
+                <DrawerTitle>Edit Set</DrawerTitle>
+                <DrawerDescription>
+                  Modify the values for this set from {new Date(set.created_at).toLocaleDateString()} at {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </DrawerDescription>
+              </DrawerHeader>
+              
+              <div className="flex-1 overflow-y-auto">
+                <SetEntryForm
+                  movement={movement}
+                  initialData={{
+                    reps: set.reps,
+                    weight: set.weight,
+                    duration: set.duration,
+                    distance: set.distance,
+                    notes: set.notes || '',
+                  }}
+                  onSave={handleSave}
+                  isLoading={updateSetMutation.isPending}
+                  saveButtonText="Save Changes"
+                />
+              </div>
+              
+              <DrawerFooter>
+                <DrawerClose asChild>
+                  <Button variant="outline">
+                    Cancel
+                  </Button>
+                </DrawerClose>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+                              
+          <Button
+            onClick={handleDeleteClick}
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
+          >
+            <Trash2  />
+          </Button>
         </div>
+      </div>
 
-        <ConfirmationModal
-          isOpen={showDeleteConfirm}
-          onClose={handleCancelDelete}
-          onConfirm={handleConfirmDelete}
-          title="Delete Set"
-          description={`Are you sure you want to delete this set from ${new Date(set.created_at).toLocaleDateString()} at ${new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}? This action cannot be undone.`}
-          confirmText="Delete Set"
-          cancelText="Cancel"
-          variant="destructive"
-          isLoading={deleteSetMutation.isPending}
-        />
-        </>
+
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete set"
+        description={`Are you sure you want to delete this set from ${new Date(set.created_at).toLocaleDateString()} at ${new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}? This action cannot be undone.`}
+        confirmText="Delete set"
+        cancelText="Cancel"
+        variant="destructive"
+        isLoading={deleteSetMutation.isPending}
+      />
+    </>
   );
 }

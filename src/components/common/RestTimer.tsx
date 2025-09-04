@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { Typography } from './Typography';
 
 interface RestTimerProps {
   isActive: boolean;
@@ -159,12 +160,12 @@ export default function RestTimer({ isActive, duration, onComplete, onSkip }: Re
                 {isPaused ? (
                   <>
                     <Play className="h-4 w-4" />
-                    <span className="hidden sm:inline sm:ml-2">Resume</span>
+                    <Typography variant="caption" className="hidden sm:inline sm:ml-2">Resume</Typography>
                   </>
                 ) : (
                   <>
                     <Pause className="h-4 w-4" />
-                    <span className="hidden sm:inline sm:ml-2">Pause</span>
+                    <Typography variant="caption" className="hidden sm:inline sm:ml-2">Pause</Typography>
                   </>
                 )}
               </Button>
@@ -175,7 +176,7 @@ export default function RestTimer({ isActive, duration, onComplete, onSkip }: Re
                 className="h-10 w-10 p-0 sm:w-auto sm:px-4"
               >
                 <RotateCcw className="h-4 w-4" />
-                <span className="hidden sm:inline sm:ml-2">Reset</span>
+                <Typography variant="caption" className="hidden sm:inline sm:ml-2">Reset</Typography>
               </Button>
             </>
           )}
@@ -186,14 +187,14 @@ export default function RestTimer({ isActive, duration, onComplete, onSkip }: Re
             className="h-10 w-10 p-0 sm:w-auto sm:px-4"
           >
             <SkipForward className="h-4 w-4" />
-            <span className="hidden sm:inline sm:ml-2">
+            <Typography variant="caption" className="hidden sm:inline sm:ml-2">
               {isComplete ? 'Continue' : 'Skip'}
-            </span>
+            </Typography>
           </Button>
         </div>
 
         {isPaused && (
-          <p className="text-sm text-muted-foreground mt-2">Timer is paused</p>
+          <Typography variant="caption" className="text-sm text-muted-foreground mt-2">Timer is paused</Typography>
         )}
       </div>
     </div>

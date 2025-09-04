@@ -151,7 +151,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                 className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
               >
                 <Plus className="w-4 h-4" />
-                <Typography variant="caption" className="hidden sm:inline">Add</Typography>
+                <Typography variant="body" className="hidden sm:inline">Add</Typography>
               </Button>
               <Button 
                 variant="outline" 
@@ -160,7 +160,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                 className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
               >
                 <Settings className="w-4 h-4" />
-                <Typography variant="caption" className="hidden sm:inline">Settings</Typography>
+                <Typography variant="body" className="hidden sm:inline">Settings</Typography>
               </Button>
             </div>
           </div>

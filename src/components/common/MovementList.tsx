@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
 import { useSetsByWorkout } from '@/hooks/useSets';
 import type { UserMovement } from '@/models/types';
-import { Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
+import { Dumbbell, Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Typography } from './Typography';
@@ -121,27 +121,30 @@ export default function MovementList({
                     variant="ghost"
                     size="sm"
                     asChild
-                    className="text-muted-foreground hover:text-green-500 h-8 w-8 sm:h-9 sm:w-9"
+                    className="text-green-500 hover:text-green-500 sm:text-muted-foreground"
                   >
                     <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}>
-                      <Plus  />
+                      <Dumbbell />
+                      <Typography variant="body" className="hidden sm:inline">Log sets</Typography>
                     </Link>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setEditingMovementId(movement.user_movement_id)}
-                    className="text-muted-foreground hover:text-blue-500 h-8 w-8 sm:h-9 sm:w-9"
+                    className="text-blue-500 hover:text-blue-500 sm:text-muted-foreground"
                   >
                     <Edit3  />
+                    <Typography variant="body" className="hidden sm:inline">Edit</Typography>
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
-                    className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
+                    className="text-red-500 hover:text-red-500 sm:text-muted-foreground"
                   >
                     <Trash2  />
+                    <Typography variant="body" className="hidden sm:inline">Delete</Typography>
                   </Button>
                 </div>
               </div>
@@ -160,10 +163,10 @@ export default function MovementList({
         isOpen={!!deletingMovement}
         onClose={() => setDeletingMovement(null)}
         onConfirm={handleConfirmDelete}
-        title="Remove Movement from Workout"
+        title="Remove movement from workout"
         description={`Are you sure you want to remove "${deletingMovement?.name}" from this workout? This will not delete the movement from your library, just remove it from this workout.`}
-        confirmText="Remove Movement"
-        cancelText="Keep Movement"
+        confirmText="Remove movement"
+        cancelText="Keep movement"
         variant="destructive"
         isLoading={removeMovementMutation.isPending}
       />

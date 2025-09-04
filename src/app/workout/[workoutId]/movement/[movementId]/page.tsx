@@ -165,7 +165,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             <div className="space-y-3">
               <div className="flex items-center space-x-2 px-1">
                 <Dumbbell className="w-4 h-4" />
-                <Typography variant="title2">Quick Log</Typography>
+                <Typography variant="title2">Quick log</Typography>
               </div>
               <QuickSetEntry 
                 movement={movement}
@@ -202,7 +202,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
           <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
             <div className="flex items-center space-x-2 px-1">
               <Calendar className="w-4 h-4" />
-              <Typography variant="title2">Set History</Typography>
+              <Typography variant="title2">Set history</Typography>
             </div>
             {sets.length === 0 ? (
               <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
