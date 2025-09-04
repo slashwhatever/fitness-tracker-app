@@ -1,7 +1,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { ResponsiveButton } from '@/components/common/ResponsiveButton';
+import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutManagement from '@/components/features/WorkoutManagement';
 import Loading from '@/components/Loading';

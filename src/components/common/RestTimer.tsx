@@ -2,7 +2,7 @@
 
 import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { ResponsiveButton } from './ResponsiveButton';
+import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
 interface RestTimerProps {

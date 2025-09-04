@@ -17,7 +17,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { Set, SetData, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { ResponsiveButton } from './ResponsiveButton';
+import ResponsiveButton from './ResponsiveButton';
 import SetEntryForm from './SetEntryForm';
 import { Typography } from './Typography';
 

@@ -6,7 +6,7 @@ import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { forwardRef, useImperativeHandle, useState } from 'react';
-import { ResponsiveButton } from './ResponsiveButton';
+import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
 export interface WorkoutListRef {

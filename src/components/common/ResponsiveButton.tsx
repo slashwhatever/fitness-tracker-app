@@ -60,7 +60,7 @@ VariantProps<typeof buttonVariants> & {
   asChild?: boolean
 }
 
-export const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', onClick, ...props }: ResponsiveButtonProps) => {
+const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', onClick, ...props }: ResponsiveButtonProps) => {
   const colors = colorMap[color];
   const hoverTextColor = color === 'primary' ? 'sm:hover:!text-primary-foreground' : 'sm:hover:!text-white';
   

@@ -3,7 +3,7 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
-import { ResponsiveButton } from '@/components/common/ResponsiveButton';
+import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import Loading from '@/components/Loading';
