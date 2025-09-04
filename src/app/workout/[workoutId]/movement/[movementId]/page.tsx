@@ -1,7 +1,7 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import GroupedSetHistory from '@/components/common/GroupedSetHistory';
+import { GroupedSetHistory } from '@/components/common/GroupedSetHistory';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import { Typography } from '@/components/common/Typography';
 import Loading from '@/components/Loading';
