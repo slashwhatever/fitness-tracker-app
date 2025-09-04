@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -95,10 +95,10 @@ jobs:
         continue-on-error: true
 
   # ============================================================================
-  # PRODUCTION DEPLOYMENT (main branch only)
+  # DATABASE MIGRATIONS (main branch only)
   # ============================================================================
-  deploy:
-    name: Deploy to Production
+  migrations:
+    name: Run Database Migrations
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [test, security]
@@ -107,20 +107,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "pnpm"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
@@ -132,30 +118,3 @@ jobs:
           supabase db push --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Build for production
-        run: |
-          # Ensure no local env files interfere
-          rm -f .env.local .env
-          pnpm build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-          NEXT_PUBLIC_APP_ENV: production
-
-      - name: Deploy to Netlify
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=.next --prod
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          # Pass environment variables to Netlify
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
-
-      - name: Run health checks
-        run: |
-          echo "Waiting for deployment to be ready..."
-          sleep 30
-          ./scripts/health-check.sh https://${{ secrets.NETLIFY_SITE_URL }}/health
