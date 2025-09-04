@@ -1,9 +1,12 @@
 'use client';
 
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { signInWithEmail } from '@/lib/supabase/auth-utils';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -14,21 +17,40 @@ interface LoginFormProps {
   redirectTo?: string;
 }
 
+// Zod schema for form validation
+const formSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Initialize form with React Hook Form and Zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: standardSchemaResolver(formSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = handleSubmit(async (values: FormData) => {
     setLoading(true);
     setError('');
 
     try {
-      const { user, error: signInError } = await signInWithEmail(email, password);
+      const { user, error: signInError } = await signInWithEmail(values.email, values.password);
       
       if (signInError) {
         setError(signInError);
@@ -44,7 +66,7 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
     } finally {
       setLoading(false);
     }
-  };
+  });
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -58,34 +80,37 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <label htmlFor="email" className="text-sm font-medium">
+              Email
+            </label>
             <Input
               id="email"
               type="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
               disabled={loading}
               autoComplete="email"
+              {...register("email")}
             />
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <label htmlFor="password" className="text-sm font-medium">
+              Password
+            </label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
                 disabled={loading}
                 autoComplete="current-password"
                 className="pr-10"
+                {...register("password")}
               />
               <Button
                 type="button"
@@ -103,6 +128,9 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
                 )}
               </Button>
             </div>
+            {errors.password && (
+              <p className="text-sm text-destructive">{errors.password.message}</p>
+            )}
           </div>
 
           {error && (
@@ -114,7 +142,7 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
           <Button
             type="submit"
             className="w-full"
-            disabled={loading || !email || !password}
+            disabled={loading || !isValid}
           >
             {loading ? (
               <>

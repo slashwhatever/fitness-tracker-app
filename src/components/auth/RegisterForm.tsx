@@ -1,9 +1,12 @@
 'use client';
 
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { signUpWithEmail } from '@/lib/supabase/auth-utils';
 import { Check, Eye, EyeOff, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
@@ -25,43 +28,69 @@ const passwordRequirements: PasswordRequirement[] = [
   { label: 'Contains number', test: (p) => /\d/.test(p) },
 ];
 
+// Zod schema for form validation with complex password requirements
+const formSchema = z.object({
+  displayName: z.string().min(1, "Display name is required").min(2, "Display name must be at least 2 characters"),
+  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/\d/, "Password must contain at least one number"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 export function RegisterForm({ }: RegisterFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  // Initialize form with React Hook Form and Zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm<FormData>({
+    resolver: standardSchemaResolver(formSchema),
+    mode: "onChange", // Real-time validation for password feedback
+    defaultValues: {
+      displayName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // Watch password for real-time validation feedback
+  const watchedPassword = watch("password");
+  const watchedConfirmPassword = watch("confirmPassword");
+
   const passwordValidation = useMemo(() => {
     return passwordRequirements.map(req => ({
       ...req,
-      valid: req.test(password)
+      valid: req.test(watchedPassword || "")
     }));
-  }, [password]);
+  }, [watchedPassword]);
 
   const isPasswordValid = passwordValidation.every(req => req.valid);
-  const passwordsMatch = password === confirmPassword && password.length > 0;
-  const isFormValid = email && isPasswordValid && passwordsMatch && displayName;
+  const passwordsMatch = watchedPassword === watchedConfirmPassword && watchedPassword && watchedPassword.length > 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!isFormValid) {
-      setError('Please fix the validation errors before submitting.');
-      return;
-    }
-
+  const onSubmit = handleSubmit(async (values: FormData) => {
     setLoading(true);
     setError('');
 
     try {
-      const { user, error: signUpError } = await signUpWithEmail(email, password, {
+      const { user, error: signUpError } = await signUpWithEmail(values.email, values.password, {
         data: {
-          display_name: displayName,
+          display_name: values.displayName,
         }
       });
       
@@ -80,7 +109,7 @@ export function RegisterForm({ }: RegisterFormProps) {
     } finally {
       setLoading(false);
     }
-  };
+  });
 
   if (success) {
     return (
@@ -128,48 +157,54 @@ export function RegisterForm({ }: RegisterFormProps) {
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name</Label>
+            <label htmlFor="displayName" className="text-sm font-medium">
+              Display Name
+            </label>
             <Input
               id="displayName"
               type="text"
               placeholder="Enter your name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              required
               disabled={loading}
               autoComplete="name"
+              {...register("displayName")}
             />
+            {errors.displayName && (
+              <p className="text-sm text-destructive">{errors.displayName.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <label htmlFor="email" className="text-sm font-medium">
+              Email
+            </label>
             <Input
               id="email"
               type="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
               disabled={loading}
               autoComplete="email"
+              {...register("email")}
             />
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <label htmlFor="password" className="text-sm font-medium">
+              Password
+            </label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Create a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
                 disabled={loading}
                 autoComplete="new-password"
                 className="pr-10"
+                {...register("password")}
               />
               <Button
                 type="button"
@@ -187,8 +222,11 @@ export function RegisterForm({ }: RegisterFormProps) {
                 )}
               </Button>
             </div>
+            {errors.password && (
+              <p className="text-sm text-destructive">{errors.password.message}</p>
+            )}
             
-            {password && (
+            {watchedPassword && (
               <div className="space-y-1 text-xs">
                 {passwordValidation.map((req, index) => (
                   <div key={index} className={`flex items-center gap-2 ${req.valid ? 'text-green-600' : 'text-muted-foreground'}`}>
@@ -205,18 +243,18 @@ export function RegisterForm({ }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <label htmlFor="confirmPassword" className="text-sm font-medium">
+              Confirm Password
+            </label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Confirm your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
                 disabled={loading}
                 autoComplete="new-password"
                 className="pr-10"
+                {...register("confirmPassword")}
               />
               <Button
                 type="button"
@@ -234,8 +272,11 @@ export function RegisterForm({ }: RegisterFormProps) {
                 )}
               </Button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+            )}
             
-            {confirmPassword && (
+            {watchedConfirmPassword && (
               <div className={`text-xs flex items-center gap-2 ${passwordsMatch ? 'text-green-600' : 'text-red-500'}`}>
                 {passwordsMatch ? (
                   <Check className="h-3 w-3" />
@@ -256,7 +297,7 @@ export function RegisterForm({ }: RegisterFormProps) {
           <Button
             type="submit"
             className="w-full"
-            disabled={loading || !isFormValid}
+            disabled={loading || !isValid}
           >
             {loading ? (
               <>

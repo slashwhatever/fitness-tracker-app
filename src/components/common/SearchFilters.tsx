@@ -1,10 +1,11 @@
 'use client';
 
+import { useForm } from "react-hook-form";
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { ExperienceLevel } from '@/models/types';
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 interface SearchFiltersProps {
   onSearchChange: (search: string) => void;
@@ -18,6 +19,13 @@ interface SearchFiltersProps {
 const DEFAULT_EXPERIENCE_LEVELS: ExperienceLevel[] = ['Beginner', 'Intermediate', 'Advanced'];
 const DEFAULT_MUSCLE_GROUPS: string[] = ['Back', 'Biceps', 'Cardio', 'Chest', 'Core', 'Forearms', 'Full Body', 'Legs', 'Shoulders', 'Triceps'];
 
+// Form type definition for filters
+type FiltersFormData = {
+  search: string;
+  selectedMuscleGroup: string | null;
+  selectedExperienceLevel: ExperienceLevel | null;
+};
+
 export default function SearchFilters({
   onSearchChange,
   onMuscleGroupFilter,
@@ -25,37 +33,59 @@ export default function SearchFilters({
   muscleGroups = DEFAULT_MUSCLE_GROUPS,
   experienceLevels = DEFAULT_EXPERIENCE_LEVELS,
 }: SearchFiltersProps) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string | null>(null);
-  const [selectedExperienceLevel, setSelectedExperienceLevel] = useState<ExperienceLevel | null>(null);
+  // Initialize form with React Hook Form using uncontrolled components
+  const {
+    register,
+    setValue,
+    getValues,
+    watch,
+    reset,
+  } = useForm<FiltersFormData>({
+    mode: "onChange",
+    defaultValues: {
+      search: "",
+      selectedMuscleGroup: null,
+      selectedExperienceLevel: null,
+    },
+  });
 
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    onSearchChange(value);
-  };
+  // Watch form values to trigger parent callbacks
+  const searchValue = watch("search");
+  const selectedMuscleGroup = watch("selectedMuscleGroup");
+  const selectedExperienceLevel = watch("selectedExperienceLevel");
+
+  // Trigger parent callbacks when watched values change
+  useEffect(() => {
+    onSearchChange(searchValue);
+  }, [searchValue, onSearchChange]);
+
+  useEffect(() => {
+    onMuscleGroupFilter(selectedMuscleGroup);
+  }, [selectedMuscleGroup, onMuscleGroupFilter]);
+
+  useEffect(() => {
+    onExperienceLevelFilter(selectedExperienceLevel);
+  }, [selectedExperienceLevel, onExperienceLevelFilter]);
 
   const handleMuscleGroupChange = (muscle_group: string) => {
     const newValue = selectedMuscleGroup === muscle_group ? null : muscle_group;
-    setSelectedMuscleGroup(newValue);
-    onMuscleGroupFilter(newValue);
+    setValue("selectedMuscleGroup", newValue);
   };
 
   const handleExperienceLevelChange = (level: ExperienceLevel) => {
     const newValue = selectedExperienceLevel === level ? null : level;
-    setSelectedExperienceLevel(newValue);
-    onExperienceLevelFilter(newValue);
+    setValue("selectedExperienceLevel", newValue);
   };
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setSelectedMuscleGroup(null);
-    setSelectedExperienceLevel(null);
-    onSearchChange('');
-    onMuscleGroupFilter(null);
-    onExperienceLevelFilter(null);
+    reset({
+      search: "",
+      selectedMuscleGroup: null,
+      selectedExperienceLevel: null,
+    });
   };
 
-  const hasActiveFilters = searchTerm || selectedMuscleGroup || selectedExperienceLevel;
+  const hasActiveFilters = searchValue || selectedMuscleGroup || selectedExperienceLevel;
 
   return (
     <div className="space-y-4">
@@ -65,10 +95,9 @@ export default function SearchFilters({
           <Input
             type="text"
             id="search"
-            value={searchTerm}
-            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search by exercise name..."
             className="pl-10"
+            {...register("search")}
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <svg className="h-5 w-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +111,7 @@ export default function SearchFilters({
       <div className="space-y-3">
         {/* Muscle Group Filters */}
         <div>
-          <Label className="text-sm font-medium mb-2">Muscle Group</Label>
+          <label className="text-sm font-medium mb-2">Muscle Group</label>
           <div className="flex flex-wrap gap-2">
             {muscleGroups.map((muscleGroup) => (
               <Button
@@ -100,7 +129,7 @@ export default function SearchFilters({
 
         {/* Experience Level Filters */}
         <div>
-          <Label className="text-sm font-medium mb-2">Experience Level</Label>
+          <label className="text-sm font-medium mb-2">Experience Level</label>
           <div className="flex flex-wrap gap-2">
             {experienceLevels.map((level) => (
               <Button

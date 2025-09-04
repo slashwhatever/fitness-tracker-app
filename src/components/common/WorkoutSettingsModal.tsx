@@ -1,5 +1,9 @@
 'use client';
 
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,14 +15,12 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { TIMER_PRESETS, Workout } from '@/models/types';
 import { SupabaseService } from '@/services/supabaseService';
 import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface WorkoutSettingsModalProps {
   isOpen: boolean;
@@ -28,6 +30,19 @@ interface WorkoutSettingsModalProps {
   onWorkoutDeleted: (workoutId: string) => void;
 }
 
+// Zod schema for form validation
+const formSchema = z.object({
+  name: z.string().min(1, "Workout name is required").min(2, "Workout name must be at least 2 characters"),
+  description: z.string().optional(),
+  default_rest_timer: z.string().optional().refine((val) => {
+    if (!val || val === '' || val === 'none') return true;
+    const num = parseInt(val);
+    return !isNaN(num) && num >= 0;
+  }, "Rest timer must be a valid number (0 or greater)"),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 export default function WorkoutSettingsModal({
   isOpen,
   onClose,
@@ -35,34 +50,60 @@ export default function WorkoutSettingsModal({
   onWorkoutUpdated,
   onWorkoutDeleted,
 }: WorkoutSettingsModalProps) {
-  const [name, setName] = useState(workout.name);
-  const [description, setDescription] = useState(workout.description || '');
-  const [defaultRestTimer, setDefaultRestTimer] = useState(workout.default_rest_timer?.toString() || '');
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const handleSave = async () => {
+  // Initialize form with React Hook Form and Zod validation using uncontrolled components
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<FormData>({
+    resolver: standardSchemaResolver(formSchema),
+    mode: "onSubmit",
+    defaultValues: {
+      name: "",
+      description: "",
+      default_rest_timer: "",
+    },
+  });
+
+  // Populate form when workout changes
+  useEffect(() => {
+    if (workout && isOpen) {
+      reset({
+        name: workout.name,
+        description: workout.description || "",
+        default_rest_timer: workout.default_rest_timer?.toString() || "none",
+      });
+    }
+  }, [workout, isOpen, reset]);
+
+  const onSubmit = handleSubmit(async (values: FormData) => {
     setIsSaving(true);
     try {
       const updates = {
-        name: name.trim(),
-        description: description.trim() || null,
-        default_rest_timer: defaultRestTimer ? parseInt(defaultRestTimer) : null,
+        name: values.name.trim(),
+        description: values.description?.trim() || null,
+        default_rest_timer: (values.default_rest_timer && values.default_rest_timer !== 'none') 
+          ? parseInt(values.default_rest_timer) 
+          : null,
         updated_at: new Date().toISOString(),
       };
 
       const updatedWorkout = await SupabaseService.updateWorkout(workout.id, updates);
       if (updatedWorkout) {
         onWorkoutUpdated(updatedWorkout);
-        onClose();
+        handleClose();
       }
     } catch (error) {
       console.error('Failed to save workout settings:', error);
     } finally {
       setIsSaving(false);
     }
-  };
+  });
 
   const handleDelete = async () => {
     const success = await SupabaseService.deleteWorkout(workout.id);
@@ -74,9 +115,11 @@ export default function WorkoutSettingsModal({
 
   const handleClose = () => {
     // Reset form to original values
-    setName(workout.name);
-    setDescription(workout.description || '');
-    setDefaultRestTimer(workout.default_rest_timer?.toString() || '');
+    reset({
+      name: workout.name,
+      description: workout.description || "",
+      default_rest_timer: workout.default_rest_timer?.toString() || "none",
+    });
     setShowDeleteConfirm(false);
     onClose();
   };
@@ -85,43 +128,55 @@ export default function WorkoutSettingsModal({
     <div className={`space-y-4 ${className}`}>
       {/* Workout Name */}
       <div className="space-y-2">
-        <Label htmlFor="workout-name">Workout Name *</Label>
+        <label htmlFor="name" className="text-sm font-medium">
+          Workout Name *
+        </label>
         <Input
-          id="workout-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          id="name"
           placeholder="Enter workout name"
+          {...register("name")}
         />
+        {errors.name && (
+          <p className="text-sm text-destructive">{errors.name.message}</p>
+        )}
       </div>
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="workout-description">Description</Label>
+        <label htmlFor="description" className="text-sm font-medium">
+          Description
+        </label>
         <Textarea
-          id="workout-description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          id="description"
           placeholder="Optional workout description"
           rows={3}
+          {...register("description")}
         />
+        {errors.description && (
+          <p className="text-sm text-destructive">{errors.description.message}</p>
+        )}
       </div>
 
       {/* Rest Timer */}
       <div className="space-y-2">
-        <Label htmlFor="rest-timer">Default Rest Timer</Label>
-        <Select value={defaultRestTimer} onValueChange={setDefaultRestTimer}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select rest timer (optional)" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">No default timer</SelectItem>
-            {TIMER_PRESETS.map((preset) => (
-              <SelectItem key={preset.seconds} value={preset.seconds.toString()}>
-                {preset.label} ({preset.seconds}s)
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <label htmlFor="default_rest_timer" className="text-sm font-medium">
+          Default Rest Timer
+        </label>
+        <select 
+          id="default_rest_timer"
+          {...register("default_rest_timer")}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <option value="none">No default timer</option>
+          {TIMER_PRESETS.map((preset) => (
+            <option key={preset.seconds} value={preset.seconds.toString()}>
+              {preset.label} ({preset.seconds}s)
+            </option>
+          ))}
+        </select>
+        {errors.default_rest_timer && (
+          <p className="text-sm text-destructive">{errors.default_rest_timer.message}</p>
+        )}
         <p className="text-xs text-muted-foreground">
           This timer will be used for all movements in this workout unless overridden
         </p>
@@ -142,12 +197,12 @@ export default function WorkoutSettingsModal({
       </Button>
 
       <div className="flex flex-col-reverse sm:flex-row gap-2">
-        <Button variant="outline" onClick={handleClose} className="w-full sm:w-auto">
+        <Button type="button" variant="outline" onClick={handleClose} className="w-full sm:w-auto">
           Cancel
         </Button>
         <Button 
-          onClick={handleSave} 
-          disabled={!name.trim() || isSaving}
+          type="submit"
+          disabled={!isValid || isSaving}
           className="w-full sm:w-auto"
         >
           {isSaving ? 'Saving...' : 'Save changes'}
@@ -164,8 +219,10 @@ export default function WorkoutSettingsModal({
             <DialogHeader>
               <DialogTitle>Workout settings</DialogTitle>
             </DialogHeader>
-            <FormContent />
-            <ActionButtons />
+            <form onSubmit={onSubmit}>
+              <FormContent />
+              <ActionButtons />
+            </form>
           </DialogContent>
         </Dialog>
 
@@ -190,10 +247,12 @@ export default function WorkoutSettingsModal({
           <DrawerHeader className="text-left">
             <DrawerTitle>Workout settings</DrawerTitle>
           </DrawerHeader>
-          <FormContent className="px-4" />
-          <DrawerFooter className="pt-2">
-            <ActionButtons />
-          </DrawerFooter>
+          <form onSubmit={onSubmit}>
+            <FormContent className="px-4" />
+            <DrawerFooter className="pt-2">
+              <ActionButtons />
+            </DrawerFooter>
+          </form>
         </DrawerContent>
       </Drawer>
 
