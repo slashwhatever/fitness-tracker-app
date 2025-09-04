@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { ResponsiveButton } from './ResponsiveButton';
 import { Typography } from './Typography';
 
 interface RestTimerProps {
@@ -151,46 +151,39 @@ export default function RestTimer({ isActive, duration, onComplete, onSkip }: Re
         <div className="flex justify-center gap-2">
           {!isComplete && (
             <>
-              <Button
+              <ResponsiveButton
                 onClick={togglePause}
-                variant="secondary"
-                size="sm"
-                className="h-10 w-10 p-0 sm:w-auto sm:px-4"
+                icon={isPaused ? Play : Pause}
+                color="blue"
               >
                 {isPaused ? (
                   <>
-                    <Play className="h-4 w-4" />
-                    <Typography variant="caption" className="hidden sm:inline sm:ml-2">Resume</Typography>
+                    <Typography variant="body">Resume</Typography>
                   </>
                 ) : (
                   <>
-                    <Pause className="h-4 w-4" />
-                    <Typography variant="caption" className="hidden sm:inline sm:ml-2">Pause</Typography>
+                    <Typography variant="body">Pause</Typography>
                   </>
                 )}
-              </Button>
-              <Button
+              </ResponsiveButton>
+              <ResponsiveButton
                 onClick={handleReset}
-                variant="outline"
-                size="sm"
-                className="h-10 w-10 p-0 sm:w-auto sm:px-4"
+                icon={RotateCcw}
+                color="blue"
               >
-                <RotateCcw className="h-4 w-4" />
-                <Typography variant="caption" className="hidden sm:inline sm:ml-2">Reset</Typography>
-              </Button>
+                <Typography variant="body">Reset</Typography>
+              </ResponsiveButton>
             </>
           )}
-          <Button
+          <ResponsiveButton
             onClick={handleSkip}
-            variant={isComplete ? "default" : "destructive"}
-            size="sm"
-            className="h-10 w-10 p-0 sm:w-auto sm:px-4"
+            icon={isComplete ? SkipForward : SkipForward}
+            color="red"
           >
-            <SkipForward className="h-4 w-4" />
-            <Typography variant="caption" className="hidden sm:inline sm:ml-2">
+            <Typography variant="body">
               {isComplete ? 'Continue' : 'Skip'}
             </Typography>
-          </Button>
+          </ResponsiveButton>
         </div>
 
         {isPaused && (

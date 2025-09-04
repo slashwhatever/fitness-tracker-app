@@ -1,12 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { forwardRef, useImperativeHandle, useState } from 'react';
+import { ResponsiveButton } from './ResponsiveButton';
 import { Typography } from './Typography';
 
 export interface WorkoutListRef {
@@ -106,24 +106,20 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
 
               <div className="flex items-center space-x-1 ml-2">
                 <Link href={`/workout/${workout.id}`}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-blue-500 hover:text-blue-500 sm:text-muted-foreground"
+                  <ResponsiveButton
+                    icon={ChevronRight}
+                    color="blue"
                   >
-                    <ChevronRight  />
-                    <Typography variant="body" className="hidden sm:inline">View</Typography>
-                  </Button>
+                    <Typography variant="body">View</Typography>
+                  </ResponsiveButton>
                 </Link>
-                <Button
+                <ResponsiveButton
                   onClick={(e) => handleDeleteClick(e, workout)}
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-500 hover:text-red-500 sm:text-muted-foreground"
+                  icon={Trash2}
+                  color="red"
                 >
-                  <Trash2  />
-                  <Typography variant="body" className="hidden sm:inline">Delete</Typography>
-                </Button>
+                  <Typography variant="body">Delete</Typography>
+                </ResponsiveButton>
               </div>
             </div>
           ))}

@@ -3,6 +3,7 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
+import { ResponsiveButton } from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
 import Loading from '@/components/Loading';
@@ -144,24 +145,20 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             </div>
 
             <div className="flex space-x-2 ml-4">
-              <Button 
-                variant="outline" 
-                size="sm"
+              <ResponsiveButton 
                 onClick={() => setShowMovementModal(true)}
-                className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
+                icon={Plus}
+                color="primary"
               >
-                <Plus className="w-4 h-4" />
-                <Typography variant="body" className="hidden sm:inline">Add</Typography>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
+                <Typography variant="body">Add</Typography>
+              </ResponsiveButton>
+              <ResponsiveButton 
+                icon={Settings}
+                color="primary"
                 onClick={() => setShowSettingsModal(true)}
-                className="h-8 w-8 sm:w-auto p-0 sm:px-3 flex items-center sm:space-x-2"
               >
-                <Settings className="w-4 h-4" />
-                <Typography variant="body" className="hidden sm:inline">Settings</Typography>
-              </Button>
+                <Typography variant="body">Settings</Typography>
+              </ResponsiveButton>
             </div>
           </div>
           

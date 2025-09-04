@@ -1,4 +1,5 @@
-// Temporarily disabled during refactor
+import AnalyticsDashboard from '@/components/features/AnalyticsDashboard';
+
 export default function AnalyticsPage() { 
-  return <div>Analytics - Coming Soon</div>; 
+  return <AnalyticsDashboard />;
 }

@@ -17,6 +17,7 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { Set, SetData, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { ResponsiveButton } from './ResponsiveButton';
 import SetEntryForm from './SetEntryForm';
 import { Typography } from './Typography';
 
@@ -97,8 +98,8 @@ export default function EditableSet({
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer space-y-2 sm:space-y-0">
-        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+      <div className="flex flex-row justify-between items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all cursor-pointer">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 flex-1 min-w-0">
           <div className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
             <Typography variant="caption">{new Date(set.created_at).toLocaleDateString()}</Typography>
             <Typography variant="caption">{new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Typography>
@@ -139,28 +140,25 @@ export default function EditableSet({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center space-x-2 self-end sm:self-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDuplicate}
-            className="text-green-500 hover:text-green-500 sm:text-muted-foreground"
-          >
-            <Copy  />
-            <Typography variant="body" className="hidden sm:inline">Duplicate</Typography>
-          </Button>
+        <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 ml-2 sm:ml-4">
+          <ResponsiveButton
 
+            icon={Copy}
+            color="green"
+            onClick={handleDuplicate}
+          >
+            <Typography variant="body">Duplicate</Typography>
+          </ResponsiveButton>
 
           <Drawer open={isEditing} onOpenChange={handleDrawerOpenChange}>
             <DrawerTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 sm:h-9 sm:w-9"
-              >
-                <Edit/>
-                <Typography variant="body" className="hidden sm:inline">Edit</Typography>
-              </Button>
+              <ResponsiveButton
+                title="Edit"
+                icon={Edit}
+                color="blue"
+              > 
+                <Typography variant="body">Edit</Typography>
+              </ResponsiveButton>
             </DrawerTrigger>
             <DrawerContent className="h-[95vh]">
               <DrawerHeader>
@@ -189,21 +187,21 @@ export default function EditableSet({
               <DrawerFooter>
                 <DrawerClose asChild>
                   <Button variant="outline">
-                    Cancel
+                    <Typography variant="body">Cancel</Typography>
                   </Button>
                 </DrawerClose>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
                               
-          <Button
+          <ResponsiveButton
+            title="Delete"
+            icon={Trash2}
             onClick={handleDeleteClick}
-            variant="ghost"
-            size="icon"
-            className="text-muted-foreground hover:text-red-500 h-8 w-8 sm:h-9 sm:w-9"
+            color="red"
           >
-            <Trash2  />
-          </Button>
+            <Typography variant="body">Delete</Typography>
+          </ResponsiveButton>
         </div>
       </div>
 

@@ -1,10 +1,10 @@
 'use client';
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { ResponsiveButton } from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutManagement from '@/components/features/WorkoutManagement';
 import Loading from '@/components/Loading';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Dumbbell, Library, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -35,24 +35,21 @@ export default function Dashboard() {
               </Typography>
             </div>
             <div className="flex flex-row space-x-2">
-              <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
+              <ResponsiveButton color="primary" asChild icon={BarChart3}>
                 <Link href="/analytics" className="flex items-center sm:space-x-2">
-                  <BarChart3 className="w-4 h-4" aria-hidden="true" />
-                  <Typography className="hidden sm:inline text-xs sm:text-sm"variant="caption">Analytics</Typography>
+                  <Typography variant="body">Analytics</Typography>
                 </Link>
-              </Button>
-              <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
+              </ResponsiveButton>
+              <ResponsiveButton color="primary" asChild icon={Library}>
                 <Link href="/library" className="flex items-center sm:space-x-2">
-                  <Library className="w-4 h-4" aria-hidden="true" />
-                  <Typography className="hidden sm:inline text-xs sm:text-sm"variant="caption">Movement Library</Typography>
+                  <Typography variant="body">Movement Library</Typography>
                 </Link>
-              </Button>
-              <Button variant="outline" asChild size="sm" className="h-8 w-8 sm:w-auto p-0 sm:px-3">
+              </ResponsiveButton>
+              <ResponsiveButton color="primary" asChild icon={Settings}>
                 <Link href="/settings" className="flex items-center sm:space-x-2">
-                  <Settings className="w-4 h-4" aria-hidden="true" />
-                  <Typography className="hidden sm:inline text-xs sm:text-sm"variant="caption">Settings</Typography>
+                  <Typography variant="body">Settings</Typography>
                 </Link>
-              </Button>
+              </ResponsiveButton>
             </div>
           </div>
           

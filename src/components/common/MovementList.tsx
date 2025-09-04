@@ -10,6 +10,7 @@ import type { UserMovement } from '@/models/types';
 import { Dumbbell, Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
 interface MovementListProps {
@@ -117,35 +118,29 @@ export default function MovementList({
                   </div>
                 </Link>
                 <div className="flex items-center space-x-1 sm:space-x-2 ml-2 flex-shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <ResponsiveButton
+                    icon={Dumbbell}
+                    color="green"
                     asChild
-                    className="text-green-500 hover:text-green-500 sm:text-muted-foreground"
                   >
                     <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}>
-                      <Dumbbell />
-                      <Typography variant="body" className="hidden sm:inline">Log sets</Typography>
+                      <Typography variant="body">Log sets</Typography>
                     </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  </ResponsiveButton>
+                  <ResponsiveButton
+                    icon={Edit3}
+                    color="blue"
                     onClick={() => setEditingMovementId(movement.user_movement_id)}
-                    className="text-blue-500 hover:text-blue-500 sm:text-muted-foreground"
                   >
-                    <Edit3  />
-                    <Typography variant="body" className="hidden sm:inline">Edit</Typography>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                    <Typography variant="body">Edit</Typography>
+                  </ResponsiveButton>
+                  <ResponsiveButton
+                    icon={Trash2}
+                    color="red"
                     onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
-                    className="text-red-500 hover:text-red-500 sm:text-muted-foreground"
                   >
-                    <Trash2  />
-                    <Typography variant="body" className="hidden sm:inline">Delete</Typography>
-                  </Button>
+                    <Typography variant="body">Delete</Typography>
+                  </ResponsiveButton>
                 </div>
               </div>
             </div>
