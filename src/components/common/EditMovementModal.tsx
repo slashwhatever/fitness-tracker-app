@@ -1,6 +1,6 @@
 'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -74,7 +74,7 @@ export default function EditMovementModal({
     watch,
     reset,
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: standardSchemaResolver(formSchema),
     mode: "onSubmit",
     defaultValues: {
       name: "",

@@ -1,6 +1,6 @@
 'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { FieldErrors, useForm, UseFormRegister } from "react-hook-form";
 import { z } from "zod";
 
@@ -141,7 +141,7 @@ export default function CreateWorkoutModal({
     formState: { errors, isValid },
     reset,
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: standardSchemaResolver(formSchema),
     mode: "onChange",
     defaultValues: {
       name: "",

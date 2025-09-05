@@ -1,6 +1,6 @@
 'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -60,7 +60,7 @@ export function RegisterForm({ }: RegisterFormProps) {
     formState: { errors, isValid },
     watch,
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: standardSchemaResolver(formSchema),
     mode: "onChange", // Real-time validation for password feedback
     defaultValues: {
       displayName: "",

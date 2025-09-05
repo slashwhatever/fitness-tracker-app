@@ -1,6 +1,6 @@
 'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -65,7 +65,7 @@ export default function WorkoutSettingsModal({
     watch,
     setValue,
   } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: standardSchemaResolver(formSchema),
     mode: "onSubmit",
     defaultValues: {
       name: "",
