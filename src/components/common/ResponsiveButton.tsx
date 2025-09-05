@@ -51,7 +51,7 @@ const colorMap: Record<ResponsiveButtonColors, {
 
 type ResponsiveButtonProps = {
   children: React.ReactNode;
-  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>; // Optional when using asChild
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   size?: ResponsiveButtonSizes;
   color: ResponsiveButtonColors;
   className?: string;
@@ -76,10 +76,51 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
     }
   };
   
-  // Simple approach: when asChild=true, just pass children through and let consumer handle structure
-  const content = asChild ? children : (
+  // When using asChild, inject icon and responsive structure into the child element
+  if (asChild && React.isValidElement(children)) {
+    const originalChildren = (children.props as any).children;
+    const enhancedChild = React.cloneElement(children as React.ReactElement<any>, {
+      ...(children.props as any),
+      className: cn("flex items-center gap-1", (children.props as any).className),
+      children: (
+        <>
+          <Icon className="flex-shrink-0" />
+          <span className="hidden sm:inline">{originalChildren}</span>
+        </>
+      )
+    });
+
+    return (
+      <Button
+        variant={variant}
+        size={size}
+        asChild={asChild}
+        className={cn(
+          // Base mobile styles: square button with colored icon
+          colors.text, 
+          colors.hoverText, 
+          "hover:bg-accent/50",
+          // Desktop styles: outline default, colored background on hover
+          "sm:size-auto sm:px-4 sm:py-2 sm:has-[>svg]:px-3",
+          "sm:border",
+          colors.smText,
+          colors.smBorder,
+          colors.smHoverBg,
+          hoverTextColor,
+          "sm:hover:!border-transparent",
+          className
+        )}
+        {...props}
+      >
+        {enhancedChild}
+      </Button>
+    );
+  }
+
+  // Default case: not using asChild
+  const content = (
     <span className="flex items-center gap-1">
-      {Icon && <Icon className="flex-shrink-0" />}
+      <Icon className="flex-shrink-0" />
       <span className="hidden sm:inline">{children}</span>
     </span>
   );

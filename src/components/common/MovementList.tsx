@@ -119,12 +119,12 @@ export default function MovementList({
                 </Link>
                 <div className="flex items-center space-x-1 sm:space-x-2 ml-2 flex-shrink-0">
                   <ResponsiveButton
+                    icon={Dumbbell}
                     color="green"
                     asChild
                   >
-                    <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`} className="flex items-center gap-1">
-                      <Dumbbell className="flex-shrink-0" />
-                      <span className="hidden sm:inline">Log sets</span>
+                    <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}>
+                      <Typography variant="body">Log sets</Typography>
                     </Link>
                   </ResponsiveButton>
                   <ResponsiveButton
