@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { createClient } from '@/lib/supabase/client';
@@ -9,7 +9,7 @@ import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import UpdatePasswordForm from '@/components/auth/UpdatePasswordForm';
 import Loading from '@/components/Loading';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -73,4 +73,12 @@ export default function ResetPasswordPage() {
 
   // Show reset password form for initial email request
   return <ResetPasswordForm />;
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
 }
