@@ -1,4 +1,6 @@
-import { Construction, Hammer } from 'lucide-react';
+import { Construction, Hammer, Home } from 'lucide-react';
+import Link from 'next/link';
+import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
 interface UnderConstructionProps {
@@ -35,6 +37,20 @@ export const UnderConstruction = ({
         <span>In Development</span>
         <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-75"></div>
       </div>
+
+      <div className="mt-6">
+        <ResponsiveButton 
+          color="primary" 
+          icon={Home} 
+          variant="outline" 
+          asChild
+        >
+          <Link href="/">
+            <Typography variant="body">Back to Home</Typography>
+          </Link>
+        </ResponsiveButton>
+      </div>
+      
     </div>
   );
 };
