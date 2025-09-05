@@ -126,7 +126,7 @@ export default function SetEntryForm({
                   value={setData.reps || ''}
                   onChange={handleRepsChange}
                   onFocus={handleFocus}
-                  className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
+                  className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                   min="0"
                   placeholder="0"
                   style={{ 
@@ -171,7 +171,7 @@ export default function SetEntryForm({
                     value={setData.weight || ''}
                     onChange={handleWeightChange}
                     onFocus={handleFocus}
-                    className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
+                    className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     min="0"
                     step="any"
                     placeholder="0"
@@ -220,7 +220,7 @@ export default function SetEntryForm({
                 value={setData.duration || ''}
                 onChange={handleDurationChange}
                 onFocus={handleFocus}
-                className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full"
+                className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 min="0"
                 placeholder="0"
                 style={{ fontSize: '4rem', lineHeight: '1' }}
@@ -260,7 +260,7 @@ export default function SetEntryForm({
                 value={setData.distance || ''}
                 onChange={handleDistanceChange}
                 onFocus={handleFocus}
-                className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full"
+                className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 min="0"
                 step="0.1"
                 placeholder="0"
