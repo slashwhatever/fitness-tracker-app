@@ -121,9 +121,11 @@ export default function MovementList({
                   <ResponsiveButton
                     icon={Dumbbell}
                     color="green"
-                    url={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
+                    asChild
                   >
-                    Log sets
+                    <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}>
+                      <span className="hidden sm:inline">Log sets</span>
+                    </Link>
                   </ResponsiveButton>
                   <ResponsiveButton
                     icon={Edit3}

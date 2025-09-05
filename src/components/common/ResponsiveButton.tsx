@@ -58,10 +58,11 @@ type ResponsiveButtonProps = {
   variant?: 'default' | 'outline' | 'ghost' | 'link' | 'secondary' | 'destructive';
   url?: string; // Optional URL for navigation
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  asChild?: boolean;
 } & React.ComponentProps<"button"> &
 VariantProps<typeof buttonVariants>
 
-const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', url, onClick, ...props }: ResponsiveButtonProps) => {
+const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', url, onClick, asChild, ...props }: ResponsiveButtonProps) => {
   const router = useRouter();
   const colors = colorMap[color];
   const hoverTextColor = color === 'primary' ? 'sm:hover:!text-primary-foreground' : 'sm:hover:!text-white';
@@ -75,7 +76,13 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
     }
   };
   
-  const content = (
+  // When using asChild, just provide responsive structure around the icon, pass children through
+  const content = asChild ? (
+    <span className="flex items-center gap-1">
+      <Icon className="flex-shrink-0" />
+      {children}
+    </span>
+  ) : (
     <span className="flex items-center gap-1">
       <Icon className="flex-shrink-0" />
       <span className="hidden sm:inline">{children}</span>
@@ -86,6 +93,7 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
     <Button
       variant={variant}
       size={size}
+      asChild={asChild}
       className={cn(
         // Base mobile styles: square button with colored icon
         colors.text, 
@@ -101,7 +109,7 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
         "sm:hover:!border-transparent",
         className
       )}
-      onClick={handleClick}
+      onClick={asChild ? undefined : handleClick}
       {...props}
     >
       {content}

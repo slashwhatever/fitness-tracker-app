@@ -7,6 +7,7 @@ import WorkoutManagement from '@/components/features/WorkoutManagement';
 import Loading from '@/components/Loading';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Dumbbell, Library, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { loading } = useAuth();
@@ -34,14 +35,20 @@ export default function Dashboard() {
               </Typography>
             </div>
             <div className="flex flex-row space-x-2">
-              <ResponsiveButton color="primary" icon={BarChart3} variant="outline" url="/analytics">
-                Analytics
+              <ResponsiveButton color="primary" icon={BarChart3} variant="outline" asChild>
+                <Link href="/analytics">
+                  <span className="hidden sm:inline">Analytics</span>
+                </Link>
               </ResponsiveButton>
-              <ResponsiveButton color="primary" icon={Library} variant="outline" url="/library">
-                Movement Library
+              <ResponsiveButton color="primary" icon={Library} variant="outline" asChild>
+                <Link href="/library">
+                  <span className="hidden sm:inline">Movement Library</span>
+                </Link>
               </ResponsiveButton>
-              <ResponsiveButton color="primary" icon={Settings} variant="outline" url="/settings">
-                Settings
+              <ResponsiveButton color="primary" icon={Settings} variant="outline" asChild>
+                <Link href="/settings">
+                  <span className="hidden sm:inline">Settings</span>
+                </Link>
               </ResponsiveButton>
             </div>
           </div>
