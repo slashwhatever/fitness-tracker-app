@@ -1,3 +1,5 @@
+"use client";
+
 import { Construction, Hammer, Home } from 'lucide-react';
 import Link from 'next/link';
 import ResponsiveButton from './ResponsiveButton';
