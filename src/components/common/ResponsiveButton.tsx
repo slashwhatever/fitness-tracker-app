@@ -6,6 +6,15 @@ import { VariantProps } from "class-variance-authority";
 import { useRouter } from "next/navigation";
 import React from "react";
 
+// Type for React elements with className and children props
+interface ReactElementWithProps extends React.ReactElement {
+  props: {
+    children?: React.ReactNode;
+    className?: string;
+    [key: string]: unknown;
+  };
+}
+
 type ResponsiveButtonSizes = 'sm' | 'lg' | 'icon' | 'default';
 
 type ResponsiveButtonColors =
@@ -80,10 +89,11 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
   
   // When using asChild, inject icon and responsive structure into the child element
   if (asChild && React.isValidElement(children)) {
-    const originalChildren = (children.props as any).children;
-    const enhancedChild = React.cloneElement(children as React.ReactElement<any>, {
-      ...(children.props as any),
-      className: cn("flex items-center gap-1", (children.props as any).className),
+    const typedChildren = children as ReactElementWithProps;
+    const originalChildren = typedChildren.props.children;
+    const enhancedChild = React.cloneElement(typedChildren, {
+      ...typedChildren.props,
+      className: cn("flex items-center gap-1", typedChildren.props.className),
       children: (
         <>
           <Icon className="flex-shrink-0" />
