@@ -62,13 +62,13 @@ export const ResetPasswordForm = () => {
           <div className="text-center space-y-2">
             <Typography variant="title1">Check Your Email</Typography>
             <Typography variant="body" className="text-muted-foreground">
-              We've sent a password reset link to your email address. Click the link in the email to reset your password.
+              We&apos;ve sent a password reset link to your email address. Click the link in the email to reset your password.
             </Typography>
           </div>
           
           <div className="space-y-4">
             <Typography variant="caption" className="text-muted-foreground text-center block">
-              Didn't receive the email? Check your spam folder or try again.
+              Didn&apos;t receive the email? Check your spam folder or try again.
             </Typography>
             
             <div className="flex flex-col space-y-2">
@@ -97,7 +97,7 @@ export const ResetPasswordForm = () => {
         <div className="text-center space-y-2">
           <Typography variant="title1">Reset Your Password</Typography>
           <Typography variant="body" className="text-muted-foreground">
-            Enter your email address and we'll send you a link to reset your password.
+            Enter your email address and we&apos;ll send you a link to reset your password.
           </Typography>
         </div>
 

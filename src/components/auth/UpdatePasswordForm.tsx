@@ -105,7 +105,7 @@ export const UpdatePasswordForm = () => {
           <div className="text-center space-y-2">
             <Typography variant="title1">Password Updated!</Typography>
             <Typography variant="body" className="text-muted-foreground">
-              Your password has been successfully updated. You'll be redirected to the login page shortly.
+              Your password has been successfully updated. You&apos;ll be redirected to the login page shortly.
             </Typography>
           </div>
           

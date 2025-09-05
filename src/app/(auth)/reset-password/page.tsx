@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthProvider';
-import { getSupabaseClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
+import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import UpdatePasswordForm from '@/components/auth/UpdatePasswordForm';
 import Loading from '@/components/Loading';
@@ -17,7 +18,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const checkAuthState = async () => {
-      const supabase = getSupabaseClient();
+      const supabase = createClient();
       
       // Check for auth tokens in URL (from email link)
       const { data, error } = await supabase.auth.getSession();
@@ -42,8 +43,8 @@ export default function ResetPasswordPage() {
     checkAuthState();
 
     // Listen for auth state changes (when user clicks email link)
-    const supabase = getSupabaseClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
         if (session) {
           setIsUpdateMode(true);
