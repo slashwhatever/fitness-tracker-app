@@ -81,6 +81,11 @@ export default function SetEntryForm({
     handleInputChange('notes', e.target.value);
   }, [handleInputChange]);
 
+  // Focus handlers to select all text for easy overwriting
+  const handleFocus = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
+  }, []);
+
   const isFormValid = (): boolean => {
     if (!movement) return false;
     
@@ -120,6 +125,7 @@ export default function SetEntryForm({
                   inputMode="numeric"
                   value={setData.reps || ''}
                   onChange={handleRepsChange}
+                  onFocus={handleFocus}
                   className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
                   min="0"
                   placeholder="0"
@@ -164,6 +170,7 @@ export default function SetEntryForm({
                     inputMode="decimal"
                     value={setData.weight || ''}
                     onChange={handleWeightChange}
+                    onFocus={handleFocus}
                     className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
                     min="0"
                     step="any"
@@ -212,6 +219,7 @@ export default function SetEntryForm({
                 inputMode="numeric"
                 value={setData.duration || ''}
                 onChange={handleDurationChange}
+                onFocus={handleFocus}
                 className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full"
                 min="0"
                 placeholder="0"
@@ -251,6 +259,7 @@ export default function SetEntryForm({
                 inputMode="decimal"
                 value={setData.distance || ''}
                 onChange={handleDistanceChange}
+                onFocus={handleFocus}
                 className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full"
                 min="0"
                 step="0.1"
@@ -288,6 +297,7 @@ export default function SetEntryForm({
             type="text"
             value={setData.notes || ''}
             onChange={handleNotesChange}
+            onFocus={handleFocus}
             placeholder="Add note"
             className="text-center text-lg bg-transparent border-0 border-b border-muted-foreground/30 rounded-none focus:border-primary focus:ring-0"
           />

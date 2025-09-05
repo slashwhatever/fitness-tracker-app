@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from '@/components/ui/button';
 import { Construction, Hammer, Home } from 'lucide-react';
 import Link from 'next/link';
-import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
 interface UnderConstructionProps {
@@ -41,16 +41,16 @@ export const UnderConstruction = ({
       </div>
 
       <div className="mt-6">
-        <ResponsiveButton 
+        <Button 
           color="primary" 
-          icon={Home} 
           variant="outline" 
           asChild
         >
           <Link href="/">
+            <Home />
             <Typography variant="body">Back to Home</Typography>
           </Link>
-        </ResponsiveButton>
+        </Button>
       </div>
       
     </div>
