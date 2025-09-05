@@ -25,6 +25,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 }
 
 export const metadata = {
-  title: 'Sign In - Fitness Tracking App',
+  title: 'Sign In - Logset',
   description: 'Sign in to your fitness tracking account',
 };

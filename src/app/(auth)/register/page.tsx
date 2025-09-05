@@ -25,6 +25,6 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
 }
 
 export const metadata = {
-  title: 'Sign Up - Fitness Tracking App',
+  title: 'Sign Up - Logset',
   description: 'Create your fitness tracking account',
 };

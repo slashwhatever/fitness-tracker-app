@@ -1,4 +1,4 @@
-// Core TypeScript interfaces for the Fitness Tracking App
+// Core TypeScript interfaces for the Logset Fitness Tracking App
 // Based on architecture specifications from docs/architecture/data-models.md
 
 // ============================================================================
