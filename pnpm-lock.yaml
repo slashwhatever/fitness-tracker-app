@@ -105,7 +105,7 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       zod:
-        specifier: ^4.1.5
+        specifier: ^4.0.10
         version: 4.1.5
     devDependencies:
       '@axe-core/react':
@@ -118,8 +118,8 @@ importers:
         specifier: ^4.2.5
         version: 4.2.5
       '@netlify/plugin-nextjs':
-        specifier: ^5.12.1
-        version: 5.12.1
+        specifier: ^5.13.0
+        version: 5.13.0
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.12
@@ -924,8 +924,8 @@ packages:
     resolution: {integrity: sha512-aL9DP/BpXNq86p4zCuWOgqd1a8Nvnbip9iiMuY5EcWzyAuiEPFeGnIUIGuGtBGtMnDE9AedUl+w9vXJZyDa1pQ==}
     engines: {node: '>=18.0.0'}
 
-  '@netlify/plugin-nextjs@5.12.1':
-    resolution: {integrity: sha512-b2Ic9NkNnnh0lKC/YWDZ2+HdLd/uYdBzLvLKYOkPyFt8KEszoC+Je3GRcwBeOLxaNtK8lji7YPIjtGz8K2sLVQ==}
+  '@netlify/plugin-nextjs@5.13.0':
+    resolution: {integrity: sha512-sOhMUITRmcQDFf+ppAhZwecCE2kDCV8nVWe3fwTkNThpKoXBcpKVECL07IkBv5fJLxp/kODy346OaCk6FI9MAg==}
     engines: {node: '>=18.0.0'}
 
   '@netlify/runtime-utils@2.1.0':
@@ -5702,7 +5702,7 @@ snapshots:
       - rollup
       - supports-color
 
-  '@netlify/plugin-nextjs@5.12.1': {}
+  '@netlify/plugin-nextjs@5.13.0': {}
 
   '@netlify/runtime-utils@2.1.0': {}
 

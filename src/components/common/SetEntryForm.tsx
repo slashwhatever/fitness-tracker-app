@@ -43,30 +43,9 @@ export default function SetEntryForm({
       const currentValue = prev[field] as number | null;
       const newValue = Math.max(0, (currentValue || 0) + delta);
       
-      // Apply different step sizes based on field and current value
-      let adjustedValue = newValue;
-      if (field === 'weight') {
-        // Weight increments: 0.25 for small weights, 2.5 for larger weights
-        if (delta > 0) {
-          adjustedValue = currentValue && currentValue >= 20 ? 
-            Math.round((currentValue + 2.5) * 4) / 4 : 
-            Math.round((currentValue || 0 + 0.25) * 4) / 4;
-        } else {
-          adjustedValue = currentValue && currentValue > 20 ? 
-            Math.max(0, Math.round((currentValue - 2.5) * 4) / 4) : 
-            Math.max(0, Math.round((currentValue || 0 - 0.25) * 4) / 4);
-        }
-      } else if (field === 'distance') {
-        // Distance increments: 0.1
-        adjustedValue = Math.round(adjustedValue * 10) / 10;
-      } else if (field === 'duration') {
-        // Duration increments: 5 seconds
-        adjustedValue = Math.round(adjustedValue / 5) * 5;
-      }
-      
       return {
         ...prev,
-        [field]: adjustedValue || null
+        [field]: newValue || null
       };
     });
   };
@@ -187,7 +166,7 @@ export default function SetEntryForm({
                     onChange={handleWeightChange}
                     className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full"
                     min="0"
-                    step="0.25"
+                    step="any"
                     placeholder="0"
                     style={{ 
                     fontSize: '4rem', 
