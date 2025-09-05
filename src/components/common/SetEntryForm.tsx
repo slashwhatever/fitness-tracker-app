@@ -126,18 +126,18 @@ export default function SetEntryForm({
                   value={setData.reps || ''}
                   onChange={handleRepsChange}
                   onFocus={handleFocus}
-                  className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                   min="0"
                   placeholder="0"
                   style={{ 
-                    fontSize: '4rem', 
+                    fontSize: '3rem', 
                     lineHeight: '1',
                     border: 'none !important',
                     outline: 'none !important',
                     boxShadow: 'none !important'
                   }}
                 />
-                <div className="text-sm text-muted-foreground">rep{(setData.reps || 0) !== 1 ? 's' : ''}</div>
+                <div className="text-base text-muted-foreground">rep{(setData.reps || 0) !== 1 ? 's' : ''}</div>
               </div>
               <div className="flex justify-center items-center space-x-4">
                 <Button
@@ -171,19 +171,19 @@ export default function SetEntryForm({
                     value={setData.weight || ''}
                     onChange={handleWeightChange}
                     onFocus={handleFocus}
-                    className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                    className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                     min="0"
                     step="any"
                     placeholder="0"
                     style={{ 
-                    fontSize: '4rem', 
+                    fontSize: '3rem', 
                     lineHeight: '1',
                     border: 'none !important',
                     outline: 'none !important',
                     boxShadow: 'none !important'
                   }}
                   />
-                  <div className="text-sm text-muted-foreground">{weightUnit}</div>
+                  <div className="text-base text-muted-foreground">{weightUnit}</div>
                 </div>
                 <div className="flex justify-center items-center space-x-4">
                   <Button
@@ -220,12 +220,12 @@ export default function SetEntryForm({
                 value={setData.duration || ''}
                 onChange={handleDurationChange}
                 onFocus={handleFocus}
-                className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 min="0"
                 placeholder="0"
-                style={{ fontSize: '4rem', lineHeight: '1' }}
+                style={{ fontSize: '3rem', lineHeight: '1' }}
               />
-              <div className="text-sm text-muted-foreground">seconds</div>
+              <div className="text-base text-muted-foreground">seconds</div>
             </div>
             <div className="flex justify-center items-center space-x-4">
               <Button
@@ -260,13 +260,13 @@ export default function SetEntryForm({
                 value={setData.distance || ''}
                 onChange={handleDistanceChange}
                 onFocus={handleFocus}
-                className="text-6xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                 min="0"
                 step="0.1"
                 placeholder="0"
-                style={{ fontSize: '4rem', lineHeight: '1' }}
+                style={{ fontSize: '3rem', lineHeight: '1' }}
               />
-              <div className="text-sm text-muted-foreground">{getDistanceUnitAbbreviation(distanceUnit)}</div>
+              <div className="text-base text-muted-foreground">{getDistanceUnitAbbreviation(distanceUnit)}</div>
             </div>
             <div className="flex justify-center items-center space-x-4">
               <Button
