@@ -51,7 +51,7 @@ const colorMap: Record<ResponsiveButtonColors, {
 
 type ResponsiveButtonProps = {
   children: React.ReactNode;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>; // Optional when using asChild
   size?: ResponsiveButtonSizes;
   color: ResponsiveButtonColors;
   className?: string;
@@ -76,15 +76,10 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
     }
   };
   
-  // When using asChild, just provide responsive structure around the icon, pass children through
-  const content = asChild ? (
+  // Simple approach: when asChild=true, just pass children through and let consumer handle structure
+  const content = asChild ? children : (
     <span className="flex items-center gap-1">
-      <Icon className="flex-shrink-0" />
-      {children}
-    </span>
-  ) : (
-    <span className="flex items-center gap-1">
-      <Icon className="flex-shrink-0" />
+      {Icon && <Icon className="flex-shrink-0" />}
       <span className="hidden sm:inline">{children}</span>
     </span>
   );
