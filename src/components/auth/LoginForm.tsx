@@ -1,6 +1,6 @@
 'use client';
 
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -37,7 +37,7 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<FormData>({
-    resolver: standardSchemaResolver(formSchema),
+    resolver: zodResolver(formSchema),
     mode: "onSubmit",
     defaultValues: {
       email: "",

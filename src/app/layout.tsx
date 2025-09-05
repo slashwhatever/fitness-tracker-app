@@ -1,8 +1,8 @@
+import TimerBanner from "@/components/common/TimerBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
-import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { TimerProvider } from "@/contexts/TimerContext";
-import TimerBanner from "@/components/common/TimerBanner";
+import { AuthProvider } from "@/lib/auth/AuthProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -20,6 +20,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Fitness Tracking App",
   description: "Professional fitness tracking app with workout logging, movement library, and progress analytics",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

@@ -36,18 +36,27 @@ export default function Dashboard() {
             </div>
             <div className="flex flex-row space-x-2">
               <ResponsiveButton color="primary" asChild icon={BarChart3} variant="outline">
-                <Link href="/analytics" className="flex items-center sm:space-x-2">
-                  <Typography variant="body">Analytics</Typography>
+                <Link href="/analytics" className="flex items-center gap-1">
+                  <BarChart3 />
+                  <span className="hidden sm:inline">
+                    <Typography variant="body">Analytics</Typography>
+                  </span>
                 </Link>
               </ResponsiveButton>
               <ResponsiveButton color="primary" asChild icon={Library} variant="outline">
-                <Link href="/library" className="flex items-center sm:space-x-2">
-                  <Typography variant="body">Movement Library</Typography>
+                <Link href="/library" className="flex items-center gap-1">
+                  <Library />
+                  <span className="hidden sm:inline">
+                    <Typography variant="body">Movement Library</Typography>
+                  </span>
                 </Link>
               </ResponsiveButton>
               <ResponsiveButton color="primary" asChild icon={Settings} variant="outline">
-                <Link href="/settings" className="flex items-center sm:space-x-2">
-                  <Typography variant="body">Settings</Typography>
+                <Link href="/settings" className="flex items-center gap-1">
+                  <Settings />
+                  <span className="hidden sm:inline">
+                    <Typography variant="body">Settings</Typography>
+                  </span>
                 </Link>
               </ResponsiveButton>
             </div>

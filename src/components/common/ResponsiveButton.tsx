@@ -1,6 +1,7 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VariantProps } from "class-variance-authority";
+import React from "react";
 
 type ResponsiveButtonSizes = 'sm' | 'lg' | 'icon' | 'default';
 
@@ -60,14 +61,24 @@ VariantProps<typeof buttonVariants> & {
   asChild?: boolean
 }
 
-const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', onClick, ...props }: ResponsiveButtonProps) => {
+const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', onClick, asChild, ...props }: ResponsiveButtonProps) => {
   const colors = colorMap[color];
   const hoverTextColor = color === 'primary' ? 'sm:hover:!text-primary-foreground' : 'sm:hover:!text-white';
+  
+  // When using asChild, let the child handle its own structure
+  // When not using asChild, wrap with our responsive icon/text structure
+  const content = asChild ? children : (
+    <span className="flex items-center gap-1">
+      <Icon />
+      <span className="hidden sm:inline">{children}</span>
+    </span>
+  );
   
   return (
     <Button
       variant={variant}
       size={size}
+      asChild={asChild}
       className={cn(
         // Base mobile styles: square button with colored icon
         colors.text, 
@@ -86,10 +97,7 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
       onClick={onClick}
       {...props}
     >
-      <span className="flex items-center gap-1">
-        <Icon />
-        <span className="hidden sm:inline">{children}</span>
-      </span>
+      {content}
     </Button>
   );
 };
