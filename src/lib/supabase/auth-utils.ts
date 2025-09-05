@@ -161,7 +161,7 @@ export async function resetPassword(
   try {
     const client = getSupabaseClient();
     const { error } = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectTo || `${window.location.origin}/auth/reset-password`,
+      redirectTo: redirectTo || `${window.location.origin}/reset-password`,
     });
 
     if (error) {
