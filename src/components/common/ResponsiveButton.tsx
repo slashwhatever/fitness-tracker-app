@@ -1,6 +1,7 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VariantProps } from "class-variance-authority";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 type ResponsiveButtonSizes = 'sm' | 'lg' | 'icon' | 'default';
@@ -55,21 +56,28 @@ type ResponsiveButtonProps = {
   color: ResponsiveButtonColors;
   className?: string;
   variant?: 'default' | 'outline' | 'ghost' | 'link' | 'secondary' | 'destructive';
+  url?: string; // Optional URL for navigation
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 } & React.ComponentProps<"button"> &
-VariantProps<typeof buttonVariants> & {
-  asChild?: boolean
-}
+VariantProps<typeof buttonVariants>
 
-const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', onClick, asChild, ...props }: ResponsiveButtonProps) => {
+const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, className, variant = 'ghost', url, onClick, ...props }: ResponsiveButtonProps) => {
+  const router = useRouter();
   const colors = colorMap[color];
   const hoverTextColor = color === 'primary' ? 'sm:hover:!text-primary-foreground' : 'sm:hover:!text-white';
   
-  // When using asChild, let the child handle its own structure
-  // When not using asChild, wrap with our responsive icon/text structure
-  const content = asChild ? children : (
+  // Handle click - navigate if url provided, otherwise call onClick
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (url) {
+      router.push(url);
+    } else if (onClick) {
+      onClick(e);
+    }
+  };
+  
+  const content = (
     <span className="flex items-center gap-1">
-      <Icon />
+      <Icon className="flex-shrink-0" />
       <span className="hidden sm:inline">{children}</span>
     </span>
   );
@@ -78,7 +86,6 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
     <Button
       variant={variant}
       size={size}
-      asChild={asChild}
       className={cn(
         // Base mobile styles: square button with colored icon
         colors.text, 
@@ -94,7 +101,7 @@ const ResponsiveButton = ({ children, icon: Icon, size = 'icon', color, classNam
         "sm:hover:!border-transparent",
         className
       )}
-      onClick={onClick}
+      onClick={handleClick}
       {...props}
     >
       {content}

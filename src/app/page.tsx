@@ -7,7 +7,6 @@ import WorkoutManagement from '@/components/features/WorkoutManagement';
 import Loading from '@/components/Loading';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Dumbbell, Library, Settings } from 'lucide-react';
-import Link from 'next/link';
 
 export default function Dashboard() {
   const { loading } = useAuth();
@@ -35,29 +34,14 @@ export default function Dashboard() {
               </Typography>
             </div>
             <div className="flex flex-row space-x-2">
-              <ResponsiveButton color="primary" asChild icon={BarChart3} variant="outline">
-                <Link href="/analytics" className="flex items-center gap-1">
-                  <BarChart3 />
-                  <span className="hidden sm:inline">
-                    <Typography variant="body">Analytics</Typography>
-                  </span>
-                </Link>
+              <ResponsiveButton color="primary" icon={BarChart3} variant="outline" url="/analytics">
+                Analytics
               </ResponsiveButton>
-              <ResponsiveButton color="primary" asChild icon={Library} variant="outline">
-                <Link href="/library" className="flex items-center gap-1">
-                  <Library />
-                  <span className="hidden sm:inline">
-                    <Typography variant="body">Movement Library</Typography>
-                  </span>
-                </Link>
+              <ResponsiveButton color="primary" icon={Library} variant="outline" url="/library">
+                Movement Library
               </ResponsiveButton>
-              <ResponsiveButton color="primary" asChild icon={Settings} variant="outline">
-                <Link href="/settings" className="flex items-center gap-1">
-                  <Settings />
-                  <span className="hidden sm:inline">
-                    <Typography variant="body">Settings</Typography>
-                  </span>
-                </Link>
+              <ResponsiveButton color="primary" icon={Settings} variant="outline" url="/settings">
+                Settings
               </ResponsiveButton>
             </div>
           </div>

@@ -121,25 +121,23 @@ export default function MovementList({
                   <ResponsiveButton
                     icon={Dumbbell}
                     color="green"
-                    asChild
+                    url={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
                   >
-                    <Link href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}>
-                      <Typography variant="body">Log sets</Typography>
-                    </Link>
+                    Log sets
                   </ResponsiveButton>
                   <ResponsiveButton
                     icon={Edit3}
                     color="blue"
                     onClick={() => setEditingMovementId(movement.user_movement_id)}
                   >
-                    <Typography variant="body">Edit</Typography>
+                    Edit
                   </ResponsiveButton>
                   <ResponsiveButton
                     icon={Trash2}
                     color="red"
                     onClick={() => handleDeleteClick(movement.user_movement_id, movement.user_movement?.name || 'Unknown Movement')}
                   >
-                    <Typography variant="body">Delete</Typography>
+                    Delete
                   </ResponsiveButton>
                 </div>
               </div>

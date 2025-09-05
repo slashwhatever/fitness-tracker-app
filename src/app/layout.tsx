@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fitness Tracking App",
+  title: "Logset: Fitness Tracking App",
   description: "Professional fitness tracking app with workout logging, movement library, and progress analytics",
   manifest: "/manifest.webmanifest",
   icons: {
