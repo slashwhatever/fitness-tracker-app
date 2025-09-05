@@ -40,7 +40,7 @@ const formSchema = z.object({
     .regex(/\d/, "Password must contain at least one number"),
   confirmPassword: z.string().min(1, "Please confirm your password"),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not masdtch",
+  message: "Passwords do not match",
   path: ["confirmPassword"],
 });
 
