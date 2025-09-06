@@ -14,38 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      analytics_events: {
-        Row: {
-          created_at: string
-          event_data: Json
-          event_type: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          event_data?: Json
-          event_type: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          event_data?: Json
-          event_type?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "analytics_events_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       movement_templates: {
         Row: {
           created_at: string
@@ -204,53 +172,6 @@ export type Database = {
           },
         ]
       }
-      sync_operations: {
-        Row: {
-          created_at: string
-          data: Json
-          error: string | null
-          id: string
-          operation: Database["public"]["Enums"]["operation_type"]
-          record_id: string
-          retry_count: number
-          table_name: string
-          timestamp: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data: Json
-          error?: string | null
-          id?: string
-          operation: Database["public"]["Enums"]["operation_type"]
-          record_id: string
-          retry_count?: number
-          table_name: string
-          timestamp: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          error?: string | null
-          id?: string
-          operation?: Database["public"]["Enums"]["operation_type"]
-          record_id?: string
-          retry_count?: number
-          table_name?: string
-          timestamp?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "sync_operations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       user_movements: {
         Row: {
           created_at: string
@@ -392,54 +313,6 @@ export type Database = {
           },
         ]
       }
-      workout_sessions: {
-        Row: {
-          completed_at: string | null
-          created_at: string
-          id: string
-          notes: string | null
-          started_at: string
-          updated_at: string
-          user_id: string
-          workout_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          notes?: string | null
-          started_at: string
-          updated_at?: string
-          user_id: string
-          workout_id: string
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string
-          id?: string
-          notes?: string | null
-          started_at?: string
-          updated_at?: string
-          user_id?: string
-          workout_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workout_sessions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "workout_sessions_workout_id_fkey"
-            columns: ["workout_id"]
-            isOneToOne: false
-            referencedRelation: "workouts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       workouts: {
         Row: {
           created_at: string
@@ -483,7 +356,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reorder_workout_movements: {
+        Args: { workout_uuid: string }
+        Returns: undefined
+      }
     }
     Enums: {
       experience_level: "Beginner" | "Intermediate" | "Advanced"

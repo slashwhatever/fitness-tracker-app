@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Tables, TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import { isSafeForQueries } from '@/lib/utils/validation';
 
 type Workout = Tables<'workouts'>;
 type WorkoutInsert = TablesInsert<'workouts'>;
@@ -57,7 +58,7 @@ export function useWorkout(workoutId: string) {
       if (error) throw error;
       return data as Workout;
     },
-    enabled: !!workoutId,
+    enabled: isSafeForQueries(workoutId),
   });
 }
 

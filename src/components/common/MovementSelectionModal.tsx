@@ -12,10 +12,11 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { useAddMovementToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
+import { useAddMovementsToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementsFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { getExperienceLevelVariant } from '@/lib/utils/typeHelpers';
 import type { MovementTemplate, TrackingType, UserMovement } from '@/models/types';
+import { prepareWorkoutMovements, getNextOrderIndex } from '@/lib/utils/workout-helpers';
 import { Check, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Typography } from './Typography';
@@ -47,6 +48,7 @@ interface SearchAndContentProps {
   selectedMovements: Set<string>;
   handleMovementToggle: (movementId: string, movementData: DatabaseUserMovement | MovementTemplate) => void;
   userMovements: DatabaseUserMovement[];
+  isSaving: boolean;
 }
 
 const SearchAndContent = React.memo(function SearchAndContent({ 
@@ -59,7 +61,8 @@ const SearchAndContent = React.memo(function SearchAndContent({
   filteredLibrary,
   selectedMovements,
   handleMovementToggle,
-  userMovements
+  userMovements,
+  isSaving
 }: SearchAndContentProps) {
   return (
   <div className={`flex flex-col space-y-4 overflow-hidden ${className}`}>
@@ -94,7 +97,11 @@ const SearchAndContent = React.memo(function SearchAndContent({
               {filteredUserMovements.map((movement) => (
                 <div
                   key={movement.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
+                  className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                    isSaving 
+                      ? 'opacity-60 cursor-not-allowed' 
+                      : 'cursor-pointer hover:bg-accent/50'
+                  } ${
                     selectedMovements.has(movement.id) 
                       ? 'bg-primary/10 border-primary' 
                       : 'border-border hover:border-accent-foreground/20'
@@ -142,8 +149,16 @@ const SearchAndContent = React.memo(function SearchAndContent({
             {filteredLibrary.map((movement) => (
               <div
                 key={movement.id}
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:bg-accent/50 ${
-                  selectedMovements.has(movement.id) 
+                className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                  isSaving 
+                    ? 'opacity-60 cursor-not-allowed' 
+                    : 'cursor-pointer hover:bg-accent/50'
+                } ${
+                  (() => {
+                    const existingUserMovement = userMovements.find(um => um.template_id === movement.id);
+                    const userMovementId = existingUserMovement?.id || movement.id;
+                    return selectedMovements.has(userMovementId);
+                  })()
                     ? 'bg-primary/10 border-primary' 
                     : 'border-border hover:border-accent-foreground/20'
                 }`}
@@ -216,6 +231,10 @@ export default function MovementSelectionModal({
   const [initialSelectedMovements, setInitialSelectedMovements] = useState<Set<string>>(new Set());
   const [showCustomMovementModal, setShowCustomMovementModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [frozenSelectedMovements, setFrozenSelectedMovements] = useState<Set<string>>(new Set());
+  
+  // Use frozen state for display during save operations
+  const displaySelectedMovements = isSaving ? frozenSelectedMovements : selectedMovements;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -226,8 +245,8 @@ export default function MovementSelectionModal({
   const { data: userMovements = [] } = useUserMovements();
   const { data: workoutMovements = [] } = useWorkoutMovements(workoutId);
   const createUserMovementMutation = useCreateUserMovement();
-  const addMovementToWorkoutMutation = useAddMovementToWorkout();
-  const removeMovementFromWorkoutMutation = useRemoveMovementFromWorkout();
+  const addMovementsBatch = useAddMovementsToWorkout();
+  const removeMovementsBatch = useRemoveMovementsFromWorkout();
 
   // Pre-select movements that are already in this workout
   const workoutMovementIdsString = useMemo(() => 
@@ -239,14 +258,20 @@ export default function MovementSelectionModal({
     if (!isOpen) {
       setSelectedMovements(new Set());
       setInitialSelectedMovements(new Set());
+      setFrozenSelectedMovements(new Set());
+      setIsSaving(false);
       return;
     }
+
+    // Don't update selections if we're in the middle of saving
+    if (isSaving) return;
 
     const ids = workoutMovementIdsString ? workoutMovementIdsString.split(',').filter(Boolean) : [];
     const initialSet = new Set(ids);
     setSelectedMovements(initialSet);
     setInitialSelectedMovements(initialSet);
-  }, [isOpen, workoutMovementIdsString]);
+    setFrozenSelectedMovements(initialSet);
+  }, [isOpen, workoutMovementIdsString, isSaving]);
 
   const filteredLibrary = useMemo(() => {
     // Get template IDs that users already have custom movements for
@@ -284,6 +309,9 @@ export default function MovementSelectionModal({
   }, [userMovements, searchTerm]);
 
   const handleMovementToggle = useCallback((movementId: string, movementData: DatabaseUserMovement | MovementTemplate) => {
+    // Don't allow selection changes while saving
+    if (isSaving) return;
+    
     // Save current scroll position
     const scrollTop = scrollContainerRef.current?.scrollTop || 0;
     
@@ -314,7 +342,7 @@ export default function MovementSelectionModal({
         scrollContainerRef.current.scrollTop = scrollTop;
       }
     });
-  }, [userMovements]);
+  }, [userMovements, isSaving]);
 
   const handleCustomMovementCreated = (userMovementId: string) => {
     // Close custom movement modal
@@ -325,26 +353,25 @@ export default function MovementSelectionModal({
   };
 
   const handleSave = async () => {
+    // Freeze the current selections to prevent checkbox flashing
+    setFrozenSelectedMovements(new Set(selectedMovements));
     setIsSaving(true);
     try {
       // Calculate movements to add and remove
       const movementsToAdd = Array.from(selectedMovements).filter(id => !initialSelectedMovements.has(id));
       const movementsToRemove = Array.from(initialSelectedMovements).filter(id => !selectedMovements.has(id));
 
-      // Remove movements from workout
-      for (const movementId of movementsToRemove) {
-        await removeMovementFromWorkoutMutation.mutateAsync({ 
-          workoutId, 
-          movementId 
+      // Batch remove movements (single API call)
+      if (movementsToRemove.length > 0) {
+        await removeMovementsBatch.mutateAsync({
+          workoutId,
+          movementIds: movementsToRemove
         });
       }
 
-      // Add movements to workout
-      let currentMaxOrderIndex = Math.max(
-        ...workoutMovements.map(wm => wm.order_index || 0),
-        -1
-      );
-
+      // Process movements to add (create user movements for templates if needed)
+      const userMovementIds: string[] = [];
+      
       for (const movementId of movementsToAdd) {
         // Check if this is a template that needs a user movement created
         const templateMovement = movementTemplates.find(t => t.id === movementId);
@@ -362,15 +389,15 @@ export default function MovementSelectionModal({
           userMovementId = newUserMovement.id;
         }
 
-        // Increment order index for each new movement
-        currentMaxOrderIndex += 1;
+        userMovementIds.push(userMovementId);
+      }
 
-        // Add to workout
-        await addMovementToWorkoutMutation.mutateAsync({
-          workout_id: workoutId,
-          user_movement_id: userMovementId,
-          order_index: currentMaxOrderIndex,
-        });
+      // Batch add movements (single API call)
+      if (userMovementIds.length > 0) {
+        const startingOrderIndex = getNextOrderIndex(workoutMovements);
+        const newWorkoutMovements = prepareWorkoutMovements(workoutId, userMovementIds, startingOrderIndex);
+        
+        await addMovementsBatch.mutateAsync(newWorkoutMovements);
       }
 
       onClose();
@@ -391,10 +418,10 @@ export default function MovementSelectionModal({
   const FooterContent = () => (
     <div className="flex justify-between items-center pt-4 border-t bg-background">
       <div className="text-sm text-muted-foreground">
-        {selectedMovements.size} movement{selectedMovements.size !== 1 ? 's' : ''} selected
+        {displaySelectedMovements.size} movement{displaySelectedMovements.size !== 1 ? 's' : ''} selected
       </div>
       <div className="flex space-x-3">
-        <Button variant="outline" onClick={handleCancel}>
+        <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
           Cancel
         </Button>
         <Button onClick={handleSave} disabled={isSaving}>
@@ -424,9 +451,10 @@ export default function MovementSelectionModal({
               scrollContainerRef={scrollContainerRef}
               filteredUserMovements={filteredUserMovements}
               filteredLibrary={filteredLibrary}
-              selectedMovements={selectedMovements}
+              selectedMovements={displaySelectedMovements}
               handleMovementToggle={handleMovementToggle}
               userMovements={userMovements}
+              isSaving={isSaving}
             />
             <div className="flex-shrink-0">
               <FooterContent />
@@ -463,6 +491,7 @@ export default function MovementSelectionModal({
             selectedMovements={selectedMovements}
             handleMovementToggle={handleMovementToggle}
             userMovements={userMovements}
+            isSaving={isSaving}
           />
           <DrawerFooter className="pt-2 flex-shrink-0">
             <FooterContent />

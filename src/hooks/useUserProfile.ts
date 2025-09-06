@@ -32,8 +32,9 @@ export function useUserProfile() {
         .single();
 
       if (error) {
-        // If profile doesn't exist, return null (we'll create it later)
+        // If profile doesn't exist, this is unexpected since triggers should create it
         if (error.code === 'PGRST116') {
+          console.warn('User profile missing - this should not happen with database triggers. User ID:', user.id);
           return null;
         }
         throw error;

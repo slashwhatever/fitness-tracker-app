@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Tables, TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import { isSafeForQueries } from '@/lib/utils/validation';
 
 type UserMovement = Tables<'user_movements'>;
 type UserMovementInsert = TablesInsert<'user_movements'>;
@@ -82,7 +83,7 @@ export function useUserMovement(movementId: string) {
       if (error) throw error;
       return data as UserMovement;
     },
-    enabled: !!movementId,
+    enabled: isSafeForQueries(movementId),
   });
 }
 
@@ -105,7 +106,7 @@ export function useWorkoutMovements(workoutId: string) {
       if (error) throw error;
       return data;
     },
-    enabled: !!workoutId,
+    enabled: isSafeForQueries(workoutId),
   });
 }
 
@@ -311,6 +312,79 @@ export function useAddMovementToWorkout() {
   });
 }
 
+// Add multiple movements to workout (batch operation)
+export function useAddMovementsToWorkout() {
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (workoutMovements: WorkoutMovementInsert[]) => {
+      if (!workoutMovements.length) return [];
+
+      // Use a single insert query for all movements
+      const { data, error } = await supabase
+        .from('workout_movements')
+        .insert(workoutMovements)
+        .select();
+
+      if (error) throw error;
+      return data as WorkoutMovement[];
+    },
+    onMutate: async (newWorkoutMovements) => {
+      if (!newWorkoutMovements.length) return;
+
+      const workoutId = newWorkoutMovements[0].workout_id;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ 
+        queryKey: movementKeys.workoutMovementsList(workoutId) 
+      });
+
+      // Snapshot the previous value
+      const previousWorkoutMovements = queryClient.getQueryData(
+        movementKeys.workoutMovementsList(workoutId)
+      );
+
+      // Create optimistic movements
+      const optimisticMovements = newWorkoutMovements.map((movement, index) => ({
+        id: `temp-${Date.now()}-${index}`, // Unique temporary IDs
+        ...movement,
+        created_at: new Date().toISOString(),
+        user_movement: null, // Will be populated by real response
+      }));
+
+      // Optimistically update with all new movements
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(workoutId),
+        (old: WorkoutMovement[]) => {
+          const combined = [...(old || []), ...optimisticMovements];
+          return combined.sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+        }
+      );
+
+      return { previousWorkoutMovements, workoutId };
+    },
+    onError: (err, newWorkoutMovements, context) => {
+      // If the mutation fails, roll back
+      if (context?.workoutId) {
+        queryClient.setQueryData(
+          movementKeys.workoutMovementsList(context.workoutId),
+          context.previousWorkoutMovements
+        );
+      }
+    },
+    onSettled: (_, __, variables) => {
+      // Always refetch after error or success to ensure consistency
+      if (variables.length > 0) {
+        const workoutId = variables[0].workout_id;
+        queryClient.invalidateQueries({ 
+          queryKey: movementKeys.workoutMovementsList(workoutId) 
+        });
+      }
+    },
+  });
+}
+
 // Remove movement from workout
 export function useRemoveMovementFromWorkout() {
   const queryClient = useQueryClient();
@@ -342,6 +416,63 @@ export function useRemoveMovementFromWorkout() {
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(workoutId),
         (old: WorkoutMovement[]) => (old || []).filter(wm => wm.user_movement_id !== movementId)
+      );
+
+      return { previousWorkoutMovements };
+    },
+    onError: (err, { workoutId }, context) => {
+      // If the mutation fails, roll back
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(workoutId),
+        context?.previousWorkoutMovements
+      );
+    },
+    onSettled: (data, error, { workoutId }) => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ 
+        queryKey: movementKeys.workoutMovementsList(workoutId) 
+      });
+    },
+  });
+}
+
+// Remove multiple movements from workout (batch operation)
+export function useRemoveMovementsFromWorkout() {
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async ({ workoutId, movementIds }: { workoutId: string; movementIds: string[] }) => {
+      if (!movementIds.length) return { workoutId, movementIds };
+
+      // Use a single delete query with IN clause for all movements
+      const { error } = await supabase
+        .from('workout_movements')
+        .delete()
+        .eq('workout_id', workoutId)
+        .in('user_movement_id', movementIds);
+
+      if (error) throw error;
+      return { workoutId, movementIds };
+    },
+    onMutate: async ({ workoutId, movementIds }) => {
+      if (!movementIds.length) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ 
+        queryKey: movementKeys.workoutMovementsList(workoutId) 
+      });
+
+      // Snapshot the previous value
+      const previousWorkoutMovements = queryClient.getQueryData(
+        movementKeys.workoutMovementsList(workoutId)
+      );
+
+      // Optimistically remove all specified movements
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(workoutId),
+        (old: WorkoutMovement[]) => 
+          (old || []).filter(wm => !movementIds.includes(wm.user_movement_id))
       );
 
       return { previousWorkoutMovements };

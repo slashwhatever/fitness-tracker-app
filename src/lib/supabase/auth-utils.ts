@@ -1,6 +1,5 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { createClient } from "./client";
-import { SupabaseService } from "@/services/supabaseService";
 
 /**
  * Get Supabase client
@@ -114,28 +113,9 @@ export async function signUpWithEmail(
       };
     }
 
-    // Create user profile record after successful signup
-    if (data.user && data.user.id) {
-      try {
-        const displayName = options?.data?.display_name as string || '';
-        
-        const userProfileData = {
-          id: data.user.id,
-          display_name: displayName,
-          default_rest_timer: 90, // Default 90 seconds rest timer
-          weight_unit: 'kg' as const,
-          distance_unit: 'km' as const,
-          notification_preferences: {},
-          privacy_settings: {},
-        };
-
-        await SupabaseService.saveUserProfile(userProfileData);
-      } catch (profileError) {
-        console.error('Failed to create user profile:', profileError);
-        // Don't fail the signup process if profile creation fails
-        // The user can complete their profile later
-      }
-    }
+    // User profile is automatically created by database trigger
+    // The trigger uses raw_user_meta_data for display_name if provided
+    // This ensures profile creation is atomic with user creation and cannot fail
 
     return {
       user: data.user,
