@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { useMuscleGroups, useTrackingTypes } from '@/hooks';
 import { getExperienceLevelVariant, getTrackingTypeIcon } from '@/lib/utils/typeHelpers';
 import { MovementTemplate } from '@/models/types';
 
@@ -12,6 +13,12 @@ interface MovementCardProps {
 }
 
 export default function MovementCard({ movement, onClick, selected }: MovementCardProps) {
+  const { data: trackingTypes = [] } = useTrackingTypes();
+  const { data: muscleGroups = [] } = useMuscleGroups();
+  
+  // Find the display name for the tracking type
+  const trackingType = trackingTypes.find(tt => tt.name === movement.tracking_type);
+  const trackingTypeDisplayName = trackingType?.display_name || movement.tracking_type;
 
   const handleClick = () => {
     if (onClick) {
@@ -28,9 +35,15 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
     >
       <CardContent className="p-4 space-y-2">
         <CardTitle className="text-lg">{getTrackingTypeIcon(movement.tracking_type)} {movement.name}</CardTitle>
-        <CardDescription className="text-muted-foreground text-sm">{movement.muscle_groups?.join(', ') || 'Unknown'}</CardDescription>
         <CardDescription className="text-muted-foreground text-sm">
-          {movement.tracking_type} exercise
+          Focus: {movement.muscle_groups?.map(name => {
+            // Convert muscle group name to display name
+            const muscleGroup = muscleGroups.find(mg => mg.name === name);
+            return muscleGroup?.display_name || name.charAt(0).toUpperCase() + name.slice(1);
+          }).join(', ') || 'Unknown'}
+        </CardDescription>
+        <CardDescription className="text-muted-foreground text-sm">
+          Tracking: {trackingTypeDisplayName}
         </CardDescription>
           <CardDescription className="text-muted-foreground text-sm">
             <Badge variant={getExperienceLevelVariant(movement.experience_level)}> 

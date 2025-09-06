@@ -3,14 +3,14 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Movement, SetData, UserMovement } from '@/models/types';
+import type { Set, UserMovement } from '@/models/types';
 import { Check, Minus, Plus } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 interface SetEntryFormProps {
-  movement: UserMovement | Movement;
-  initialData?: Partial<SetData>;
-  onSave: (data: SetData) => Promise<void>;
+  movement: UserMovement;
+  initialData?: Partial<Set>;
+  onSave: (data: Partial<Set>) => Promise<void>;
   isLoading?: boolean;
   saveButtonText?: string;
 }
@@ -23,7 +23,7 @@ export default function SetEntryForm({
   saveButtonText = "Save Set"
 }: SetEntryFormProps) {
   const { data: userProfile } = useUserProfile();
-  const [setData, setSetData] = useState<SetData>({
+  const [setData, setSetData] = useState<Partial<Set>>({
     reps: initialData.reps || null,
     weight: initialData.weight || null,
     duration: initialData.duration || null,
@@ -38,9 +38,9 @@ export default function SetEntryForm({
     return unit === 'miles' ? 'mi' : 'km';
   };
 
-  const adjustValue = (field: keyof SetData, delta: number) => {
+  const adjustValue = (field: 'reps' | 'weight' | 'duration' | 'distance', delta: number) => {
     setSetData(prev => {
-      const currentValue = prev[field] as number | null;
+      const currentValue = prev[field as keyof typeof prev] as number | null;
       const newValue = Math.max(0, (currentValue || 0) + delta);
       
       return {
@@ -50,7 +50,7 @@ export default function SetEntryForm({
     });
   };
 
-  const handleInputChange = useCallback((field: keyof SetData, value: string) => {
+  const handleInputChange = useCallback((field: 'reps' | 'weight' | 'duration' | 'distance' | 'notes', value: string) => {
     setSetData(prev => ({
       ...prev,
       [field]: value === '' ? null : 
@@ -92,13 +92,13 @@ export default function SetEntryForm({
     switch (movement.tracking_type) {
       case 'weight':
       case 'bodyweight':
-        return (setData.reps !== null && setData.reps > 0);
+        return (setData.reps !== null && setData.reps !== undefined && setData.reps > 0);
       case 'duration':
-        return (setData.duration !== null && setData.duration > 0);
+        return (setData.duration !== null && setData.duration !== undefined && setData.duration > 0);
       case 'distance':
-        return (setData.distance !== null && setData.distance > 0);
+        return (setData.distance !== null && setData.distance !== undefined && setData.distance > 0);
       case 'reps_only':
-        return (setData.reps !== null && setData.reps > 0);
+        return (setData.reps !== null && setData.reps !== undefined && setData.reps > 0);
       default:
         return false;
     }

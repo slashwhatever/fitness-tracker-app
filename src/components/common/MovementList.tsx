@@ -34,6 +34,7 @@ export default function MovementList({
   // Get the movement data for editing
   const { data: editingMovement } = useUserMovement(editingMovementId || '');
 
+
   const handleDeleteClick = (movementId: string, movementName: string) => {
     setDeletingMovement({ id: movementId, name: movementName });
   };

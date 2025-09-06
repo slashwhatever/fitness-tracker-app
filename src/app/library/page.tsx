@@ -12,6 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { useMuscleGroups } from '@/hooks';
 import { useMovementTemplates } from '@/hooks/useMovements';
 import { ExperienceLevel, MovementTemplate } from '@/models/types';
 import { useMemo, useState } from 'react';
@@ -21,13 +22,14 @@ export default function MovementLibraryPage() {
   const [muscleGroupFilter, setMuscleGroupFilter] = useState<string | null>(null);
   const [experienceLevelFilter, setExperienceLevelFilter] = useState<ExperienceLevel | null>(null);
 
-  // Fetch movement templates from database instead of local file
+  // Fetch movement templates and muscle groups from database
   const { data: movementTemplates = [], isLoading, error } = useMovementTemplates();
+  const { data: muscleGroupsData = [] } = useMuscleGroups();
 
-  // Derive muscle groups and experience levels from the data
+  // Extract muscle group names for filtering
   const muscleGroups = useMemo(() => {
-    return Array.from(new Set(movementTemplates.flatMap(m => m.muscle_groups))).sort();
-  }, [movementTemplates]);
+    return muscleGroupsData.map(mg => mg.display_name).sort();
+  }, [muscleGroupsData]);
 
   const experienceLevels: ExperienceLevel[] = ['Beginner', 'Intermediate', 'Advanced'];
 
@@ -123,7 +125,11 @@ export default function MovementLibraryPage() {
 
         <SearchFilters
           onSearchChange={setSearchTerm}
-          onMuscleGroupFilter={setMuscleGroupFilter}
+          onMuscleGroupFilter={(filter) => {
+            // Convert display name back to name for filtering
+            const muscleGroup = muscleGroupsData.find(mg => mg.display_name === filter);
+            setMuscleGroupFilter(muscleGroup?.name || null);
+          }}
           onExperienceLevelFilter={setExperienceLevelFilter}
           muscleGroups={muscleGroups}
           experienceLevels={experienceLevels}

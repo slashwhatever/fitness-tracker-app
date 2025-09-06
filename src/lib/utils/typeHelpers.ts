@@ -1,9 +1,9 @@
-import { ExperienceLevel, TrackingType } from "@/models/types";
+import { ExperienceLevel, TrackingTypeName } from "@/models/types";
 
 /**
  * Get the appropriate icon for a tracking type
  */
-export function getTrackingTypeIcon(type: TrackingType): string {
+export function getTrackingTypeIcon(type: TrackingTypeName): string {
   switch (type) {
     case "weight":
       return "🏋️";
@@ -41,7 +41,7 @@ export function getExperienceLevelVariant(
 /**
  * Format tracking type for display (handles underscore replacement)
  */
-export function formatTrackingType(type: TrackingType): string {
+export function formatTrackingType(type: TrackingTypeName): string {
   return (
     type.replace("_", " ").charAt(0).toUpperCase() +
     type.replace("_", " ").slice(1)
@@ -51,7 +51,7 @@ export function formatTrackingType(type: TrackingType): string {
 /**
  * Type guard to check if a string is a valid TrackingType
  */
-export function isValidTrackingType(value: string): value is TrackingType {
+export function isValidTrackingType(value: string): value is TrackingTypeName {
   return ["weight", "bodyweight", "duration", "distance", "reps_only"].includes(
     value
   );

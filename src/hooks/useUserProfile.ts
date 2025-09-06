@@ -3,9 +3,9 @@
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Tables, TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import type { TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import type { QueryData } from '@supabase/supabase-js';
 
-type UserProfile = Tables<'user_profiles'>;
 type UserProfileInsert = TablesInsert<'user_profiles'>;
 type UserProfileUpdate = TablesUpdate<'user_profiles'>;
 
@@ -25,12 +25,15 @@ export function useUserProfile() {
     queryFn: async () => {
       if (!user?.id) return null;
       
-      const { data, error } = await supabase
+      const query = supabase
         .from('user_profiles')
         .select('*')
         .eq('id', user.id)
         .single();
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) {
         // If profile doesn't exist, this is unexpected since triggers should create it
         if (error.code === 'PGRST116') {
@@ -39,7 +42,7 @@ export function useUserProfile() {
         }
         throw error;
       }
-      return data as UserProfile;
+      return data as QueryResult;
     },
     enabled: !!user?.id,
   });
@@ -65,7 +68,7 @@ export function useUpsertUserProfile() {
         .single();
 
       if (error) throw error;
-      return data as UserProfile;
+      return data;
     },
     onSuccess: (data) => {
       if (user?.id) {
@@ -93,7 +96,7 @@ export function useUpdateUserProfile() {
         .single();
 
       if (error) throw error;
-      return data as UserProfile;
+      return data;
     },
     onSuccess: (data) => {
       if (user?.id) {

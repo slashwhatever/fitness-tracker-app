@@ -3,6 +3,7 @@
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import type { QueryData } from '@supabase/supabase-js';
 
 // Query keys
 const prKeys = {
@@ -23,7 +24,7 @@ export function usePersonalRecords() {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
+      const query = supabase
         .from("personal_records")
         .select(
           `
@@ -35,8 +36,11 @@ export function usePersonalRecords() {
         .eq("user_id", user.id)
         .order("achieved_at", { ascending: false });
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as QueryResult;
     },
     enabled: !!user?.id,
   });
@@ -52,7 +56,7 @@ export function usePersonalRecordsByMovement(movementId: string) {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
+      const query = supabase
         .from("personal_records")
         .select(
           `
@@ -65,8 +69,11 @@ export function usePersonalRecordsByMovement(movementId: string) {
         .eq("user_movement_id", movementId)
         .order("achieved_at", { ascending: false });
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as QueryResult;
     },
     enabled: !!user?.id && !!movementId,
   });

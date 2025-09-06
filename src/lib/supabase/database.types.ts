@@ -14,16 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      movement_template_muscle_groups: {
+        Row: {
+          created_at: string | null
+          id: string
+          movement_template_id: string
+          muscle_group_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          movement_template_id: string
+          muscle_group_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          movement_template_id?: string
+          muscle_group_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movement_template_muscle_groups_movement_template_id_fkey"
+            columns: ["movement_template_id"]
+            isOneToOne: false
+            referencedRelation: "movement_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movement_template_muscle_groups_muscle_group_id_fkey"
+            columns: ["muscle_group_id"]
+            isOneToOne: false
+            referencedRelation: "muscle_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       movement_templates: {
         Row: {
           created_at: string
           experience_level: Database["public"]["Enums"]["experience_level"]
           id: string
           instructions: string | null
-          muscle_groups: string[]
           name: string
           tags: string[] | null
-          tracking_type: Database["public"]["Enums"]["tracking_type"]
+          tracking_type_id: string
           updated_at: string
         }
         Insert: {
@@ -31,10 +66,9 @@ export type Database = {
           experience_level: Database["public"]["Enums"]["experience_level"]
           id?: string
           instructions?: string | null
-          muscle_groups?: string[]
           name: string
           tags?: string[] | null
-          tracking_type: Database["public"]["Enums"]["tracking_type"]
+          tracking_type_id: string
           updated_at?: string
         }
         Update: {
@@ -42,11 +76,51 @@ export type Database = {
           experience_level?: Database["public"]["Enums"]["experience_level"]
           id?: string
           instructions?: string | null
-          muscle_groups?: string[]
           name?: string
           tags?: string[] | null
-          tracking_type?: Database["public"]["Enums"]["tracking_type"]
+          tracking_type_id?: string
           updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movement_templates_tracking_type_id_fkey"
+            columns: ["tracking_type_id"]
+            isOneToOne: false
+            referencedRelation: "tracking_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      muscle_groups: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_name: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -172,6 +246,78 @@ export type Database = {
           },
         ]
       }
+      tracking_types: {
+        Row: {
+          created_at: string | null
+          default_unit: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_unit?: string | null
+          description?: string | null
+          display_name: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_unit?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_movement_muscle_groups: {
+        Row: {
+          created_at: string | null
+          id: string
+          muscle_group_id: string
+          user_movement_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          muscle_group_id: string
+          user_movement_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          muscle_group_id?: string
+          user_movement_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_movement_muscle_groups_muscle_group_id_fkey"
+            columns: ["muscle_group_id"]
+            isOneToOne: false
+            referencedRelation: "muscle_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_movement_muscle_groups_user_movement_id_fkey"
+            columns: ["user_movement_id"]
+            isOneToOne: false
+            referencedRelation: "user_movements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_movements: {
         Row: {
           created_at: string
@@ -179,11 +325,10 @@ export type Database = {
           id: string
           last_used_at: string | null
           manual_1rm: number | null
-          muscle_groups: string[]
           name: string
           personal_notes: string | null
           template_id: string | null
-          tracking_type: Database["public"]["Enums"]["tracking_type"]
+          tracking_type_id: string
           updated_at: string
           usage_count: number
           user_id: string
@@ -194,11 +339,10 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
-          muscle_groups?: string[]
           name: string
           personal_notes?: string | null
           template_id?: string | null
-          tracking_type: Database["public"]["Enums"]["tracking_type"]
+          tracking_type_id: string
           updated_at?: string
           usage_count?: number
           user_id: string
@@ -209,11 +353,10 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
-          muscle_groups?: string[]
           name?: string
           personal_notes?: string | null
           template_id?: string | null
-          tracking_type?: Database["public"]["Enums"]["tracking_type"]
+          tracking_type_id?: string
           updated_at?: string
           usage_count?: number
           user_id?: string
@@ -224,6 +367,13 @@ export type Database = {
             columns: ["template_id"]
             isOneToOne: false
             referencedRelation: "movement_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_movements_tracking_type_id_fkey"
+            columns: ["tracking_type_id"]
+            isOneToOne: false
+            referencedRelation: "tracking_types"
             referencedColumns: ["id"]
           },
           {
@@ -366,12 +516,6 @@ export type Database = {
       operation_type: "INSERT" | "UPDATE" | "DELETE"
       record_type: "max_weight" | "max_reps" | "max_duration" | "max_volume"
       set_type: "warmup" | "working" | "drop" | "failure" | "rest_pause"
-      tracking_type:
-        | "weight"
-        | "bodyweight"
-        | "duration"
-        | "distance"
-        | "reps_only"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -503,13 +647,6 @@ export const Constants = {
       operation_type: ["INSERT", "UPDATE", "DELETE"],
       record_type: ["max_weight", "max_reps", "max_duration", "max_volume"],
       set_type: ["warmup", "working", "drop", "failure", "rest_pause"],
-      tracking_type: [
-        "weight",
-        "bodyweight",
-        "duration",
-        "distance",
-        "reps_only",
-      ],
     },
   },
 } as const

@@ -3,10 +3,10 @@
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Tables, TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import type { TablesInsert, TablesUpdate } from '@/lib/supabase/types';
+import type { QueryData } from '@supabase/supabase-js';
 import { isSafeForQueries } from '@/lib/utils/validation';
 
-type Workout = Tables<'workouts'>;
 type WorkoutInsert = TablesInsert<'workouts'>;
 type WorkoutUpdate = TablesUpdate<'workouts'>;
 
@@ -29,14 +29,17 @@ export function useWorkouts() {
     queryFn: async () => {
       if (!user?.id) return [];
       
-      const { data, error } = await supabase
+      const query = supabase
         .from('workouts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data as Workout[];
+      return data as QueryResult;
     },
     enabled: !!user?.id,
   });
@@ -49,14 +52,17 @@ export function useWorkout(workoutId: string) {
   return useQuery({
     queryKey: workoutKeys.detail(workoutId),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const query = supabase
         .from('workouts')
         .select('*')
         .eq('id', workoutId)
         .single();
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data as Workout;
+      return data as QueryResult;
     },
     enabled: isSafeForQueries(workoutId),
   });
@@ -82,7 +88,7 @@ export function useCreateWorkout() {
         .single();
 
       if (error) throw error;
-      return data as Workout;
+      return data;
     },
     onMutate: async (newWorkout) => {
       if (!user?.id) return;
@@ -104,7 +110,7 @@ export function useCreateWorkout() {
 
       queryClient.setQueryData(
         workoutKeys.list(user.id),
-        (old: Workout[]) => [optimisticWorkout, ...(old || [])]
+        (old: unknown[]) => [optimisticWorkout, ...(old || [])]
       );
 
       return { previousWorkouts };
@@ -140,7 +146,7 @@ export function useUpdateWorkout() {
         .single();
 
       if (error) throw error;
-      return data as Workout;
+      return data;
     },
     onSuccess: (data) => {
       if (user?.id) {
@@ -179,7 +185,9 @@ export function useDeleteWorkout() {
       // Optimistically remove the workout
       queryClient.setQueryData(
         workoutKeys.list(user.id),
-        (old: Workout[]) => (old || []).filter((workout: Workout) => workout.id !== workoutId)
+        (old: unknown[]) => (old || []).filter((workout: unknown) => 
+          typeof workout === 'object' && workout !== null && 'id' in workout && (workout as {id: string}).id !== workoutId
+        )
       );
 
       return { previousWorkouts };

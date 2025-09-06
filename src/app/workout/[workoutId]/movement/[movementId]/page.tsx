@@ -15,9 +15,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useTimer } from '@/contexts/TimerContext';
-import { useCreateSet, useSetsByMovement, useUserMovement, useWorkout } from '@/hooks';
+import { useCreateSet, useSetsByMovement, useTrackingTypes, useUserMovement, useWorkout } from '@/hooks';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { LastSet, Set, UserMovement, getEffectiveRestTimer } from '@/models/types';
+import { Set, UserMovement, getEffectiveRestTimer } from '@/models/types';
 import { Calendar, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -39,6 +39,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.movementId || '');
   const { data: workout, isLoading: workoutLoading } = useWorkout(paramsResolved?.workoutId || '');
   const { data: userProfile } = useUserProfile();
+  const { data: trackingTypes = [] } = useTrackingTypes();
   const createSetMutation = useCreateSet();
   const { startTimer } = useTimer();
 
@@ -76,14 +77,6 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   };
 
   const loading = movementLoading || workoutLoading || !movement || !workout;
-
-  // TODO: Implement weight unit preferences with React Query hooks
-  // useEffect(() => {
-  //   if (user?.id) {
-  //     () => Promise.resolve("mock")(user.id).then(setWeightUnit);
-  //   }
-  // }, [user?.id]);
-
 
   if (loading) {
     return (
@@ -151,7 +144,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             </div>
             <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
                 <Typography variant="caption">Muscle groups: {movement.muscle_groups?.join(', ') || 'Unknown'}</Typography>
-                <Typography variant="caption">Tracking type: {movement.tracking_type}</Typography>
+                <Typography variant="caption">Tracking type: {trackingTypes.find(tt => tt.name === movement.tracking_type)?.display_name || movement.tracking_type}</Typography>
               {movement.personal_notes && (
                 <>  
                   <Typography variant="caption" className="break-words">Notes: {movement.personal_notes}</Typography>
@@ -169,7 +162,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
               </div>
               <QuickSetEntry 
                 movement={movement}
-                lastSet={sets.length > 0 ? sets[0] as LastSet : null}
+                lastSet={sets.length > 0 ? sets[0] : null}
                 onQuickLog={async (setData) => {
                   if (paramsResolved?.movementId) {
                     try {

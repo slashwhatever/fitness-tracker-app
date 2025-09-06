@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/drawer';
 import { useDeleteSet, useUpdateSet } from '@/hooks/useSets';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import { Set, SetData, UserMovement } from '@/models/types';
+import type { Set, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import ResponsiveButton from './ResponsiveButton';
@@ -42,7 +42,7 @@ export default function EditableSet({
   const weightUnit = userProfile?.weight_unit || 'lbs';
   const distanceUnit = userProfile?.distance_unit || 'miles';
 
-  const handleSave = async (setData: SetData) => {
+  const handleSave = async (setData: Partial<Set>) => {
     const updates: Partial<Set> = {
       reps: setData.reps,
       weight: setData.weight,

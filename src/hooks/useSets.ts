@@ -3,6 +3,7 @@
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import type { QueryData } from '@supabase/supabase-js';
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type SetInsert = TablesInsert<"sets">;
@@ -31,7 +32,7 @@ export function useSets() {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
+      const query = supabase
         .from("sets")
         .select(
           `
@@ -42,8 +43,11 @@ export function useSets() {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as QueryResult;
     },
     enabled: !!user?.id,
   });
@@ -59,7 +63,7 @@ export function useSetsByMovement(movementId: string) {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
+      const query = supabase
         .from("sets")
         .select(
           `
@@ -71,8 +75,11 @@ export function useSetsByMovement(movementId: string) {
         .eq("user_movement_id", movementId)
         .order("created_at", { ascending: false });
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as QueryResult;
     },
     enabled: !!user?.id && !!movementId,
   });
@@ -85,7 +92,7 @@ export function useSetsByWorkout(workoutId: string) {
   return useQuery({
     queryKey: setKeys.byWorkout(workoutId),
     queryFn: async () => {
-      const { data, error } = await supabase
+      const query = supabase
         .from("sets")
         .select(
           `
@@ -96,8 +103,11 @@ export function useSetsByWorkout(workoutId: string) {
         .eq("workout_id", workoutId)
         .order("created_at");
 
+      type QueryResult = QueryData<typeof query>;
+      
+      const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as QueryResult;
     },
     enabled: !!workoutId,
   });

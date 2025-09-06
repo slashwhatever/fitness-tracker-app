@@ -1,8 +1,14 @@
 'use client';
 
-import { QuickSetEntryProps, SetData } from '@/models/types';
+import type { Set, UserMovement } from '@/models/types';
 import { useState } from 'react';
 import SetEntryForm from './SetEntryForm';
+
+interface QuickSetEntryProps {
+  movement: UserMovement | null;
+  lastSet: Partial<Set> | null;
+  onQuickLog: (data: Partial<Set>) => Promise<void>;
+}
 
 export default function QuickSetEntry({ 
   movement, 
@@ -11,7 +17,7 @@ export default function QuickSetEntry({
 }: QuickSetEntryProps) {
   const [isLogging, setIsLogging] = useState(false);
     
-  const handleSave = async (setData: SetData) => {
+  const handleSave = async (setData: Partial<Set>) => {
     setIsLogging(true);
     try {
       await onQuickLog(setData);

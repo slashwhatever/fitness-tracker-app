@@ -1,153 +1,69 @@
 // Core TypeScript interfaces for the Logset Fitness Tracking App
-// Based on architecture specifications from docs/architecture/data-models.md
+// Based on generated Supabase types and extended for app-specific needs
+
+import type { Tables, TablesInsert, TablesUpdate, Enums } from "@/lib/supabase/database.types";
 
 // ============================================================================
-// CORE TYPE DEFINITIONS
+// DATABASE TYPE IMPORTS
 // ============================================================================
 
-export type TrackingType =
+// Use generated types from Supabase as base
+export type TrackingType = Tables<'tracking_types'>;
+export type MuscleGroup = Tables<'muscle_groups'>;
+
+export type TrackingTypeName =
   | "weight"
   | "bodyweight"
   | "duration"
   | "distance"
-  | "reps_only";
-export type ExperienceLevel = "Beginner" | "Intermediate" | "Advanced";
-export type MuscleGroup =
-  | "Chest"
-  | "Back"
-  | "Legs"
-  | "Shoulders"
-  | "Biceps"
-  | "Triceps"
-  | "Core"
-  | "Cardio"
-  | "Full Body"
-  | "Forearms";
+  | "reps_only"; // Old enum still exists in code
+export type ExperienceLevel = Enums<'experience_level'>;
+export type SetType = Enums<'set_type'>;
+export type RecordType = Enums<'record_type'>;
 
-export interface MovementTemplate {
-  id: string;
-  name: string;
-  muscle_groups: string[]; // Reverted: back to array for multiple muscle groups
-  tracking_type: TrackingType;
-  experience_level: ExperienceLevel;
-  instructions: string | null; // Match database schema
-  tags: string[] | null; // Match database schema
-  created_at: string; // Always present in database
-  updated_at: string; // Always present in database
-}
 
 // ============================================================================
-// USER MANAGEMENT
+// DATABASE ROW TYPES
 // ============================================================================
 
-export interface User {
-  id: string;
-  created_at: string;
+// Use generated types directly
+export type UserProfile = Tables<'user_profiles'>;
+export type Workout = Tables<'workouts'>;
+export type WorkoutMovement = Tables<'workout_movements'>;
+export type Set = Tables<'sets'>;
+export type PersonalRecord = Tables<'personal_records'>;
+
+// Junction table types
+export type MovementTemplateMuscleGroup = Tables<'movement_template_muscle_groups'>;
+export type UserMovementMuscleGroup = Tables<'user_movement_muscle_groups'>;
+
+// QueryData types are now used in hooks for automatic type inference from Supabase queries
+
+// Raw database row types
+type MovementTemplateRow = Tables<'movement_templates'>;
+type UserMovementRow = Tables<'user_movements'>;
+
+// Extended movement template (adds muscle_groups and tracking_type populated by joins)
+export interface MovementTemplate
+  extends Omit<MovementTemplateRow, "muscle_groups"> {
+  muscle_groups: string[]; // Will be populated by joins with muscle group names
+  tracking_type: TrackingTypeName; // Will be populated by join with tracking_types table
 }
+
+// Extended user movement (adds muscle_groups and tracking_type populated by joins)
+export interface UserMovement extends Omit<UserMovementRow, "muscle_groups"> {
+  muscle_groups: string[]; // Will be populated by joins with muscle group names
+  tracking_type: TrackingTypeName; // Will be populated by join with tracking_types table
+}
+
 
 export type WeightUnit = "lbs" | "kg";
 export type DistanceUnit = "miles" | "km";
 
-export interface UserProfile {
-  id: string; // UUID from auth.users
-  display_name?: string;
-  default_rest_timer: number; // Global timer preference in seconds
-  weight_unit: WeightUnit; // Preferred weight unit
-  distance_unit: DistanceUnit; // Preferred distance unit
-  created_at: string;
-  updated_at: string;
-}
 
-export interface UserMovement {
-  id: string;
-  user_id: string;
-  template_id: string | null; // References MovementTemplate.id
-  name: string;
-  muscle_groups: string[]; // Reverted: back to array for multiple muscle groups
-  tracking_type: TrackingType;
-  custom_rest_timer?: number; // Movement-specific timer override
-  personal_notes?: string;
-  manual_1rm?: number;
-  usage_count: number;
-  created_at: string;
-  updated_at: string;
-}
 
-export interface Movement {
-  id: string;
-  name: string;
-  tracking_type: string;
-}
 
-export interface LastSet {
-  reps?: number;
-  weight?: number;
-  duration?: number;
-  distance?: number;
-}
 
-export interface QuickSetEntryProps {
-  movement: Movement | null;
-  lastSet: LastSet | null;
-  onQuickLog: (data: SetData) => Promise<void>;
-}
-
-export interface SetData {
-  reps: number | null;
-  weight: number | null;
-  duration: number | null;
-  distance: number | null;
-  notes: string | null;
-}
-
-// ============================================================================
-// WORKOUT MANAGEMENT
-// ============================================================================
-
-export type SetType = "warmup" | "working" | "drop" | "failure" | "rest_pause";
-
-export interface Set {
-  id: string;
-  user_movement_id: string;
-  workout_id: string | null;
-  user_id: string;
-  set_type: SetType;
-  reps: number | null;
-  weight: number | null; // For weight-based exercises
-  duration: number | null; // For time-based exercises (seconds)
-  distance: number | null; // For distance-based exercises
-  notes: string | null;
-  created_at: string;
-}
-
-export interface Workout {
-  id: string;
-  user_id: string;
-  name: string;
-  description: string | null;
-  default_rest_timer: number | null; // Workout-specific timer override
-  created_at: string;
-  updated_at: string;
-}
-
-export interface WorkoutMovement {
-  id: string;
-  workout_id: string;
-  user_movement_id: string;
-  order_index: number;
-  created_at: string;
-}
-
-export interface WorkoutSession {
-  id: string;
-  user_id: string;
-  workout_id: string;
-  started_at: string;
-  completed_at: string | null;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 // ============================================================================
 // SYNC AND OFFLINE SUPPORT
@@ -170,17 +86,6 @@ export interface AnalyticsEvent {
   user_id: string;
   event_type: string;
   event_data: Record<string, unknown>;
-  created_at: string;
-}
-
-export interface PersonalRecord {
-  id: string;
-  user_id: string;
-  user_movement_id: string;
-  record_type: "max_weight" | "max_reps" | "max_duration" | "max_volume";
-  value: number;
-  set_id: string; // Reference to the set that achieved this PR
-  achieved_at: string;
   created_at: string;
 }
 
@@ -213,9 +118,9 @@ export type TimerSource = "global" | "user" | "workout" | "movement";
  * Movement > Workout > User > Global (180s default)
  */
 export function getEffectiveRestTimer(
-  userPreferences: { default_rest_timer?: number },
-  workout?: { default_rest_timer?: number },
-  movement?: { custom_rest_timer?: number }
+  userPreferences: { default_rest_timer?: number | null },
+  workout?: { default_rest_timer?: number | null },
+  movement?: { custom_rest_timer?: number | null }
 ): number {
   if (movement?.custom_rest_timer) return movement.custom_rest_timer;
   if (workout?.default_rest_timer) return workout.default_rest_timer;
@@ -228,9 +133,9 @@ export function getEffectiveRestTimer(
  * Determines the source of the timer value for display purposes
  */
 export function getTimerSource(
-  userPreferences: { default_rest_timer?: number },
-  workout?: { default_rest_timer?: number },
-  movement?: { custom_rest_timer?: number }
+  userPreferences: { default_rest_timer?: number | null },
+  workout?: { default_rest_timer?: number | null },
+  movement?: { custom_rest_timer?: number | null }
 ): TimerSource {
   if (movement?.custom_rest_timer) return "movement";
   if (workout?.default_rest_timer) return "workout";
@@ -283,38 +188,13 @@ export interface PaginatedResponse<T> {
   total_pages: number;
 }
 
-// Request types for API operations
-export interface CreateWorkoutRequest {
-  name: string;
-  description?: string;
-  default_rest_timer?: number;
+// API request types - extend database insert types
+export interface CreateUserMovementRequest extends Omit<TablesInsert<'user_movements'>, 'user_id'> {
+  muscle_groups: string[]; // Additional field for handling muscle groups
 }
 
-export interface CreateUserMovementRequest {
-  template_id?: string;
-  name: string;
-  muscle_groups: string[];
-  tracking_type: TrackingType;
-  custom_rest_timer?: number;
-  personal_notes?: string;
-}
+export type CreateWorkoutRequest = Omit<TablesInsert<'workouts'>, 'user_id'>;
 
-export interface CreateSetRequest {
-  user_movement_id: string;
-  workout_id?: string;
-  set_type?: SetType;
-  reps?: number;
-  weight?: number;
-  duration?: number;
-  distance?: number;
-  notes?: string;
-}
+export type CreateSetRequest = TablesInsert<'sets'>;
 
-export interface UpdateSetRequest {
-  set_type?: SetType;
-  reps?: number;
-  weight?: number;
-  duration?: number;
-  distance?: number;
-  notes?: string;
-}
+export type UpdateSetRequest = TablesUpdate<'sets'>;

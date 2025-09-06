@@ -16,9 +16,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useUpdateUserMovement } from '@/hooks';
+import { useMuscleGroups, useTrackingTypes, useUpdateUserMovement } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import type { TrackingType, UserMovement } from '@/models/types';
+import type { TrackingTypeName, UserMovement } from '@/models/types';
 import { useEffect } from 'react';
 import { Label } from "../ui/label";
 
@@ -28,18 +28,7 @@ interface EditMovementModalProps {
   movement: UserMovement | null;
 }
 
-const MUSCLE_GROUPS = [
-  'Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 
-  'Glutes', 'Calves', 'Cardio', 'Full Body'
-];
-
-const TRACKING_TYPES = [
-  { value: 'weight' as TrackingType, label: 'Weight & Reps', description: 'Track weight lifted and repetitions' },
-  { value: 'bodyweight' as TrackingType, label: 'Bodyweight', description: 'Track reps only (push-ups, pull-ups, etc.)' },
-  { value: 'duration' as TrackingType, label: 'Duration', description: 'Track time (planks, holds, etc.)' },
-  { value: 'distance' as TrackingType, label: 'Distance', description: 'Track distance (running, walking, etc.)' },
-  { value: 'reps_only' as TrackingType, label: 'Reps Only', description: 'Just track repetitions' },
-];
+// Muscle groups are now loaded dynamically from database
 
 // Zod schema for form validation
 const formSchema = z.object({
@@ -62,6 +51,8 @@ export default function EditMovementModal({
   movement,
 }: EditMovementModalProps) {
   const updateUserMovementMutation = useUpdateUserMovement();
+  const { data: trackingTypes = [] } = useTrackingTypes();
+  const { data: muscleGroups = [] } = useMuscleGroups();
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   // Initialize form with React Hook Form and Zod validation using uncontrolled components
@@ -104,12 +95,18 @@ export default function EditMovementModal({
     if (!movement) return;
 
     try {
+      // Find the tracking type ID
+      const trackingType = trackingTypes.find(tt => tt.name === values.tracking_type);
+      if (!trackingType) {
+        throw new Error(`Unknown tracking type: ${values.tracking_type}`);
+      }
+
       await updateUserMovementMutation.mutateAsync({
         id: movement.id,
         updates: {
           name: values.name.trim(),
           muscle_groups: values.muscle_groups,
-          tracking_type: values.tracking_type,
+          tracking_type_id: trackingType.id,
           custom_rest_timer: values.custom_rest_timer ? parseInt(values.custom_rest_timer) : null,
           personal_notes: values.personal_notes?.trim() || null,
         },
@@ -167,21 +164,21 @@ export default function EditMovementModal({
         </Label>
         <Select 
           value={watch("tracking_type")} 
-          onValueChange={(value) => setValue("tracking_type", value as TrackingType)}
+          onValueChange={(value) => setValue("tracking_type", value as TrackingTypeName)}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select tracking type">
               {watch("tracking_type") ? 
-                TRACKING_TYPES.find(t => t.value === watch("tracking_type"))?.label : 
+                trackingTypes.find(t => t.name === watch("tracking_type"))?.display_name : 
                 "Select tracking type"
               }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            {TRACKING_TYPES.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
+            {trackingTypes.map((type) => (
+              <SelectItem key={type.id} value={type.name}>
                 <div className="flex flex-col items-start">
-                  <div className="font-medium">{type.label}</div>
+                  <div className="font-medium">{type.display_name}</div>
                   <div className="text-sm text-muted-foreground">{type.description}</div>
                 </div>
               </SelectItem>
@@ -199,19 +196,19 @@ export default function EditMovementModal({
           Muscle groups * ({watchMuscleGroups?.length || 0} selected)
         </Label>
         <div className="grid grid-cols-2 gap-2">
-          {MUSCLE_GROUPS.map((group) => (
+          {muscleGroups.map((group) => (
             <Button
-              key={group}
+              key={group.id}
               variant="ghost"
               type="button"
-              onClick={() => handleMuscleGroupToggle(group)}
+              onClick={() => handleMuscleGroupToggle(group.display_name)}
               className={`p-2 text-sm rounded-md border transition-colors ${
-                watchMuscleGroups?.includes(group)
+                watchMuscleGroups?.includes(group.display_name)
                   ? 'bg-primary text-primary-foreground border-primary'
                   : 'bg-background border-border hover:bg-accent'
               }`}
             >
-              {group}
+              {group.display_name}
             </Button>
           ))}
         </div>

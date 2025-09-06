@@ -4,3 +4,5 @@ export * from './useMovements';
 export * from './useSets';
 export * from './usePersonalRecords';
 export * from './useUserProfile';
+export * from './useTrackingTypes';
+export * from './useMuscleGroups';

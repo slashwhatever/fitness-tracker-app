@@ -12,10 +12,10 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
-import { useAddMovementsToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementsFromWorkout, useUserMovements, useWorkoutMovements } from '@/hooks';
+import { useAddMovementsToWorkout, useCreateUserMovement, useMovementTemplates, useRemoveMovementsFromWorkout, useTrackingTypes, useUserMovements, useWorkoutMovements } from '@/hooks';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { getExperienceLevelVariant } from '@/lib/utils/typeHelpers';
-import type { MovementTemplate, TrackingType, UserMovement } from '@/models/types';
+import type { UserMovement, MovementTemplate } from '@/models/types';
 import { prepareWorkoutMovements, getNextOrderIndex } from '@/lib/utils/workout-helpers';
 import { Check, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -27,15 +27,7 @@ interface MovementSelectionModalProps {
   workoutId: string;
 }
 
-// Type alias for user movements as returned from database
-type DatabaseUserMovement = Omit<UserMovement, 'custom_rest_timer' | 'personal_notes' | 'manual_1rm'> & {
-  custom_rest_timer: number | null;
-  personal_notes: string | null;
-  manual_1rm: number | null;
-  created_at: string;
-  last_used_at: string | null;
-  updated_at: string;
-};
+// Use the proper transformed types from hooks
 
 interface SearchAndContentProps {
   className?: string;
@@ -43,11 +35,11 @@ interface SearchAndContentProps {
   setSearchTerm: (value: string) => void;
   setShowCustomMovementModal: (value: boolean) => void;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
-  filteredUserMovements: DatabaseUserMovement[];
+  filteredUserMovements: UserMovement[];
   filteredLibrary: MovementTemplate[];
   selectedMovements: Set<string>;
-  handleMovementToggle: (movementId: string, movementData: DatabaseUserMovement | MovementTemplate) => void;
-  userMovements: DatabaseUserMovement[];
+  handleMovementToggle: (movementId: string, movementData: UserMovement | MovementTemplate) => void;
+  userMovements: UserMovement[];
   isSaving: boolean;
 }
 
@@ -244,9 +236,11 @@ export default function MovementSelectionModal({
   // Use our React Query hooks
   const { data: userMovements = [] } = useUserMovements();
   const { data: workoutMovements = [] } = useWorkoutMovements(workoutId);
+  const { data: trackingTypes = [] } = useTrackingTypes();
   const createUserMovementMutation = useCreateUserMovement();
   const addMovementsBatch = useAddMovementsToWorkout();
   const removeMovementsBatch = useRemoveMovementsFromWorkout();
+
 
   // Pre-select movements that are already in this workout
   const workoutMovementIdsString = useMemo(() => 
@@ -308,7 +302,7 @@ export default function MovementSelectionModal({
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [userMovements, searchTerm]);
 
-  const handleMovementToggle = useCallback((movementId: string, movementData: DatabaseUserMovement | MovementTemplate) => {
+  const handleMovementToggle = useCallback((movementId: string, movementData: UserMovement | MovementTemplate) => {
     // Don't allow selection changes while saving
     if (isSaving) return;
     
@@ -378,12 +372,18 @@ export default function MovementSelectionModal({
         let userMovementId = movementId;
 
         if (templateMovement && !userMovements.find(um => um.id === movementId)) {
+          // Get tracking type from ID since hooks aren't transforming data yet
+          const trackingType = trackingTypes.find(tt => tt.id === templateMovement.tracking_type_id);
+          if (!trackingType) {
+            throw new Error(`Unknown tracking type ID: ${templateMovement.tracking_type_id}`);
+          }
+
           // Create user movement from template
           const newUserMovement = await createUserMovementMutation.mutateAsync({
             template_id: templateMovement.id,
             name: templateMovement.name,
             muscle_groups: templateMovement.muscle_groups,
-            tracking_type: templateMovement.tracking_type as TrackingType,
+            tracking_type_id: trackingType.id,
             personal_notes: templateMovement.instructions,
           });
           userMovementId = newUserMovement.id;
@@ -490,7 +490,7 @@ export default function MovementSelectionModal({
             filteredLibrary={filteredLibrary}
             selectedMovements={selectedMovements}
             handleMovementToggle={handleMovementToggle}
-            userMovements={userMovements}
+            userMovements={userMovements as UserMovement[]}
             isSaving={isSaving}
           />
           <DrawerFooter className="pt-2 flex-shrink-0">
