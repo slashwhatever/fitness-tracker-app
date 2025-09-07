@@ -33,14 +33,20 @@ export function TimerProvider({ children }: TimerProviderProps) {
   const [duration, setDuration] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [hasNotified, setHasNotified] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
   const lastSaveTimeRef = useRef<number>(Date.now());
 
   // Storage keys
   const TIMER_STORAGE_KEY = 'logset_timer_state';
 
-  // Load timer state from localStorage on mount
+  // Handle hydration
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    setIsHydrated(true);
+  }, []);
+
+  // Load timer state from localStorage on mount (only after hydration)
+  useEffect(() => {
+    if (!isHydrated) return;
     
     try {
       const saved = localStorage.getItem(TIMER_STORAGE_KEY);
@@ -64,11 +70,11 @@ export function TimerProvider({ children }: TimerProviderProps) {
     } catch (error) {
       console.warn('Failed to restore timer state:', error);
     }
-  }, []);
+  }, [isHydrated]);
 
   // Save timer state to localStorage
   const saveTimerState = useCallback(() => {
-    if (typeof window === 'undefined') return;
+    if (!isHydrated) return;
     
     try {
       const state = {
@@ -85,18 +91,18 @@ export function TimerProvider({ children }: TimerProviderProps) {
     } catch (error) {
       console.warn('Failed to save timer state:', error);
     }
-  }, [isActive, timeLeft, duration, isPaused, hasNotified]);
+  }, [isActive, timeLeft, duration, isPaused, hasNotified, isHydrated]);
 
   // Clear timer state from localStorage
   const clearTimerState = useCallback(() => {
-    if (typeof window === 'undefined') return;
+    if (!isHydrated) return;
     
     try {
       localStorage.removeItem(TIMER_STORAGE_KEY);
     } catch (error) {
       console.warn('Failed to clear timer state:', error);
     }
-  }, []);
+  }, [isHydrated]);
 
   // Save state periodically when timer is active
   useEffect(() => {
@@ -117,7 +123,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
     saveTimerState();
     
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, isPaused, saveTimerState, clearTimerState]);
+  }, [isActive, isHydrated, timeLeft, isPaused, saveTimerState, clearTimerState]);
 
   // Get default duration from user profile with fallback hierarchy
   const getDefaultDuration = useCallback(() => {

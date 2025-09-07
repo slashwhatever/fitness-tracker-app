@@ -23,7 +23,7 @@ export default function TimerBanner() {
   
   const { data: userProfile } = useUserProfile();
   const updateProfileMutation = useUpdateUserProfile();
-  const [isPinned, setIsPinned] = useState(() => userProfile?.timer_pin_enabled ?? true);
+  const [isPinned, setIsPinned] = useState(true); // Default to true for SSR consistency
   
   // Update local state when userProfile changes
   useEffect(() => {
