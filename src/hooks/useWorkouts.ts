@@ -42,6 +42,9 @@ export function useWorkouts() {
       return data as QueryResult;
     },
     enabled: !!user?.id,
+    // Workout list changes moderately - cache for reasonable time
+    staleTime: 3 * 60 * 1000, // 3 minutes
+    gcTime: 15 * 60 * 1000, // 15 minutes
   });
 }
 
@@ -65,6 +68,9 @@ export function useWorkout(workoutId: string) {
       return data as QueryResult;
     },
     enabled: isSafeForQueries(workoutId),
+    // Individual workout details don't change often during active session
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 20 * 60 * 1000, // 20 minutes
   });
 }
 

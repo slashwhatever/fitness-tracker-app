@@ -154,7 +154,7 @@ export function RegisterForm({ }: RegisterFormProps) {
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit}>
           <div className="space-y-2">
             <Label htmlFor="displayName" className="text-sm font-medium text-muted-foreground">
               Display Name

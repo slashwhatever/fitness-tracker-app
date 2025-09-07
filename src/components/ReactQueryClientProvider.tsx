@@ -10,9 +10,22 @@ export const ReactQueryClientProvider = ({ children }: { children: React.ReactNo
       new QueryClient({
         defaultOptions: {
           queries: {
-            // With SSR, we usually want to set some default staleTime
-            // above 0 to avoid refetching immediately on the client
-            staleTime: 60 * 1000,
+            // Longer stale time - data stays fresh longer
+            staleTime: 5 * 60 * 1000, // 5 minutes
+            // Keep data in cache longer to avoid re-fetching
+            gcTime: 30 * 60 * 1000, // 30 minutes (was cacheTime)
+            // Enable background refetching for better UX
+            refetchOnWindowFocus: false, // Disable aggressive refetching
+            refetchOnReconnect: 'always',
+            retry: 1, // Don't retry failed requests aggressively
+            refetchInterval: false, // No automatic background polling by default
+            refetchIntervalInBackground: false,
+            // Network-based stale time - longer for slower connections
+            networkMode: 'online',
+          },
+          mutations: {
+            // Keep mutation data longer for optimistic updates
+            gcTime: 5 * 60 * 1000, // 5 minutes
           },
         },
       })

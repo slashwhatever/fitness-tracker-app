@@ -5,7 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useImperativeHandle, useState, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
@@ -20,6 +21,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   // Use our new React Query hooks
   const { data: workouts = [], isLoading, refetch } = useWorkouts();
   const deleteWorkoutMutation = useDeleteWorkout();
+  const queryClient = useQueryClient();
 
   // Simple component for showing movement count
   function MovementCount({ workoutId }: { workoutId: string }) {
@@ -59,6 +61,30 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
     setShowDeleteConfirm(false);
   };
 
+  // Prefetch workout details and movements on hover for better UX
+  const prefetchWorkoutData = useCallback(async (workoutId: string) => {
+    try {
+      // Prefetch workout details
+      await queryClient.prefetchQuery({
+        queryKey: ['workouts', 'detail', workoutId],
+        queryFn: async () => {
+          const { createClient } = await import('@/lib/supabase/client');
+          const supabase = createClient();
+          const { data } = await supabase
+            .from('workouts')
+            .select('*')
+            .eq('id', workoutId)
+            .single();
+          return data;
+        },
+        staleTime: 5 * 60 * 1000,
+      });
+    } catch (error) {
+      // Prefetch errors are non-critical
+      console.debug('Prefetch failed for workout:', workoutId, error);
+    }
+  }, [queryClient]);
+
   return (
     <>
     <div className="space-y-3">
@@ -92,7 +118,11 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
           {workouts.map((workout) => (
             <div key={workout.id} className="flex items-center justify-between p-3 bg-card rounded-lg border hover:bg-muted/50 transition-all cursor-pointer">
 
-              <Link href={`/workout/${workout.id}`} className="flex-1 min-w-0">
+              <Link 
+                href={`/workout/${workout.id}`} 
+                className="flex-1 min-w-0"
+                onMouseEnter={() => prefetchWorkoutData(workout.id)}
+              >
                 <div className="text-left">
                   <Typography variant="title3">{workout.name}</Typography>
                   {workout.description && (

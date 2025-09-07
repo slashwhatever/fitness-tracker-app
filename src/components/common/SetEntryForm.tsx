@@ -113,7 +113,7 @@ export default function SetEntryForm({
 
   return (
     <div className="p-4 space-y-2">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit}>
         {/* Reps and Weight Display */}
         {(movement.tracking_type === 'weight' || movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
           <div className="grid grid-cols-2 gap-4">

@@ -58,7 +58,7 @@ function WorkoutFormContent({
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   return (
-    <form onSubmit={onSubmit} className={`space-y-4 ${className}`}>
+    <form onSubmit={onSubmit} className={className}>
       <div className="space-y-2">
         <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
           Workout Title *

@@ -157,7 +157,7 @@ export default function EditableSet({
             </DrawerTrigger>
             <DrawerContent className="!max-h-[95vh]">
               <DrawerHeader>
-                <DrawerTitle>Edit Set</DrawerTitle>
+                <DrawerTitle>Edit set</DrawerTitle>
                 <DrawerDescription>
                   Modify the values for this set from {new Date(set.created_at).toLocaleDateString()} at {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </DrawerDescription>

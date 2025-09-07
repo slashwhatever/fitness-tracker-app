@@ -61,8 +61,8 @@ export function useMovementTemplates() {
           .filter((name): name is string => Boolean(name)) || []
       })) as MovementTemplate[];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes - templates don't change often
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 15 * 60 * 1000, // 15 minutes - templates rarely change
+    gcTime: 60 * 60 * 1000, // 1 hour
   });
 }
 
@@ -106,6 +106,9 @@ export function useUserMovements() {
       })) as UserMovement[];
     },
     enabled: !!user?.id,
+    // User movements change occasionally - moderate caching
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 }
 

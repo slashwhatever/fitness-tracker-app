@@ -277,7 +277,7 @@ export default function CreateCustomMovementModal({
             <DialogTitle className="text-xl">Create custom movement</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={onSubmit} className="flex-1 flex flex-col space-y-4 min-h-0">
+          <form onSubmit={onSubmit}>
             <FormContent />
             <ActionButtons />
           </form>
@@ -296,7 +296,7 @@ export default function CreateCustomMovementModal({
         <DrawerHeader className="text-left flex-shrink-0">
           <DrawerTitle>Create custom movement</DrawerTitle>
         </DrawerHeader>
-        <form onSubmit={onSubmit} className="flex-1 flex flex-col min-h-0">
+        <form onSubmit={onSubmit}>
           <div className="flex-1 overflow-y-auto px-4">
             <FormContent />
           </div>

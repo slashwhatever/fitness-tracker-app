@@ -1,17 +1,17 @@
 "use client";
 
+import { Typography } from '@/components/common/Typography';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Typography } from '@/components/common/Typography';
 import { updatePassword } from '@/lib/supabase/auth-utils';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { z } from 'zod';
-import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formSchema = z.object({
   password: z
@@ -131,7 +131,7 @@ export const UpdatePasswordForm = () => {
           </Typography>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit}>
           <div className="space-y-2">
             <Label htmlFor="password">New Password</Label>
             <div className="relative">

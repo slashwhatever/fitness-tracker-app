@@ -80,7 +80,7 @@ export function LoginForm({ redirectTo = '/' }: LoginFormProps) {
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit}>
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">
               Email

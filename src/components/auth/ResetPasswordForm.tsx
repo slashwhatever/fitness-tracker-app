@@ -1,15 +1,15 @@
 "use client";
 
+import { Typography } from '@/components/common/Typography';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Typography } from '@/components/common/Typography';
 import { resetPassword } from '@/lib/supabase/auth-utils';
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import { z } from 'zod';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -101,7 +101,7 @@ export const ResetPasswordForm = () => {
           </Typography>
         </div>
 
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit}>
           <div className="space-y-2">
             <Label htmlFor="email">Email address</Label>
             <Input
