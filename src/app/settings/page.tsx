@@ -23,9 +23,9 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import { signOut } from '@/lib/supabase/auth-utils';
 import { DistanceUnit, TIMER_PRESETS, UserProfile, WeightUnit } from '@/models/types';
 import { SupabaseService } from '@/services/supabaseService';
-import { signOut } from '@/lib/supabase/auth-utils';
 import { LogOut, Save } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -161,10 +161,8 @@ export default function SettingsPage() {
           </div>
 
           {/* Workout Preferences */}
-          <div className="space-y-4">
-            <div>
-              <Typography variant="title3">Workout Preferences</Typography>
-            </div>
+          <Typography variant="title3">Workout preferences</Typography>
+          <div className="space-y-2">
 
             <div className="space-y-2">
               <Label htmlFor="rest-timer">Default Rest Timer</Label>

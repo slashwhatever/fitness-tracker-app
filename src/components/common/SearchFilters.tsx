@@ -88,9 +88,8 @@ export default function SearchFilters({
   const hasActiveFilters = searchValue || selectedMuscleGroup || selectedExperienceLevel;
 
   return (
-    <div className="space-y-4">
-      {/* Search Input */}
-      <div>
+    <>
+      <div className="space-y-2">
         <div className="relative">
           <Input
             type="text"
@@ -107,42 +106,39 @@ export default function SearchFilters({
         </div>
       </div>
 
-      {/* Filter Buttons */}
-      <div className="space-y-3">
-        {/* Muscle Group Filters */}
-        <div>
-          <Label htmlFor="muscle_group" className="text-sm font-medium text-muted-foreground">Muscle Group</Label>
-          <div className="flex flex-wrap gap-2">
-            {muscleGroups.map((muscleGroup) => (
-              <Button
-                key={muscleGroup}
-                variant={selectedMuscleGroup === muscleGroup ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleMuscleGroupChange(muscleGroup)}
-                className="text-sm"
-              >
-                {muscleGroup}
-              </Button>
-            ))}
-          </div>
+      {/* Muscle Group Filters */}
+      <div className="space-y-2">
+        <Label htmlFor="muscle_group" className="text-sm font-medium text-muted-foreground">Muscle group</Label>
+        <div className="flex flex-wrap gap-2">
+          {muscleGroups.map((muscleGroup) => (
+            <Button
+              key={muscleGroup}
+              variant={selectedMuscleGroup === muscleGroup ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleMuscleGroupChange(muscleGroup)}
+              className="text-sm"
+            >
+              {muscleGroup}
+            </Button>
+          ))}
         </div>
+      </div>
 
-        {/* Experience Level Filters */}
-        <div>
-          <Label className="text-sm font-medium text-muted-foreground">Experience Level</Label>
-          <div className="flex flex-wrap gap-2">
-            {experienceLevels.map((level) => (
-              <Button
-                key={level}
-                variant={selectedExperienceLevel === level ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleExperienceLevelChange(level)}
-                className="text-sm"
-              >
-                {level}
-              </Button>
-            ))}
-          </div>
+      {/* Experience Level Filters */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-muted-foreground">Experience Level</Label>
+        <div className="flex flex-wrap gap-2">
+          {experienceLevels.map((level) => (
+            <Button
+              key={level}
+              variant={selectedExperienceLevel === level ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleExperienceLevelChange(level)}
+              className="text-sm"
+            >
+              {level}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -159,6 +155,6 @@ export default function SearchFilters({
           </Button>
         </div>
       )}
-    </div>
+    </>
   );
 }

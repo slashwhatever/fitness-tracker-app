@@ -73,7 +73,7 @@ export default function MovementLibraryPage() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Movement Library</BreadcrumbPage>
+                <BreadcrumbPage>Movement library</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -105,7 +105,7 @@ export default function MovementLibraryPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Movement Library</BreadcrumbPage>
+              <BreadcrumbPage>Movement library</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -119,9 +119,7 @@ export default function MovementLibraryPage() {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex items-center space-x-2">
-          <Typography variant="title2">Search & Filters</Typography>
-        </div>
+        <Typography variant="title2">Search & filters</Typography>
 
         <SearchFilters
           onSearchChange={setSearchTerm}
