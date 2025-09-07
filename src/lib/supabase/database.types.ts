@@ -322,43 +322,46 @@ export type Database = {
         Row: {
           created_at: string
           custom_rest_timer: number | null
+          experience_level: Database["public"]["Enums"]["experience_level"]
           id: string
           last_used_at: string | null
           manual_1rm: number | null
           name: string
           personal_notes: string | null
+          tags: string[] | null
           template_id: string | null
           tracking_type_id: string
           updated_at: string
-          usage_count: number
           user_id: string
         }
         Insert: {
           created_at?: string
           custom_rest_timer?: number | null
+          experience_level?: Database["public"]["Enums"]["experience_level"]
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
           name: string
           personal_notes?: string | null
+          tags?: string[] | null
           template_id?: string | null
           tracking_type_id: string
           updated_at?: string
-          usage_count?: number
           user_id: string
         }
         Update: {
           created_at?: string
           custom_rest_timer?: number | null
+          experience_level?: Database["public"]["Enums"]["experience_level"]
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
           name?: string
           personal_notes?: string | null
+          tags?: string[] | null
           template_id?: string | null
           tracking_type_id?: string
           updated_at?: string
-          usage_count?: number
           user_id?: string
         }
         Relationships: [

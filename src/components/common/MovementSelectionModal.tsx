@@ -125,8 +125,8 @@ const SearchAndContent = React.memo(function SearchAndContent({
                     </div>
                   </div>
                   
-                  <Badge variant="outline" className="text-xs">
-                    Custom
+                  <Badge variant={getExperienceLevelVariant(movement.experience_level)} className="text-xs">
+                    {movement.experience_level}
                   </Badge>
                 </div>
               ))}
