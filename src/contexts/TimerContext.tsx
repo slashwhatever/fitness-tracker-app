@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useCallback, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useCallback, useEffect, useState, ReactNode, useRef } from 'react';
 import { useUserProfile } from '@/hooks/useUserProfile';
 
 interface TimerContextType {
@@ -33,6 +33,91 @@ export function TimerProvider({ children }: TimerProviderProps) {
   const [duration, setDuration] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [hasNotified, setHasNotified] = useState(false);
+  const lastSaveTimeRef = useRef<number>(Date.now());
+
+  // Storage keys
+  const TIMER_STORAGE_KEY = 'logset_timer_state';
+
+  // Load timer state from localStorage on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const saved = localStorage.getItem(TIMER_STORAGE_KEY);
+      if (saved) {
+        const state = JSON.parse(saved);
+        const now = Date.now();
+        const elapsed = Math.floor((now - state.timestamp) / 1000);
+        
+        // Only restore if the timer was active and not too old (max 24 hours)
+        if (state.isActive && elapsed < 86400) {
+          const newTimeLeft = Math.max(0, state.timeLeft - elapsed);
+          
+          setIsActive(true);
+          setDuration(state.duration);
+          setTimeLeft(newTimeLeft);
+          setIsPaused(state.isPaused);
+          setHasNotified(newTimeLeft <= 0 ? true : state.hasNotified);
+          lastSaveTimeRef.current = now;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to restore timer state:', error);
+    }
+  }, []);
+
+  // Save timer state to localStorage
+  const saveTimerState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const state = {
+        isActive,
+        timeLeft,
+        duration,
+        isPaused,
+        hasNotified,
+        timestamp: Date.now()
+      };
+      
+      localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state));
+      lastSaveTimeRef.current = Date.now();
+    } catch (error) {
+      console.warn('Failed to save timer state:', error);
+    }
+  }, [isActive, timeLeft, duration, isPaused, hasNotified]);
+
+  // Clear timer state from localStorage
+  const clearTimerState = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      localStorage.removeItem(TIMER_STORAGE_KEY);
+    } catch (error) {
+      console.warn('Failed to clear timer state:', error);
+    }
+  }, []);
+
+  // Save state periodically when timer is active
+  useEffect(() => {
+    if (!isActive) {
+      clearTimerState();
+      return;
+    }
+    
+    // Save every 5 seconds when active
+    const interval = setInterval(() => {
+      const now = Date.now();
+      if (now - lastSaveTimeRef.current >= 5000) {
+        saveTimerState();
+      }
+    }, 5000);
+    
+    // Save immediately when state changes
+    saveTimerState();
+    
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft, isPaused, saveTimerState, clearTimerState]);
 
   // Get default duration from user profile with fallback hierarchy
   const getDefaultDuration = useCallback(() => {
@@ -112,14 +197,16 @@ export function TimerProvider({ children }: TimerProviderProps) {
     setIsActive(false);
     setIsPaused(false);
     setHasNotified(false);
-  }, []);
+    clearTimerState();
+  }, [clearTimerState]);
 
   const stopTimer = useCallback(() => {
     setIsActive(false);
     setTimeLeft(0);
     setIsPaused(false);
     setHasNotified(false);
-  }, []);
+    clearTimerState();
+  }, [clearTimerState]);
 
   // Timer countdown effect
   useEffect(() => {

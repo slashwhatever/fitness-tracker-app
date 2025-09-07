@@ -2,7 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { useTimer } from '@/contexts/TimerContext';
-import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { useUpdateUserProfile, useUserProfile } from '@/hooks/useUserProfile';
+import { Pause, Pin, PinOff, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function TimerBanner() {
   const {
@@ -18,16 +20,43 @@ export default function TimerBanner() {
     skipTimer,
     formatTime
   } = useTimer();
+  
+  const { data: userProfile } = useUserProfile();
+  const updateProfileMutation = useUpdateUserProfile();
+  const [isPinned, setIsPinned] = useState(() => userProfile?.timer_pin_enabled ?? true);
+  
+  // Update local state when userProfile changes
+  useEffect(() => {
+    if (userProfile?.timer_pin_enabled !== undefined) {
+      setIsPinned(userProfile.timer_pin_enabled);
+    }
+  }, [userProfile?.timer_pin_enabled]);
+  
+  // Handle pin toggle
+  const handlePinToggle = async () => {
+    const newPinState = !isPinned;
+    setIsPinned(newPinState); // Optimistic update
+    
+    try {
+      await updateProfileMutation.mutateAsync({
+        timer_pin_enabled: newPinState
+      });
+    } catch (error) {
+      // Revert on error
+      setIsPinned(!newPinState);
+      console.error('Failed to update pin setting:', error);
+    }
+  };
 
   if (!isActive) return null;
 
   return (
     <div 
-      className={`relative w-full px-4 py-2 transition-colors duration-300 ${
+      className={`relative w-full px-4 py-2 transition-colors duration-300 border-0 outline-none ${
         isComplete ? 'bg-green-600 text-white' : 
         isWarning ? 'bg-yellow-500 text-black' : 
         'bg-primary text-primary-foreground'
-      }`}
+      } ${isPinned ? 'sticky top-0 z-50 shadow-sm' : ''}`}
     >
       <div className="flex items-center justify-between">
         {/* Time remaining - left aligned */}
@@ -45,6 +74,19 @@ export default function TimerBanner() {
 
         {/* Action buttons - right aligned */}
         <div className="flex items-center gap-1">
+          <Button
+            onClick={handlePinToggle}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 p-0 hover:bg-white/20 text-inherit"
+            title={isPinned ? 'Unpin timer' : 'Pin timer to top'}
+          >
+            {isPinned ? (
+              <Pin className="h-4 w-4 text-green-500" />
+            ) : (
+              <PinOff className="h-4 w-4" />
+            )}
+          </Button>
           {!isComplete && (
             <>
               <Button
@@ -69,6 +111,7 @@ export default function TimerBanner() {
               </Button>
             </>
           )}
+
           <Button
             onClick={skipTimer}
             variant="ghost"

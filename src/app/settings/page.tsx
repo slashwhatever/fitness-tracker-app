@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { DistanceUnit, TIMER_PRESETS, UserProfile, WeightUnit } from '@/models/types';
 import { SupabaseService } from '@/services/supabaseService';
@@ -37,6 +38,7 @@ export default function SettingsPage() {
   const [defaultRestTimer, setDefaultRestTimer] = useState('');
   const [weightUnit, setWeightUnit] = useState<WeightUnit>('lbs');
   const [distanceUnit, setDistanceUnit] = useState<DistanceUnit>('miles');
+  const [timerPinEnabled, setTimerPinEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
   const router = useRouter();
@@ -47,7 +49,8 @@ export default function SettingsPage() {
       setDisplayName(userProfile.display_name || '');
       setDefaultRestTimer(userProfile.default_rest_timer?.toString() || 'none');
       setWeightUnit((userProfile.weight_unit as WeightUnit) || 'lbs');
-      setDistanceUnit((userProfile.distance_unit as DistanceUnit) || 'miles');      
+      setDistanceUnit((userProfile.distance_unit as DistanceUnit) || 'miles');
+      setTimerPinEnabled(userProfile.timer_pin_enabled ?? true);      
     }
   }, [userProfile]);
 
@@ -61,6 +64,7 @@ export default function SettingsPage() {
         default_rest_timer: defaultRestTimer && defaultRestTimer !== 'none' ? parseInt(defaultRestTimer) : 90, // Default 90s
         weight_unit: weightUnit,
         distance_unit: distanceUnit,
+        timer_pin_enabled: timerPinEnabled,
         updated_at: new Date().toISOString(),
       };
 
@@ -83,6 +87,7 @@ export default function SettingsPage() {
       setDefaultRestTimer(userProfile.default_rest_timer?.toString() || 'none');
       setWeightUnit((userProfile.weight_unit as WeightUnit) || 'lbs');
       setDistanceUnit((userProfile.distance_unit as DistanceUnit) || 'miles');
+      setTimerPinEnabled(userProfile.timer_pin_enabled ?? true);
       
     }
   };
@@ -179,6 +184,22 @@ export default function SettingsPage() {
               <Typography variant="caption">
                 This timer will be used for all movements unless overridden
               </Typography>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="timer-pin">Pin Timer</Label>
+                  <Typography variant="caption">
+                    Keep the timer visible at the top of the screen when scrolling
+                  </Typography>
+                </div>
+                <Switch
+                  id="timer-pin"
+                  checked={timerPinEnabled}
+                  onCheckedChange={setTimerPinEnabled}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

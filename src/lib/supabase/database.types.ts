@@ -395,6 +395,7 @@ export type Database = {
           id: string
           notification_preferences: Json
           privacy_settings: Json
+          timer_pin_enabled: boolean
           updated_at: string
           weight_unit: string
         }
@@ -407,6 +408,7 @@ export type Database = {
           id: string
           notification_preferences?: Json
           privacy_settings?: Json
+          timer_pin_enabled?: boolean
           updated_at?: string
           weight_unit?: string
         }
@@ -419,6 +421,7 @@ export type Database = {
           id?: string
           notification_preferences?: Json
           privacy_settings?: Json
+          timer_pin_enabled?: boolean
           updated_at?: string
           weight_unit?: string
         }
