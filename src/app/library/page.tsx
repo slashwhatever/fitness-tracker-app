@@ -126,9 +126,7 @@ export default function MovementLibraryPage() {
         <SearchFilters
           onSearchChange={setSearchTerm}
           onMuscleGroupFilter={(filter) => {
-            // Convert display name back to name for filtering
-            const muscleGroup = muscleGroupsData.find(mg => mg.display_name === filter);
-            setMuscleGroupFilter(muscleGroup?.name || null);
+            setMuscleGroupFilter(filter);
           }}
           onExperienceLevelFilter={setExperienceLevelFilter}
           muscleGroups={muscleGroups}
