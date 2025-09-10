@@ -25,7 +25,7 @@ export default function Dashboard() {
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+        <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
           {/* Header */}
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">

@@ -14,11 +14,16 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { useTimer } from '@/contexts/TimerContext';
 import { useCreateSet, useSetsByMovement, useTrackingTypes, useUserMovement, useWorkout } from '@/hooks';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Set, UserMovement, getEffectiveRestTimer } from '@/models/types';
-import { Calendar, Dumbbell } from 'lucide-react';
+import { Calendar, ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -28,6 +33,7 @@ interface MovementDetailPageProps {
 
 export default function MovementDetailPage({ params }: MovementDetailPageProps) {
   const [paramsResolved, setParamsResolved] = useState<{ workoutId: string; movementId: string } | null>(null);
+  const [isMovementInfoOpen, setIsMovementInfoOpen] = useState(false);
 
   // Resolve async params
   useEffect(() => {
@@ -37,6 +43,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   // Use our new React Query hooks
   const { data: movement, isLoading: movementLoading } = useUserMovement(paramsResolved?.movementId || '');
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.movementId || '');
+
   const { data: workout, isLoading: workoutLoading } = useWorkout(paramsResolved?.workoutId || '');
   const { data: userProfile } = useUserProfile();
   const { data: trackingTypes = [] } = useTrackingTypes();
@@ -113,7 +120,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-        <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+        <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
           {/* Breadcrumbs */}
           <Breadcrumb>
             <BreadcrumbList>
@@ -131,35 +138,46 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             </BreadcrumbList>
           </Breadcrumb>
 
-          {/* Movement Info */}
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center space-x-3 mb-3 ">
-              <span className="text-xl sm:text-2xl">
-                {movement.tracking_type === 'weight' ? '🏋️' : 
-                 movement.tracking_type === 'bodyweight' ? '🤸' :
-                 movement.tracking_type === 'duration' ? '⏱️' :
-                 movement.tracking_type === 'distance' ? '🏃' : '💪'}
-              </span>
-              <Typography variant="title1" className="min-w-0 break-words">{movement.name}</Typography>
+          {/* Movement Info - Collapsible */}
+          <Collapsible
+            open={isMovementInfoOpen}
+            onOpenChange={setIsMovementInfoOpen}
+            className="flex flex-col gap-2"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center space-x-3">
+                <span className="text-xl sm:text-2xl">
+                  {movement.tracking_type === 'weight' ? '🏋️' : 
+                   movement.tracking_type === 'bodyweight' ? '🤸' :
+                   movement.tracking_type === 'duration' ? '⏱️' :
+                   movement.tracking_type === 'distance' ? '🏃' : '💪'}
+                </span>
+                <Typography variant="title1" className="min-w-0 break-words">{movement.name}</Typography>
+              </div>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                  <ChevronsUpDown className="h-4 w-4" />
+                  <span className="sr-only">Toggle movement details</span>
+                </Button>
+              </CollapsibleTrigger>
             </div>
-            <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
+            <CollapsibleContent className="space-y-1">
+              <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
                 <Typography variant="caption">Muscle groups: {movement.muscle_groups?.join(', ') || 'Unknown'}</Typography>
                 <Typography variant="caption">Tracking type: {trackingTypes.find(tt => tt.name === movement.tracking_type)?.display_name || movement.tracking_type}</Typography>
-              {movement.personal_notes && (
-                <>  
+                {movement.custom_rest_timer && (
+                  <Typography variant="caption">Custom rest timer: {movement.custom_rest_timer}s</Typography>
+                )}
+                {movement.personal_notes && (
                   <Typography variant="caption" className="break-words">Notes: {movement.personal_notes}</Typography>
-                </>
-              )}
-            </div>
-          </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-3 sm:gap-4">
             {/* Quick Log */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2 px-1">
-                <Dumbbell className="w-4 h-4" />
-                <Typography variant="title2">Quick log</Typography>
-              </div>
+            <div className="space-y-2">
               <QuickSetEntry 
                 movement={movement}
                 lastSet={sets.length > 0 ? sets[0] : null}
@@ -192,7 +210,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
 
 
           {/* Set History */}
-          <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4">
+          <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
             <div className="flex items-center space-x-2 px-1">
               <Calendar className="w-4 h-4" />
               <Typography variant="title2">Set history</Typography>

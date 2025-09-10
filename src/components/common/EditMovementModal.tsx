@@ -14,6 +14,7 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
+import { MultiSelect } from '@/components/ui/multi-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useMuscleGroups, useTrackingTypes, useUpdateUserMovement } from '@/hooks';
@@ -130,12 +131,8 @@ export default function EditMovementModal({
     onClose();
   };
 
-  const handleMuscleGroupToggle = (group: string) => {
-    const currentGroups = getValues("muscle_groups");
-    const newGroups = currentGroups.includes(group)
-      ? currentGroups.filter(g => g !== group)
-      : [...currentGroups, group];
-    setValue("muscle_groups", newGroups, { shouldValidate: true });
+  const handleMuscleGroupsChange = (selectedGroups: string[]) => {
+    setValue("muscle_groups", selectedGroups, { shouldValidate: true });
   };
 
   if (!movement) return null;
@@ -195,23 +192,16 @@ export default function EditMovementModal({
         <Label htmlFor="muscle_groups" className="text-sm font-medium text-muted-foreground">
           Muscle groups * ({watchMuscleGroups?.length || 0} selected)
         </Label>
-        <div className="grid grid-cols-2 gap-2">
-          {muscleGroups.map((group) => (
-            <Button
-              key={group.id}
-              variant="ghost"
-              type="button"
-              onClick={() => handleMuscleGroupToggle(group.display_name)}
-              className={`p-2 text-sm rounded-md border transition-colors ${
-                watchMuscleGroups?.includes(group.display_name)
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background border-border hover:bg-accent'
-              }`}
-            >
-              {group.display_name}
-            </Button>
-          ))}
-        </div>
+        <MultiSelect
+          options={muscleGroups.map(group => ({
+            label: group.display_name,
+            value: group.display_name
+          }))}
+          defaultValue={watchMuscleGroups || []}
+          onValueChange={handleMuscleGroupsChange}
+          placeholder="Select muscle groups..."
+          resetOnDefaultValueChange={true}
+        />
         {errors.muscle_groups && (
           <p className="text-sm text-destructive">{errors.muscle_groups.message}</p>
         )}

@@ -130,10 +130,10 @@ export default function WorkoutSettingsModal({
 
   const FormContent = ({ className = "" }: { className?: string }) => (
     <div className={`space-y-4 ${className}`}>
-      {/* Workout Name */}
+      {/* Workout name */}
       <div className="space-y-2">
         <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
-          Workout Name *
+          Workout name *
         </Label>
         <Input
           id="name"
@@ -208,12 +208,11 @@ export default function WorkoutSettingsModal({
   );
 
   const ActionButtons = () => (
-    <div className="flex flex-col space-y-3 sm:flex-row sm:justify-between sm:space-y-0 pt-4">
+    <div className="flex flex-col-reverse sm:flex-row gap-2 order-2 sm:order-1">
       <Button
         variant="destructive"
-        size="sm"
         onClick={() => setShowDeleteConfirm(true)}
-        className="flex items-center justify-center space-x-2 w-full sm:w-auto"
+        className="w-full sm:w-auto"
       >
         <Trash2 className="w-4 h-4" />
         Delete workout
@@ -255,7 +254,7 @@ export default function WorkoutSettingsModal({
           onConfirm={handleDelete}
           title="Delete workout"
           description={`Are you sure you want to delete "${workout.name}"? This will permanently remove the workout. This action cannot be undone.`}
-          confirmText="Delete Workout"
+          confirmText="Delete workout"
           cancelText="Cancel"
           variant="destructive"
         />
@@ -285,7 +284,7 @@ export default function WorkoutSettingsModal({
         onConfirm={handleDelete}
         title="Delete workout"
         description={`Are you sure you want to delete "${workout.name}"? This will permanently remove the workout. This action cannot be undone.`}
-        confirmText="Delete Workout"
+        confirmText="Delete workout"
         cancelText="Cancel"
         variant="destructive"
       />

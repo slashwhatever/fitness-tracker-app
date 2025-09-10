@@ -3,10 +3,10 @@
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from '@/hooks';
+import { useQueryClient } from '@tanstack/react-query';
 import { ChevronRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { forwardRef, useImperativeHandle, useState, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
 
@@ -87,7 +87,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
 
   return (
     <>
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="flex items-center space-x-2">
         <Typography variant="title2">Your workouts</Typography>
       </div>
@@ -161,13 +161,13 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
         isOpen={showDeleteConfirm}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="Delete Workout"
+        title="Delete workout"
         description={
           workoutToDelete 
             ? `Are you sure you want to delete "${workoutToDelete.name}"? This will permanently remove the workout and all its movements. This action cannot be undone.`
             : ''
         }
-        confirmText="Delete Workout"
+        confirmText="Delete workout"
         cancelText="Cancel"
         variant="destructive"
         isLoading={deleteWorkoutMutation.isPending}

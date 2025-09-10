@@ -25,9 +25,9 @@ export default function WorkoutManagement({ onWorkoutCreated }: WorkoutManagemen
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-2 sm:space-y-4">
       {/* Quick Actions */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center space-x-2">
           <Typography variant="title2">Workout management</Typography>
         </div>

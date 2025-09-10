@@ -64,7 +64,7 @@ export default function MovementLibraryPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-        <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4">
+        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4">
           {/* Breadcrumbs */}
           <Breadcrumb>
             <BreadcrumbList>
@@ -96,7 +96,7 @@ export default function MovementLibraryPage() {
 
   return (
     <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-      <div className="max-w-7xl mx-auto space-y-3 sm:space-y-4">
+      <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4">
         {/* Breadcrumbs */}
         <Breadcrumb>
           <BreadcrumbList>

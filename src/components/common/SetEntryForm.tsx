@@ -118,7 +118,7 @@ export default function SetEntryForm({
         {(movement.tracking_type === 'weight' || movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
           <div className="grid grid-cols-2 gap-4">
             {/* Reps */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="text-center">
                 <Input
                   type="number"
@@ -163,7 +163,7 @@ export default function SetEntryForm({
 
             {/* Weight (only for weight tracking) */}
             {movement.tracking_type === 'weight' && (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="text-center">
                   <Input
                     type="number"
@@ -212,7 +212,7 @@ export default function SetEntryForm({
 
         {/* Duration Display */}
         {movement.tracking_type === 'duration' && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="text-center">
               <Input
                 type="number"
@@ -252,7 +252,7 @@ export default function SetEntryForm({
 
         {/* Distance Display */}
         {movement.tracking_type === 'distance' && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="text-center">
               <Input
                 type="number"
@@ -292,7 +292,7 @@ export default function SetEntryForm({
         )}
 
         {/* Notes */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <Input
             type="text"
             value={setData.notes || ''}

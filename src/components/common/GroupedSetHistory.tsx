@@ -95,19 +95,21 @@ export default function GroupedSetHistory({
           groupedSets[sortedDateKeys[index + 1]] : undefined;
         
         return (
-          <div key={dateKey} className="space-y-3">
+          <div key={dateKey} className="space-y-2">
             {/* Date Header */}
-            <div className="space-y-3">
+            <div className="space-y-2">
               <Typography variant="title3" className="text-muted-foreground">
                 {formatDateHeader(dateKey)}
               </Typography>
               
-              {/* Session Comparison */}
-              <SessionComparison
-                currentSets={setsForDay}
-                previousSets={previousDaySets}
-                movement={movement}
-              />
+              {/* Session Comparison - only show for most recent session when there are multiple sessions */}
+              {index === 0 && sortedDateKeys.length > 1 && (
+                <SessionComparison
+                  currentSets={setsForDay}
+                  previousSets={previousDaySets}
+                  movement={movement}
+                />
+              )}
             </div>
 
             {/* Sets for that day */}
