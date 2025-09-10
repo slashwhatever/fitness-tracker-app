@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
-import { useSetsByWorkout } from '@/hooks/useSets';
+import { useSets, useSetsByWorkout } from '@/hooks/useSets';
 import type { UserMovement } from '@/models/types';
 import { Dumbbell, Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
+import { formatLastSetDate } from '@/lib/utils/dateHelpers';
 
 interface MovementListProps {
   workoutId: string;
@@ -27,6 +28,7 @@ export default function MovementList({
 }: MovementListProps) {
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
   const { data: workoutSets = [] } = useSetsByWorkout(workoutId);
+  const { data: allSets = [] } = useSets();
   const removeMovementMutation = useRemoveMovementFromWorkout();
   const [editingMovementId, setEditingMovementId] = useState<string | null>(null);
   const [deletingMovement, setDeletingMovement] = useState<{ id: string; name: string } | null>(null);
@@ -55,6 +57,12 @@ export default function MovementList({
 
   const getMovementSets = (userMovementId: string) => {
     return workoutSets.filter(set => set.user_movement_id === userMovementId);
+  };
+
+  const getLastSetDate = (userMovementId: string) => {
+    // Get all sets for this specific movement
+    const movementSets = allSets.filter(set => set.user_movement_id === userMovementId);
+    return formatLastSetDate(movementSets);
   };
 
   if (isLoading) {
@@ -113,7 +121,7 @@ export default function MovementList({
                       {movement.user_movement?.name || 'Unknown Movement'}
                     </Typography>
                     <Typography variant="caption" className="line-clamp-2 block">
-                      {movement.user_movement?.muscle_groups?.join(', ') || 'No muscle groups'}
+                      {getLastSetDate(movement.user_movement_id)}
                       {movementSets.length > 0 && ` • ${movementSets.length} set${movementSets.length > 1 ? 's' : ''}`}
                     </Typography>
                   </div>

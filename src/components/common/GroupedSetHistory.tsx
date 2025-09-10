@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import EditableSet from './EditableSet';
 import SessionComparison from './SessionComparison';
 import { Typography } from './Typography';
+import { formatDateHeader } from '@/lib/utils/dateHelpers';
 
 interface GroupedSetHistoryProps {
   sets: Set[];
@@ -52,30 +53,6 @@ export default function GroupedSetHistory({
     );
   }, [groupedSets]);
 
-  const formatDateHeader = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    // Check if it's today
-    if (date.toDateString() === today.toDateString()) {
-      return 'Today';
-    }
-    
-    // Check if it's yesterday
-    if (date.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    }
-
-    // Format as "MON, 25 DEC 2023"
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }).replace(',', ',');
-  };
 
 
   if (sets.length === 0) {
