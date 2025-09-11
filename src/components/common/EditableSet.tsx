@@ -1,16 +1,13 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
+  DrawerTrigger
 } from '@/components/ui/drawer';
 import { useDeleteSet, useUpdateSet } from '@/hooks/useSets';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -98,7 +95,7 @@ export default function EditableSet({
 
   return (
     <>
-      <div className="flex flex-row justify-between items-center p-2 sm:p-3 bg-card border border-default rounded-lg hover:border-gray-300 transition-all">
+      <div className="flex flex-row justify-between items-center">
         <div className="flex-1 min-w-0">
           {/* Set Data Display */}
           <div className="text-left">
@@ -179,13 +176,6 @@ export default function EditableSet({
                 />
               </div>
               
-              <DrawerFooter>
-                <DrawerClose asChild>
-                  <Button variant="outline">
-                    <Typography variant="body">Cancel</Typography>
-                  </Button>
-                </DrawerClose>
-              </DrawerFooter>
             </DrawerContent>
           </Drawer>
                               

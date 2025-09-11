@@ -1,11 +1,12 @@
 'use client';
 
+import { formatDateHeader } from '@/lib/utils/dateHelpers';
 import { Set, UserMovement } from '@/models/types';
 import { useMemo } from 'react';
 import EditableSet from './EditableSet';
 import SessionComparison from './SessionComparison';
 import { Typography } from './Typography';
-import { formatDateHeader } from '@/lib/utils/dateHelpers';
+import { Separator } from '@/components/ui/separator';
 
 interface GroupedSetHistoryProps {
   sets: Set[];
@@ -72,32 +73,41 @@ export default function GroupedSetHistory({
           groupedSets[sortedDateKeys[index + 1]] : undefined;
         
         return (
-          <div key={dateKey} className="space-y-2">
-            {/* Date Header */}
-            <div className="space-y-2">
+          <div key={dateKey} className="bg-card border border-default rounded-lg overflow-hidden">
+            {/* Session Header */}
+            <div className="p-3 pb-2">
               <Typography variant="title3" className="text-muted-foreground">
                 {formatDateHeader(dateKey)}
               </Typography>
-              
-              {/* Session Comparison - only show for most recent session when there are multiple sessions */}
-              {index === 0 && sortedDateKeys.length > 1 && (
-                <SessionComparison
-                  currentSets={setsForDay}
-                  previousSets={previousDaySets}
-                  movement={movement}
-                />
-              )}
             </div>
 
+            {/* Session Comparison - only show for most recent session when there are multiple sessions */}
+            {index === 0 && sortedDateKeys.length > 1 && (
+              <>
+                <div className="px-3 pb-2">
+                  <SessionComparison
+                    currentSets={setsForDay}
+                    previousSets={previousDaySets}
+                    movement={movement}
+                  />
+                </div>
+                <Separator />
+              </>
+            )}
+
             {/* Sets for that day */}
-            <div className="space-y-2">
-              {setsForDay.map((set) => (
-                <EditableSet
-                  key={set.id}
-                  set={set}
-                  movement={movement}
-                  onDuplicate={onDuplicate}
-                />
+            <div>
+              {setsForDay.map((set, setIndex) => (
+                <div key={set.id}>
+                  <div className="p-3">
+                    <EditableSet
+                      set={set}
+                      movement={movement}
+                      onDuplicate={onDuplicate}
+                    />
+                  </div>
+                  {setIndex < setsForDay.length - 1 && <Separator />}
+                </div>
               ))}
             </div>
           </div>

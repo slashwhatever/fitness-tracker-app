@@ -256,7 +256,7 @@ export default function SessionComparison({
     const height = Math.min(100, Math.max(5, currentAsPercentOfPrevious));
     
     return (
-      <div className="relative w-2 h-8 rounded-full overflow-hidden">
+      <div className="relative w-2 h-10 rounded-full overflow-hidden">
         {/* Background */}
         <div className={`absolute inset-0 ${metric.backgroundColor} rounded-full`} />
         {/* Progress - shows current as percentage of previous */}
@@ -292,26 +292,26 @@ export default function SessionComparison({
   };
 
   return (
-    <div className="bg-card border rounded-lg p-3 space-y-2">
+    <div className="space-y-2">
       {/* Title row */}
-      <Typography variant="caption" className="text-muted-foreground font-medium">
+      <Typography variant="caption">
         Compared to previous
       </Typography>
       
-      {/* Metrics grid - 2 rows */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+      {/* Metrics grid - single row on desktop, 2 rows on mobile */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
         {metrics.map((metric) => (
           <div key={metric.label} className="flex items-center space-x-2">
             {/* Progress bar */}
             {renderProgressBar(metric)}
             
             {/* Data */}
-            <div className="text-left">
+            <div>
               <div className="flex items-center space-x-1">
                 <Typography variant="caption" className="font-medium whitespace-nowrap">
                   {formatValue(metric.current, metric.label)}
                 </Typography>
-                <Typography variant="footnote" className="text-muted-foreground whitespace-nowrap">
+                <Typography variant="caption" className="text-muted-foreground whitespace-nowrap">
                   {metric.label}
                 </Typography>
               </div>
@@ -321,14 +321,14 @@ export default function SessionComparison({
                   'text-muted-foreground'
                 }`}>
                 {metric.diff > 0 ? (
-                  <ChevronUp className="w-3 h-3" />
+                  <ChevronUp className="w-5 h-5 font-bold" />
                 ) : metric.diff < 0 ? (
-                  <ChevronDown className="w-3 h-3" />
+                  <ChevronDown className="w-5 h-5 font-bold" />
                 ) : (
-                  <Minus className="w-3 h-3" />
+                  <Minus className="w-5 h-5 font-bold" />
                 )}
                 <Typography 
-                  variant="footnote" 
+                  variant="caption" 
                   className="whitespace-nowrap"
                 >
                   {(() => {

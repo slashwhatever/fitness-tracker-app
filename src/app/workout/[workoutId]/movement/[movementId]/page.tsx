@@ -3,6 +3,7 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import GroupedSetHistory from '@/components/common/GroupedSetHistory';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
+import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import Loading from '@/components/Loading';
 import {
@@ -155,10 +156,13 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                 <Typography variant="title1" className="min-w-0 break-words">{movement.name}</Typography>
               </div>
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                  <ChevronsUpDown className="h-4 w-4" />
-                  <span className="sr-only">Toggle movement details</span>
-                </Button>
+                <ResponsiveButton 
+                  icon={ChevronsUpDown}
+                  color="primary"
+                  variant="outline"
+                >
+                  <Typography variant="body">movement details</Typography>
+                </ResponsiveButton>
               </CollapsibleTrigger>
             </div>
             <CollapsibleContent className="space-y-1">

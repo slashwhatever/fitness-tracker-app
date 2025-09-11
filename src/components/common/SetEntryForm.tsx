@@ -112,8 +112,8 @@ export default function SetEntryForm({
   };
 
   return (
-    <div className="p-4 space-y-2">
-      <form onSubmit={handleSubmit}>
+    <div className="p-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Reps and Weight Display */}
         {(movement.tracking_type === 'weight' || movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
           <div className="grid grid-cols-2 gap-4">
@@ -140,25 +140,25 @@ export default function SetEntryForm({
                 <div className="text-base text-muted-foreground">rep{(setData.reps || 0) !== 1 ? 's' : ''}</div>
               </div>
               <div className="flex justify-center items-center space-x-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => adjustValue('reps', -1)}
-                  className="h-12 w-12 rounded-full"
-                >
-                  <Minus className="h-6 w-6" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => adjustValue('reps', 1)}
-                  className="h-12 w-12 rounded-full"
-                >
-                  <Plus className="h-6 w-6" />
-                </Button>
-              </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustValue('reps', -1)}
+                    className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                  >
+                    <Minus className="h-6 w-6" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => adjustValue('reps', 1)}
+                    className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                  >
+                    <Plus className="h-6 w-6" />
+                  </Button>
+                </div>
             </div>
 
             {/* Weight (only for weight tracking) */}
@@ -191,7 +191,7 @@ export default function SetEntryForm({
                     variant="outline"
                     size="icon"
                     onClick={() => adjustValue('weight', -1)}
-                    className="h-12 w-12 rounded-full"
+                    className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
                   >
                     <Minus className="h-6 w-6" />
                   </Button>
@@ -200,7 +200,7 @@ export default function SetEntryForm({
                     variant="outline"
                     size="icon"
                     onClick={() => adjustValue('weight', 1)}
-                    className="h-12 w-12 rounded-full"
+                    className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
                   >
                     <Plus className="h-6 w-6" />
                   </Button>
@@ -291,18 +291,6 @@ export default function SetEntryForm({
           </div>
         )}
 
-        {/* Notes */}
-        <div className="space-y-2">
-          <Input
-            type="text"
-            value={setData.notes || ''}
-            onChange={handleNotesChange}
-            onFocus={handleFocus}
-            placeholder="Add note"
-            className="text-center text-lg bg-transparent border-0 border-b border-muted-foreground/30 rounded-none focus:border-primary focus:ring-0"
-          />
-        </div>
-
         {/* Save Button */}
           <Button
             type="submit"
@@ -318,6 +306,19 @@ export default function SetEntryForm({
               </>
             )}
           </Button>
+
+          {/* Notes */}
+          <div className="space-y-2">
+            <Input
+              type="text"
+              value={setData.notes || ''}
+              onChange={handleNotesChange}
+              onFocus={handleFocus}
+              placeholder="Add note"
+              className="text-center text-sm sm:text-base bg-transparent border-0 border-b border-muted-foreground/30 rounded-none focus:border-primary focus:ring-0"
+            />
+          </div>
+
       </form>
     </div>
   );
