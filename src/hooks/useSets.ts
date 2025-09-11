@@ -82,6 +82,8 @@ export function useSetsByMovement(movementId: string) {
       return data as QueryResult;
     },
     enabled: !!user?.id && !!movementId,
+    staleTime: 1000 * 60 * 2, // 2 minutes - sets data changes more frequently
+    gcTime: 1000 * 60 * 5, // 5 minutes garbage collection
   });
 }
 
@@ -178,6 +180,32 @@ export function useUpdateSet() {
 
       if (error) throw error;
       return data;
+    },
+    // Optimistic update for better UX
+    onMutate: async ({ id, updates }) => {
+      if (!user?.id) return;
+
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: setKeys.list(user.id) });
+      
+      // Snapshot previous value
+      const previousSets = queryClient.getQueryData(setKeys.list(user.id));
+      
+      // Optimistically update
+      queryClient.setQueryData(setKeys.list(user.id), (old: unknown) => {
+        if (!old || !Array.isArray(old)) return old;
+        return old.map((set: Record<string, unknown>) => 
+          set.id === id ? { ...set, ...updates } : set
+        );
+      });
+
+      return { previousSets };
+    },
+    onError: (err, variables, context) => {
+      // Revert optimistic update on error
+      if (context?.previousSets && user?.id) {
+        queryClient.setQueryData(setKeys.list(user.id), context.previousSets);
+      }
     },
     onSuccess: (data) => {
       if (user?.id) {

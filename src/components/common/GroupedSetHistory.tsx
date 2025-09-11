@@ -54,8 +54,6 @@ export default function GroupedSetHistory({
     );
   }, [groupedSets]);
 
-
-
   if (sets.length === 0) {
     return (
       <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
@@ -96,20 +94,18 @@ export default function GroupedSetHistory({
             )}
 
             {/* Sets for that day */}
-            <div>
-              {setsForDay.map((set, setIndex) => (
-                <div key={set.id}>
-                  <div className="p-3">
-                    <EditableSet
-                      set={set}
-                      movement={movement}
-                      onDuplicate={onDuplicate}
-                    />
-                  </div>
-                  {setIndex < setsForDay.length - 1 && <Separator />}
+            {setsForDay.map((set, setIndex) => (
+              <div key={set.id}>
+                <div className="p-3">
+                  <EditableSet
+                    set={set}
+                    movement={movement}
+                    onDuplicate={onDuplicate}
+                  />
                 </div>
-              ))}
-            </div>
+                {setIndex < setsForDay.length - 1 && <Separator />}
+              </div>
+            ))}
           </div>
         );
       })}

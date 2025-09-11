@@ -13,7 +13,7 @@ import { useDeleteSet, useUpdateSet } from '@/hooks/useSets';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import type { Set, UserMovement } from '@/models/types';
 import { Copy, Edit, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useCallback, useMemo, memo } from 'react';
 import ResponsiveButton from './ResponsiveButton';
 import SetEntryForm from './SetEntryForm';
 import { Typography } from './Typography';
@@ -24,7 +24,7 @@ interface EditableSetProps {
   onDuplicate: (originalSet: Set) => void;
 }
 
-export default function EditableSet({
+const EditableSet = memo(function EditableSet({
   set,
   movement,
   onDuplicate,
@@ -39,7 +39,15 @@ export default function EditableSet({
   const weightUnit = userProfile?.weight_unit || 'lbs';
   const distanceUnit = userProfile?.distance_unit || 'miles';
 
-  const handleSave = async (setData: Partial<Set>) => {
+  // Memoize expensive date formatting
+  const formattedDate = useMemo(() => 
+    new Date(set.created_at).toLocaleDateString(), [set.created_at]
+  );
+  const formattedTime = useMemo(() => 
+    new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), [set.created_at]
+  );
+
+  const handleSave = useCallback(async (setData: Partial<Set>) => {
     const updates: Partial<Set> = {
       reps: setData.reps,
       weight: setData.weight,
@@ -54,12 +62,11 @@ export default function EditableSet({
     } catch (error) {
       console.error('Failed to update set:', error);
     }
-  };
+  }, [set.id, updateSetMutation]);
 
-  const handleDrawerOpenChange = (open: boolean) => {
+  const handleDrawerOpenChange = useCallback((open: boolean) => {
     setIsEditing(open);
-  };
-
+  }, []);
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -67,19 +74,19 @@ export default function EditableSet({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getDistanceUnitAbbreviation = (unit: string) => {
+  const getDistanceUnitAbbreviation = useCallback((unit: string) => {
     return unit === 'miles' ? 'mi' : 'km';
-  };
+  }, []);
 
-  const handleDuplicate = () => {
+  const handleDuplicate = useCallback(() => {
     onDuplicate(set);
-  };
+  }, [onDuplicate, set]);
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = useCallback(() => {
     setShowDeleteConfirm(true);
-  };
+  }, []);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     try {
       await deleteSetMutation.mutateAsync(set.id);
       setShowDeleteConfirm(false);
@@ -87,18 +94,16 @@ export default function EditableSet({
       console.error('Failed to delete set:', error);
       // Keep modal open on error so user can retry
     }
-  };
+  }, [deleteSetMutation, set.id]);
 
-  const handleCancelDelete = () => {
+  const handleCancelDelete = useCallback(() => {
     setShowDeleteConfirm(false);
-  };
+  }, []);
 
   return (
     <>
       <div className="flex flex-row justify-between items-center">
-        <div className="flex-1 min-w-0">
-          {/* Set Data Display */}
-          <div className="text-left">
+        <div className="flex-1 min-w-0 text-left">
             {movement.tracking_type === 'weight' && (
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <Typography variant="title2">{set.reps || 0}</Typography>
@@ -128,13 +133,11 @@ export default function EditableSet({
                 <Typography variant="title2">{formatDuration(set.duration)}</Typography>
               </div>
             )}
-          </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 ml-2 sm:ml-4">
           <ResponsiveButton
-
             icon={Copy}
             color="green"
             onClick={handleDuplicate}
@@ -156,7 +159,7 @@ export default function EditableSet({
               <DrawerHeader>
                 <DrawerTitle>Edit set</DrawerTitle>
                 <DrawerDescription>
-                  Modify the values for this set from {new Date(set.created_at).toLocaleDateString()} at {new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  Modify the values for this set from {formattedDate} at {formattedTime}
                 </DrawerDescription>
               </DrawerHeader>
               
@@ -175,10 +178,9 @@ export default function EditableSet({
                   saveButtonText="Save Changes"
                 />
               </div>
-              
             </DrawerContent>
           </Drawer>
-                              
+          
           <ResponsiveButton
             title="Delete"
             icon={Trash2}
@@ -190,13 +192,12 @@ export default function EditableSet({
         </div>
       </div>
 
-
       <ConfirmationModal
         isOpen={showDeleteConfirm}
         onClose={handleCancelDelete}
         onConfirm={handleConfirmDelete}
         title="Delete set"
-        description={`Are you sure you want to delete this set from ${new Date(set.created_at).toLocaleDateString()} at ${new Date(set.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}? This action cannot be undone.`}
+        description={`Are you sure you want to delete this set from ${formattedDate} at ${formattedTime}? This action cannot be undone.`}
         confirmText="Delete set"
         cancelText="Cancel"
         variant="destructive"
@@ -204,4 +205,6 @@ export default function EditableSet({
       />
     </>
   );
-}
+});
+
+export default EditableSet;

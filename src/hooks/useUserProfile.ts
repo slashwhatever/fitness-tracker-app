@@ -45,6 +45,8 @@ export function useUserProfile() {
       return data as QueryResult;
     },
     enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // 5 minutes - profile data doesn't change often
+    gcTime: 1000 * 60 * 10, // 10 minutes garbage collection
   });
 }
 
