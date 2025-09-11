@@ -161,7 +161,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
                   color="primary"
                   variant="outline"
                 >
-                  <Typography variant="body">movement details</Typography>
+                  <Typography variant="body">Movement details</Typography>
                 </ResponsiveButton>
               </CollapsibleTrigger>
             </div>
