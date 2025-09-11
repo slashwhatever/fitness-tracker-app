@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import Loading from '../Loading';
+import { PageSkeleton } from '../ui/skeleton-patterns';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -35,7 +35,7 @@ export function ProtectedRoute({
   // Show loading state while checking authentication
   if (loading) {
     return fallback || (
-      <Loading />
+      <PageSkeleton />
     );
   }
 

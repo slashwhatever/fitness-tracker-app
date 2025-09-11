@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Typography } from '@/components/common/Typography';
-import Loading from '@/components/Loading';
+import { SettingsSkeleton } from '@/components/ui/skeleton-patterns';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -109,7 +109,7 @@ export default function SettingsPage() {
     return (
       <ProtectedRoute>
         <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-          <Loading title="Loading your settings..." subtitle="Please wait while we load your settings." />
+          <SettingsSkeleton />
         </main>
       </ProtectedRoute>
     );

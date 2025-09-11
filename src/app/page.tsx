@@ -4,7 +4,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutManagement from '@/components/features/WorkoutManagement';
-import Loading from '@/components/Loading';
+import { PageSkeleton } from '@/components/ui/skeleton-patterns';
 import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Dumbbell, Library, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <Loading />
+      <PageSkeleton />
     );
   }
 

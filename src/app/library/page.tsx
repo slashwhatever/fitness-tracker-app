@@ -3,7 +3,7 @@
 import MovementCard from '@/components/common/MovementCard';
 import SearchFilters from '@/components/common/SearchFilters';
 import { Typography } from '@/components/common/Typography';
-import Loading from '@/components/Loading';
+import { LibrarySkeleton } from '@/components/ui/skeleton-patterns';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -147,7 +147,7 @@ export default function MovementLibraryPage() {
         </div>
         {isLoading ? (
           <div className="text-center py-12">
-            <Loading title="Loading exercises..." subtitle="Please wait while we fetch the movement library." />
+            <LibrarySkeleton />
           </div>
         ) : filteredMovements.length === 0 ? (
           <div className="text-center py-12">

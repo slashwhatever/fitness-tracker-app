@@ -5,7 +5,7 @@ import GroupedSetHistory from '@/components/common/GroupedSetHistory';
 import QuickSetEntry from '@/components/common/QuickSetEntry';
 import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
-import Loading from '@/components/Loading';
+import { MovementDetailSkeleton } from '@/components/ui/skeleton-patterns';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -89,9 +89,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   if (loading) {
     return (
       <ProtectedRoute>
-        <main className="min-h-screen bg-background p-8">
-          <Loading title="Loading movement details..." subtitle="Please wait while we load the movement details." />
-        </main>
+        <MovementDetailSkeleton />
       </ProtectedRoute>
     );
   }

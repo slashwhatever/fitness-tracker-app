@@ -6,7 +6,7 @@ import MovementSelectionModal from '@/components/common/MovementSelectionModal';
 import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
-import Loading from '@/components/Loading';
+import { WorkoutPageSkeleton } from '@/components/ui/skeleton-patterns';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -88,9 +88,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   if (loading) {
     return (
       <ProtectedRoute>
-        <main className="min-h-screen bg-background p-8">
-          <Loading title="Loading workout..." subtitle="Please wait while we load the workout." />
-        </main>
+        <WorkoutPageSkeleton />
       </ProtectedRoute>
     );
   }

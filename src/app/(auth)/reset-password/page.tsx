@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 import UpdatePasswordForm from '@/components/auth/UpdatePasswordForm';
-import Loading from '@/components/Loading';
+import { PageSkeleton } from '@/components/ui/skeleton-patterns';
 
 function ResetPasswordContent() {
   const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -63,7 +63,7 @@ function ResetPasswordContent() {
   }, [user, isUpdateMode, loading, router]);
 
   if (loading) {
-    return <Loading />;
+    return <PageSkeleton />;
   }
 
   // Show update password form if user has valid session (from email link)
@@ -77,7 +77,7 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<PageSkeleton />}>
       <ResetPasswordContent />
     </Suspense>
   );
