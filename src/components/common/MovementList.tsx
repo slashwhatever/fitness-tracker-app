@@ -3,16 +3,16 @@
 import EditMovementModal from '@/components/common/EditMovementModal';
 import { Button } from '@/components/ui/button';
 import { ConfirmationModal } from '@/components/ui/confirmation-modal';
-import { Skeleton } from '@/components/ui/skeleton';
+import { MovementListSkeleton } from '@/components/ui/skeleton-patterns';
 import { useRemoveMovementFromWorkout, useUserMovement, useWorkoutMovements } from '@/hooks';
 import { useSets, useSetsByWorkout } from '@/hooks/useSets';
+import { formatLastSetDate } from '@/lib/utils/dateHelpers';
 import type { UserMovement } from '@/models/types';
 import { Dumbbell, Edit3, Plus, SearchX, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import ResponsiveButton from './ResponsiveButton';
 import { Typography } from './Typography';
-import { formatLastSetDate } from '@/lib/utils/dateHelpers';
 
 interface MovementListProps {
   workoutId: string;
@@ -67,26 +67,7 @@ export default function MovementList({
 
   if (isLoading) {
     return (
-      <div className="grid gap-2">
-        {[...Array(expectedCount)].map((_, index) => (
-          <div key={index} className="bg-muted/50 rounded-lg border">
-            <div className="flex items-center justify-between p-3 sm:p-4">
-              <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                <Skeleton className="w-6 h-4" />
-                <div className="min-w-0 flex-1">
-                  <Skeleton className="h-4 w-32 sm:w-40 mb-1" />
-                  <Skeleton className="h-3 w-24 sm:w-32" />
-                </div>
-              </div>
-              <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
-                <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
-                <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
-                <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <MovementListSkeleton />
     );
   }
 

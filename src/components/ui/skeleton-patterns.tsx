@@ -42,27 +42,7 @@ export function WorkoutPageSkeleton() {
           </div>
         </div>
         
-        {/* Movement list skeleton */}
-        <div className="grid gap-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-muted/50 rounded-lg border">
-              <div className="flex items-center justify-between p-3 sm:p-4">
-                <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-                  <Skeleton className="w-6 h-4" />
-                  <div className="min-w-0 flex-1">
-                    <Skeleton className="h-4 w-32 sm:w-40 mb-1" />
-                    <Skeleton className="h-3 w-24 sm:w-32" />
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
-                  <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
-                  <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
-                  <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+
       </div>
     </div>
   );
@@ -71,17 +51,23 @@ export function WorkoutPageSkeleton() {
 // Movement list skeleton
 export function MovementListSkeleton() {
   return (
-    <div className="space-y-3">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between p-3 bg-card border border-default rounded-lg">
-          <div className="flex items-center space-x-3">
-            <Skeleton className="h-6 w-6 rounded-full" />
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-3 w-16" />
+      <div className="grid gap-2">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="bg-muted/50 rounded-lg border">
+          <div className="flex items-center justify-between p-3 sm:p-4">
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+              <Skeleton className="w-6 h-4" />
+              <div className="min-w-0 flex-1">
+                <Skeleton className="h-4 w-32 sm:w-40 mb-1" />
+                <Skeleton className="h-3 w-24 sm:w-32" />
+              </div>
+            </div>
+            <div className="flex items-center space-x-1 sm:space-x-2 ml-2">
+              <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
+              <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
+              <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
             </div>
           </div>
-          <Skeleton className="h-8 w-8 rounded" />
         </div>
       ))}
     </div>
