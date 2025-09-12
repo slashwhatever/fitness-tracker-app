@@ -23,8 +23,7 @@ interface MovementListProps {
 
 export default function MovementList({ 
   workoutId, 
-  onAddMovementClick,
-  expectedCount = 2
+  onAddMovementClick
 }: MovementListProps) {
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
   const { data: workoutSets = [] } = useSetsByWorkout(workoutId);

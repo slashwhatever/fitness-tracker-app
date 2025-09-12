@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import WorkoutHeader from './WorkoutHeader';
 import { Workout } from '@/models/types';
 
@@ -24,6 +24,7 @@ const mockWorkout: Workout = {
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
   user_id: 'user-1',
+  default_rest_timer: null,
 };
 
 export const Loading: Story = {
@@ -49,7 +50,7 @@ export const WithWorkoutNoDescription: Story = {
   args: {
     workout: {
       ...mockWorkout,
-      description: undefined,
+      description: null,
     },
     isLoading: false,
     movementCount: 3,
@@ -63,7 +64,7 @@ export const SingleMovement: Story = {
     workout: {
       ...mockWorkout,
       name: 'Quick Bench Session',
-      description: undefined,
+      description: null,
     },
     isLoading: false,
     movementCount: 1,

@@ -62,7 +62,6 @@ export default function EditMovementModal({
     handleSubmit,
     formState: { errors, isValid },
     setValue,
-    getValues,
     watch,
     reset,
   } = useForm<FormData>({
