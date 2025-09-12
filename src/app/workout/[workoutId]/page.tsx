@@ -3,10 +3,8 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import MovementList from '@/components/common/MovementList';
 import MovementSelectionModal from '@/components/common/MovementSelectionModal';
-import ResponsiveButton from '@/components/common/ResponsiveButton';
-import { Typography } from '@/components/common/Typography';
+import WorkoutHeader from '@/components/common/WorkoutHeader';
 import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
-import { WorkoutPageSkeleton } from '@/components/ui/skeleton-patterns';
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -18,7 +16,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
-import { Plus, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -40,7 +37,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   }, [params]);
 
   // Use our new React Query hooks
-  const { data: workout, isLoading: loading } = useWorkout(paramsResolved?.workoutId || '');
+  const { data: workout, isLoading: workoutLoading } = useWorkout(paramsResolved?.workoutId || '');
   const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.workoutId || '');
 
   const handleMovementAdded = async (userMovementId: string) => {
@@ -85,13 +82,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     }
   };
 
-  if (loading) {
-    return (
-      <ProtectedRoute>
-        <WorkoutPageSkeleton />
-      </ProtectedRoute>
-    );
-  }
+  // No page-level loading - components handle their own loading states
 
   if (!workout) {
     return (
@@ -131,36 +122,13 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             </BreadcrumbList>
           </Breadcrumb>
           
-          <div className="flex justify-between items-center space-y-2">
-            <div className="flex flex-col space-y-4">
-              <Typography variant="title1" className="truncate mb-0">{workout.name}</Typography>
-              {workout.description && (
-                <Typography variant="caption" className="mt-1">{workout.description}</Typography>
-              )}
-              <Typography variant="caption" className="mt-0">
-                {workoutMovements.length} movement{workoutMovements.length !== 1 ? 's' : ''}
-              </Typography>
-            </div>
-
-            <div className="flex space-x-2 ml-4">
-              <ResponsiveButton 
-                onClick={() => setShowMovementModal(true)}
-                icon={Plus}
-                color="primary"
-                variant="outline"
-              >
-                <Typography variant="body">Add</Typography>
-              </ResponsiveButton>
-              <ResponsiveButton 
-                icon={Settings}
-                color="primary"
-                variant="outline"
-                onClick={() => setShowSettingsModal(true)}
-              >
-                <Typography variant="body">Settings</Typography>
-              </ResponsiveButton>
-            </div>
-          </div>
+          <WorkoutHeader 
+            workout={workout}
+            isLoading={workoutLoading}
+            movementCount={workoutMovements.length}
+            onAddMovement={() => setShowMovementModal(true)}
+            onSettings={() => setShowSettingsModal(true)}
+          />
           
           <MovementList
             key={refreshKey}

@@ -53,7 +53,7 @@ export function MovementListSkeleton() {
   return (
       <div className="grid gap-2">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="bg-muted/50 rounded-lg border">
+        <div key={i} className="bg-background rounded-lg border">
           <div className="flex items-center justify-between p-3 sm:p-4">
             <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
               <Skeleton className="w-6 h-4" />
