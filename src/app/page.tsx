@@ -4,23 +4,13 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import ResponsiveButton from '@/components/common/ResponsiveButton';
 import { Typography } from '@/components/common/Typography';
 import WorkoutManagement from '@/components/features/WorkoutManagement';
-import { PageSkeleton } from '@/components/ui/skeleton-patterns';
-import { useAuth } from '@/lib/auth/AuthProvider';
 import { BarChart3, Dumbbell, Library, Settings } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Dashboard() {
-  const { loading } = useAuth();
-
   const handleWorkoutCreated = () => {
     // Trigger a refresh of the workout list (handled by React Query automatically)
   };
-
-  if (loading) {
-    return (
-      <PageSkeleton />
-    );
-  }
 
   return (
     <ProtectedRoute>

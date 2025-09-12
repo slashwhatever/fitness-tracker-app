@@ -42,10 +42,17 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
   }, [params]);
 
   // Use our new React Query hooks
-  const { data: movement, isLoading: movementLoading } = useUserMovement(paramsResolved?.movementId || '');
+  const { 
+    data: movement, 
+    isLoading: movementLoading, 
+    status: movementStatus 
+  } = useUserMovement(paramsResolved?.movementId || '');
   const { data: sets = [] } = useSetsByMovement(paramsResolved?.movementId || '');
 
-  const { data: workout, isLoading: workoutLoading } = useWorkout(paramsResolved?.workoutId || '');
+  const { 
+    data: workout, 
+    isLoading: workoutLoading 
+  } = useWorkout(paramsResolved?.workoutId || '');
   const { data: userProfile } = useUserProfile();
   const { data: trackingTypes = [] } = useTrackingTypes();
   const createSetMutation = useCreateSet();
@@ -75,7 +82,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
       const duration = getEffectiveRestTimer(
         { default_rest_timer: userProfile.default_rest_timer || undefined },
         undefined, // No workout context on movement detail page
-        { custom_rest_timer: movement.custom_rest_timer || undefined }
+        { custom_rest_timer: movement?.custom_rest_timer || undefined }
       );
       
       if (duration) {
@@ -84,7 +91,8 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
     }
   };
 
-  const loading = movementLoading || workoutLoading || !movement || !workout;
+  // Show loading skeleton while any queries are loading
+  const loading = movementLoading || workoutLoading;
 
   if (loading) {
     return (
@@ -94,7 +102,11 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
     );
   }
 
-  if (!movement) {
+  // Only show "not found" if we've finished fetching and there's no movement
+  const hasFinishedFetching = movementStatus === 'success' || movementStatus === 'error';
+  const movementNotFound = hasFinishedFetching && !movement && !movementLoading;
+
+  if (movementNotFound) {
     return (
       <ProtectedRoute>
         <main className="min-h-screen bg-background p-8">
@@ -146,12 +158,12 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center space-x-3">
                 <span className="text-xl sm:text-2xl">
-                  {movement.tracking_type === 'weight' ? '🏋️' : 
-                   movement.tracking_type === 'bodyweight' ? '🤸' :
-                   movement.tracking_type === 'duration' ? '⏱️' :
-                   movement.tracking_type === 'distance' ? '🏃' : '💪'}
+                  {movement?.tracking_type === 'weight' ? '🏋️' : 
+                   movement?.tracking_type === 'bodyweight' ? '🤸' :
+                   movement?.tracking_type === 'duration' ? '⏱️' :
+                   movement?.tracking_type === 'distance' ? '🏃' : '💪'}
                 </span>
-                <Typography variant="title1" className="min-w-0 break-words">{movement.name}</Typography>
+                <Typography variant="title1" className="min-w-0 break-words">{movement?.name}</Typography>
               </div>
               <CollapsibleTrigger asChild>
                 <ResponsiveButton 
@@ -165,13 +177,13 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             </div>
             <CollapsibleContent className="space-y-1">
               <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
-                <Typography variant="caption">Muscle groups: {movement.muscle_groups?.join(', ') || 'Unknown'}</Typography>
-                <Typography variant="caption">Tracking type: {trackingTypes.find(tt => tt.name === movement.tracking_type)?.display_name || movement.tracking_type}</Typography>
-                {movement.custom_rest_timer && (
-                  <Typography variant="caption">Custom rest timer: {movement.custom_rest_timer}s</Typography>
+                <Typography variant="caption">Muscle groups: {movement?.muscle_groups?.join(', ') || 'Unknown'}</Typography>
+                <Typography variant="caption">Tracking type: {trackingTypes.find(tt => tt.name === movement?.tracking_type)?.display_name || movement?.tracking_type}</Typography>
+                {movement?.custom_rest_timer && (
+                  <Typography variant="caption">Custom rest timer: {movement?.custom_rest_timer}s</Typography>
                 )}
-                {movement.personal_notes && (
-                  <Typography variant="caption" className="break-words">Notes: {movement.personal_notes}</Typography>
+                {movement?.personal_notes && (
+                  <Typography variant="caption" className="break-words">Notes: {movement?.personal_notes}</Typography>
                 )}
               </div>
             </CollapsibleContent>
@@ -181,7 +193,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             {/* Quick Log */}
             <div className="space-y-2">
               <QuickSetEntry 
-                movement={movement}
+                movement={movement || null}
                 lastSet={sets.length > 0 ? sets[0] : null}
                 onQuickLog={async (setData) => {
                   if (paramsResolved?.movementId) {
@@ -207,7 +219,7 @@ export default function MovementDetailPage({ params }: MovementDetailPageProps) 
             </div>
 
             {/* Personal Records */}
-            {/* <PRSummary userMovementId={movement.id} /> */}
+            {/* <PRSummary userMovementId={movement?.id} /> */}
           </div>
 
 

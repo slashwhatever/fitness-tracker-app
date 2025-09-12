@@ -1,23 +1,32 @@
-'use client';
+"use client";
 
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import MovementList from '@/components/common/MovementList';
-import MovementSelectionModal from '@/components/common/MovementSelectionModal';
-import WorkoutHeader from '@/components/common/WorkoutHeader';
-import WorkoutSettingsModal from '@/components/common/WorkoutSettingsModal';
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import MovementList from "@/components/common/MovementList";
+import MovementSelectionModal from "@/components/common/MovementSelectionModal";
+import WorkoutHeader from "@/components/common/WorkoutHeader";
+import WorkoutSettingsModal from "@/components/common/WorkoutSettingsModal";
 import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-import { useAddMovementToWorkout, useWorkout, useWorkoutMovements } from '@/hooks';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  useAddMovementToWorkout,
+  useWorkout,
+  useWorkoutMovements,
+} from "@/hooks";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface WorkoutDetailPageProps {
   params: Promise<{ workoutId: string }>;
@@ -26,8 +35,12 @@ interface WorkoutDetailPageProps {
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [showMovementModal, setShowMovementModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [paramsResolved, setParamsResolved] = useState<{ workoutId: string } | null>(null);
-  const [addingMovements, setAddingMovements] = useState<Set<string>>(new Set());
+  const [paramsResolved, setParamsResolved] = useState<{
+    workoutId: string;
+  } | null>(null);
+  const [addingMovements, setAddingMovements] = useState<Set<string>>(
+    new Set()
+  );
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const addMovementToWorkoutMutation = useAddMovementToWorkout();
 
@@ -37,44 +50,55 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   }, [params]);
 
   // Use our new React Query hooks
-  const { data: workout, isLoading: workoutLoading } = useWorkout(paramsResolved?.workoutId || '');
-  const { data: workoutMovements = [] } = useWorkoutMovements(paramsResolved?.workoutId || '');
+  const {
+    data: workout,
+    isLoading: workoutLoading,
+    status: workoutStatus,
+  } = useWorkout(paramsResolved?.workoutId || "");
+  const { data: workoutMovements = [] } = useWorkoutMovements(
+    paramsResolved?.workoutId || ""
+  );
 
   const handleMovementAdded = async (userMovementId: string) => {
     if (!paramsResolved?.workoutId) return;
-    
+
     // Check if movement is already in workout to avoid duplicates
-    const isAlreadyInWorkout = workoutMovements.some(wm => wm.user_movement_id === userMovementId);
+    const isAlreadyInWorkout = workoutMovements.some(
+      (wm) => wm.user_movement_id === userMovementId
+    );
     if (isAlreadyInWorkout) {
-      console.log('🚫 Movement already in workout, skipping');
+      console.log("🚫 Movement already in workout, skipping");
       return;
     }
-    
+
     if (addingMovements.has(userMovementId)) {
-      console.log('🚫 Already adding this movement, skipping');
+      console.log("🚫 Already adding this movement, skipping");
       return;
     }
 
     // Add to pending set immediately to prevent double-adds
-    setAddingMovements(prev => new Set([...prev, userMovementId]));
+    setAddingMovements((prev) => new Set([...prev, userMovementId]));
 
     try {
-      console.log('🔄 Adding movement to workout:', { userMovementId, workoutId: paramsResolved.workoutId });
-      
+      console.log("🔄 Adding movement to workout:", {
+        userMovementId,
+        workoutId: paramsResolved.workoutId,
+      });
+
       await addMovementToWorkoutMutation.mutateAsync({
         workout_id: paramsResolved.workoutId,
         user_movement_id: userMovementId,
         order_index: 0, // The mutation will handle finding the right order
       });
-      
-      console.log('✅ Movement added successfully');
+
+      console.log("✅ Movement added successfully");
       // Force refresh of the movements list
-      setRefreshKey(prev => prev + 1);
+      setRefreshKey((prev) => prev + 1);
     } catch (error) {
-      console.error('❌ Error adding movement to workout:', error);
+      console.error("❌ Error adding movement to workout:", error);
     } finally {
       // Remove from pending set
-      setAddingMovements(prev => {
+      setAddingMovements((prev) => {
         const newSet = new Set(prev);
         newSet.delete(userMovementId);
         return newSet;
@@ -82,9 +106,12 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     }
   };
 
-  // No page-level loading - components handle their own loading states
+  // Only show "not found" if we've finished fetching and there's no workout
+  // Don't show it during loading or if we haven't attempted to fetch yet
+  const hasFinishedFetching = workoutStatus === 'success' || workoutStatus === 'error';
+  const workoutNotFound = hasFinishedFetching && !workout && !workoutLoading;
 
-  if (!workout) {
+  if (workoutNotFound) {
     return (
       <ProtectedRoute>
         <main className="min-h-screen bg-background p-8">
@@ -93,7 +120,8 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               <CardContent className="p-8 text-center">
                 <CardTitle>Workout not found</CardTitle>
                 <CardDescription className="text-muted-foreground mb-4">
-                  The workout you&apos;re looking for doesn&apos;t exist or has been deleted.
+                  The workout you&apos;re looking for doesn&apos;t exist or has
+                  been deleted.
                 </CardDescription>
                 <Button asChild>
                   <Link href="/">Return to Dashboard</Link>
@@ -117,22 +145,22 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>{workout?.name || 'Workout'}</BreadcrumbPage>
+                <BreadcrumbPage>{workout?.name || "Workout"}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          
-          <WorkoutHeader 
+
+          <WorkoutHeader
             workout={workout}
             isLoading={workoutLoading}
             movementCount={workoutMovements.length}
             onAddMovement={() => setShowMovementModal(true)}
             onSettings={() => setShowSettingsModal(true)}
           />
-          
+
           <MovementList
             key={refreshKey}
-            workoutId={paramsResolved?.workoutId || ''}
+            workoutId={paramsResolved?.workoutId || ""}
             onMovementAdded={handleMovementAdded}
             onAddMovementClick={() => setShowMovementModal(true)}
             expectedCount={workoutMovements.length || 2}
@@ -143,25 +171,27 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             onClose={() => {
               setShowMovementModal(false);
               // Force refresh when modal closes to show any changes
-              setRefreshKey(prev => prev + 1);
+              setRefreshKey((prev) => prev + 1);
             }}
-            workoutId={paramsResolved?.workoutId || ''}
+            workoutId={paramsResolved?.workoutId || ""}
           />
 
-          <WorkoutSettingsModal
-            isOpen={showSettingsModal}
-            onClose={() => {
-              setShowSettingsModal(false);
-              setRefreshKey(prev => prev + 1);
-            }}
-            workout={workout}
-            onWorkoutUpdated={() => {
-              setRefreshKey(prev => prev + 1);
-            }}
-            onWorkoutDeleted={() => {
-              setRefreshKey(prev => prev + 1);
-            }}
-          />
+          {workout && (
+            <WorkoutSettingsModal
+              isOpen={showSettingsModal}
+              onClose={() => {
+                setShowSettingsModal(false);
+                setRefreshKey((prev) => prev + 1);
+              }}
+              workout={workout}
+              onWorkoutUpdated={() => {
+                setRefreshKey((prev) => prev + 1);
+              }}
+              onWorkoutDeleted={() => {
+                setRefreshKey((prev) => prev + 1);
+              }}
+            />
+          )}
         </div>
       </main>
     </ProtectedRoute>

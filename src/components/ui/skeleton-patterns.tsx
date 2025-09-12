@@ -3,15 +3,17 @@ import { Skeleton } from "./skeleton";
 // Full page skeleton for loading screens
 export function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-background p-4 space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-72" />
-      </div>
-      <div className="space-y-4">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-32 w-full" />
+    <div className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+      <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-32 w-full" />
+        </div>
       </div>
     </div>
   );
@@ -155,33 +157,44 @@ export function MovementDetailSkeleton() {
   );
 }
 
-// Settings page skeleton
+// Settings page skeleton  
 export function SettingsSkeleton() {
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-32" />
-        <Skeleton className="h-4 w-64" />
-      </div>
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="bg-card border border-default rounded-lg p-4 space-y-4"
-          >
-            <Skeleton className="h-5 w-28" />
-            <div className="space-y-3">
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-9 w-full" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-24" />
-                <Skeleton className="h-9 w-full" />
-              </div>
-            </div>
+    <div className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+      <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
+        {/* Breadcrumbs */}
+        <div className="flex items-center space-x-2">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-1" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+        
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-4 w-64" />
           </div>
-        ))}
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-card border border-default rounded-lg p-4 space-y-4"
+              >
+                <Skeleton className="h-5 w-28" />
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-9 w-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -190,30 +203,41 @@ export function SettingsSkeleton() {
 // Library page skeleton
 export function LibrarySkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-4 w-72" />
-      </div>
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-full" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-card border border-default rounded-lg p-4 space-y-3"
-            >
-              <div className="flex items-center space-x-2">
-                <Skeleton className="h-6 w-6" />
-                <Skeleton className="h-5 w-24" />
-              </div>
-              <div className="space-y-2">
-                <Skeleton className="h-3 w-20" />
-                <Skeleton className="h-3 w-16" />
-              </div>
-              <Skeleton className="h-8 w-full" />
+    <div className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4">
+        {/* Breadcrumbs */}
+        <div className="flex items-center space-x-2">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-1" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="h-4 w-72" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-card border border-default rounded-lg p-4 space-y-3"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Skeleton className="h-6 w-6" />
+                    <Skeleton className="h-5 w-24" />
+                  </div>
+                  <div className="space-y-2">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                  <Skeleton className="h-8 w-full" />
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
