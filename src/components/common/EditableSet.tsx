@@ -156,27 +156,29 @@ const EditableSet = memo(function EditableSet({
               </ResponsiveButton>
             </DrawerTrigger>
             <DrawerContent className="!max-h-[95vh]">
-              <DrawerHeader>
-                <DrawerTitle>Edit set</DrawerTitle>
-                <DrawerDescription>
-                  Modify the values for this set from {formattedDate} at {formattedTime}
-                </DrawerDescription>
-              </DrawerHeader>
-              
-              <div className="flex-1 overflow-y-auto">
-                <SetEntryForm
-                  movement={movement}
-                  initialData={{
-                    reps: set.reps,
-                    weight: set.weight,
-                    duration: set.duration,
-                    distance: set.distance,
-                    notes: set.notes || '',
-                  }}
-                  onSave={handleSave}
-                  isLoading={updateSetMutation.isPending}
-                  saveButtonText="Save Changes"
-                />
+              <div className="max-w-4xl mx-auto">
+                <DrawerHeader>
+                  <DrawerTitle>Edit set</DrawerTitle>
+                  <DrawerDescription>
+                    Modify the values for this set from {formattedDate} at {formattedTime}
+                  </DrawerDescription>
+                </DrawerHeader>
+                
+                <div className="flex-1 overflow-y-auto">
+                  <SetEntryForm
+                    movement={movement}
+                    initialData={{
+                      reps: set.reps,
+                      weight: set.weight,
+                      duration: set.duration,
+                      distance: set.distance,
+                      notes: set.notes || '',
+                    }}
+                    onSave={handleSave}
+                    isLoading={updateSetMutation.isPending}
+                    saveButtonText="Save Changes"
+                  />
+                </div>
               </div>
             </DrawerContent>
           </Drawer>
