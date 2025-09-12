@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import type { Set, UserMovement } from '@/models/types';
 import { Check, Minus, Plus } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 interface SetEntryFormProps {
   movement: UserMovement;
@@ -30,6 +30,17 @@ export default function SetEntryForm({
     distance: initialData.distance || null,
     notes: initialData.notes || '',
   });
+
+  // Update internal state when initialData changes
+  useEffect(() => {
+    setSetData({
+      reps: initialData.reps || null,
+      weight: initialData.weight || null,
+      duration: initialData.duration || null,
+      distance: initialData.distance || null,
+      notes: initialData.notes || '',
+    });
+  }, [initialData]);
 
   const weightUnit = userProfile?.weight_unit || 'lbs';
   const distanceUnit = userProfile?.distance_unit || 'miles';

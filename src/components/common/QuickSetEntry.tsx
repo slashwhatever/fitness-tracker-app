@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { Set, UserMovement } from '@/models/types';
-import { useState } from 'react';
-import SetEntryForm from './SetEntryForm';
+import type { Set, UserMovement } from "@/models/types";
+import { useState } from "react";
+import SetEntryForm from "./SetEntryForm";
 
 interface QuickSetEntryProps {
   movement: UserMovement | null;
@@ -10,13 +10,13 @@ interface QuickSetEntryProps {
   onQuickLog: (data: Partial<Set>) => Promise<void>;
 }
 
-export default function QuickSetEntry({ 
-  movement, 
-  lastSet, 
-  onQuickLog 
+export default function QuickSetEntry({
+  movement,
+  lastSet,
+  onQuickLog,
 }: QuickSetEntryProps) {
   const [isLogging, setIsLogging] = useState(false);
-    
+
   const handleSave = async (setData: Partial<Set>) => {
     setIsLogging(true);
     try {
@@ -34,6 +34,7 @@ export default function QuickSetEntry({
     );
   }
 
+
   return (
     <div className="bg-card rounded-lg border">
       <SetEntryForm
@@ -43,13 +44,12 @@ export default function QuickSetEntry({
           weight: lastSet?.weight || null,
           duration: lastSet?.duration || null,
           distance: lastSet?.distance || null,
-          notes: '',
+          notes: "",
         }}
         onSave={handleSave}
         isLoading={isLogging}
         saveButtonText="Log Set"
       />
-      
     </div>
   );
 }
