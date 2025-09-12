@@ -153,7 +153,7 @@ export function FancyMultiSelect({
                         e.preventDefault();
                         e.stopPropagation();
                       }}
-                      onSelect={(value) => {
+                      onSelect={() => {
                         setInputValue("");
                         handleSelect(option);
                       }}
