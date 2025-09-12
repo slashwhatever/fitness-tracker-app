@@ -60,4 +60,4 @@ supabase/.temp/storage-version
 
 *storybook.log
 storybook-static
-.vscode/
+.vscode/settings.json
