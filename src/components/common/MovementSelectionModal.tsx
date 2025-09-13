@@ -19,6 +19,7 @@ import type { UserMovement, MovementTemplate } from '@/models/types';
 import { prepareWorkoutMovements, getNextOrderIndex } from '@/lib/utils/workout-helpers';
 import { Check, Plus } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Typography } from './Typography';
 
 interface MovementSelectionModalProps {
@@ -29,10 +30,14 @@ interface MovementSelectionModalProps {
 
 // Use the proper transformed types from hooks
 
+type SearchFormData = {
+  search: string;
+};
+
 interface SearchAndContentProps {
   className?: string;
-  searchTerm: string;
-  setSearchTerm: (value: string) => void;
+  searchValue: string;
+  onSearchChange: (value: string) => void;
   setShowCustomMovementModal: (value: boolean) => void;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
   filteredUserMovements: UserMovement[];
@@ -45,8 +50,8 @@ interface SearchAndContentProps {
 
 const SearchAndContent = React.memo(function SearchAndContent({ 
   className = "", 
-  searchTerm, 
-  setSearchTerm, 
+  searchValue, 
+  onSearchChange, 
   setShowCustomMovementModal,
   scrollContainerRef,
   filteredUserMovements,
@@ -56,6 +61,19 @@ const SearchAndContent = React.memo(function SearchAndContent({
   userMovements,
   isSaving
 }: SearchAndContentProps) {
+  const { register, watch } = useForm<SearchFormData>({
+    defaultValues: {
+      search: searchValue
+    }
+  });
+
+  const watchedSearch = watch('search');
+
+  // Update parent when form value changes
+  useEffect(() => {
+    onSearchChange(watchedSearch || '');
+  }, [watchedSearch, onSearchChange]);
+
   return (
   <div className={`flex flex-col space-y-4 overflow-hidden ${className}`}>
     {/* Search Bar */}
@@ -63,8 +81,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
       <Input
         type="text"
         placeholder="Search movements..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        {...register('search')}
         className="flex-1"
       />
       <Button 
@@ -224,6 +241,10 @@ export default function MovementSelectionModal({
   const [showCustomMovementModal, setShowCustomMovementModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [frozenSelectedMovements, setFrozenSelectedMovements] = useState<Set<string>>(new Set());
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchTerm(value);
+  }, []);
   
   // Use frozen state for display during save operations
   const displaySelectedMovements = isSaving ? frozenSelectedMovements : selectedMovements;
@@ -445,8 +466,8 @@ export default function MovementSelectionModal({
 
             <SearchAndContent 
               className="flex-1 min-h-0"
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
+              searchValue={searchTerm}
+              onSearchChange={handleSearchChange}
               setShowCustomMovementModal={setShowCustomMovementModal}
               scrollContainerRef={scrollContainerRef}
               filteredUserMovements={filteredUserMovements}
@@ -482,8 +503,8 @@ export default function MovementSelectionModal({
           </DrawerHeader>
           <SearchAndContent 
             className="px-4 flex-1 min-h-0"
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            searchValue={searchTerm}
+            onSearchChange={handleSearchChange}
             setShowCustomMovementModal={setShowCustomMovementModal}
             scrollContainerRef={scrollContainerRef}
             filteredUserMovements={filteredUserMovements}

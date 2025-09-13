@@ -1,27 +1,38 @@
-'use client';
+"use client";
 
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
-import { ConfirmationModal } from '@/components/ui/confirmation-modal';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { TIMER_PRESETS, Workout } from '@/models/types';
-import { SupabaseService } from '@/services/supabaseService';
-import { Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { TIMER_PRESETS, Workout } from "@/models/types";
+import { SupabaseService } from "@/services/supabaseService";
+import { Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 
 interface WorkoutSettingsModalProps {
@@ -34,13 +45,19 @@ interface WorkoutSettingsModalProps {
 
 // Zod schema for form validation
 const formSchema = z.object({
-  name: z.string().min(1, "Workout name is required").min(2, "Workout name must be at least 2 characters"),
+  name: z
+    .string()
+    .min(1, "Workout name is required")
+    .min(2, "Workout name must be at least 2 characters"),
   description: z.string().optional(),
-  default_rest_timer: z.string().optional().refine((val) => {
-    if (!val || val === '' || val === 'none') return true;
-    const num = parseInt(val);
-    return !isNaN(num) && num >= 0;
-  }, "Rest timer must be a valid number (0 or greater)"),
+  default_rest_timer: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val === "" || val === "none") return true;
+      const num = parseInt(val);
+      return !isNaN(num) && num >= 0;
+    }, "Rest timer must be a valid number (0 or greater)"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -91,19 +108,23 @@ export default function WorkoutSettingsModal({
       const updates = {
         name: values.name.trim(),
         description: values.description?.trim() || null,
-        default_rest_timer: (values.default_rest_timer && values.default_rest_timer !== 'none') 
-          ? parseInt(values.default_rest_timer) 
-          : null,
+        default_rest_timer:
+          values.default_rest_timer && values.default_rest_timer !== "none"
+            ? parseInt(values.default_rest_timer)
+            : null,
         updated_at: new Date().toISOString(),
       };
 
-      const updatedWorkout = await SupabaseService.updateWorkout(workout.id, updates);
+      const updatedWorkout = await SupabaseService.updateWorkout(
+        workout.id,
+        updates
+      );
       if (updatedWorkout) {
         onWorkoutUpdated(updatedWorkout);
         handleClose();
       }
     } catch (error) {
-      console.error('Failed to save workout settings:', error);
+      console.error("Failed to save workout settings:", error);
     } finally {
       setIsSaving(false);
     }
@@ -132,7 +153,10 @@ export default function WorkoutSettingsModal({
     <div className={`space-y-4 ${className}`}>
       {/* Workout name */}
       <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="name"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Workout name *
         </Label>
         <Input
@@ -147,7 +171,10 @@ export default function WorkoutSettingsModal({
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="description"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Description
         </Label>
         <Textarea
@@ -157,25 +184,34 @@ export default function WorkoutSettingsModal({
           {...register("description")}
         />
         {errors.description && (
-          <p className="text-sm text-destructive">{errors.description.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
       {/* Rest Timer */}
       <div className="space-y-2">
-        <Label htmlFor="default_rest_timer" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="default_rest_timer"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Default Rest Timer
         </Label>
-        <Select 
-          value={watch("default_rest_timer") || "none"} 
-          onValueChange={(value) => setValue("default_rest_timer", value === "none" ? "" : value)}
+        <Select
+          value={watch("default_rest_timer") || "none"}
+          onValueChange={(value) =>
+            setValue("default_rest_timer", value === "none" ? "" : value)
+          }
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select rest timer">
               {(() => {
                 const timerValue = watch("default_rest_timer");
                 if (!timerValue || timerValue === "none") return "No Timer";
-                const preset = TIMER_PRESETS.find(p => p.seconds.toString() === timerValue);
+                const preset = TIMER_PRESETS.find(
+                  (p) => p.seconds.toString() === timerValue
+                );
                 return preset ? preset.label : "Select rest timer";
               })()}
             </SelectValue>
@@ -184,31 +220,41 @@ export default function WorkoutSettingsModal({
             <SelectItem value="none">
               <div className="flex flex-col items-start">
                 <div className="font-medium">No Timer</div>
-                <div className="text-sm text-muted-foreground">Don&apos;t set a default rest timer</div>
+                <div className="text-sm text-muted-foreground">
+                  Don&apos;t set a default rest timer
+                </div>
               </div>
             </SelectItem>
             {TIMER_PRESETS.map((preset) => (
-              <SelectItem key={preset.seconds} value={preset.seconds.toString()}>
+              <SelectItem
+                key={preset.seconds}
+                value={preset.seconds.toString()}
+              >
                 <div className="flex flex-col items-start">
                   <div className="font-medium">{preset.label}</div>
-                  <div className="text-sm text-muted-foreground">{preset.seconds} seconds</div>
+                  <div className="text-sm text-muted-foreground">
+                    {preset.seconds} seconds
+                  </div>
                 </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         {errors.default_rest_timer && (
-          <p className="text-sm text-destructive">{errors.default_rest_timer.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.default_rest_timer.message}
+          </p>
         )}
-        <p className="text-xs text-muted-foreground">
-          This timer will be used for all movements in this workout unless overridden
+        <p className="text-xs text-muted-foreground ">
+          This timer will be used for all movements in this workout unless
+          overridden
         </p>
       </div>
     </div>
   );
 
   const ActionButtons = () => (
-    <div className="flex flex-col-reverse sm:flex-row gap-2 order-2 sm:order-1">
+    <div className="flex flex-col-reverse sm:flex-row gap-2 order-2 sm:order-1 justify-between">
       <Button
         variant="destructive"
         onClick={() => setShowDeleteConfirm(true)}
@@ -219,15 +265,20 @@ export default function WorkoutSettingsModal({
       </Button>
 
       <div className="flex flex-col-reverse sm:flex-row gap-2">
-        <Button type="button" variant="outline" onClick={handleClose} className="w-full sm:w-auto">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleClose}
+          className="w-full sm:w-auto"
+        >
           Cancel
         </Button>
-        <Button 
+        <Button
           type="submit"
           disabled={!isValid || isSaving}
           className="w-full sm:w-auto"
         >
-          {isSaving ? 'Saving...' : 'Save changes'}
+          {isSaving ? "Saving..." : "Save changes"}
         </Button>
       </div>
     </div>
@@ -237,11 +288,11 @@ export default function WorkoutSettingsModal({
     return (
       <>
         <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Workout settings</DialogTitle>
             </DialogHeader>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} className="space-y-4">
               <FormContent />
               <ActionButtons />
             </form>

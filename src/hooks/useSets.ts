@@ -142,6 +142,46 @@ export function useCreateSet() {
       if (error) throw error;
       return data;
     },
+    // Optimistic update for better UX
+    onMutate: async (newSet) => {
+      if (!user?.id) return;
+
+      // Cancel outgoing refetches to avoid conflicts
+      await queryClient.cancelQueries({ queryKey: setKeys.byMovement(user.id, newSet.user_movement_id) });
+      
+      // Snapshot previous value
+      const previousSets = queryClient.getQueryData(setKeys.byMovement(user.id, newSet.user_movement_id));
+      
+      // Create optimistic set with temporary ID and current timestamp
+      const optimisticSet = {
+        id: `temp-${Date.now()}`,
+        ...newSet,
+        user_id: user.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        rpe: null,
+      };
+
+      // Optimistically update the cache by adding the new set at the beginning (most recent)
+      queryClient.setQueryData(setKeys.byMovement(user.id, newSet.user_movement_id), (old: unknown) => {
+        if (!old || !Array.isArray(old)) return [optimisticSet];
+        return [optimisticSet, ...old];
+      });
+
+      // Also update the general sets list if it exists
+      queryClient.setQueryData(setKeys.list(user.id), (old: unknown) => {
+        if (!old || !Array.isArray(old)) return old;
+        return [optimisticSet, ...old];
+      });
+
+      return { previousSets };
+    },
+    onError: (err, variables, context) => {
+      // Revert optimistic update on error
+      if (context?.previousSets && user?.id) {
+        queryClient.setQueryData(setKeys.byMovement(user.id, variables.user_movement_id), context.previousSets);
+      }
+    },
     onSuccess: (data) => {
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });

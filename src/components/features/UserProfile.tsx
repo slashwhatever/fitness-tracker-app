@@ -9,15 +9,18 @@ import { useAuth } from '@/lib/auth/AuthProvider';
 import { updateUserMetadata } from '@/lib/supabase/auth-utils';
 import { Loader2, Save, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-interface UserProfileData {
-  display_name: string;
-  default_rest_timer: number;
-  privacy_settings: {
-    profile_visibility: 'public' | 'private';
-    workout_sharing: boolean;
-  };
-}
+// Zod schema for form validation
+const profileSchema = z.object({
+  display_name: z.string().min(1, "Display name is required").max(50, "Display name must be 50 characters or less"),
+  default_rest_timer: z.number().min(30, "Rest timer must be at least 30 seconds").max(600, "Rest timer cannot exceed 10 minutes"),
+  profile_visibility: z.enum(['public', 'private']),
+  workout_sharing: z.boolean(),
+});
+
+type UserProfileFormData = z.infer<typeof profileSchema>;
 
 export function UserProfile() {
   const { user, refreshSession } = useAuth();
@@ -25,40 +28,47 @@ export function UserProfile() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   
-  const [profileData, setProfileData] = useState<UserProfileData>({
-    display_name: '',
-    default_rest_timer: 180, // 3 minutes default
-    privacy_settings: {
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<UserProfileFormData>({
+    defaultValues: {
+      display_name: '',
+      default_rest_timer: 180, // 3 minutes default
       profile_visibility: 'private',
       workout_sharing: false,
     },
+    mode: 'onChange',
   });
 
-  // Load user profile data
+  const formValues = watch();
+
+  // Load user profile data and reset form
   useEffect(() => {
     if (user?.user_metadata) {
-      setProfileData({
+      reset({
         display_name: user.user_metadata.display_name || '',
         default_rest_timer: user.user_metadata.default_rest_timer || 180,
-        privacy_settings: {
-          profile_visibility: user.user_metadata.profile_visibility || 'private',
-          workout_sharing: user.user_metadata.workout_sharing || false,
-        },
+        profile_visibility: user.user_metadata.profile_visibility || 'private',
+        workout_sharing: user.user_metadata.workout_sharing || false,
       });
     }
-  }, [user]);
+  }, [user, reset]);
 
-  const handleSave = async () => {
+  const onSubmit = handleSubmit(async (data: UserProfileFormData) => {
     setSaving(true);
     setError('');
     setSuccess(false);
 
     try {
       const { error: updateError } = await updateUserMetadata({
-        display_name: profileData.display_name,
-        default_rest_timer: profileData.default_rest_timer,
-        profile_visibility: profileData.privacy_settings.profile_visibility,
-        workout_sharing: profileData.privacy_settings.workout_sharing,
+        display_name: data.display_name,
+        default_rest_timer: data.default_rest_timer,
+        profile_visibility: data.profile_visibility,
+        workout_sharing: data.workout_sharing,
       });
 
       if (updateError) {
@@ -78,7 +88,7 @@ export function UserProfile() {
     } finally {
       setSaving(false);
     }
-  };
+  });
 
 
 
@@ -108,7 +118,8 @@ export function UserProfile() {
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent>
+          <form onSubmit={onSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Basic Information</h3>
@@ -133,13 +144,13 @@ export function UserProfile() {
                 <Input
                   id="displayName"
                   type="text"
-                  value={profileData.display_name}
-                  onChange={(e) => setProfileData(prev => ({
-                    ...prev,
-                    display_name: e.target.value
-                  }))}
+                  value={formValues.display_name}
+                  onChange={(e) => setValue('display_name', e.target.value)}
                   placeholder="Enter your display name"
                 />
+                {errors.display_name && (
+                  <p className="text-sm text-destructive">{errors.display_name.message}</p>
+                )}
               </div>
             </div>
           </div>
@@ -151,11 +162,8 @@ export function UserProfile() {
             <div className="space-y-2">
               <Label htmlFor="defaultTimer">Default Rest Timer</Label>
               <Select
-                value={profileData.default_rest_timer.toString()}
-                onValueChange={(value) => setProfileData(prev => ({
-                  ...prev,
-                  default_rest_timer: parseInt(value)
-                }))}
+                value={formValues.default_rest_timer.toString()}
+                onValueChange={(value) => setValue('default_rest_timer', parseInt(value))}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -174,6 +182,9 @@ export function UserProfile() {
                 This will be used as the default rest timer for new workouts. 
                 You can override this for specific workouts or movements.
               </p>
+              {errors.default_rest_timer && (
+                <p className="text-sm text-destructive">{errors.default_rest_timer.message}</p>
+              )}
             </div>
           </div>
 
@@ -185,14 +196,8 @@ export function UserProfile() {
               <div className="space-y-2">
                 <Label htmlFor="profileVisibility">Profile Visibility</Label>
                 <Select
-                  value={profileData.privacy_settings.profile_visibility}
-                  onValueChange={(value: 'public' | 'private') => setProfileData(prev => ({
-                    ...prev,
-                    privacy_settings: {
-                      ...prev.privacy_settings,
-                      profile_visibility: value
-                    }
-                  }))}
+                  value={formValues.profile_visibility}
+                  onValueChange={(value: 'public' | 'private') => setValue('profile_visibility', value)}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -211,14 +216,8 @@ export function UserProfile() {
                 <input
                   type="checkbox"
                   id="workoutSharing"
-                  checked={profileData.privacy_settings.workout_sharing}
-                  onChange={(e) => setProfileData(prev => ({
-                    ...prev,
-                    privacy_settings: {
-                      ...prev.privacy_settings,
-                      workout_sharing: e.target.checked
-                    }
-                  }))}
+                  checked={formValues.workout_sharing}
+                  onChange={(e) => setValue('workout_sharing', e.target.checked)}
                   className="rounded border-gray-300"
                 />
                 <Label htmlFor="workoutSharing" className="text-sm">
@@ -247,8 +246,8 @@ export function UserProfile() {
           {/* Save Button */}
           <div className="flex justify-end pt-4 border-t">
             <Button
-              onClick={handleSave}
-              disabled={saving}
+              type="submit"
+              disabled={saving || !isDirty}
               className="min-w-[120px]"
             >
               {saving ? (
@@ -264,6 +263,7 @@ export function UserProfile() {
               )}
             </Button>
           </div>
+          </form>
         </CardContent>
       </Card>
     </div>

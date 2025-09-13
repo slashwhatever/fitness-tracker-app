@@ -5,7 +5,20 @@ import { Input } from '@/components/ui/input';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import type { Set, UserMovement } from '@/models/types';
 import { Check, Minus, Plus } from 'lucide-react';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+// Zod schema for form validation
+const setEntrySchema = z.object({
+  reps: z.number().min(0).nullable(),
+  weight: z.number().min(0).nullable(),
+  duration: z.number().min(0).nullable(),
+  distance: z.number().min(0).nullable(),
+  notes: z.string(),
+});
+
+type SetEntryFormData = z.infer<typeof setEntrySchema>;
 
 interface SetEntryFormProps {
   movement: UserMovement;
@@ -23,24 +36,36 @@ export default function SetEntryForm({
   saveButtonText = "Save Set"
 }: SetEntryFormProps) {
   const { data: userProfile } = useUserProfile();
-  const [setData, setSetData] = useState<Partial<Set>>({
-    reps: initialData.reps || null,
-    weight: initialData.weight || null,
-    duration: initialData.duration || null,
-    distance: initialData.distance || null,
-    notes: initialData.notes || '',
+  
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    reset,
+    formState: { isValid },
+  } = useForm<SetEntryFormData>({
+    defaultValues: {
+      reps: initialData.reps || null,
+      weight: initialData.weight || null,
+      duration: initialData.duration || null,
+      distance: initialData.distance || null,
+      notes: initialData.notes || '',
+    },
+    mode: 'onChange',
   });
 
-  // Update internal state when initialData changes
+  const formValues = watch();
+
+  // Update form when initialData changes (for navigation between movements)
   useEffect(() => {
-    setSetData({
+    reset({
       reps: initialData.reps || null,
       weight: initialData.weight || null,
       duration: initialData.duration || null,
       distance: initialData.distance || null,
       notes: initialData.notes || '',
     });
-  }, [initialData]);
+  }, [reset, initialData.reps, initialData.weight, initialData.duration, initialData.distance, initialData.notes]);
 
   const weightUnit = userProfile?.weight_unit || 'lbs';
   const distanceUnit = userProfile?.distance_unit || 'miles';
@@ -49,27 +74,22 @@ export default function SetEntryForm({
     return unit === 'miles' ? 'mi' : 'km';
   };
 
-  const adjustValue = (field: 'reps' | 'weight' | 'duration' | 'distance', delta: number) => {
-    setSetData(prev => {
-      const currentValue = prev[field as keyof typeof prev] as number | null;
-      const newValue = Math.max(0, (currentValue || 0) + delta);
-      
-      return {
-        ...prev,
-        [field]: newValue || null
-      };
-    });
-  };
+  const adjustValue = useCallback((field: 'reps' | 'weight' | 'duration' | 'distance', delta: number) => {
+    const currentValue = formValues[field] || 0;
+    const newValue = Math.max(0, currentValue + delta);
+    setValue(field, newValue || null);
+  }, [formValues, setValue]);
 
   const handleInputChange = useCallback((field: 'reps' | 'weight' | 'duration' | 'distance' | 'notes', value: string) => {
-    setSetData(prev => ({
-      ...prev,
-      [field]: value === '' ? null : 
-               field === 'notes' ? value : 
-               field === 'reps' || field === 'duration' ? parseInt(value) || null :
-               parseFloat(value) || null
-    }));
-  }, []);
+    if (field === 'notes') {
+      setValue(field, value);
+    } else {
+      const numValue = value === '' ? null : 
+                      field === 'reps' || field === 'duration' ? parseInt(value) || null :
+                      parseFloat(value) || null;
+      setValue(field, numValue);
+    }
+  }, [setValue]);
 
   // Memoized event handlers to prevent input focus loss
   const handleRepsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,38 +123,35 @@ export default function SetEntryForm({
     switch (movement.tracking_type) {
       case 'weight':
       case 'bodyweight':
-        return (setData.reps !== null && setData.reps !== undefined && setData.reps > 0);
+        return (formValues.reps !== null && formValues.reps !== undefined && formValues.reps > 0);
       case 'duration':
-        return (setData.duration !== null && setData.duration !== undefined && setData.duration > 0);
+        return (formValues.duration !== null && formValues.duration !== undefined && formValues.duration > 0);
       case 'distance':
-        return (setData.distance !== null && setData.distance !== undefined && setData.distance > 0);
+        return (formValues.distance !== null && formValues.distance !== undefined && formValues.distance > 0);
       case 'reps_only':
-        return (setData.reps !== null && setData.reps !== undefined && setData.reps > 0);
+        return (formValues.reps !== null && formValues.reps !== undefined && formValues.reps > 0);
       default:
         return false;
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isFormValid()) {
-      await onSave(setData);
-    }
-  };
+  const onSubmit = handleSubmit(async (data: SetEntryFormData) => {
+    await onSave(data);
+  });
 
   return (
     <div className="p-4">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         {/* Reps and Weight Display */}
         {(movement.tracking_type === 'weight' || movement.tracking_type === 'bodyweight' || movement.tracking_type === 'reps_only') && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid gap-4 ${movement.tracking_type === 'weight' ? 'grid-cols-2' : 'grid-cols-1 max-w-sm mx-auto'}`}>
             {/* Reps */}
             <div className="space-y-2">
               <div className="text-center">
                 <Input
                   type="number"
                   inputMode="numeric"
-                  value={setData.reps || ''}
+                  value={formValues.reps || ''}
                   onChange={handleRepsChange}
                   onFocus={handleFocus}
                   className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -148,7 +165,7 @@ export default function SetEntryForm({
                     boxShadow: 'none !important'
                   }}
                 />
-                <div className="text-base text-muted-foreground">rep{(setData.reps || 0) !== 1 ? 's' : ''}</div>
+                <div className="text-base text-muted-foreground">rep{(formValues.reps || 0) !== 1 ? 's' : ''}</div>
               </div>
               <div className="flex justify-center items-center space-x-4">
                   <Button
@@ -179,7 +196,7 @@ export default function SetEntryForm({
                   <Input
                     type="number"
                     inputMode="decimal"
-                    value={setData.weight || ''}
+                    value={formValues.weight || ''}
                     onChange={handleWeightChange}
                     onFocus={handleFocus}
                     className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -223,12 +240,12 @@ export default function SetEntryForm({
 
         {/* Duration Display */}
         {movement.tracking_type === 'duration' && (
-          <div className="space-y-2">
+          <div className="space-y-2 max-w-sm mx-auto">
             <div className="text-center">
               <Input
                 type="number"
                 inputMode="numeric"
-                value={setData.duration || ''}
+                value={formValues.duration || ''}
                 onChange={handleDurationChange}
                 onFocus={handleFocus}
                 className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -263,12 +280,12 @@ export default function SetEntryForm({
 
         {/* Distance Display */}
         {movement.tracking_type === 'distance' && (
-          <div className="space-y-2">
+          <div className="space-y-2 max-w-sm mx-auto">
             <div className="text-center">
               <Input
                 type="number"
                 inputMode="decimal"
-                value={setData.distance || ''}
+                value={formValues.distance || ''}
                 onChange={handleDistanceChange}
                 onFocus={handleFocus}
                 className="text-5xl font-light text-center bg-transparent border-none shadow-none focus:ring-0 focus:ring-offset-0 p-0 h-auto w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
@@ -322,7 +339,7 @@ export default function SetEntryForm({
           <div className="space-y-2">
             <Input
               type="text"
-              value={setData.notes || ''}
+              value={formValues.notes || ''}
               onChange={handleNotesChange}
               onFocus={handleFocus}
               placeholder="Add note"
