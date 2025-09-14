@@ -70,10 +70,16 @@ export default function SortableMovementItem({
             className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0 overflow-hidden select-text"
           >
             <div className="min-w-0 flex-1 overflow-hidden">
-              <Typography variant="title3" className="truncate block select-none">
+              <Typography
+                variant="title3"
+                className="truncate block select-none"
+              >
                 {movement.user_movement?.name || "Unknown Movement"}
               </Typography>
-              <Typography variant="caption" className="line-clamp-2 block select-none">
+              <Typography
+                variant="caption"
+                className="line-clamp-2 block select-none"
+              >
                 {lastSetDate}
                 {movementSets.length > 0 &&
                   ` • ${movementSets.length} set${
