@@ -1,11 +1,16 @@
-'use client';
+"use client";
 
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { FieldErrors, useForm, UseFormRegister } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -13,14 +18,15 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
-import { useCreateWorkout } from '@/hooks';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { Workout } from '@/models/types';
+import { useCreateWorkout } from "@/hooks";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { cn } from "@/lib/utils";
+import { Workout } from "@/models/types";
 
 interface CreateWorkoutModalProps {
   isOpen: boolean;
@@ -30,7 +36,10 @@ interface CreateWorkoutModalProps {
 
 // Zod schema for form validation
 const formSchema = z.object({
-  name: z.string().min(1, "Workout name is required").min(2, "Workout name must be at least 2 characters"),
+  name: z
+    .string()
+    .min(1, "Workout name is required")
+    .min(2, "Workout name must be at least 2 characters"),
   description: z.string().optional(),
 });
 
@@ -58,9 +67,12 @@ function WorkoutFormContent({
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   return (
-    <form onSubmit={onSubmit} className={className}>
+    <form onSubmit={onSubmit} className={cn(className, "space-y-2")}>
       <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="name"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Workout Title *
         </Label>
         <Input
@@ -75,7 +87,10 @@ function WorkoutFormContent({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="description"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Description (Optional)
         </Label>
         <Textarea
@@ -86,7 +101,9 @@ function WorkoutFormContent({
           disabled={isLoading}
         />
         {errors.description && (
-          <p className="text-sm text-destructive">{errors.description.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
@@ -106,11 +123,11 @@ function WorkoutFormContent({
             disabled={isLoading || !isValid}
             className="w-full sm:w-auto"
           >
-            {isLoading ? 'Creating...' : 'Create Workout'}
+            {isLoading ? "Creating..." : "Create Workout"}
           </Button>
         </div>
       )}
-      
+
       {!isDesktop && (
         <div className="pt-4">
           <Button
@@ -118,7 +135,7 @@ function WorkoutFormContent({
             disabled={isLoading || !isValid}
             className="w-full"
           >
-            {isLoading ? 'Creating...' : 'Create Workout'}
+            {isLoading ? "Creating..." : "Create Workout"}
           </Button>
         </div>
       )}
@@ -155,12 +172,12 @@ export default function CreateWorkoutModal({
         name: values.name.trim(),
         description: values.description?.trim() || null,
       });
-      
+
       onWorkoutCreated(savedWorkout);
       reset();
       onClose();
     } catch (error) {
-      console.error('Failed to create workout:', error);
+      console.error("Failed to create workout:", error);
     }
   });
 
