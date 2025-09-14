@@ -32,6 +32,13 @@
     "**/*.stories.js",
     "**/*.stories.jsx",
     "src/stories/**/*",
-    ".storybook/**/*"
+    ".storybook/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts", 
+    "**/*.spec.tsx",
+    "vitest.setup.ts",
+    "vitest.config.ts",
+    "**/__tests__/**/*"
   ]
 }

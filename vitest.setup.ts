@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest';
-import { vi } from 'vitest';
+import { vi, beforeAll, afterAll } from 'vitest';
 
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
@@ -49,11 +49,18 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
+  root: Element | null = null;
+  rootMargin: string = '0px';
+  thresholds: ReadonlyArray<number> = [0];
+
   constructor() {}
   observe() {}
   unobserve() {}
   disconnect() {}
-};
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+} as any;
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {

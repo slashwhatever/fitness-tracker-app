@@ -26,6 +26,14 @@ const eslintConfig = [...compat.extends("next/core-web-vitals", "next/typescript
     "**/*.stories.jsx",
     "src/stories/**",
     ".storybook/**",
+    // Exclude test files from production builds
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "vitest.setup.ts",
+    "vitest.config.ts",
+    "**/__tests__/**",
   ],
 }, ...storybook.configs["flat/recommended"]];
 
