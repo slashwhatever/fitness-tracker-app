@@ -45,7 +45,7 @@ export default function MovementLibraryPage() {
       <div className="min-h-screen bg-background">
         <ContextualNavigation context={{ type: "library" }} />
         <main className="p-2 sm:p-4 lg:p-6">
-          <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4 mt-4">
+          <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-4">
             <div className="text-center py-12">
               <div className="text-destructive mb-4">
                 <svg
@@ -80,7 +80,7 @@ export default function MovementLibraryPage() {
     <div className="min-h-screen bg-background">
       <ContextualNavigation context={{ type: "library" }} />
       <main className="p-2 sm:p-4 lg:p-6">
-        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4 mt-4">
+        <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-4">
           {/* Header */}
           <Typography variant="title1">Movement library</Typography>
           <Typography variant="caption">
@@ -131,7 +131,7 @@ export default function MovementLibraryPage() {
               </Typography>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredMovements.map((movement) => (
                 <MovementCard
                   key={movement.id}
