@@ -1,9 +1,11 @@
 import TimerBanner from "@/components/common/TimerBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
+import MobileViewportOptimizer from "@/components/common/MobileViewportOptimizer";
+import PWAInstallPrompt from "@/components/common/PWAInstallPrompt";
 import { TimerProvider } from "@/contexts/TimerContext";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -18,18 +20,31 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Logset: Fitness Tracking App",
-  description: "Professional fitness tracking app with workout logging, movement library, and progress analytics",
+  title: "Fitness Tracking App",
+  description: "Track your workouts and fitness progress with no distractions",
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "FitnessTracker",
   },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: "/favicon-32x32.png",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#3b82f6",
 };
 
 export default function RootLayout({
@@ -46,8 +61,10 @@ export default function RootLayout({
           <ReactQueryClientProvider>
             <AuthProvider>
               <TimerProvider>
+                <MobileViewportOptimizer />
                 <TimerBanner />
                 {children}
+                <PWAInstallPrompt />
               </TimerProvider>
             </AuthProvider>
           </ReactQueryClientProvider>
