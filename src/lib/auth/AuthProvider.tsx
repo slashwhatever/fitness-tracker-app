@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { createClient } from '@/lib/supabase/client';
-import type { Session, User } from '@supabase/supabase-js';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createClient } from "@/lib/supabase/client";
+import type { Session, User } from "@supabase/supabase-js";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContextType {
   user: User | null;
@@ -12,7 +18,9 @@ interface AuthContextType {
   refreshSession: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -27,10 +35,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const refreshSession = useCallback(async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
       if (error) {
-        console.error('Failed to get session:', error);
+        console.error("Failed to get session:", error);
         setUser(null);
         setSession(null);
         return;
@@ -39,7 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(session?.user ?? null);
       setSession(session);
     } catch (error) {
-      console.error('Failed to refresh session:', error);
+      console.error("Failed to refresh session:", error);
       setUser(null);
       setSession(null);
     }
@@ -50,18 +61,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
-      
+
       // Clear any local storage data
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-          if (key.startsWith('fitness_app_')) {
+        keys.forEach((key) => {
+          if (key.startsWith("fitness_app_")) {
             localStorage.removeItem(key);
           }
         });
       }
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
     }
   };
 
@@ -70,13 +81,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshSession().finally(() => setLoading(false));
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setUser(session?.user ?? null);
-        setSession(session);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setUser(session?.user ?? null);
+      setSession(session);
+      setLoading(false);
+    });
 
     return () => subscription?.unsubscribe();
   }, [refreshSession, supabase.auth]);
@@ -89,17 +100,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshSession,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

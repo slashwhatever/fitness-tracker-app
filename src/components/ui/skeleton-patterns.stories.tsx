@@ -1,29 +1,35 @@
-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import {
-  PageSkeleton,
-  MovementListSkeleton,
-  MovementDetailSkeleton,
-  SettingsSkeleton,
+  CardSkeleton,
   LibrarySkeleton,
-  CardSkeleton
-} from './skeleton-patterns';
+  MovementDetailSkeleton,
+  MovementListSkeleton,
+  PageSkeleton,
+  SettingsSkeleton,
+  WorkoutPageSkeleton,
+} from "./skeleton-patterns";
 
 const meta: Meta = {
-  title: 'UI/Skeleton Patterns',
+  title: "UI/Skeleton Patterns",
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
   },
 };
 
 export default meta;
 
 export const Page: StoryObj = {
-  name: 'Page Skeleton',
+  name: "Page Skeleton",
   render: () => <PageSkeleton />,
 };
 
+export const WorkoutPage: StoryObj = {
+  name: "Workout Page Skeleton",
+  render: () => <WorkoutPageSkeleton />,
+};
+
 export const MovementList: StoryObj = {
-  name: 'Movement List Skeleton',
+  name: "Movement List Skeleton",
   render: () => (
     <div className="p-4">
       <MovementListSkeleton />
@@ -32,12 +38,12 @@ export const MovementList: StoryObj = {
 };
 
 export const MovementDetail: StoryObj = {
-  name: 'Movement Detail Skeleton',
+  name: "Movement Detail Skeleton",
   render: () => <MovementDetailSkeleton />,
 };
 
 export const Settings: StoryObj = {
-  name: 'Settings Skeleton',
+  name: "Settings Skeleton",
   render: () => (
     <div className="min-h-screen bg-background p-4">
       <SettingsSkeleton />
@@ -46,7 +52,7 @@ export const Settings: StoryObj = {
 };
 
 export const Library: StoryObj = {
-  name: 'Library Skeleton',
+  name: "Library Skeleton",
   render: () => (
     <div className="min-h-screen bg-background p-4">
       <LibrarySkeleton />
@@ -55,7 +61,7 @@ export const Library: StoryObj = {
 };
 
 export const Card: StoryObj = {
-  name: 'Card Skeleton',
+  name: "Card Skeleton",
   render: () => (
     <div className="p-4">
       <CardSkeleton />

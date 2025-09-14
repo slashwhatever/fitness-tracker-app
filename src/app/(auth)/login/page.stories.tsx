@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import React from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import LoginPage from "./page";
 
@@ -34,15 +35,11 @@ const meta = {
     },
   },
   beforeEach: async () => {
-    const { fn } = await import("storybook/test");
-
     // Mock authentication functions to prevent actual auth calls
-    await import("@/lib/supabase/auth-utils")
-      .then((module) => {
-        // @ts-expect-error - Mocking module for Storybook
-        module.signIn = fn().mockResolvedValue({ error: null });
-      })
-      .catch(() => {});
+    // Since auth-utils module doesn't exist yet, just log that mocking was attempted
+    console.log(
+      "Login story beforeEach: Ready for testing (auth functions would be mocked here)"
+    );
   },
 } satisfies Meta<typeof LoginPageWrapper>;
 

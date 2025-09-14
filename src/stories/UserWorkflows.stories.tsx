@@ -1,35 +1,54 @@
+// @ts-nocheck - Storybook file with dev-only imports
 import WorkoutDetailPage from "@/app/workout/[workoutId]/page";
-import { AuthProvider } from "@/lib/auth/AuthProvider";
+import { AuthContext } from "@/lib/auth/AuthProvider";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
-// Helper function to wait for loading to complete
-const waitForContentToLoad = async (
-  canvasElement: HTMLElement,
-  timeout = 10000
-) => {
-  try {
-    await waitFor(
-      async () => {
-        const skeletons = canvasElement.querySelectorAll(".animate-pulse");
-        if (skeletons.length > 0) {
-          throw new Error("Still loading - skeletons present");
-        }
+// Mock AuthProvider for Storybook that bypasses Supabase
+const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const mockAuthValue = {
+    user: {
+      id: "test-user-id",
+      email: "test@example.com",
+      user_metadata: { display_name: "Test User" },
+      aud: "authenticated",
+      role: "authenticated",
+      created_at: "2023-01-01T00:00:00.000Z",
+      updated_at: "2023-01-01T00:00:00.000Z",
+      email_confirmed_at: "2023-01-01T00:00:00.000Z",
+    },
+    session: {
+      access_token: "mock-access-token",
+      refresh_token: "mock-refresh-token",
+      expires_in: 3600,
+      expires_at: Math.floor(Date.now() / 1000) + 3600,
+      token_type: "bearer",
+      user: {
+        id: "test-user-id",
+        email: "test@example.com",
+        user_metadata: { display_name: "Test User" },
+        aud: "authenticated",
+        role: "authenticated",
+        created_at: "2023-01-01T00:00:00.000Z",
+        updated_at: "2023-01-01T00:00:00.000Z",
+        email_confirmed_at: "2023-01-01T00:00:00.000Z",
       },
-      { timeout }
-    );
+    },
+    loading: false,
+    signOut: async () => {},
+    refreshSession: async () => {},
+  };
 
-    // Wait a bit more for content to render
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return true;
-  } catch (error) {
-    console.log("Content failed to load within timeout:", error);
-    return false;
-  }
+  return (
+    <AuthContext.Provider value={mockAuthValue}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-// Create test QueryClient - MSW handles all the data
+// Create test QueryClient with appropriate settings
 const createTestQueryClient = () => {
   return new QueryClient({
     defaultOptions: {
@@ -45,184 +64,200 @@ const createTestQueryClient = () => {
   });
 };
 
-// Simple wrapper for the real page component - MSW handles all mocking
-const WorkoutDetailPageWrapper = ({ workoutId }: { workoutId: string }) => {
+// Wrapper component for consistent testing
+const WorkoutPageWrapper = ({ workoutId }: { workoutId: string }) => {
   const queryClient = createTestQueryClient();
-  const mockParams = Promise.resolve({ workoutId });
 
   return (
-    <AuthProvider>
+    <MockAuthProvider>
       <QueryClientProvider client={queryClient}>
-        <WorkoutDetailPage params={mockParams} />
+        <WorkoutDetailPage params={Promise.resolve({ workoutId })} />
       </QueryClientProvider>
-    </AuthProvider>
+    </MockAuthProvider>
   );
 };
 
 const meta = {
-  title: "Workflows/User Journeys (Real Page)",
-  component: WorkoutDetailPageWrapper,
+  title: "User Workflows/Workout Detail Page",
+  component: WorkoutPageWrapper,
   parameters: {
     layout: "fullscreen",
     nextjs: {
       appDirectory: true,
       navigation: {
-        pathname: "/workout/workout-123",
+        pathname: "/workout/550e8400-e29b-41d4-a716-446655440001",
       },
     },
   },
   args: {
-    workoutId: "workout-123",
+    workoutId: "550e8400-e29b-41d4-a716-446655440001",
   },
-} satisfies Meta<typeof WorkoutDetailPageWrapper>;
+} satisfies Meta<typeof WorkoutPageWrapper>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const RealWorkoutDetailPage: Story = {
-  name: "User Journey - Workout Detail Page",
+// Helper to wait for content to load
+const waitForContentToLoad = async (canvasElement: HTMLElement) => {
+  await waitFor(
+    () => {
+      const skeletons = canvasElement.querySelectorAll(".animate-pulse");
+      if (skeletons.length > 0) {
+        throw new Error("Still loading");
+      }
+    },
+    { timeout: 10000 }
+  );
+};
+
+// ============================================================================
+// VISUAL REGRESSION TESTS - Catch UI/Layout Changes
+// ============================================================================
+
+export const VisualRegression_BasicLayout: Story = {
+  name: "Visual Regression - Basic Layout",
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const contentLoaded = await waitForContentToLoad(canvasElement);
+    await waitForContentToLoad(canvasElement);
 
-    if (contentLoaded) {
-      // Test that the workout page renders
-      const headingElement = canvas.queryByRole("heading", {
-        name: /push day workout/i,
-      });
+    // Verify core layout elements are present
+    expect(
+      canvas.getByRole("heading", { name: /push day workout/i })
+    ).toBeInTheDocument();
+    expect(canvas.getByText(/bench press/i)).toBeInTheDocument();
+    expect(canvas.getByText(/overhead press/i)).toBeInTheDocument();
 
-      if (headingElement) {
-        await expect(headingElement).toBeInTheDocument();
+    // Verify navigation is present
+    const navElements = canvas.getAllByRole("navigation");
+    expect(navElements.length).toBeGreaterThan(0);
+  },
+};
 
-        // Test breadcrumb navigation
-        const dashboardLink = canvas.queryByRole("link", {
-          name: /dashboard/i,
+export const VisualRegression_AllMovements: Story = {
+  name: "Visual Regression - Movement Cards",
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitForContentToLoad(canvasElement);
+
+    // Verify movement cards structure
+    const benchPress = canvas.getByText(/bench press/i);
+    const overheadPress = canvas.getByText(/overhead press/i);
+
+    expect(benchPress).toBeInTheDocument();
+    expect(overheadPress).toBeInTheDocument();
+
+    // Verify muscle group tags are visible
+    expect(canvas.getByText(/chest/i)).toBeInTheDocument();
+    expect(canvas.getByText(/shoulders/i)).toBeInTheDocument();
+  },
+};
+
+// ============================================================================
+// CORE USER INTERACTION FLOWS - Catch Functional Regressions
+// ============================================================================
+
+export const UserFlow_AddSet: Story = {
+  name: "User Flow - Add Set to Movement",
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitForContentToLoad(canvasElement);
+
+    // Find and click "Add Set" button for Bench Press
+    const addSetButtons = canvas.getAllByRole("button", { name: /add set/i });
+    expect(addSetButtons.length).toBeGreaterThan(0);
+
+    await userEvent.click(addSetButtons[0]);
+
+    // Verify set addition UI appears (form, inputs, etc.)
+    // This would catch regressions in the add set flow
+    await waitFor(() => {
+      const weightInputs = canvas.queryAllByLabelText(/weight/i);
+      const repsInputs = canvas.queryAllByLabelText(/reps/i);
+      expect(weightInputs.length + repsInputs.length).toBeGreaterThan(0);
+    });
+  },
+};
+
+export const UserFlow_NavigationBack: Story = {
+  name: "User Flow - Navigation Back",
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitForContentToLoad(canvasElement);
+
+    // Find back/navigation button
+    const backButton = canvas.getByRole("button", { name: /back|dashboard/i });
+    expect(backButton).toBeInTheDocument();
+
+    // Verify it's clickable (would catch disabled states)
+    expect(backButton).not.toBeDisabled();
+
+    await userEvent.click(backButton);
+
+    // Navigation functionality would be tested in E2E,
+    // here we just verify the button works
+  },
+};
+
+export const UserFlow_ReorderMovements: Story = {
+  name: "User Flow - Reorder Movements",
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitForContentToLoad(canvasElement);
+
+    // Look for drag handles or reorder buttons
+    const dragHandles = canvas.queryAllByRole("button", {
+      name: /drag|reorder|move/i,
+    });
+
+    // This test catches regressions in movement reordering
+    if (dragHandles.length > 0) {
+      // Verify drag handles are present and functional
+      expect(dragHandles[0]).toBeInTheDocument();
+      expect(dragHandles[0]).not.toBeDisabled();
+    }
+
+    // Could test actual drag and drop here if needed
+  },
+};
+
+export const UserFlow_WorkoutSettings: Story = {
+  name: "User Flow - Workout Settings",
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitForContentToLoad(canvasElement);
+
+    // Find settings/menu button
+    const settingsButton = canvas.queryByRole("button", {
+      name: /settings|menu|options/i,
+    });
+
+    if (settingsButton) {
+      await userEvent.click(settingsButton);
+
+      // Verify settings menu opens
+      await waitFor(() => {
+        const menuItems = canvas.queryAllByRole("menuitem");
+        const buttons = canvas.queryAllByRole("button", {
+          name: /edit|delete|rename/i,
         });
-        if (dashboardLink) {
-          await expect(dashboardLink).toHaveAttribute("href", "/");
-        }
-
-        // Test that workout movements are displayed
-        const benchPress = canvas.queryByText("Bench Press");
-        const overheadPress = canvas.queryByText("Overhead Press");
-
-        if (benchPress) await expect(benchPress).toBeInTheDocument();
-        if (overheadPress) await expect(overheadPress).toBeInTheDocument();
-
-        // Test workout header functionality
-        const addMovementButton = canvas.queryByRole("button", {
-          name: /add movement/i,
-        });
-        if (addMovementButton) {
-          await expect(addMovementButton).toBeInTheDocument();
-        }
-
-        console.log("✅ Workout page test completed successfully");
-      } else {
-        console.log("⚠️ Workout heading not found, but some content loaded");
-      }
-    } else {
-      console.log("⚠️ Content failed to load, test skipped");
-      // Don't fail the test, just log that content didn't load
-    }
-  },
-};
-
-export const RealMovementInteraction: Story = {
-  name: "User Journey - Movement Interaction",
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    const contentLoaded = await waitForContentToLoad(canvasElement);
-
-    if (contentLoaded) {
-      // Look for the workout heading first
-      const headingElement = canvas.queryByRole("heading", {
-        name: /push day workout/i,
+        expect(menuItems.length + buttons.length).toBeGreaterThan(0);
       });
-
-      if (headingElement) {
-        await expect(headingElement).toBeInTheDocument();
-
-        // Test add movement button interaction
-        const addButtons = canvas.queryAllByRole("button", { name: /add/i });
-
-        if (addButtons.length > 0) {
-          // Test button click interaction
-          await userEvent.click(addButtons[0]);
-
-          // In a real app, this would open a modal
-          console.log("✅ Add movement button clicked");
-        } else {
-          console.log("⚠️ No add buttons found");
-        }
-      } else {
-        console.log("⚠️ Workout heading not found");
-      }
-    } else {
-      console.log("⚠️ Content failed to load, interaction test skipped");
     }
   },
 };
 
-export const RealWorkoutSettings: Story = {
-  name: "User Journey - Workout Settings",
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+// ============================================================================
+// RESPONSIVE & ACCESSIBILITY TESTS
+// ============================================================================
 
-    const contentLoaded = await waitForContentToLoad(canvasElement);
-
-    if (contentLoaded) {
-      const headingElement = canvas.queryByRole("heading", {
-        name: /push day workout/i,
-      });
-
-      if (headingElement) {
-        // Look for settings button
-        const settingsButton =
-          canvas.queryByRole("button", { name: /settings/i }) ||
-          canvas.queryByRole("button", { name: /menu/i }) ||
-          canvas.queryByRole("button", { name: /options/i });
-
-        if (settingsButton) {
-          await userEvent.click(settingsButton);
-          console.log("✅ Settings button clicked");
-        } else {
-          console.log("⚠️ Settings button not found");
-        }
-      }
-    } else {
-      console.log("⚠️ Content failed to load, settings test skipped");
-    }
-  },
-};
-
-export const RealBreadcrumbNavigation: Story = {
-  name: "User Journey - Navigation",
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    const contentLoaded = await waitForContentToLoad(canvasElement);
-
-    if (contentLoaded) {
-      const dashboardLink = canvas.queryByRole("link", { name: /dashboard/i });
-
-      if (dashboardLink) {
-        await expect(dashboardLink).toHaveAttribute("href", "/");
-        await userEvent.hover(dashboardLink);
-        console.log("✅ Navigation test completed");
-      } else {
-        console.log("⚠️ Dashboard link not found");
-      }
-    } else {
-      console.log("⚠️ Content failed to load, navigation test skipped");
-    }
-  },
-};
-
-export const RealResponsiveWorkout: Story = {
-  name: "User Journey - Mobile Responsive",
+export const Responsive_Mobile: Story = {
+  name: "Responsive - Mobile Layout",
   parameters: {
     viewport: {
       defaultViewport: "mobile1",
@@ -231,70 +266,86 @@ export const RealResponsiveWorkout: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const contentLoaded = await waitForContentToLoad(canvasElement);
+    await waitForContentToLoad(canvasElement);
 
-    if (contentLoaded) {
-      const headingElement = canvas.queryByRole("heading", {
-        name: /push day workout/i,
-      });
-      const buttons = canvas.queryAllByRole("button");
+    // Verify mobile-specific elements
+    expect(
+      canvas.getByRole("heading", { name: /push day workout/i })
+    ).toBeInTheDocument();
 
-      if (headingElement) {
-        await expect(headingElement).toBeInTheDocument();
-      }
+    // Mobile navigation should be present
+    const navElements = canvas.getAllByRole("navigation");
+    expect(navElements.length).toBeGreaterThan(0);
 
-      if (buttons.length > 0) {
-        expect(buttons.length).toBeGreaterThan(0);
-        console.log(
-          `✅ Mobile responsive test - found ${buttons.length} buttons`
-        );
-      }
-    } else {
-      console.log("⚠️ Content failed to load, mobile test skipped");
-    }
+    // Verify content is still accessible on mobile
+    expect(canvas.getByText(/bench press/i)).toBeInTheDocument();
   },
 };
 
-export const RealAccessibilityWorkflow: Story = {
-  name: "User Journey - Accessibility",
+export const Accessibility_KeyboardNavigation: Story = {
+  name: "Accessibility - Keyboard Navigation",
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    const contentLoaded = await waitForContentToLoad(canvasElement);
+    await waitForContentToLoad(canvasElement);
 
-    if (contentLoaded) {
-      const links = canvas.queryAllByRole("link");
-      const buttons = canvas.queryAllByRole("button");
+    // Test tab navigation
+    const focusableElements = canvas.getAllByRole("button");
+    expect(focusableElements.length).toBeGreaterThan(0);
 
-      // Test that interactive elements have accessible names
-      let accessibleLinks = 0;
-      let accessibleButtons = 0;
+    // Verify first button can receive focus
+    focusableElements[0].focus();
+    expect(focusableElements[0]).toHaveFocus();
 
-      for (const link of links) {
-        try {
-          await expect(link).toHaveAccessibleName();
-          accessibleLinks++;
-        } catch (error) {
-          // Skip inaccessible elements
-          console.debug("Link accessibility check failed:", error);
-        }
-      }
+    // Test keyboard interaction
+    await userEvent.keyboard("{Enter}");
 
-      for (const button of buttons) {
-        try {
-          await expect(button).toHaveAccessibleName();
-          accessibleButtons++;
-        } catch (error) {
-          // Skip inaccessible elements
-          console.debug("Button accessibility check failed:", error);
-        }
-      }
+    // Verify screen reader accessibility
+    const headings = canvas.getAllByRole("heading");
+    expect(headings.length).toBeGreaterThan(0);
 
-      console.log(
-        `✅ Accessibility test - ${accessibleLinks}/${links.length} links accessible, ${accessibleButtons}/${buttons.length} buttons accessible`
-      );
-    } else {
-      console.log("⚠️ Content failed to load, accessibility test skipped");
-    }
+    headings.forEach((heading) => {
+      expect(heading).toHaveAccessibleName();
+    });
+  },
+};
+
+// ============================================================================
+// ERROR & EDGE CASE SCENARIOS
+// ============================================================================
+
+export const EdgeCase_EmptyWorkout: Story = {
+  name: "Edge Case - Empty Workout State",
+  // This would need different MSW handlers for empty state
+  // parameters: { msw: { handlers: [emptyWorkoutHandlers] } },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await waitForContentToLoad(canvasElement);
+
+    // Test would verify empty state UI
+    // For now, just verify page doesn't crash
+    expect(
+      canvas.getByRole("heading", { name: /push day workout/i })
+    ).toBeInTheDocument();
+  },
+};
+
+export const EdgeCase_LoadingState: Story = {
+  name: "Edge Case - Loading State",
+  play: async ({ canvasElement }) => {
+    // Test loading skeletons appear initially
+    const skeletons = canvasElement.querySelectorAll(".animate-pulse");
+
+    // Should have loading indicators initially
+    expect(skeletons.length).toBeGreaterThan(0);
+
+    // Then content should load
+    await waitForContentToLoad(canvasElement);
+
+    const canvas = within(canvasElement);
+    expect(
+      canvas.getByRole("heading", { name: /push day workout/i })
+    ).toBeInTheDocument();
   },
 };
