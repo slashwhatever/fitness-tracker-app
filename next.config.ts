@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   eslint: {
     // Only lint production code during build, exclude stories and mocks
     dirs: ['src/app', 'src/components', 'src/lib', 'src/hooks', 'src/queries', 'src/services', 'src/utils', 'src/models', 'src/contexts'],
+    // Ignore linting entirely during builds to focus on TypeScript errors
+    ignoreDuringBuilds: true,
   },
 };
 

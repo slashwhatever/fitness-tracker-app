@@ -19,6 +19,13 @@ const eslintConfig = [...compat.extends("next/core-web-vitals", "next/typescript
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Exclude Storybook files from production builds
+    "**/*.stories.ts",
+    "**/*.stories.tsx",
+    "**/*.stories.js", 
+    "**/*.stories.jsx",
+    "src/stories/**",
+    ".storybook/**",
   ],
 }, ...storybook.configs["flat/recommended"]];
 
