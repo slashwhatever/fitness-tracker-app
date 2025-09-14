@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY:
       process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY,
   },
+  eslint: {
+    // Only lint production code during build, exclude stories and mocks
+    dirs: ['src/app', 'src/components', 'src/lib', 'src/hooks', 'src/queries', 'src/services', 'src/utils', 'src/models', 'src/contexts'],
+  },
 };
 
 export default nextConfig;

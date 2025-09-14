@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 // Mock environment variables for Storybook
 if (typeof window !== 'undefined') {
-  // @ts-ignore
+  // @ts-expect-error - Adding process to window for Storybook environment
   window.process = {
     env: {
       NEXT_PUBLIC_SUPABASE_URL: 'https://mock-project.supabase.co',

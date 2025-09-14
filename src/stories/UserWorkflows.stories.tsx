@@ -274,8 +274,9 @@ export const RealAccessibilityWorkflow: Story = {
         try {
           await expect(link).toHaveAccessibleName();
           accessibleLinks++;
-        } catch (e) {
+        } catch (error) {
           // Skip inaccessible elements
+          console.debug("Link accessibility check failed:", error);
         }
       }
 
@@ -283,8 +284,9 @@ export const RealAccessibilityWorkflow: Story = {
         try {
           await expect(button).toHaveAccessibleName();
           accessibleButtons++;
-        } catch (e) {
+        } catch (error) {
           // Skip inaccessible elements
+          console.debug("Button accessibility check failed:", error);
         }
       }
 

@@ -1,0 +1,20 @@
+# Ignore Storybook files
+**/*.stories.ts
+**/*.stories.tsx
+**/*.stories.js
+**/*.stories.jsx
+
+# Ignore Storybook directory
+src/stories/
+
+# Ignore Storybook config
+.storybook/
+
+# Ignore test mocks for production builds  
+src/stories/mocks/
+
+# Other generated files
+.next/
+node_modules/
+dist/
+build/
