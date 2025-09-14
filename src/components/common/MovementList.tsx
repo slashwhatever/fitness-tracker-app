@@ -1,23 +1,33 @@
 "use client";
 
 import EditMovementModal from "@/components/common/EditMovementModal";
+import SortableMovementItem from "@/components/common/SortableMovementItem";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { Separator } from "@/components/ui/separator";
 import { MovementListSkeleton } from "@/components/ui/skeleton-patterns";
 import {
   useRemoveMovementFromWorkout,
+  useReorderWorkoutMovements,
   useUserMovement,
   useWorkoutMovements,
 } from "@/hooks";
 import { useSets, useSetsByWorkout } from "@/hooks/useSets";
 import { formatLastSetDate } from "@/lib/utils/dateHelpers";
 import type { UserMovement } from "@/models/types";
-import { Dumbbell, Edit3, Plus, SearchX, Trash2 } from "lucide-react";
-import Link from "next/link";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Plus, SearchX } from "lucide-react";
 import { useState } from "react";
-import ResponsiveButton from "./ResponsiveButton";
-import { Typography } from "./Typography";
 
 interface MovementListProps {
   workoutId: string;
@@ -34,6 +44,7 @@ export default function MovementList({
   const { data: workoutSets = [] } = useSetsByWorkout(workoutId);
   const { data: allSets = [] } = useSets();
   const removeMovementMutation = useRemoveMovementFromWorkout();
+  const reorderMutation = useReorderWorkoutMovements();
   const [editingMovementId, setEditingMovementId] = useState<string | null>(
     null
   );
@@ -41,6 +52,15 @@ export default function MovementList({
     id: string;
     name: string;
   } | null>(null);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px of movement before drag starts
+      },
+    })
+  );
 
   // Get the movement data for editing
   const { data: editingMovement } = useUserMovement(editingMovementId || "");
@@ -75,6 +95,41 @@ export default function MovementList({
     return formatLastSetDate(movementSets);
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = movements.findIndex(
+      (movement) => movement.id === active.id
+    );
+    const newIndex = movements.findIndex((movement) => movement.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    // Create the reordered array
+    const reorderedMovements = arrayMove(movements, oldIndex, newIndex);
+
+    // Update order_index for all affected movements
+    const updatedMovements = reorderedMovements.map((movement, index) => ({
+      id: movement.id,
+      order_index: index,
+    }));
+
+    try {
+      await reorderMutation.mutateAsync({
+        workoutId,
+        movements: updatedMovements,
+      });
+    } catch (error) {
+      console.error("Failed to reorder movements:", error);
+    }
+  };
+
   if (isLoading) {
     return <MovementListSkeleton />;
   }
@@ -97,71 +152,32 @@ export default function MovementList({
 
   return (
     <>
-      <div className="bg-card border border-default rounded-lg overflow-hidden">
-        {movements.map((movement, index) => {
-          const movementSets = getMovementSets(movement.user_movement_id);
-
-          return (
-            <>
-              <div key={movement.id}>
-                <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50  transition-all">
-                  <Link
-                    href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
-                    className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0 overflow-hidden"
-                  >
-                    <div className="min-w-0 flex-1 overflow-hidden">
-                      <Typography variant="title3" className="truncate block">
-                        {movement.user_movement?.name || "Unknown Movement"}
-                      </Typography>
-                      <Typography
-                        variant="caption"
-                        className="line-clamp-2 block"
-                      >
-                        {getLastSetDate(movement.user_movement_id)}
-                        {movementSets.length > 0 &&
-                          ` • ${movementSets.length} set${
-                            movementSets.length > 1 ? "s" : ""
-                          }`}
-                      </Typography>
-                    </div>
-                  </Link>
-                  <div className="flex items-center space-x-1 sm:space-x-2 ml-2 flex-shrink-0">
-                    <ResponsiveButton icon={Dumbbell} color="green" asChild>
-                      <Link
-                        href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
-                      >
-                        <Typography variant="body">Log sets</Typography>
-                      </Link>
-                    </ResponsiveButton>
-                    <ResponsiveButton
-                      icon={Edit3}
-                      color="blue"
-                      onClick={() =>
-                        setEditingMovementId(movement.user_movement_id)
-                      }
-                    >
-                      Edit
-                    </ResponsiveButton>
-                    <ResponsiveButton
-                      icon={Trash2}
-                      color="red"
-                      onClick={() =>
-                        handleDeleteClick(
-                          movement.user_movement_id,
-                          movement.user_movement?.name || "Unknown Movement"
-                        )
-                      }
-                    >
-                      Delete
-                    </ResponsiveButton>
-                  </div>
-                </div>
-              </div>
-              {index < movements.length - 1 && <Separator />}
-            </>
-          );
-        })}
-      </div>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <div className="bg-card border border-default rounded-lg overflow-hidden">
+          <SortableContext
+            items={movements.map((m) => m.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {movements.map((movement, index) => (
+              <SortableMovementItem
+                key={movement.id}
+                movement={movement}
+                workoutId={workoutId}
+                movementSets={getMovementSets(movement.user_movement_id)}
+                lastSetDate={getLastSetDate(movement.user_movement_id)}
+                onEdit={() => setEditingMovementId(movement.user_movement_id)}
+                onDelete={() =>
+                  handleDeleteClick(
+                    movement.user_movement_id,
+                    movement.user_movement?.name || "Unknown Movement"
+                  )
+                }
+                showSeparator={index < movements.length - 1}
+              />
+            ))}
+          </SortableContext>
+        </div>
+      </DndContext>
 
       <EditMovementModal
         isOpen={!!editingMovementId}
