@@ -1,18 +1,11 @@
 "use client";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
 import MovementList from "@/components/common/MovementList";
 import MovementSelectionModal from "@/components/common/MovementSelectionModal";
 import WorkoutHeader from "@/components/common/WorkoutHeader";
 import WorkoutSettingsModal from "@/components/common/WorkoutSettingsModal";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -135,20 +128,14 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
 
   return (
     <ProtectedRoute>
+      <ContextualNavigation
+        context={{
+          type: "workout-detail",
+          workoutName: workout?.name,
+        }}
+      />
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
         <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{workout?.name || "Workout"}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-
           <WorkoutHeader
             workout={workout}
             isLoading={workoutLoading}

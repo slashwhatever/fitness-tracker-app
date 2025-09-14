@@ -1,15 +1,8 @@
 "use client";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
 import { Typography } from "@/components/common/Typography";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,20 +109,9 @@ export default function SettingsPage() {
 
   return (
     <ProtectedRoute>
+      <ContextualNavigation context={{ type: "settings" }} />
       <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
         <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Settings</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-
           <div className="mb-6">
             <Typography variant="title2">Settings</Typography>
             <Typography variant="caption">
