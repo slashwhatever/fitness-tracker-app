@@ -134,7 +134,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
               <>
                 <div
                   key={workout.id}
-                  className="flex items-center justify-between p-3 hover:bg-muted/50 transition-all cursor-pointer"
+                  className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all cursor-pointer"
                 >
                   <Link
                     href={`/workout/${workout.id}`}
