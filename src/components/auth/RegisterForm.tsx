@@ -1,17 +1,24 @@
-'use client';
+"use client";
 
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { signUpWithEmail } from '@/lib/supabase/auth-utils';
-import { Check, Eye, EyeOff, Loader2, X } from 'lucide-react';
-import Link from 'next/link';
-import { useMemo, useState } from 'react';
-import { Label } from "../ui/label";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { signUpWithEmail } from "@/lib/supabase/auth-utils";
+import { Check, Dumbbell, Eye, EyeOff, Loader2, X } from "lucide-react";
+import Link from "next/link";
+import { useMemo, useState } from "react";
 
 interface RegisterFormProps {
   redirectTo?: string;
@@ -23,34 +30,43 @@ interface PasswordRequirement {
 }
 
 const passwordRequirements: PasswordRequirement[] = [
-  { label: 'At least 8 characters', test: (p) => p.length >= 8 },
-  { label: 'Contains uppercase letter', test: (p) => /[A-Z]/.test(p) },
-  { label: 'Contains lowercase letter', test: (p) => /[a-z]/.test(p) },
-  { label: 'Contains number', test: (p) => /\d/.test(p) },
+  { label: "At least 8 characters", test: (p) => p.length >= 8 },
+  { label: "Contains uppercase letter", test: (p) => /[A-Z]/.test(p) },
+  { label: "Contains lowercase letter", test: (p) => /[a-z]/.test(p) },
+  { label: "Contains number", test: (p) => /\d/.test(p) },
 ];
 
 // Zod schema for form validation with complex password requirements
-const formSchema = z.object({
-  displayName: z.string().min(1, "Display name is required").min(2, "Display name must be at least 2 characters"),
-  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
-  password: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/\d/, "Password must contain at least one number"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const formSchema = z
+  .object({
+    displayName: z
+      .string()
+      .min(1, "Display name is required")
+      .min(2, "Display name must be at least 2 characters"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Please enter a valid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/\d/, "Password must contain at least one number"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
-export function RegisterForm({ }: RegisterFormProps) {
+export function RegisterForm({}: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
   // Initialize form with React Hook Form and Zod validation
@@ -74,23 +90,27 @@ export function RegisterForm({ }: RegisterFormProps) {
   const watchedPassword = watch("password");
 
   const passwordValidation = useMemo(() => {
-    return passwordRequirements.map(req => ({
+    return passwordRequirements.map((req) => ({
       ...req,
-      valid: req.test(watchedPassword || "")
+      valid: req.test(watchedPassword || ""),
     }));
   }, [watchedPassword]);
 
   const onSubmit = handleSubmit(async (values: FormData) => {
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const { user, error: signUpError } = await signUpWithEmail(values.email, values.password, {
-        data: {
-          display_name: values.displayName,
+      const { user, error: signUpError } = await signUpWithEmail(
+        values.email,
+        values.password,
+        {
+          data: {
+            display_name: values.displayName,
+          },
         }
-      });
-      
+      );
+
       if (signUpError) {
         setError(signUpError);
         return;
@@ -101,8 +121,8 @@ export function RegisterForm({ }: RegisterFormProps) {
         // Note: User will need to confirm email before they can sign in
       }
     } catch (error) {
-      setError('An unexpected error occurred. Please try again.');
-      console.error('Registration error:', error);
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Registration error:", error);
     } finally {
       setLoading(false);
     }
@@ -110,19 +130,20 @@ export function RegisterForm({ }: RegisterFormProps) {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md mx-auto border-none bg-transparent">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-green-600">
             Check your email
           </CardTitle>
           <CardDescription className="text-center">
-            We&apos;ve sent you a confirmation link to complete your registration.
+            We&apos;ve sent you a confirmation link to complete your
+            registration.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="text-center space-y-4">
           <div className="text-sm text-muted-foreground">
-            Didn&apos;t receive the email? Check your spam folder or{' '}
+            Didn&apos;t receive the email? Check your spam folder or{" "}
             <Button
               variant="link"
               className="p-0 h-auto text-primary"
@@ -131,7 +152,7 @@ export function RegisterForm({ }: RegisterFormProps) {
               try again
             </Button>
           </div>
-          
+
           <Link href="/login">
             <Button variant="outline" className="w-full">
               Back to Sign In
@@ -143,20 +164,24 @@ export function RegisterForm({ }: RegisterFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto border-none bg-transparent">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          Create account
+        <CardTitle className="text-2xl font-bold text-center flex items-center justify-center">
+          <Dumbbell className="w-6 h-6 mr-2" aria-hidden="true" />
+          <Typography variant="title1">Create account</Typography>
         </CardTitle>
         <CardDescription className="text-center">
-          Start tracking your fitness journey
+          Start tracking your fitness journey with Logset
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="displayName" className="text-sm font-medium text-muted-foreground">
+            <Label
+              htmlFor="displayName"
+              className="text-sm font-medium text-muted-foreground"
+            >
               Display Name
             </Label>
             <Input
@@ -168,12 +193,17 @@ export function RegisterForm({ }: RegisterFormProps) {
               {...register("displayName")}
             />
             {errors.displayName && (
-              <p className="text-sm text-destructive">{errors.displayName.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.displayName.message}
+              </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium text-muted-foreground">
+            <Label
+              htmlFor="email"
+              className="text-sm font-medium text-muted-foreground"
+            >
               Email
             </Label>
             <Input
@@ -190,13 +220,16 @@ export function RegisterForm({ }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium text-muted-foreground">
+            <Label
+              htmlFor="password"
+              className="text-sm font-medium text-muted-foreground"
+            >
               Password
             </Label>
             <div className="relative">
               <Input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Create a password"
                 disabled={loading}
                 autoComplete="new-password"
@@ -210,7 +243,7 @@ export function RegisterForm({ }: RegisterFormProps) {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={loading}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -220,13 +253,20 @@ export function RegisterForm({ }: RegisterFormProps) {
               </Button>
             </div>
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.password.message}
+              </p>
             )}
-            
+
             {watchedPassword && (
               <div className="space-y-1 text-xs">
                 {passwordValidation.map((req, index) => (
-                  <div key={index} className={`flex items-center gap-2 ${req.valid ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  <div
+                    key={index}
+                    className={`flex items-center gap-2 ${
+                      req.valid ? "text-green-600" : "text-muted-foreground"
+                    }`}
+                  >
                     {req.valid ? (
                       <Check className="h-3 w-3" />
                     ) : (
@@ -240,13 +280,16 @@ export function RegisterForm({ }: RegisterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">
-              Confirm Password
+            <Label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium text-muted-foreground"
+            >
+              Confirm password
             </Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 disabled={loading}
                 autoComplete="new-password"
@@ -260,7 +303,9 @@ export function RegisterForm({ }: RegisterFormProps) {
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 disabled={loading}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                aria-label={
+                  showConfirmPassword ? "Hide password" : "Show password"
+                }
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -270,7 +315,9 @@ export function RegisterForm({ }: RegisterFormProps) {
               </Button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -280,25 +327,27 @@ export function RegisterForm({ }: RegisterFormProps) {
             </div>
           )}
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading || !isValid}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Creating account...
-              </>
-            ) : (
-              'Create account'
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || !isValid}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                "Create account"
+              )}
+            </Button>
+          </div>
         </form>
 
         <div className="mt-6 text-center">
           <div className="text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link
               href="/login"
               className="text-primary hover:underline underline-offset-4 font-medium"

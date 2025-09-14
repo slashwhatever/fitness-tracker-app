@@ -1,13 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { createClient } from '@/lib/supabase/client';
-import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
-import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
-import UpdatePasswordForm from '@/components/auth/UpdatePasswordForm';
-import { PageSkeleton } from '@/components/ui/skeleton-patterns';
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
+import UpdatePasswordForm from "@/components/auth/UpdatePasswordForm";
+import { PageSkeleton } from "@/components/ui/skeleton-patterns";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
 function ResetPasswordContent() {
   const [isUpdateMode, setIsUpdateMode] = useState(false);
@@ -19,16 +19,17 @@ function ResetPasswordContent() {
   useEffect(() => {
     const checkAuthState = async () => {
       const supabase = createClient();
-      
+
       // Check for auth tokens in URL (from email link)
       const { data, error } = await supabase.auth.getSession();
-      
+
       // If we have URL parameters (access_token, refresh_token, etc.), it means
       // the user clicked the reset link from email
-      const hasAuthTokens = searchParams.get('access_token') || 
-                           searchParams.get('refresh_token') ||
-                           window.location.hash.includes('access_token');
-      
+      const hasAuthTokens =
+        searchParams.get("access_token") ||
+        searchParams.get("refresh_token") ||
+        window.location.hash.includes("access_token");
+
       if (hasAuthTokens || (data.session && !error)) {
         // User came from email link and has a valid session - show update password form
         setIsUpdateMode(true);
@@ -36,7 +37,7 @@ function ResetPasswordContent() {
         // User navigated directly - show reset password form
         setIsUpdateMode(false);
       }
-      
+
       setLoading(false);
     };
 
@@ -44,13 +45,17 @@ function ResetPasswordContent() {
 
     // Listen for auth state changes (when user clicks email link)
     const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
-      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
-        if (session) {
-          setIsUpdateMode(true);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (event: AuthChangeEvent, session: Session | null) => {
+        if (event === "TOKEN_REFRESHED" || event === "SIGNED_IN") {
+          if (session) {
+            setIsUpdateMode(true);
+          }
         }
       }
-    });
+    );
 
     return () => subscription.unsubscribe();
   }, [searchParams]);
@@ -58,7 +63,7 @@ function ResetPasswordContent() {
   // If user is already logged in and not in reset flow, redirect to dashboard
   useEffect(() => {
     if (user && !isUpdateMode && !loading) {
-      router.push('/');
+      router.push("/");
     }
   }, [user, isUpdateMode, loading, router]);
 
@@ -68,11 +73,23 @@ function ResetPasswordContent() {
 
   // Show update password form if user has valid session (from email link)
   if (isUpdateMode) {
-    return <UpdatePasswordForm />;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <UpdatePasswordForm />
+        </div>
+      </div>
+    );
   }
 
   // Show reset password form for initial email request
-  return <ResetPasswordForm />;
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <ResetPasswordForm />
+      </div>
+    </div>
+  );
 }
 
 export default function ResetPasswordPage() {

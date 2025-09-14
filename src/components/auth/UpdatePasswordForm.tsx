@@ -1,30 +1,39 @@
 "use client";
 
-import { Typography } from '@/components/common/Typography';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { updatePassword } from '@/lib/supabase/auth-utils';
-import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
-import { Eye, EyeOff } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { updatePassword } from "@/lib/supabase/auth-utils";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { Check, Dumbbell, Eye, EyeOff, Loader2, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const formSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const formSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/[0-9]/, "Password must contain at least one number"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -54,45 +63,45 @@ export const UpdatePasswordForm = () => {
 
   // Password requirements validation feedback
   const passwordRequirements = [
-    { 
-      met: password.length >= 8, 
-      text: "At least 8 characters" 
+    {
+      met: password.length >= 8,
+      text: "At least 8 characters",
     },
-    { 
-      met: /[A-Z]/.test(password), 
-      text: "One uppercase letter" 
+    {
+      met: /[A-Z]/.test(password),
+      text: "One uppercase letter",
     },
-    { 
-      met: /[a-z]/.test(password), 
-      text: "One lowercase letter" 
+    {
+      met: /[a-z]/.test(password),
+      text: "One lowercase letter",
     },
-    { 
-      met: /[0-9]/.test(password), 
-      text: "One number" 
+    {
+      met: /[0-9]/.test(password),
+      text: "One number",
     },
   ];
 
   const onSubmit = handleSubmit(async (values) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const { error: updateError } = await updatePassword(values.password);
-      
+
       if (updateError) {
         setError(updateError);
         return;
       }
-      
+
       setSuccess(true);
-      
+
       // Redirect to login after successful password update
       setTimeout(() => {
-        router.push('/login');
+        router.push("/login");
       }, 3000);
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-      console.error('Update password error:', err);
+      setError("An unexpected error occurred. Please try again.");
+      console.error("Update password error:", err);
     } finally {
       setLoading(false);
     }
@@ -100,139 +109,179 @@ export const UpdatePasswordForm = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md w-full space-y-6 bg-card p-8 rounded-lg border shadow-lg">
-          <div className="text-center space-y-2">
-            <Typography variant="title1">Password Updated!</Typography>
-            <Typography variant="body" className="text-muted-foreground">
-              Your password has been successfully updated. You&apos;ll be redirected to the login page shortly.
-            </Typography>
-          </div>
-          
-          <div className="text-center">
-            <Button asChild className="w-full">
-              <Link href="/login">
-                Continue to Login
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </div>
+      <Card className="w-full max-w-md mx-auto border-none bg-transparent">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold text-center text-green-600">
+            Password Updated!
+          </CardTitle>
+          <CardDescription className="text-center">
+            Your password has been successfully updated. You&apos;ll be
+            redirected to the login page shortly.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="text-center">
+          <Button asChild className="w-full">
+            <Link href="/login">Continue to Login</Link>
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="max-w-md w-full space-y-6 bg-card p-8 rounded-lg border shadow-lg">
-        <div className="text-center space-y-2">
+    <Card className="w-full max-w-md mx-auto border-none bg-transparent">
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl font-bold text-center flex items-center justify-center">
+          <Dumbbell className="w-6 h-6 mr-2" aria-hidden="true" />
           <Typography variant="title1">Set New Password</Typography>
-          <Typography variant="body" className="text-muted-foreground">
-            Enter your new password below.
-          </Typography>
-        </div>
+        </CardTitle>
+        <CardDescription className="text-center">
+          Enter your new password below.
+        </CardDescription>
+      </CardHeader>
 
-        <form onSubmit={onSubmit}>
+      <CardContent>
+        <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="password">New Password</Label>
+            <Label
+              htmlFor="password"
+              className="text-sm font-medium text-muted-foreground"
+            >
+              New Password
+            </Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter new password"
-                {...register('password')}
-                className="w-full pr-10"
+                {...register("password")}
+                className="pr-10"
                 disabled={loading}
+                autoComplete="new-password"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                disabled={loading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
             </div>
             {errors.password && (
-              <Typography variant="caption" className="text-destructive">
+              <p className="text-sm text-destructive">
                 {errors.password.message}
-              </Typography>
+              </p>
             )}
           </div>
 
           {password && (
-            <div className="space-y-2">
-              <Typography variant="caption" className="text-muted-foreground">
-                Password requirements:
-              </Typography>
-              <div className="space-y-1">
-                {passwordRequirements.map((req, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${req.met ? 'bg-green-500' : 'bg-muted'}`} />
-                    <Typography 
-                      variant="caption" 
-                      className={req.met ? 'text-green-600' : 'text-muted-foreground'}
-                    >
-                      {req.text}
-                    </Typography>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-1 text-xs">
+              {passwordRequirements.map((req, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center gap-2 ${
+                    req.met ? "text-green-600" : "text-muted-foreground"
+                  }`}
+                >
+                  {req.met ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <X className="h-3 w-3" />
+                  )}
+                  {req.text}
+                </div>
+              ))}
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium text-muted-foreground"
+            >
+              Confirm New Password
+            </Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm new password"
-                {...register('confirmPassword')}
-                className="w-full pr-10"
+                {...register("confirmPassword")}
+                className="pr-10"
                 disabled={loading}
+                autoComplete="new-password"
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                disabled={loading}
+                aria-label={
+                  showConfirmPassword ? "Hide password" : "Show password"
+                }
               >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
             </div>
             {errors.confirmPassword && (
-              <Typography variant="caption" className="text-destructive">
+              <p className="text-sm text-destructive">
                 {errors.confirmPassword.message}
-              </Typography>
+              </p>
             )}
           </div>
 
           {error && (
-            <Typography variant="body" className="text-destructive text-center">
+            <div className="text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md p-3">
               {error}
-            </Typography>
+            </div>
           )}
 
-          <Button 
-            type="submit" 
-            className="w-full" 
-            disabled={!isValid || loading}
-          >
-            {loading ? 'Updating...' : 'Update Password'}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!isValid || loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Password"
+              )}
+            </Button>
+          </div>
         </form>
 
-        <div className="text-center">
-          <Typography variant="caption" className="text-muted-foreground">
+        <div className="mt-6 text-center">
+          <div className="text-sm text-muted-foreground">
             Remember your password?{" "}
-            <Link 
-              href="/login" 
-              className="text-primary underline-offset-4 hover:underline"
+            <Link
+              href="/login"
+              className="text-primary hover:underline underline-offset-4 font-medium"
             >
               Sign in
             </Link>
-          </Typography>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
