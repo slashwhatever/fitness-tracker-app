@@ -1,160 +1,89 @@
-'use client';
+"use client";
 
-import { useForm } from "react-hook-form";
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ExperienceLevel } from '@/models/types';
-import { useEffect } from 'react';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 
 interface SearchFiltersProps {
   onSearchChange: (search: string) => void;
-  onMuscleGroupFilter: (muscle_group: string | null) => void;
-  onExperienceLevelFilter: (level: ExperienceLevel | null) => void;
-  muscleGroups?: string[]; // Now passed as props
-  experienceLevels?: ExperienceLevel[]; // Now passed as props
 }
 
-// Default fallbacks if props not provided
-const DEFAULT_EXPERIENCE_LEVELS: ExperienceLevel[] = ['Beginner', 'Intermediate', 'Advanced'];
-const DEFAULT_MUSCLE_GROUPS: string[] = ['Back', 'Biceps', 'Cardio', 'Chest', 'Core', 'Forearms', 'Full Body', 'Legs', 'Shoulders', 'Triceps'];
-
-// Form type definition for filters
+// Form type definition for search
 type FiltersFormData = {
   search: string;
-  selectedMuscleGroup: string | null;
-  selectedExperienceLevel: ExperienceLevel | null;
 };
 
-export default function SearchFilters({
-  onSearchChange,
-  onMuscleGroupFilter,
-  onExperienceLevelFilter,
-  muscleGroups = DEFAULT_MUSCLE_GROUPS,
-  experienceLevels = DEFAULT_EXPERIENCE_LEVELS,
-}: SearchFiltersProps) {
-  // Initialize form with React Hook Form using uncontrolled components
-  const {
-    register,
-    setValue,
-    watch,
-    reset,
-  } = useForm<FiltersFormData>({
+export default function SearchFilters({ onSearchChange }: SearchFiltersProps) {
+  // Initialize form with React Hook Form
+  const { register, watch, reset } = useForm<FiltersFormData>({
     mode: "onChange",
     defaultValues: {
       search: "",
-      selectedMuscleGroup: null,
-      selectedExperienceLevel: null,
     },
   });
 
-  // Watch form values to trigger parent callbacks
+  // Watch search value to trigger parent callback
   const searchValue = watch("search");
-  const selectedMuscleGroup = watch("selectedMuscleGroup");
-  const selectedExperienceLevel = watch("selectedExperienceLevel");
 
-  // Trigger parent callbacks when watched values change
+  // Trigger parent callback when search changes
   useEffect(() => {
     onSearchChange(searchValue);
   }, [searchValue, onSearchChange]);
 
-  useEffect(() => {
-    onMuscleGroupFilter(selectedMuscleGroup);
-  }, [selectedMuscleGroup, onMuscleGroupFilter]);
-
-  useEffect(() => {
-    onExperienceLevelFilter(selectedExperienceLevel);
-  }, [selectedExperienceLevel, onExperienceLevelFilter]);
-
-  const handleMuscleGroupChange = (muscle_group: string) => {
-    const newValue = selectedMuscleGroup === muscle_group ? null : muscle_group;
-    setValue("selectedMuscleGroup", newValue);
-  };
-
-  const handleExperienceLevelChange = (level: ExperienceLevel) => {
-    const newValue = selectedExperienceLevel === level ? null : level;
-    setValue("selectedExperienceLevel", newValue);
-  };
-
-  const clearFilters = () => {
+  const clearSearch = () => {
     reset({
       search: "",
-      selectedMuscleGroup: null,
-      selectedExperienceLevel: null,
     });
   };
 
-  const hasActiveFilters = searchValue || selectedMuscleGroup || selectedExperienceLevel;
+  const hasActiveFilters = searchValue;
 
   return (
-    <>
+    <div className="space-y-4">
+      {/* Search Input */}
       <div className="space-y-2">
+        <Label htmlFor="search" className="text-sm font-medium">
+          Search movements
+        </Label>
         <div className="relative">
           <Input
-            type="text"
-            id="search"
-            placeholder="Search by exercise name..."
-            className="pl-10"
             {...register("search")}
+            id="search"
+            type="text"
+            placeholder="Search by name, muscle groups..."
+            className="pl-10"
           />
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="h-5 w-5 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
         </div>
       </div>
 
-      {/* Muscle Group Filters */}
-      <div className="space-y-2">
-        <Label htmlFor="muscle_group" className="text-sm font-medium text-muted-foreground">Muscle group</Label>
-        <div className="flex flex-wrap gap-2">
-          {muscleGroups.map((muscleGroup) => (
-            <Button
-              key={muscleGroup}
-              variant={selectedMuscleGroup === muscleGroup ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleMuscleGroupChange(muscleGroup)}
-              className="text-sm"
-            >
-              {muscleGroup}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Experience Level Filters */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Experience Level</Label>
-        <div className="flex flex-wrap gap-2">
-          {experienceLevels.map((level) => (
-            <Button
-              key={level}
-              variant={selectedExperienceLevel === level ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleExperienceLevelChange(level)}
-              className="text-sm"
-            >
-              {level}
-            </Button>
-          ))}
-        </div>
-      </div>
-
-      {/* Clear Filters */}
+      {/* Clear search button */}
       {hasActiveFilters && (
-        <div className="pt-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="text-sm underline"
-          >
-            Clear all filters
-          </Button>
-        </div>
+        <Button
+          onClick={clearSearch}
+          variant="outline"
+          size="sm"
+          className="w-full"
+        >
+          Clear search
+        </Button>
       )}
-    </>
+    </div>
   );
 }

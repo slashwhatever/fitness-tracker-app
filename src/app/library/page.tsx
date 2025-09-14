@@ -5,18 +5,12 @@ import MovementCard from "@/components/common/MovementCard";
 import SearchFilters from "@/components/common/SearchFilters";
 import { Typography } from "@/components/common/Typography";
 import { LibrarySkeleton } from "@/components/ui/skeleton-patterns";
-import { useMuscleGroups } from "@/hooks";
 import { useMovementTemplates } from "@/hooks/useMovements";
-import { ExperienceLevel, MovementTemplate } from "@/models/types";
+import { MovementTemplate } from "@/models/types";
 import { useMemo, useState } from "react";
 
 export default function MovementLibraryPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [muscleGroupFilter, setMuscleGroupFilter] = useState<string | null>(
-    null
-  );
-  const [experienceLevelFilter, setExperienceLevelFilter] =
-    useState<ExperienceLevel | null>(null);
 
   // Fetch movement templates and muscle groups from database
   const {
@@ -24,23 +18,11 @@ export default function MovementLibraryPage() {
     isLoading,
     error,
   } = useMovementTemplates();
-  const { data: muscleGroupsData = [] } = useMuscleGroups();
-
-  // Extract muscle group names for filtering
-  const muscleGroups = useMemo(() => {
-    return muscleGroupsData.map((mg) => mg.display_name).sort();
-  }, [muscleGroupsData]);
-
-  const experienceLevels: ExperienceLevel[] = [
-    "Beginner",
-    "Intermediate",
-    "Advanced",
-  ];
 
   const filteredMovements = useMemo(() => {
     return movementTemplates
       .filter((movement) => {
-        // Search filter
+        // Search filter - search in name and muscle groups
         const matchesSearch =
           searchTerm === "" ||
           movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -48,20 +30,10 @@ export default function MovementLibraryPage() {
             group.toLowerCase().includes(searchTerm.toLowerCase())
           );
 
-        // Muscle group filter
-        const matchesMuscleGroup =
-          muscleGroupFilter === null ||
-          movement.muscle_groups.includes(muscleGroupFilter);
-
-        // Experience level filter
-        const matchesExperienceLevel =
-          experienceLevelFilter === null ||
-          movement.experience_level === experienceLevelFilter;
-
-        return matchesSearch && matchesMuscleGroup && matchesExperienceLevel;
+        return matchesSearch;
       })
       .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically by name
-  }, [movementTemplates, searchTerm, muscleGroupFilter, experienceLevelFilter]);
+  }, [movementTemplates, searchTerm]);
 
   const handleMovementClick = (movement: MovementTemplate) => {
     // TODO: Handle movement selection (for Story 1.4)
@@ -110,25 +82,13 @@ export default function MovementLibraryPage() {
       <main className="p-2 sm:p-4 lg:p-6">
         <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4 mt-4">
           {/* Header */}
-          <div className="mb-6">
-            <Typography variant="title1">Movement library</Typography>
-            <Typography variant="caption">
-              Browse and discover exercises for your workouts
-            </Typography>
-          </div>
+          <Typography variant="title1">Movement library</Typography>
+          <Typography variant="caption">
+            Browse and discover exercises for your workouts
+          </Typography>
 
-          {/* Search and Filters */}
-          <Typography variant="title2">Search & filters</Typography>
-
-          <SearchFilters
-            onSearchChange={setSearchTerm}
-            onMuscleGroupFilter={(filter) => {
-              setMuscleGroupFilter(filter);
-            }}
-            onExperienceLevelFilter={setExperienceLevelFilter}
-            muscleGroups={muscleGroups}
-            experienceLevels={experienceLevels}
-          />
+          {/* Search */}
+          <SearchFilters onSearchChange={setSearchTerm} />
 
           {/* Movement Grid */}
           <div className="mb-6">

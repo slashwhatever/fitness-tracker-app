@@ -1,10 +1,18 @@
-'use client';
+"use client";
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
-import { useTrackingTypes } from '@/hooks';
-import { getExperienceLevelVariant, getTrackingTypeIcon } from '@/lib/utils/typeHelpers';
-import { MovementTemplate } from '@/models/types';
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import { useTrackingTypes } from "@/hooks";
+import {
+  getExperienceLevelVariant,
+  getTrackingTypeIcon,
+} from "@/lib/utils/typeHelpers";
+import { MovementTemplate } from "@/models/types";
 
 interface MovementCardProps {
   movement: MovementTemplate;
@@ -12,12 +20,19 @@ interface MovementCardProps {
   selected?: boolean;
 }
 
-export default function MovementCard({ movement, onClick, selected }: MovementCardProps) {
+export default function MovementCard({
+  movement,
+  onClick,
+  selected,
+}: MovementCardProps) {
   const { data: trackingTypes = [] } = useTrackingTypes();
-  
+
   // Find the display name for the tracking type
-  const trackingType = trackingTypes.find(tt => tt.name === movement.tracking_type);
-  const trackingTypeDisplayName = trackingType?.display_name || movement.tracking_type;
+  const trackingType = trackingTypes.find(
+    (tt) => tt.name === movement.tracking_type
+  );
+  const trackingTypeDisplayName =
+    trackingType?.display_name || movement.tracking_type;
 
   const handleClick = () => {
     if (onClick) {
@@ -26,22 +41,24 @@ export default function MovementCard({ movement, onClick, selected }: MovementCa
   };
 
   return (
-    <Card 
-      className={`cursor-pointer transition-all hover:shadow-md py-2 ${
-        selected ? 'ring-2 ring-primary' : ''
+    <Card
+      className={`cursor-pointer transition-all hover:shadow-md py-0 ${
+        selected ? "ring-2 ring-primary" : ""
       }`}
       onClick={handleClick}
     >
       <CardContent className="p-4 space-y-2">
-        <CardTitle className="text-lg">{getTrackingTypeIcon(movement.tracking_type)} {movement.name}</CardTitle>
+        <CardTitle className="text-lg flex items-center gap-2">
+          {getTrackingTypeIcon(movement.tracking_type, 18)} {movement.name}
+        </CardTitle>
         <CardDescription className="text-muted-foreground text-sm">
-          Focus: {movement.muscle_groups?.join(', ') || 'Unknown'}
+          Focus: {movement.muscle_groups?.join(", ") || "Unknown"}
         </CardDescription>
         <CardDescription className="text-muted-foreground text-sm">
           Tracking: {trackingTypeDisplayName}
         </CardDescription>
-          <CardDescription className="text-muted-foreground text-sm">
-            <Badge variant={getExperienceLevelVariant(movement.experience_level)}> 
+        <CardDescription className="text-muted-foreground text-sm">
+          <Badge variant={getExperienceLevelVariant(movement.experience_level)}>
             {movement.experience_level}
           </Badge>
         </CardDescription>

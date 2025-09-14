@@ -23,6 +23,7 @@ import {
   useWorkout,
 } from "@/hooks";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { getTrackingTypeIcon } from "@/lib/utils/typeHelpers";
 import { Set, UserMovement, getEffectiveRestTimer } from "@/models/types";
 import { Calendar, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
@@ -157,17 +158,8 @@ export default function MovementDetailPage({
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center space-x-3">
-                  <span className="text-xl sm:text-2xl">
-                    {movement?.tracking_type === "weight"
-                      ? "🏋️"
-                      : movement?.tracking_type === "bodyweight"
-                      ? "🤸"
-                      : movement?.tracking_type === "duration"
-                      ? "⏱️"
-                      : movement?.tracking_type === "distance"
-                      ? "🏃"
-                      : "💪"}
-                  </span>
+                  {movement?.tracking_type &&
+                    getTrackingTypeIcon(movement.tracking_type, 24)}
                   <Typography variant="title1" className="min-w-0 break-words">
                     {movement?.name}
                   </Typography>
