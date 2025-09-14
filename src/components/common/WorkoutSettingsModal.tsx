@@ -28,9 +28,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useDeleteWorkout, useUpdateWorkout } from "@/hooks";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { TIMER_PRESETS, Workout } from "@/models/types";
-import { SupabaseService } from "@/services/supabaseService";
 import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
@@ -72,6 +72,10 @@ export default function WorkoutSettingsModal({
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  // Use React Query hooks for proper cache management
+  const updateWorkoutMutation = useUpdateWorkout();
+  const deleteWorkoutMutation = useDeleteWorkout();
 
   // Initialize form with React Hook Form and Zod validation using uncontrolled components
   const {
@@ -115,10 +119,11 @@ export default function WorkoutSettingsModal({
         updated_at: new Date().toISOString(),
       };
 
-      const updatedWorkout = await SupabaseService.updateWorkout(
-        workout.id,
-        updates
-      );
+      const updatedWorkout = await updateWorkoutMutation.mutateAsync({
+        id: workout.id,
+        updates,
+      });
+
       if (updatedWorkout) {
         onWorkoutUpdated(updatedWorkout);
         handleClose();
@@ -131,10 +136,12 @@ export default function WorkoutSettingsModal({
   });
 
   const handleDelete = async () => {
-    const success = await SupabaseService.deleteWorkout(workout.id);
-    if (success) {
+    try {
+      await deleteWorkoutMutation.mutateAsync(workout.id);
       onWorkoutDeleted(workout.id);
       onClose();
+    } catch (error) {
+      console.error("Failed to delete workout:", error);
     }
   };
 

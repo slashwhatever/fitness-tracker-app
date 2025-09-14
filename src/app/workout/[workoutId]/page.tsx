@@ -34,7 +34,6 @@ interface WorkoutDetailPageProps {
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [showMovementModal, setShowMovementModal] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [paramsResolved, setParamsResolved] = useState<{
     workoutId: string;
   } | null>(null);
@@ -92,8 +91,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
       });
 
       console.log("✅ Movement added successfully");
-      // Force refresh of the movements list
-      setRefreshKey((prev) => prev + 1);
+      // React Query will automatically update the cache
     } catch (error) {
       console.error("❌ Error adding movement to workout:", error);
     } finally {
@@ -108,7 +106,8 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
 
   // Only show "not found" if we've finished fetching and there's no workout
   // Don't show it during loading or if we haven't attempted to fetch yet
-  const hasFinishedFetching = workoutStatus === 'success' || workoutStatus === 'error';
+  const hasFinishedFetching =
+    workoutStatus === "success" || workoutStatus === "error";
   const workoutNotFound = hasFinishedFetching && !workout && !workoutLoading;
 
   if (workoutNotFound) {
@@ -159,7 +158,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           />
 
           <MovementList
-            key={refreshKey}
             workoutId={paramsResolved?.workoutId || ""}
             onMovementAdded={handleMovementAdded}
             onAddMovementClick={() => setShowMovementModal(true)}
@@ -170,8 +168,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             isOpen={showMovementModal}
             onClose={() => {
               setShowMovementModal(false);
-              // Force refresh when modal closes to show any changes
-              setRefreshKey((prev) => prev + 1);
             }}
             workoutId={paramsResolved?.workoutId || ""}
           />
@@ -181,14 +177,13 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               isOpen={showSettingsModal}
               onClose={() => {
                 setShowSettingsModal(false);
-                setRefreshKey((prev) => prev + 1);
               }}
               workout={workout}
               onWorkoutUpdated={() => {
-                setRefreshKey((prev) => prev + 1);
+                // React Query will automatically update the cache
               }}
               onWorkoutDeleted={() => {
-                setRefreshKey((prev) => prev + 1);
+                // React Query will automatically update the cache
               }}
             />
           )}
