@@ -53,13 +53,16 @@ export default function SortableMovementItem({
         className={isDragging ? "z-[9999] relative" : ""}
       >
         <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all bg-card">
-          {/* Drag Handle */}
+          {/* Drag Handle - Larger touch target for mobile */}
           <div
             {...attributes}
             {...listeners}
-            className="flex items-center justify-center w-6 h-6 mr-2 sm:mr-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-8 h-8 sm:w-6 sm:h-6 mr-2 sm:mr-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none"
+            role="button"
+            tabIndex={0}
+            aria-label="Drag to reorder movement"
           >
-            <GripVertical className="w-4 h-4" />
+            <GripVertical className="w-5 h-5 sm:w-4 sm:h-4" />
           </div>
 
           <Link

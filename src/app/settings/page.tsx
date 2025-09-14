@@ -150,7 +150,7 @@ export default function SettingsPage() {
                     value={defaultRestTimer}
                     onValueChange={setDefaultRestTimer}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="rest-timer">
                       <SelectValue placeholder="Select default rest timer" />
                     </SelectTrigger>
                     <SelectContent>
@@ -196,7 +196,7 @@ export default function SettingsPage() {
                         setWeightUnit(value)
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="weight-unit">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -214,7 +214,7 @@ export default function SettingsPage() {
                         setDistanceUnit(value)
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger id="distance-unit">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

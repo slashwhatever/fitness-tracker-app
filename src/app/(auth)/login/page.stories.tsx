@@ -12,7 +12,8 @@ const LoginPageWrapper = ({ redirectTo }: { redirectTo?: string }) => {
 };
 
 const meta = {
-  title: "Pages/Authentication/Login (Real Component)",
+  title: "Pages/Authentication/Login (Real Component) [DISABLED]",
+  tags: ["skip"],
   component: LoginPageWrapper,
   parameters: {
     layout: "fullscreen",

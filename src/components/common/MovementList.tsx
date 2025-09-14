@@ -18,6 +18,7 @@ import {
   DndContext,
   DragEndEvent,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -53,11 +54,17 @@ export default function MovementList({
     name: string;
   } | null>(null);
 
-  // Drag and drop sensors
+  // Drag and drop sensors for both mouse and touch
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8, // Require 8px of movement before drag starts
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // 200ms delay before drag starts on touch
+        tolerance: 8, // Allow 8px of movement during delay
       },
     })
   );
