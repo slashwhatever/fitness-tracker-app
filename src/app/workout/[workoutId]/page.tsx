@@ -128,54 +128,56 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
 
   return (
     <ProtectedRoute>
-      <ContextualNavigation
-        context={{
-          type: "workout-detail",
-          workoutName: workout?.name,
-        }}
-      />
-      <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-        <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4">
-          <WorkoutHeader
-            workout={workout}
-            isLoading={workoutLoading}
-            movementCount={workoutMovements.length}
-            onAddMovement={() => setShowMovementModal(true)}
-            onSettings={() => setShowSettingsModal(true)}
-          />
-
-          <MovementList
-            workoutId={paramsResolved?.workoutId || ""}
-            onMovementAdded={handleMovementAdded}
-            onAddMovementClick={() => setShowMovementModal(true)}
-            expectedCount={workoutMovements.length || 2}
-          />
-
-          <MovementSelectionModal
-            isOpen={showMovementModal}
-            onClose={() => {
-              setShowMovementModal(false);
-            }}
-            workoutId={paramsResolved?.workoutId || ""}
-          />
-
-          {workout && (
-            <WorkoutSettingsModal
-              isOpen={showSettingsModal}
-              onClose={() => {
-                setShowSettingsModal(false);
-              }}
+      <div className="min-h-screen bg-background">
+        <ContextualNavigation
+          context={{
+            type: "workout-detail",
+            workoutName: workout?.name,
+          }}
+        />
+        <main className="p-2 sm:p-4 lg:p-6">
+          <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
+            <WorkoutHeader
               workout={workout}
-              onWorkoutUpdated={() => {
-                // React Query will automatically update the cache
-              }}
-              onWorkoutDeleted={() => {
-                // React Query will automatically update the cache
-              }}
+              isLoading={workoutLoading}
+              movementCount={workoutMovements.length}
+              onAddMovement={() => setShowMovementModal(true)}
+              onSettings={() => setShowSettingsModal(true)}
             />
-          )}
-        </div>
-      </main>
+
+            <MovementList
+              workoutId={paramsResolved?.workoutId || ""}
+              onMovementAdded={handleMovementAdded}
+              onAddMovementClick={() => setShowMovementModal(true)}
+              expectedCount={workoutMovements.length || 2}
+            />
+
+            <MovementSelectionModal
+              isOpen={showMovementModal}
+              onClose={() => {
+                setShowMovementModal(false);
+              }}
+              workoutId={paramsResolved?.workoutId || ""}
+            />
+
+            {workout && (
+              <WorkoutSettingsModal
+                isOpen={showSettingsModal}
+                onClose={() => {
+                  setShowSettingsModal(false);
+                }}
+                workout={workout}
+                onWorkoutUpdated={() => {
+                  // React Query will automatically update the cache
+                }}
+                onWorkoutDeleted={() => {
+                  // React Query will automatically update the cache
+                }}
+              />
+            )}
+          </div>
+        </main>
+      </div>
     </ProtectedRoute>
   );
 }

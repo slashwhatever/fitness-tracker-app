@@ -70,10 +70,10 @@ export default function MovementLibraryPage() {
 
   if (error) {
     return (
-      <>
+      <div className="min-h-screen bg-background">
         <ContextualNavigation context={{ type: "library" }} />
-        <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-          <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4">
+        <main className="p-2 sm:p-4 lg:p-6">
+          <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4 mt-4">
             <div className="text-center py-12">
               <div className="text-destructive mb-4">
                 <svg
@@ -100,15 +100,15 @@ export default function MovementLibraryPage() {
             </div>
           </div>
         </main>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-background">
       <ContextualNavigation context={{ type: "library" }} />
-      <main className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
-        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4">
+      <main className="p-2 sm:p-4 lg:p-6">
+        <div className="max-w-7xl mx-auto space-y-2 sm:space-y-4 mt-4">
           {/* Header */}
           <div className="mb-6">
             <Typography variant="title1">Movement library</Typography>
@@ -183,6 +183,6 @@ export default function MovementLibraryPage() {
           )}
         </div>
       </main>
-    </>
+    </div>
   );
 }
