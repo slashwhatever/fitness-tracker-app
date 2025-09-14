@@ -52,11 +52,11 @@ export function WorkoutPageSkeleton() {
 export function MovementListSkeleton() {
   return (
     <div className="grid gap-2">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="bg-background rounded-lg border">
-          <div className="flex items-center justify-between p-3 sm:p-4">
+      <div className="bg-background rounded-lg border">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="flex items-center justify-between p-3 sm:p-4">
             <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
-              <Skeleton className="w-6 h-4" />
+              <Skeleton className="w-6 h-6" />
               <div className="min-w-0 flex-1">
                 <Skeleton className="h-4 w-32 sm:w-40 mb-1" />
                 <Skeleton className="h-3 w-24 sm:w-32" />
@@ -68,8 +68,8 @@ export function MovementListSkeleton() {
               <Skeleton className="h-8 w-8 sm:h-9 sm:w-9 rounded" />
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -157,7 +157,7 @@ export function MovementDetailSkeleton() {
   );
 }
 
-// Settings page skeleton  
+// Settings page skeleton
 export function SettingsSkeleton() {
   return (
     <div className="min-h-screen bg-background p-2 sm:p-4 lg:p-6">
@@ -168,7 +168,7 @@ export function SettingsSkeleton() {
           <Skeleton className="h-4 w-1" />
           <Skeleton className="h-4 w-16" />
         </div>
-        
+
         <div className="space-y-6">
           <div className="space-y-2">
             <Skeleton className="h-8 w-32" />
@@ -211,7 +211,7 @@ export function LibrarySkeleton() {
           <Skeleton className="h-4 w-1" />
           <Skeleton className="h-4 w-24" />
         </div>
-        
+
         <div className="space-y-6">
           <div className="space-y-2">
             <Skeleton className="h-8 w-40" />

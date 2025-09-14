@@ -105,14 +105,15 @@ export default function GroupedSetHistory({
 
             {/* Sets for that day */}
             {setsForDay.map((set, setIndex) => (
-              <div key={set.id}>
-                <div className="p-3 hover:bg-muted/50 transition-all">
-                  <EditableSet
-                    set={set}
-                    movement={movement}
-                    onDuplicate={onDuplicate}
-                  />
-                </div>
+              <div
+                key={set.id}
+                className="p-3 hover:bg-muted/50 transition-all"
+              >
+                <EditableSet
+                  set={set}
+                  movement={movement}
+                  onDuplicate={onDuplicate}
+                />
                 {setIndex < setsForDay.length - 1 && <Separator />}
               </div>
             ))}
