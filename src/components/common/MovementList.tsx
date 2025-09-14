@@ -63,8 +63,8 @@ export default function MovementList({
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 200, // 200ms delay before drag starts on touch
-        tolerance: 8, // Allow 8px of movement during delay
+        delay: 250, // Longer delay to avoid conflicts with scroll
+        tolerance: 5, // Smaller tolerance for better responsiveness
       },
     })
   );
@@ -160,7 +160,7 @@ export default function MovementList({
   return (
     <>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div className="bg-card border border-default rounded-lg overflow-hidden">
+        <div className="bg-card border border-default rounded-lg overflow-hidden touch-none select-none">
           <SortableContext
             items={movements.map((m) => m.id)}
             strategy={verticalListSortingStrategy}

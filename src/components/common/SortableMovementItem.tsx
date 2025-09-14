@@ -50,14 +50,14 @@ export default function SortableMovementItem({
       <div
         ref={setNodeRef}
         style={style}
-        className={isDragging ? "z-[9999] relative" : ""}
+        className={`${isDragging ? "z-[9999] relative" : ""} touch-none`}
       >
-        <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all bg-card">
+        <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all bg-card select-none">
           {/* Drag Handle - Larger touch target for mobile */}
           <div
             {...attributes}
             {...listeners}
-            className="flex items-center justify-center w-8 h-8 sm:w-6 sm:h-6 mr-2 sm:mr-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none"
+            className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 mr-2 sm:mr-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none select-none"
             role="button"
             tabIndex={0}
             aria-label="Drag to reorder movement"
@@ -67,13 +67,13 @@ export default function SortableMovementItem({
 
           <Link
             href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
-            className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0 overflow-hidden"
+            className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0 overflow-hidden select-text"
           >
             <div className="min-w-0 flex-1 overflow-hidden">
-              <Typography variant="title3" className="truncate block">
+              <Typography variant="title3" className="truncate block select-none">
                 {movement.user_movement?.name || "Unknown Movement"}
               </Typography>
-              <Typography variant="caption" className="line-clamp-2 block">
+              <Typography variant="caption" className="line-clamp-2 block select-none">
                 {lastSetDate}
                 {movementSets.length > 0 &&
                   ` • ${movementSets.length} set${
