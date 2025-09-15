@@ -326,7 +326,10 @@ export type Database = {
           id: string
           last_used_at: string | null
           manual_1rm: number | null
+          migrated_from_template: boolean | null
+          migration_date: string | null
           name: string
+          original_template_id: string | null
           personal_notes: string | null
           tags: string[] | null
           template_id: string | null
@@ -341,7 +344,10 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
+          migrated_from_template?: boolean | null
+          migration_date?: string | null
           name: string
+          original_template_id?: string | null
           personal_notes?: string | null
           tags?: string[] | null
           template_id?: string | null
@@ -356,7 +362,10 @@ export type Database = {
           id?: string
           last_used_at?: string | null
           manual_1rm?: number | null
+          migrated_from_template?: boolean | null
+          migration_date?: string | null
           name?: string
+          original_template_id?: string | null
           personal_notes?: string | null
           tags?: string[] | null
           template_id?: string | null
@@ -387,6 +396,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_movements_template_backup: {
+        Row: {
+          backup_created_at: string
+          id: string
+          migration_version: string
+          name: string
+          original_row: Json
+          template_id: string | null
+          user_id: string
+        }
+        Insert: {
+          backup_created_at?: string
+          id: string
+          migration_version?: string
+          name: string
+          original_row: Json
+          template_id?: string | null
+          user_id: string
+        }
+        Update: {
+          backup_created_at?: string
+          id?: string
+          migration_version?: string
+          name?: string
+          original_row?: Json
+          template_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {
@@ -512,6 +551,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_migration_backup_24: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       reorder_workout_movements: {
         Args: { workout_uuid: string }
         Returns: undefined

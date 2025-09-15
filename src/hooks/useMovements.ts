@@ -377,6 +377,8 @@ export function useUpdateUserMovement() {
       id: string;
       updates: UserMovementUpdate & { muscle_groups?: string[] };
     }) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
       const { muscle_groups, ...movementUpdates } = updates;
 
       // Don't send tracking_type to database, it only has tracking_type_id
@@ -550,7 +552,13 @@ export function useAddMovementsToWorkout() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async (workoutMovements: WorkoutMovementInsert[]) => {
+    mutationFn: async ({
+      workoutMovements,
+      userMovementsForOptimistic,
+    }: {
+      workoutMovements: WorkoutMovementInsert[];
+      userMovementsForOptimistic?: UserMovement[];
+    }) => {
       if (!workoutMovements.length) return [];
 
       // Use a single insert query for all movements
@@ -562,7 +570,10 @@ export function useAddMovementsToWorkout() {
       if (error) throw error;
       return data as WorkoutMovement[];
     },
-    onMutate: async (newWorkoutMovements) => {
+    onMutate: async ({
+      workoutMovements: newWorkoutMovements,
+      userMovementsForOptimistic,
+    }) => {
       if (!newWorkoutMovements.length) return;
 
       const workoutId = newWorkoutMovements[0].workout_id;
@@ -578,14 +589,19 @@ export function useAddMovementsToWorkout() {
       );
 
       // Create optimistic movements
-      const optimisticMovements = newWorkoutMovements.map(
-        (movement, index) => ({
+      const optimisticMovements = newWorkoutMovements.map((movement, index) => {
+        // Find corresponding user movement data for optimistic display
+        const userMovement = userMovementsForOptimistic?.find(
+          (um) => um.id === movement.user_movement_id
+        );
+
+        return {
           id: `temp-${Date.now()}-${index}`, // Unique temporary IDs
           ...movement,
           created_at: new Date().toISOString(),
-          user_movement: null, // Will be populated by real response
-        })
-      );
+          user_movement: userMovement || null, // Use actual data for proper display
+        };
+      });
 
       // Optimistically update with all new movements
       queryClient.setQueryData(
@@ -600,7 +616,7 @@ export function useAddMovementsToWorkout() {
 
       return { previousWorkoutMovements, workoutId };
     },
-    onError: (err, newWorkoutMovements, context) => {
+    onError: (err, { workoutMovements: newWorkoutMovements }, context) => {
       // If the mutation fails, roll back
       if (context?.workoutId) {
         queryClient.setQueryData(
@@ -609,10 +625,10 @@ export function useAddMovementsToWorkout() {
         );
       }
     },
-    onSettled: (_, __, variables) => {
+    onSettled: (_, __, { workoutMovements }) => {
       // Always refetch after error or success to ensure consistency
-      if (variables.length > 0) {
-        const workoutId = variables[0].workout_id;
+      if (workoutMovements.length > 0) {
+        const workoutId = workoutMovements[0].workout_id;
         queryClient.invalidateQueries({
           queryKey: movementKeys.workoutMovementsList(workoutId),
         });

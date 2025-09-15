@@ -6,7 +6,12 @@ import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from "@/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { Separator } from "../ui/separator";
 import ResponsiveButton from "./ResponsiveButton";
 import { Typography } from "./Typography";
@@ -131,11 +136,8 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
         ) : (
           <div className="bg-card border border-default rounded-lg overflow-hidden">
             {workouts.map((workout, index) => (
-              <>
-                <div
-                  key={workout.id}
-                  className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all cursor-pointer"
-                >
+              <React.Fragment key={workout.id}>
+                <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all cursor-pointer">
                   <Link
                     href={`/workout/${workout.id}`}
                     className="flex-1 min-w-0"
@@ -170,7 +172,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                   </div>
                 </div>
                 {index < workouts.length - 1 && <Separator />}
-              </>
+              </React.Fragment>
             ))}
           </div>
         )}

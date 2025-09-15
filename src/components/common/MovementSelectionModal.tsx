@@ -205,50 +205,24 @@ const SearchAndContent = React.memo(function SearchAndContent({
                       ? "opacity-60 cursor-not-allowed"
                       : "cursor-pointer hover:bg-accent/50"
                   } ${
-                    (() => {
-                      const existingUserMovement = userMovements.find(
-                        (um) => um.template_id === movement.id
-                      );
-                      const userMovementId =
-                        existingUserMovement?.id || movement.id;
-                      return selectedMovements.has(userMovementId);
-                    })()
+                    selectedMovements.has(movement.id)
                       ? "bg-primary/10 border-primary"
                       : "border-border hover:border-accent-foreground/20"
                   }`}
                   onClick={() => {
-                    // For library movements, find the corresponding user_movement_id
-                    const existingUserMovement = userMovements.find(
-                      (um) => um.template_id === movement.id
-                    );
-                    const userMovementId =
-                      existingUserMovement?.id || movement.id;
-                    handleMovementToggle(userMovementId, movement);
+                    // Library movements use their own IDs directly
+                    handleMovementToggle(movement.id, movement);
                   }}
                 >
                   <div className="flex items-center space-x-3 flex-1">
                     <div
                       className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                        (() => {
-                          const existingUserMovement = userMovements.find(
-                            (um) => um.template_id === movement.id
-                          );
-                          const userMovementId =
-                            existingUserMovement?.id || movement.id;
-                          return selectedMovements.has(userMovementId);
-                        })()
+                        selectedMovements.has(movement.id)
                           ? "bg-primary border-primary"
                           : "border-muted-foreground/30"
                       }`}
                     >
-                      {(() => {
-                        const existingUserMovement = userMovements.find(
-                          (um) => um.template_id === movement.id
-                        );
-                        const userMovementId =
-                          existingUserMovement?.id || movement.id;
-                        return selectedMovements.has(userMovementId);
-                      })() && (
+                      {selectedMovements.has(movement.id) && (
                         <Check className="w-3 h-3 text-primary-foreground" />
                       )}
                     </div>
@@ -363,20 +337,9 @@ export default function MovementSelectionModal({
   }, [isOpen, workoutMovementIdsString, isSaving]);
 
   const filteredLibrary = useMemo(() => {
-    // Get template IDs that users already have custom movements for
-    const usedTemplateIds = new Set(
-      userMovements
-        .filter((userMovement) => userMovement.template_id)
-        .map((userMovement) => userMovement.template_id)
-    );
-
+    // Show all templates with search filtering - no hiding logic needed
     return movementTemplates
       .filter((movement) => {
-        // Filter out templates that user already has custom movements for
-        if (usedTemplateIds.has(movement.id)) {
-          return false;
-        }
-
         // Apply search filter
         return (
           movement.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -386,7 +349,7 @@ export default function MovementSelectionModal({
         );
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [movementTemplates, searchTerm, userMovements]);
+  }, [movementTemplates, searchTerm]);
 
   const filteredUserMovements = useMemo(() => {
     return userMovements
@@ -412,13 +375,8 @@ export default function MovementSelectionModal({
       let actualMovementId = movementId;
       const isTemplate = "experience_level" in movementData;
 
-      if (isTemplate) {
-        // For templates, check if user already has a movement for this template
-        const existingUserMovement = userMovements.find(
-          (um) => um.template_id === movementData.id
-        );
-        actualMovementId = existingUserMovement?.id || movementId;
-      }
+      // Both templates and user movements use their own IDs directly
+      // No need to check for existing relationships since template links are broken
 
       // Toggle selection in local state only
       setSelectedMovements((prev) => {
@@ -453,15 +411,19 @@ export default function MovementSelectionModal({
     // Freeze the current selections to prevent checkbox flashing
     setFrozenSelectedMovements(new Set(selectedMovements));
     setIsSaving(true);
-    try {
-      // Calculate movements to add and remove
-      const movementsToAdd = Array.from(selectedMovements).filter(
-        (id) => !initialSelectedMovements.has(id)
-      );
-      const movementsToRemove = Array.from(initialSelectedMovements).filter(
-        (id) => !selectedMovements.has(id)
-      );
 
+    // Calculate movements to add and remove
+    const movementsToAdd = Array.from(selectedMovements).filter(
+      (id) => !initialSelectedMovements.has(id)
+    );
+    const movementsToRemove = Array.from(initialSelectedMovements).filter(
+      (id) => !selectedMovements.has(id)
+    );
+
+    // Close modal immediately for better UX (optimistic UI)
+    onClose();
+
+    try {
       // Batch remove movements (single API call)
       if (movementsToRemove.length > 0) {
         await removeMovementsBatch.mutateAsync({
@@ -480,10 +442,9 @@ export default function MovementSelectionModal({
         );
         let userMovementId = movementId;
 
-        if (
-          templateMovement &&
-          !userMovements.find((um) => um.id === movementId)
-        ) {
+        if (templateMovement) {
+          // Always create a new user movement when adding from library
+          // This allows users to have multiple movements with the same name
           // Get tracking type from ID since hooks aren't transforming data yet
           const trackingType = trackingTypes.find(
             (tt) => tt.id === templateMovement.tracking_type_id
@@ -494,9 +455,9 @@ export default function MovementSelectionModal({
             );
           }
 
-          // Create user movement from template
+          // Create user movement from template (no template link)
           const newUserMovement = await createUserMovementMutation.mutateAsync({
-            template_id: templateMovement.id,
+            template_id: null,
             name: templateMovement.name,
             muscle_groups: templateMovement.muscle_groups,
             tracking_type_id: trackingType.id,
@@ -508,19 +469,42 @@ export default function MovementSelectionModal({
         userMovementIds.push(userMovementId);
       }
 
+      // Filter out movements that are already in the workout to prevent constraint violations
+      const existingUserMovementIds = new Set(
+        workoutMovements.map((wm) => wm.user_movement_id)
+      );
+      const newUserMovementIds = userMovementIds.filter(
+        (id) => !existingUserMovementIds.has(id)
+      );
+
+      // Log for debugging
+      if (userMovementIds.length > newUserMovementIds.length) {
+        console.log(
+          `Filtered out ${
+            userMovementIds.length - newUserMovementIds.length
+          } movements that were already in the workout`
+        );
+      }
+
       // Batch add movements (single API call)
-      if (userMovementIds.length > 0) {
+      if (newUserMovementIds.length > 0) {
         const startingOrderIndex = getNextOrderIndex(workoutMovements);
         const newWorkoutMovements = prepareWorkoutMovements(
           workoutId,
-          userMovementIds,
+          newUserMovementIds,
           startingOrderIndex
         );
 
-        await addMovementsBatch.mutateAsync(newWorkoutMovements);
-      }
+        // Collect user movements for optimistic updates
+        const userMovementsForOptimistic = newUserMovementIds
+          .map((id) => userMovements.find((um) => um.id === id))
+          .filter((um): um is UserMovement => um !== undefined);
 
-      onClose();
+        await addMovementsBatch.mutateAsync({
+          workoutMovements: newWorkoutMovements,
+          userMovementsForOptimistic,
+        });
+      }
     } catch (error) {
       console.error("Error saving workout changes:", error);
     } finally {

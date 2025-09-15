@@ -18,8 +18,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
 import { FancyMultiSelect } from "@/components/ui/fancy-multi-select";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,7 +35,7 @@ import {
 } from "@/hooks";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { TrackingTypeName, UserMovement } from "@/models/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 
 interface EditMovementModalProps {
@@ -84,6 +84,7 @@ export default function EditMovementModal({
   const { data: trackingTypes = [] } = useTrackingTypes();
   const { data: muscleGroups = [] } = useMuscleGroups();
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const [error, setError] = useState("");
 
   // Initialize form with React Hook Form and Zod validation using uncontrolled components
   const {
@@ -117,6 +118,7 @@ export default function EditMovementModal({
         custom_rest_timer: movement.custom_rest_timer?.toString() || "",
         personal_notes: movement.personal_notes || "",
       });
+      setError(""); // Clear any previous errors when opening
     }
   }, [movement, isOpen, reset]);
 
@@ -148,6 +150,12 @@ export default function EditMovementModal({
       handleClose();
     } catch (error) {
       console.error("Error updating movement:", error);
+      // Display user-friendly error message
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred. Please try again.";
+      setError(errorMessage);
     }
   });
 
@@ -160,6 +168,7 @@ export default function EditMovementModal({
       custom_rest_timer: "",
       personal_notes: "",
     });
+    setError(""); // Clear any error messages
     onClose();
   };
 
@@ -182,7 +191,9 @@ export default function EditMovementModal({
         <Input
           id="name"
           placeholder="e.g., Barbell Bench Press"
-          {...register("name")}
+          {...register("name", {
+            onChange: () => setError(""), // Clear error when user types
+          })}
         />
         {errors.name && (
           <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -299,12 +310,9 @@ export default function EditMovementModal({
         )}
       </div>
 
-      {/* Display template info if movement is based on a template */}
-      {movement.template_id && (
-        <div className="p-3 bg-muted/50 rounded-lg">
-          <p className="text-sm text-muted-foreground">
-            📋 This movement is based on a library template
-          </p>
+      {error && (
+        <div className="text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md p-3 mt-4">
+          {error}
         </div>
       )}
     </div>
