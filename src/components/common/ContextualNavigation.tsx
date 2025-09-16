@@ -23,7 +23,8 @@ type NavigationContext =
       movementName?: string;
     }
   | { type: "settings" }
-  | { type: "library" };
+  | { type: "library" }
+  | { type: "analytics" };
 
 interface ContextualNavigationProps {
   context: NavigationContext;
@@ -54,6 +55,7 @@ export default function ContextualNavigation({
 
       case "settings":
       case "library":
+      case "analytics":
         return {
           href: "/",
           label: "Dashboard",
@@ -147,6 +149,21 @@ export default function ContextualNavigation({
           </Breadcrumb>
         );
 
+      case "analytics":
+        return (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Analytics</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        );
+
       default:
         return null;
     }
@@ -162,7 +179,7 @@ export default function ContextualNavigation({
 
   return (
     <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 border-b border-border/40">
-      <div className="max-w-4xl mx-auto px-2">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4">
         {/* Mobile Navigation */}
         {backNavigation && (
           <div className="md:hidden py-3">

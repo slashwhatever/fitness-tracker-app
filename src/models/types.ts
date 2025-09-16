@@ -1,15 +1,20 @@
 // Core TypeScript interfaces for the Logset Fitness Tracking App
 // Based on generated Supabase types and extended for app-specific needs
 
-import type { Tables, TablesInsert, TablesUpdate, Enums } from "@/lib/supabase/database.types";
+import type {
+  Enums,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "@/lib/supabase/database.types";
 
 // ============================================================================
 // DATABASE TYPE IMPORTS
 // ============================================================================
 
 // Use generated types from Supabase as base
-export type TrackingType = Tables<'tracking_types'>;
-export type MuscleGroup = Tables<'muscle_groups'>;
+export type TrackingType = Tables<"tracking_types">;
+export type MuscleGroup = Tables<"muscle_groups">;
 
 export type TrackingTypeName =
   | "weight"
@@ -17,31 +22,32 @@ export type TrackingTypeName =
   | "duration"
   | "distance"
   | "reps_only"; // Old enum still exists in code
-export type ExperienceLevel = Enums<'experience_level'>;
-export type SetType = Enums<'set_type'>;
-export type RecordType = Enums<'record_type'>;
 
+export type ExperienceLevel = Enums<"experience_level">;
+export type SetType = Enums<"set_type">;
+export type RecordType = Enums<"record_type">;
 
 // ============================================================================
 // DATABASE ROW TYPES
 // ============================================================================
 
 // Use generated types directly
-export type UserProfile = Tables<'user_profiles'>;
-export type Workout = Tables<'workouts'>;
-export type WorkoutMovement = Tables<'workout_movements'>;
-export type Set = Tables<'sets'>;
-export type PersonalRecord = Tables<'personal_records'>;
+export type UserProfile = Tables<"user_profiles">;
+export type Workout = Tables<"workouts">;
+export type WorkoutMovement = Tables<"workout_movements">;
+export type Set = Tables<"sets">;
+export type PersonalRecord = Tables<"personal_records">;
 
 // Junction table types
-export type MovementTemplateMuscleGroup = Tables<'movement_template_muscle_groups'>;
-export type UserMovementMuscleGroup = Tables<'user_movement_muscle_groups'>;
+export type MovementTemplateMuscleGroup =
+  Tables<"movement_template_muscle_groups">;
+export type UserMovementMuscleGroup = Tables<"user_movement_muscle_groups">;
 
 // QueryData types are now used in hooks for automatic type inference from Supabase queries
 
 // Raw database row types
-type MovementTemplateRow = Tables<'movement_templates'>;
-type UserMovementRow = Tables<'user_movements'>;
+type MovementTemplateRow = Tables<"movement_templates">;
+type UserMovementRow = Tables<"user_movements">;
 
 // Extended movement template (adds muscle_groups and tracking_type populated by joins)
 export interface MovementTemplate
@@ -56,14 +62,8 @@ export interface UserMovement extends Omit<UserMovementRow, "muscle_groups"> {
   tracking_type: TrackingTypeName; // Will be populated by join with tracking_types table
 }
 
-
 export type WeightUnit = "lbs" | "kg";
 export type DistanceUnit = "miles" | "km";
-
-
-
-
-
 
 // ============================================================================
 // SYNC AND OFFLINE SUPPORT
@@ -133,14 +133,16 @@ export function getEffectiveRestTimer(
  * Determines the source of the timer value for display purposes
  */
 export function getTimerSource(
-  userPreferences: { default_rest_timer?: number | null },
-  workout?: { default_rest_timer?: number | null },
-  movement?: { custom_rest_timer?: number | null }
+  globalTimer: number | null,
+  movementTimer: number | null
 ): TimerSource {
-  if (movement?.custom_rest_timer) return "movement";
-  if (workout?.default_rest_timer) return "workout";
-  if (userPreferences.default_rest_timer) return "user";
-  return "global";
+  if (movementTimer !== null) {
+    return "movement";
+  }
+  if (globalTimer !== null) {
+    return "global";
+  }
+  return "global"; // fallback to global when no timer is set
 }
 
 /**
@@ -189,12 +191,13 @@ export interface PaginatedResponse<T> {
 }
 
 // API request types - extend database insert types
-export interface CreateUserMovementRequest extends Omit<TablesInsert<'user_movements'>, 'user_id'> {
+export interface CreateUserMovementRequest
+  extends Omit<TablesInsert<"user_movements">, "user_id"> {
   muscle_groups: string[]; // Additional field for handling muscle groups
 }
 
-export type CreateWorkoutRequest = Omit<TablesInsert<'workouts'>, 'user_id'>;
+export type CreateWorkoutRequest = Omit<TablesInsert<"workouts">, "user_id">;
 
-export type CreateSetRequest = TablesInsert<'sets'>;
+export type CreateSetRequest = TablesInsert<"sets">;
 
-export type UpdateSetRequest = TablesUpdate<'sets'>;
+export type UpdateSetRequest = TablesUpdate<"sets">;

@@ -1,35 +1,34 @@
-'use client';
+"use client";
 
-import { createClient } from '@/lib/supabase/client';
-import { useQuery } from '@tanstack/react-query';
-import type { QueryData } from '@supabase/supabase-js';
+import { createClient } from "@/lib/supabase/client";
+import type { QueryData } from "@supabase/supabase-js";
+import { useQuery } from "@tanstack/react-query";
 
-export const muscleGroupKeys = {
-  all: ['muscleGroups'] as const,
-  active: () => [...muscleGroupKeys.all, 'active'] as const,
+// Query keys
+const muscleGroupKeys = {
+  all: ["muscle-groups"] as const,
+  lists: () => [...muscleGroupKeys.all, "list"] as const,
 };
 
+// Get all muscle groups
 export function useMuscleGroups() {
   const supabase = createClient();
-  
+
   return useQuery({
-    queryKey: muscleGroupKeys.active(),
+    queryKey: muscleGroupKeys.lists(),
     queryFn: async () => {
       const query = supabase
-        .from('muscle_groups')
-        .select('*')
-        .eq('is_active', true)
-        .order('sort_order');
+        .from("muscle_groups")
+        .select("*")
+        .order("display_name");
 
       type QueryResult = QueryData<typeof query>;
-      
-      const { data, error } = await query;
-      if (error) {
-        throw new Error(`Failed to fetch muscle groups: ${error.message}`);
-      }
 
+      const { data, error } = await query;
+      if (error) throw error;
       return data as QueryResult;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 60 * 60 * 1000, // 1 hour - muscle groups rarely change
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours
   });
 }

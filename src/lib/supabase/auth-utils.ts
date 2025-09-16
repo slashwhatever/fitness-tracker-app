@@ -279,3 +279,5 @@ export async function getCurrentUserId(): Promise<string | null> {
     return null;
   }
 }
+
+// Functions are exported individually above

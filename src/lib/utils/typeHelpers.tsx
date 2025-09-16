@@ -1,13 +1,19 @@
 import { ExperienceLevel, TrackingTypeName } from "@/models/types";
-import { Weight, BicepsFlexed, Timer, Footprints, Hash, BarChart3 } from "lucide-react";
-import { ReactElement } from "react";
+import {
+  BarChart3,
+  BicepsFlexed,
+  Footprints,
+  Hash,
+  Timer,
+  Weight,
+} from "lucide-react";
 
 /**
  * Get the appropriate icon for a tracking type
  */
-export function getTrackingTypeIcon(type: TrackingTypeName, size?: number): ReactElement {
+export function getTrackingTypeIcon(trackingType: string, size?: number) {
   const iconSize = size || 16;
-  switch (type) {
+  switch (trackingType) {
     case "weight":
       return <Weight size={iconSize} />;
     case "bodyweight":
