@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from '@/components/ui/button';
-import { Construction, Hammer, Home } from 'lucide-react';
-import Link from 'next/link';
-import { Typography } from './Typography';
+import { Button } from "@/components/ui/button";
+import { Construction, Hammer, Home } from "lucide-react";
+import Link from "next/link";
+import { Typography } from "./Typography";
 
 interface UnderConstructionProps {
   title?: string;
@@ -11,20 +11,22 @@ interface UnderConstructionProps {
   className?: string;
 }
 
-export const UnderConstruction = ({ 
-  title = "Coming Soon", 
+const UnderConstruction = ({
+  title = "Coming Soon",
   message = "This feature is under construction and will be available in a future update.",
-  className = ""
+  className = "",
 }: UnderConstructionProps) => {
   return (
-    <div className={`flex flex-col items-center justify-center p-8 text-center space-y-4 ${className}`}>
+    <div
+      className={`flex flex-col items-center justify-center p-8 text-center space-y-4 ${className}`}
+    >
       <div className="relative">
         {/* Construction Icon */}
         <Construction className="w-16 h-16 text-yellow-500 mb-2" />
         {/* Animated Hammer */}
         <Hammer className="w-6 h-6 text-orange-500 absolute -top-1 -right-1 animate-pulse" />
       </div>
-      
+
       <div className="space-y-2">
         <Typography variant="title1" className="text-foreground">
           {title}
@@ -33,7 +35,7 @@ export const UnderConstruction = ({
           {message}
         </Typography>
       </div>
-      
+
       <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-4">
         <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
         <span>In Development</span>
@@ -41,18 +43,13 @@ export const UnderConstruction = ({
       </div>
 
       <div className="mt-6">
-        <Button 
-          color="primary" 
-          variant="outline" 
-          asChild
-        >
+        <Button color="primary" variant="outline" asChild>
           <Link href="/">
             <Home />
             <Typography variant="body">Back to Home</Typography>
           </Link>
         </Button>
       </div>
-      
     </div>
   );
 };
