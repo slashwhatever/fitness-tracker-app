@@ -409,6 +409,9 @@ export function useUpdateUserMovement() {
       await queryClient.cancelQueries({
         queryKey: movementKeys.userMovement(id),
       });
+      await queryClient.cancelQueries({
+        queryKey: movementKeys.workoutMovements(),
+      });
 
       // Snapshot the previous values
       const previousUserMovements = queryClient.getQueryData(
@@ -447,6 +450,31 @@ export function useUpdateUserMovement() {
         );
       }
 
+      // Optimistically update workout movements that contain this user movement
+      const workoutMovementQueries = queryClient.getQueriesData({
+        queryKey: movementKeys.workoutMovements(),
+      });
+
+      workoutMovementQueries.forEach(([queryKey, data]) => {
+        if (Array.isArray(data)) {
+          queryClient.setQueryData(queryKey, (old: any[]) => {
+            return old.map((workoutMovement: any) => {
+              if (workoutMovement.user_movement?.id === id) {
+                return {
+                  ...workoutMovement,
+                  user_movement: {
+                    ...workoutMovement.user_movement,
+                    ...updates,
+                    updated_at: new Date().toISOString(),
+                  },
+                };
+              }
+              return workoutMovement;
+            });
+          });
+        }
+      });
+
       return { previousUserMovements, previousMovement };
     },
     onError: (err, { id }, context) => {
@@ -474,6 +502,10 @@ export function useUpdateUserMovement() {
         });
         queryClient.invalidateQueries({
           queryKey: movementKeys.userMovement(id),
+        });
+        // Invalidate workout movements that might contain this user movement
+        queryClient.invalidateQueries({
+          queryKey: movementKeys.workoutMovements(),
         });
       }
     },
