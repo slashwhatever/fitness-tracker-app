@@ -1,26 +1,40 @@
-'use client';
+"use client";
 
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useCreateUserMovement, useMuscleGroups, useTrackingTypes } from '@/hooks';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
-import type { TrackingTypeName } from '@/models/types';
-import { useEffect } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  useCreateUserMovement,
+  useMuscleGroups,
+  useTrackingTypes,
+} from "@/hooks";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useEffect } from "react";
 
 interface CreateCustomMovementModalProps {
   isOpen: boolean;
@@ -35,14 +49,28 @@ interface CreateCustomMovementModalProps {
 
 // Zod schema for form validation
 const formSchema = z.object({
-  name: z.string().min(1, "Movement name is required").min(2, "Movement name must be at least 2 characters"),
-  muscle_groups: z.array(z.string()).min(1, "At least one muscle group must be selected"),
-  tracking_type: z.enum(["weight", "bodyweight", "duration", "distance", "reps_only"]),
-  custom_rest_timer: z.string().optional().refine((val) => {
-    if (!val || val === '') return true;
-    const num = parseInt(val);
-    return !isNaN(num) && num >= 0;
-  }, "Rest timer must be a valid number (0 or greater)"),
+  name: z
+    .string()
+    .min(1, "Movement name is required")
+    .min(2, "Movement name must be at least 2 characters"),
+  muscle_groups: z
+    .array(z.string())
+    .min(1, "At least one muscle group must be selected"),
+  tracking_type: z.enum([
+    "weight",
+    "bodyweight",
+    "duration",
+    "distance",
+    "reps",
+  ]),
+  custom_rest_timer: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val === "") return true;
+      const num = parseInt(val);
+      return !isNaN(num) && num >= 0;
+    }, "Rest timer must be a valid number (0 or greater)"),
   personal_notes: z.string().optional(),
 });
 
@@ -52,7 +80,7 @@ export default function CreateCustomMovementModal({
   isOpen,
   onClose,
   onMovementCreated,
-  initialName = '',
+  initialName = "",
 }: CreateCustomMovementModalProps) {
   const createUserMovementMutation = useCreateUserMovement();
   const { data: trackingTypes = [] } = useTrackingTypes();
@@ -98,7 +126,9 @@ export default function CreateCustomMovementModal({
   const onSubmit = handleSubmit(async (values: FormData) => {
     try {
       // Find the matching tracking type ID
-      const trackingType = trackingTypes.find(tt => tt.name === values.tracking_type);
+      const trackingType = trackingTypes.find(
+        (tt) => tt.name === values.tracking_type
+      );
       if (!trackingType) {
         throw new Error(`Unknown tracking type: ${values.tracking_type}`);
       }
@@ -107,7 +137,9 @@ export default function CreateCustomMovementModal({
         name: values.name.trim(),
         muscle_groups: values.muscle_groups,
         tracking_type_id: trackingType.id,
-        custom_rest_timer: values.custom_rest_timer ? parseInt(values.custom_rest_timer) : null,
+        custom_rest_timer: values.custom_rest_timer
+          ? parseInt(values.custom_rest_timer)
+          : null,
         personal_notes: values.personal_notes?.trim() || null,
         template_id: null, // This is a custom movement
       });
@@ -115,7 +147,7 @@ export default function CreateCustomMovementModal({
       onMovementCreated(newMovement.id);
       handleClose();
     } catch (error) {
-      console.error('Error creating custom movement:', error);
+      console.error("Error creating custom movement:", error);
     }
   });
 
@@ -134,7 +166,7 @@ export default function CreateCustomMovementModal({
   const handleMuscleGroupToggle = (group: string) => {
     const currentGroups = getValues("muscle_groups");
     const newGroups = currentGroups.includes(group)
-      ? currentGroups.filter(g => g !== group)
+      ? currentGroups.filter((g) => g !== group)
       : [...currentGroups, group];
     setValue("muscle_groups", newGroups, { shouldValidate: true });
   };
@@ -143,12 +175,15 @@ export default function CreateCustomMovementModal({
     <div className={`space-y-4 min-h-0 ${className}`}>
       {/* Movement Name */}
       <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="name"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Movement name *
         </Label>
-        <Input 
+        <Input
           id="name"
-          placeholder="e.g., Barbell Bench Press" 
+          placeholder="e.g., Barbell Bench Press"
           {...register("name")}
         />
         {errors.name && (
@@ -158,19 +193,32 @@ export default function CreateCustomMovementModal({
 
       {/* Tracking Type */}
       <div className="space-y-2">
-        <Label htmlFor="tracking_type" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="tracking_type"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Tracking type *
         </Label>
-        <Select 
-          value={watch("tracking_type")} 
-          onValueChange={(value) => setValue("tracking_type", value as TrackingTypeName)}
+        <Select
+          value={watch("tracking_type")}
+          onValueChange={(value) =>
+            setValue(
+              "tracking_type",
+              value as
+                | "weight"
+                | "bodyweight"
+                | "duration"
+                | "distance"
+                | "reps"
+            )
+          }
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select tracking type">
-              {watch("tracking_type") ? 
-                trackingTypes.find(t => t.name === watch("tracking_type"))?.display_name : 
-                "Select tracking type"
-              }
+              {watch("tracking_type")
+                ? trackingTypes.find((t) => t.name === watch("tracking_type"))
+                    ?.display_name
+                : "Select tracking type"}
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -178,14 +226,18 @@ export default function CreateCustomMovementModal({
               <SelectItem key={type.id} value={type.name}>
                 <div className="flex flex-col items-start">
                   <div className="font-medium">{type.display_name}</div>
-                  <div className="text-sm text-muted-foreground">{type.description}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {type.description}
+                  </div>
                 </div>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         {errors.tracking_type && (
-          <p className="text-sm text-destructive">{errors.tracking_type.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.tracking_type.message}
+          </p>
         )}
       </div>
 
@@ -203,8 +255,8 @@ export default function CreateCustomMovementModal({
               onClick={() => handleMuscleGroupToggle(group.name)}
               className={`p-2 text-sm rounded-md border transition-colors ${
                 watchMuscleGroups?.includes(group.name)
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-background border-border hover:bg-accent'
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background border-border hover:bg-accent"
               }`}
             >
               {group.display_name}
@@ -212,40 +264,52 @@ export default function CreateCustomMovementModal({
           ))}
         </div>
         {errors.muscle_groups && (
-          <p className="text-sm text-destructive">{errors.muscle_groups.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.muscle_groups.message}
+          </p>
         )}
       </div>
 
       {/* Custom Rest Timer */}
       <div className="space-y-2">
-        <Label htmlFor="custom_rest_timer" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="custom_rest_timer"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Custom rest timer (seconds)
         </Label>
-        <Input 
+        <Input
           id="custom_rest_timer"
-          type="number" 
-          placeholder="e.g., 120" 
+          type="number"
+          placeholder="e.g., 120"
           min="0"
           {...register("custom_rest_timer")}
         />
         {errors.custom_rest_timer && (
-          <p className="text-sm text-destructive">{errors.custom_rest_timer.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.custom_rest_timer.message}
+          </p>
         )}
       </div>
 
       {/* Personal Notes */}
       <div className="space-y-2">
-        <Label htmlFor="personal_notes" className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="personal_notes"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Personal notes
         </Label>
-        <Textarea 
+        <Textarea
           id="personal_notes"
           placeholder="Any personal notes about this movement..."
           rows={3}
           {...register("personal_notes")}
         />
         {errors.personal_notes && (
-          <p className="text-sm text-destructive">{errors.personal_notes.message}</p>
+          <p className="text-sm text-destructive">
+            {errors.personal_notes.message}
+          </p>
         )}
       </div>
     </div>
@@ -256,25 +320,32 @@ export default function CreateCustomMovementModal({
       <Button type="button" variant="outline" onClick={handleClose}>
         Cancel
       </Button>
-      <Button 
-        type="submit" 
+      <Button
+        type="submit"
         disabled={!isValid || createUserMovementMutation.isPending}
       >
-        {createUserMovementMutation.isPending ? 'Creating...' : 'Create Movement'}
+        {createUserMovementMutation.isPending
+          ? "Creating..."
+          : "Create Movement"}
       </Button>
     </div>
   );
 
   if (isDesktop) {
     return (
-      <Dialog open={isOpen} onOpenChange={(open) => {
-        if (!open) {
-          handleClose();
-        }
-      }}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleClose();
+          }
+        }}
+      >
         <DialogContent className="max-w-md max-h-[90vh] w-[90vw] flex flex-col">
           <DialogHeader className="pb-4">
-            <DialogTitle className="text-xl">Create custom movement</DialogTitle>
+            <DialogTitle className="text-xl">
+              Create custom movement
+            </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={onSubmit}>
@@ -287,11 +358,14 @@ export default function CreateCustomMovementModal({
   }
 
   return (
-    <Drawer open={isOpen} onOpenChange={(open) => {
-      if (!open) {
-        handleClose();
-      }
-    }}>
+    <Drawer
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          handleClose();
+        }
+      }}
+    >
       <DrawerContent className="!max-h-[95vh] flex flex-col">
         <DrawerHeader className="text-left flex-shrink-0">
           <DrawerTitle>Create custom movement</DrawerTitle>

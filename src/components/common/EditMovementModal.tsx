@@ -34,7 +34,7 @@ import {
   useUpdateUserMovement,
 } from "@/hooks";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import type { TrackingTypeName, UserMovement } from "@/models/types";
+import type { UserMovement } from "@/models/types";
 import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
 
@@ -60,7 +60,7 @@ const formSchema = z.object({
     "bodyweight",
     "duration",
     "distance",
-    "reps_only",
+    "reps",
   ]),
   custom_rest_timer: z
     .string()
@@ -114,7 +114,12 @@ export default function EditMovementModal({
       reset({
         name: movement.name,
         muscle_groups: movement.muscle_groups || [],
-        tracking_type: movement.tracking_type,
+        tracking_type: movement.tracking_type as
+          | "weight"
+          | "bodyweight"
+          | "duration"
+          | "distance"
+          | "reps",
         custom_rest_timer: movement.custom_rest_timer?.toString() || "",
         personal_notes: movement.personal_notes || "",
       });
@@ -211,7 +216,15 @@ export default function EditMovementModal({
         <Select
           value={watch("tracking_type")}
           onValueChange={(value) =>
-            setValue("tracking_type", value as TrackingTypeName)
+            setValue(
+              "tracking_type",
+              value as
+                | "weight"
+                | "bodyweight"
+                | "duration"
+                | "distance"
+                | "reps"
+            )
           }
         >
           <SelectTrigger className="w-full">

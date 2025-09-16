@@ -124,7 +124,7 @@ const EditableSet = memo(function EditableSet({
           )}
 
           {(movement.tracking_type === "bodyweight" ||
-            movement.tracking_type === "reps_only") && (
+            movement.tracking_type === "reps") && (
             <div className="flex items-center space-x-1 sm:space-x-2">
               <Typography variant="title2">{set.reps}</Typography>
               <Typography variant="caption">reps</Typography>

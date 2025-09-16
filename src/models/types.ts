@@ -16,12 +16,8 @@ import type {
 export type TrackingType = Tables<"tracking_types">;
 export type MuscleGroup = Tables<"muscle_groups">;
 
-export type TrackingTypeName =
-  | "weight"
-  | "bodyweight"
-  | "duration"
-  | "distance"
-  | "reps_only"; // Old enum still exists in code
+// Derive tracking type names from the database table
+export type TrackingTypeName = TrackingType["name"];
 
 export type ExperienceLevel = Enums<"experience_level">;
 export type SetType = Enums<"set_type">;

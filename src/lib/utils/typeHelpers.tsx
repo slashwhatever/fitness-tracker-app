@@ -22,7 +22,7 @@ export function getTrackingTypeIcon(trackingType: string, size?: number) {
       return <Timer size={iconSize} />;
     case "distance":
       return <Footprints size={iconSize} />;
-    case "reps_only":
+    case "reps":
       return <Hash size={iconSize} />;
     default:
       return <BarChart3 size={iconSize} />;
@@ -61,7 +61,7 @@ export function formatTrackingType(type: TrackingTypeName): string {
  * Type guard to check if a string is a valid TrackingType
  */
 export function isValidTrackingType(value: string): value is TrackingTypeName {
-  return ["weight", "bodyweight", "duration", "distance", "reps_only"].includes(
+  return ["weight", "bodyweight", "duration", "distance", "reps"].includes(
     value
   );
 }
