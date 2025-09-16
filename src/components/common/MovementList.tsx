@@ -23,8 +23,8 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Plus, SearchX } from "lucide-react";
@@ -63,8 +63,8 @@ export default function MovementList({
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250, // Longer delay to avoid conflicts with scroll
-        tolerance: 5, // Smaller tolerance for better responsiveness
+        delay: 100, // Shorter delay for better responsiveness
+        tolerance: 8, // Larger tolerance to prevent accidental drags while scrolling
       },
     })
   );
@@ -160,7 +160,7 @@ export default function MovementList({
   return (
     <>
       <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-        <div className="bg-card border border-default rounded-lg overflow-hidden touch-none select-none">
+        <div className="bg-card border border-default rounded-lg overflow-hidden select-none">
           <SortableContext
             items={movements.map((m) => m.id)}
             strategy={verticalListSortingStrategy}
