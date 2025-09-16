@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
+import { useTimer } from "@/contexts/TimerContext";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,6 +35,10 @@ export default function ContextualNavigation({
   context,
 }: ContextualNavigationProps) {
   const router = useRouter();
+  const { isActive: timerActive, isPinned: timerPinned } = useTimer();
+
+  // Check if timer is pinned and active - if so, we need to position below it
+  const timerIsVisible = timerActive && timerPinned;
 
   // Determine back navigation based on context
   const getBackNavigation = () => {
@@ -178,7 +183,11 @@ export default function ContextualNavigation({
   }
 
   return (
-    <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 border-b border-border/40">
+    <div
+      className={`sticky bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 border-b border-border/40 ${
+        timerIsVisible ? "top-[3rem]" : "top-0"
+      }`}
+    >
       <div className="max-w-4xl mx-auto px-2 sm:px-4">
         {/* Mobile Navigation */}
         {backNavigation && (

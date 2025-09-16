@@ -146,45 +146,60 @@ const SearchAndContent = React.memo(function SearchAndContent({
                         : "cursor-pointer hover:bg-accent/50"
                     } ${
                       selectedMovements.has(movement.id)
-                        ? "bg-primary/10 border-primary"
+                        ? "bg-white dark:bg-white border-primary/50"
                         : "border-border hover:border-accent-foreground/20"
                     }`}
                     onClick={() => handleMovementToggle(movement.id, movement)}
                   >
-                    <div className="flex items-center space-x-3 flex-1">
-                      <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                          selectedMovements.has(movement.id)
-                            ? "bg-primary border-primary"
-                            : "border-muted-foreground/30"
-                        }`}
-                      >
-                        {selectedMovements.has(movement.id) && (
-                          <Check className="w-3 h-3 text-primary-foreground" />
-                        )}
-                      </div>
-
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2">
-                          {getTrackingTypeIcon(movement.tracking_type, 16)}
-                          <h3 className="font-medium text-sm truncate">
+                          <div
+                            className={
+                              selectedMovements.has(movement.id)
+                                ? "text-gray-900"
+                                : ""
+                            }
+                          >
+                            {getTrackingTypeIcon(movement.tracking_type, 16)}
+                          </div>
+                          <h3
+                            className={`font-medium text-sm truncate ${
+                              selectedMovements.has(movement.id)
+                                ? "text-gray-900"
+                                : ""
+                            }`}
+                          >
                             {movement.name}
                           </h3>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p
+                          className={`text-xs ${
+                            selectedMovements.has(movement.id)
+                              ? "text-gray-600"
+                              : "text-muted-foreground"
+                          }`}
+                        >
                           {movement.muscle_groups?.join(", ") || "Unknown"}
                         </p>
                       </div>
                     </div>
 
-                    <Badge
-                      variant={getExperienceLevelVariant(
-                        movement.experience_level
+                    <div className="flex items-center space-x-2 ml-3">
+                      {!selectedMovements.has(movement.id) && (
+                        <Badge
+                          variant={getExperienceLevelVariant(
+                            movement.experience_level
+                          )}
+                          className="text-xs"
+                        >
+                          {movement.experience_level}
+                        </Badge>
                       )}
-                      className="text-xs"
-                    >
-                      {movement.experience_level}
-                    </Badge>
+                      {selectedMovements.has(movement.id) && (
+                        <Check className="w-5 h-5 text-green-600" />
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -206,7 +221,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
                       : "cursor-pointer hover:bg-accent/50"
                   } ${
                     selectedMovements.has(movement.id)
-                      ? "bg-primary/10 border-primary"
+                      ? "bg-white dark:bg-white border-primary/50"
                       : "border-border hover:border-accent-foreground/20"
                   }`}
                   onClick={() => {
@@ -214,39 +229,54 @@ const SearchAndContent = React.memo(function SearchAndContent({
                     handleMovementToggle(movement.id, movement);
                   }}
                 >
-                  <div className="flex items-center space-x-3 flex-1">
-                    <div
-                      className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                        selectedMovements.has(movement.id)
-                          ? "bg-primary border-primary"
-                          : "border-muted-foreground/30"
-                      }`}
-                    >
-                      {selectedMovements.has(movement.id) && (
-                        <Check className="w-3 h-3 text-primary-foreground" />
-                      )}
-                    </div>
-
+                  <div className="flex items-center space-x-3 flex-1 min-w-0">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2">
-                        {getTrackingTypeIcon(movement.tracking_type, 16)}
-                        <h3 className="font-medium text-sm truncate">
+                        <div
+                          className={
+                            selectedMovements.has(movement.id)
+                              ? "text-gray-900"
+                              : ""
+                          }
+                        >
+                          {getTrackingTypeIcon(movement.tracking_type, 16)}
+                        </div>
+                        <h3
+                          className={`font-medium text-sm truncate ${
+                            selectedMovements.has(movement.id)
+                              ? "text-gray-900"
+                              : ""
+                          }`}
+                        >
                           {movement.name}
                         </h3>
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p
+                        className={`text-xs ${
+                          selectedMovements.has(movement.id)
+                            ? "text-gray-600"
+                            : "text-muted-foreground"
+                        }`}
+                      >
                         {movement.muscle_groups?.join(", ") || "Unknown"}
                       </p>
                     </div>
                   </div>
 
-                  <Badge
-                    variant={getExperienceLevelVariant(
-                      movement.experience_level
+                  <div className="flex items-center space-x-2 ml-3">
+                    {!selectedMovements.has(movement.id) && (
+                      <Badge
+                        variant={getExperienceLevelVariant(
+                          movement.experience_level
+                        )}
+                      >
+                        {movement.experience_level}
+                      </Badge>
                     )}
-                  >
-                    {movement.experience_level}
-                  </Badge>
+                    {selectedMovements.has(movement.id) && (
+                      <Check className="w-5 h-5 text-green-600" />
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -352,6 +382,11 @@ export default function MovementSelectionModal({
   }, [movementTemplates, searchTerm]);
 
   const filteredUserMovements = useMemo(() => {
+    // Get IDs of movements already in this workout
+    const workoutMovementIds = new Set(
+      workoutMovements.map((wm) => wm.user_movement_id)
+    );
+
     return userMovements
       .filter(
         (movement) =>
@@ -360,8 +395,18 @@ export default function MovementSelectionModal({
             group.toLowerCase().includes(searchTerm.toLowerCase())
           )
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [userMovements, searchTerm]);
+      .sort((a, b) => {
+        // First, sort by whether movement is in workout (in workout = top)
+        const aInWorkout = workoutMovementIds.has(a.id);
+        const bInWorkout = workoutMovementIds.has(b.id);
+
+        if (aInWorkout && !bInWorkout) return -1;
+        if (!aInWorkout && bInWorkout) return 1;
+
+        // If both are in workout or both not in workout, sort alphabetically
+        return a.name.localeCompare(b.name);
+      });
+  }, [userMovements, searchTerm, workoutMovements]);
 
   const handleMovementToggle = useCallback(
     (movementId: string, movementData: UserMovement | MovementTemplate) => {
