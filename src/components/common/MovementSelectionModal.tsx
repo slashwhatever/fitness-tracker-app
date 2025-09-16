@@ -312,6 +312,9 @@ export default function MovementSelectionModal({
   const [frozenSelectedMovements, setFrozenSelectedMovements] = useState<
     Set<string>
   >(new Set());
+  const [recentlyCreatedMovements, setRecentlyCreatedMovements] = useState<
+    Set<string>
+  >(new Set());
 
   const handleSearchChange = useCallback((value: string) => {
     setSearchTerm(value);
@@ -350,6 +353,7 @@ export default function MovementSelectionModal({
       setSelectedMovements(new Set());
       setInitialSelectedMovements(new Set());
       setFrozenSelectedMovements(new Set());
+      setRecentlyCreatedMovements(new Set());
       setIsSaving(false);
       return;
     }
@@ -396,17 +400,24 @@ export default function MovementSelectionModal({
           )
       )
       .sort((a, b) => {
-        // First, sort by whether movement is in workout (in workout = top)
+        // First priority: recently created movements (at the very top)
+        const aIsNew = recentlyCreatedMovements.has(a.id);
+        const bIsNew = recentlyCreatedMovements.has(b.id);
+
+        if (aIsNew && !bIsNew) return -1;
+        if (!aIsNew && bIsNew) return 1;
+
+        // Second priority: movements already in workout
         const aInWorkout = workoutMovementIds.has(a.id);
         const bInWorkout = workoutMovementIds.has(b.id);
 
         if (aInWorkout && !bInWorkout) return -1;
         if (!aInWorkout && bInWorkout) return 1;
 
-        // If both are in workout or both not in workout, sort alphabetically
+        // Final priority: alphabetical order within each group
         return a.name.localeCompare(b.name);
       });
-  }, [userMovements, searchTerm, workoutMovements]);
+  }, [userMovements, searchTerm, workoutMovements, recentlyCreatedMovements]);
 
   const handleMovementToggle = useCallback(
     (movementId: string, movementData: UserMovement | MovementTemplate) => {
@@ -447,6 +458,9 @@ export default function MovementSelectionModal({
   const handleCustomMovementCreated = (userMovementId: string) => {
     // Close custom movement modal
     setShowCustomMovementModal(false);
+
+    // Track this as a recently created movement for sorting
+    setRecentlyCreatedMovements((prev) => new Set([...prev, userMovementId]));
 
     // Automatically select the new custom movement (don't save to DB yet)
     setSelectedMovements((prev) => new Set([...prev, userMovementId]));

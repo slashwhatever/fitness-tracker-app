@@ -18,6 +18,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { FancyMultiSelect } from "@/components/ui/fancy-multi-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -163,12 +164,8 @@ export default function CreateCustomMovementModal({
     onClose();
   };
 
-  const handleMuscleGroupToggle = (group: string) => {
-    const currentGroups = getValues("muscle_groups");
-    const newGroups = currentGroups.includes(group)
-      ? currentGroups.filter((g) => g !== group)
-      : [...currentGroups, group];
-    setValue("muscle_groups", newGroups, { shouldValidate: true });
+  const handleMuscleGroupsChange = (selectedGroups: string[]) => {
+    setValue("muscle_groups", selectedGroups, { shouldValidate: true });
   };
 
   const FormContent = ({ className = "" }: { className?: string }) => (
@@ -243,26 +240,22 @@ export default function CreateCustomMovementModal({
 
       {/* Muscle Groups */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">
+        <Label
+          htmlFor="muscle_groups"
+          className="text-sm font-medium text-muted-foreground"
+        >
           Muscle groups * ({watchMuscleGroups?.length || 0} selected)
         </Label>
-        <div className="grid grid-cols-2 gap-2">
-          {muscleGroups.map((group) => (
-            <Button
-              key={group.id}
-              variant="ghost"
-              type="button"
-              onClick={() => handleMuscleGroupToggle(group.name)}
-              className={`p-2 text-sm rounded-md border transition-colors ${
-                watchMuscleGroups?.includes(group.name)
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background border-border hover:bg-accent"
-              }`}
-            >
-              {group.display_name}
-            </Button>
-          ))}
-        </div>
+        <FancyMultiSelect
+          className="h-full"
+          options={muscleGroups.map((group) => ({
+            label: group.display_name,
+            value: group.display_name,
+          }))}
+          defaultValue={watchMuscleGroups || []}
+          onValueChange={handleMuscleGroupsChange}
+          placeholder="Select muscle groups..."
+        />
         {errors.muscle_groups && (
           <p className="text-sm text-destructive">
             {errors.muscle_groups.message}
