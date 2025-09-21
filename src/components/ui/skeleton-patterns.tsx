@@ -119,37 +119,32 @@ export function MovementDetailSkeleton() {
         <div className="space-y-3">
           <Skeleton className="h-6 w-24" />
           <div className="space-y-4">
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-card border border-default rounded-lg overflow-hidden"
-              >
-                <div className="p-3 pb-2">
-                  <Skeleton className="h-5 w-32" />
-                </div>
-                <div>
-                  {Array.from({ length: 3 }).map((_, j) => (
-                    <div key={j}>
-                      <div className="p-3 flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                          <Skeleton className="h-5 w-6" />
-                          <Skeleton className="h-4 w-8" />
-                          <Skeleton className="h-4 w-4" />
-                          <Skeleton className="h-5 w-6" />
-                          <Skeleton className="h-4 w-8" />
-                        </div>
-                        <div className="flex space-x-2">
-                          <Skeleton className="h-7 w-16" />
-                          <Skeleton className="h-7 w-12" />
-                          <Skeleton className="h-7 w-14" />
-                        </div>
-                      </div>
-                      {j < 2 && <div className="h-px bg-border" />}
-                    </div>
-                  ))}
-                </div>
+            <div className="bg-card border border-default rounded-lg overflow-hidden">
+              <div className="p-3 pb-2">
+                <Skeleton className="h-5 w-32" />
               </div>
-            ))}
+              <div>
+                {Array.from({ length: 3 }).map((_, j) => (
+                  <div key={j}>
+                    <div className="p-3 flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Skeleton className="h-5 w-6" />
+                        <Skeleton className="h-4 w-8" />
+                        <Skeleton className="h-4 w-4" />
+                        <Skeleton className="h-5 w-6" />
+                        <Skeleton className="h-4 w-8" />
+                      </div>
+                      <div className="flex space-x-2">
+                        <Skeleton className="h-7 w-16" />
+                        <Skeleton className="h-7 w-12" />
+                        <Skeleton className="h-7 w-14" />
+                      </div>
+                    </div>
+                    {j < 2 && <div className="h-px bg-border" />}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

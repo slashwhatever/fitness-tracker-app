@@ -597,7 +597,7 @@ export default function MovementSelectionModal({
   if (isDesktop) {
     return (
       <>
-        <Dialog open={isOpen}>
+        <Dialog open={isOpen} onOpenChange={onClose}>
           <DialogContent className="max-w-3xl h-[85vh] w-[90vw] flex flex-col">
             <DialogHeader className="pb-4 flex-shrink-0">
               <DialogTitle className="text-xl">
