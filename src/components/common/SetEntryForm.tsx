@@ -37,13 +37,7 @@ export default function SetEntryForm({
 }: SetEntryFormProps) {
   const { data: userProfile } = useUserProfile();
 
-  const {
-    watch,
-    setValue,
-    handleSubmit,
-    reset,
-    formState: { isValid },
-  } = useForm<SetEntryFormData>({
+  const { watch, setValue, handleSubmit, reset } = useForm<SetEntryFormData>({
     defaultValues: {
       reps: initialData.reps || null,
       weight: initialData.weight || null,
@@ -275,25 +269,61 @@ export default function SetEntryForm({
                     {weightUnit}
                   </div>
                 </div>
-                <div className="flex justify-center items-center space-x-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => adjustValue("weight", -1)}
-                    className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
-                  >
-                    <Minus className="h-6 w-6" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => adjustValue("weight", 1)}
-                    className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
-                  >
-                    <Plus className="h-6 w-6" />
-                  </Button>
+                <div className="flex flex-col justify-center items-center space-y-2">
+                  <div className="grid grid-cols-3 gap-0 w-28">
+                    <div className="flex justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustValue("weight", -1)}
+                        className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                      >
+                        <Minus className="h-6 w-6" />
+                      </Button>
+                    </div>
+                    <div className="flex justify-center items-center text-base text-muted-foreground">
+                      1
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustValue("weight", 1)}
+                        className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                      >
+                        <Plus className="h-6 w-6" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-0 w-28">
+                    <div className="flex justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustValue("weight", -5)}
+                        className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                      >
+                        <Minus className="h-6 w-6" />
+                      </Button>
+                    </div>
+                    <div className="flex justify-center items-center text-base text-muted-foreground">
+                      5
+                    </div>
+                    <div className="flex justify-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => adjustValue("weight", 5)}
+                        className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                      >
+                        <Plus className="h-6 w-6" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
