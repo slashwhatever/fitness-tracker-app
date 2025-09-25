@@ -8,15 +8,21 @@ import { useMovementTemplates } from "@/hooks/useMovements";
 import { MovementTemplate } from "@/models/types";
 import { useMemo, useState } from "react";
 
-export default function LibraryContent() {
+interface LibraryContentProps {
+  initialMovements: MovementTemplate[];
+}
+
+export default function LibraryContent({
+  initialMovements,
+}: LibraryContentProps) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch movement templates and muscle groups from database
+  // Use server-side data as initial data for React Query
   const {
     data: movementTemplates = [],
     isLoading,
     error,
-  } = useMovementTemplates();
+  } = useMovementTemplates(initialMovements);
 
   const filteredMovements = useMemo(() => {
     return movementTemplates

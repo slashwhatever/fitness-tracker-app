@@ -57,7 +57,7 @@ export default function DashboardContent() {
             variant="outline"
             asChild
           >
-            <Link 
+            <Link
               href="/analytics"
               onMouseEnter={() => prefetchPage("analytics")}
             >
@@ -70,10 +70,7 @@ export default function DashboardContent() {
             variant="outline"
             asChild
           >
-            <Link 
-              href="/library"
-              onMouseEnter={() => prefetchPage("library")}
-            >
+            <Link href="/library" onMouseEnter={() => prefetchPage("library")}>
               <Typography variant="body">Movement Library</Typography>
             </Link>
           </ResponsiveButton>
@@ -83,7 +80,7 @@ export default function DashboardContent() {
             variant="outline"
             asChild
           >
-            <Link 
+            <Link
               href="/settings"
               onMouseEnter={() => prefetchPage("settings")}
             >

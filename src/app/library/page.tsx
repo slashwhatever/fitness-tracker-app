@@ -2,8 +2,12 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ContextualNavigation from "@/components/common/ContextualNavigation";
 import { Typography } from "@/components/common/Typography";
 import LibraryContent from "@/components/features/LibraryContent";
+import { getMovementTemplates } from "@/lib/data/movement-templates";
 
-export default function MovementLibraryPage() {
+export default async function MovementLibraryPage() {
+  // Fetch movement templates on server-side
+  const initialMovements = await getMovementTemplates();
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
@@ -16,7 +20,7 @@ export default function MovementLibraryPage() {
               Browse and discover exercises for your workouts
             </Typography>
 
-            <LibraryContent />
+            <LibraryContent initialMovements={initialMovements} />
           </div>
         </main>
       </div>

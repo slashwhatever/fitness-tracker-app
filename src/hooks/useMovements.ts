@@ -33,7 +33,7 @@ const movementKeys = {
 
 // Get all movement templates from database using QueryData for automatic type inference
 
-export function useMovementTemplates() {
+export function useMovementTemplates(initialData?: MovementTemplate[]) {
   const supabase = createClient();
 
   return useQuery({
@@ -71,6 +71,7 @@ export function useMovementTemplates() {
             .filter((name): name is string => Boolean(name)) || [],
       })) as MovementTemplate[];
     },
+    initialData,
     staleTime: 15 * 60 * 1000, // 15 minutes - templates rarely change
     gcTime: 60 * 60 * 1000, // 1 hour
   });
