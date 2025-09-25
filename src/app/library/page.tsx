@@ -1,12 +1,22 @@
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ContextualNavigation from "@/components/common/ContextualNavigation";
 import { Typography } from "@/components/common/Typography";
-import LibraryContent from "@/components/features/LibraryContent";
-import { getMovementTemplates } from "@/lib/data/movement-templates";
+import LibraryContentServer from "@/components/features/LibraryContentServer";
+import LibrarySearchWrapper from "@/components/features/LibrarySearchWrapper";
+import { LibrarySkeleton } from "@/components/ui/skeleton-patterns";
+import { Suspense } from "react";
 
-export default async function MovementLibraryPage() {
-  // Fetch movement templates on server-side
-  const initialMovements = await getMovementTemplates();
+interface MovementLibraryPageProps {
+  searchParams: Promise<{
+    search?: string;
+  }>;
+}
+
+export default async function MovementLibraryPage({
+  searchParams,
+}: MovementLibraryPageProps) {
+  const params = await searchParams;
+  const searchTerm = params.search || "";
 
   return (
     <ProtectedRoute>
@@ -14,13 +24,18 @@ export default async function MovementLibraryPage() {
         <ContextualNavigation context={{ type: "library" }} />
         <main className="p-2 sm:p-4 lg:p-6">
           <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-4">
-            {/* Header */}
+            {/* Header - Renders immediately */}
             <Typography variant="title1">Movement library</Typography>
             <Typography variant="caption">
               Browse and discover exercises for your workouts
             </Typography>
 
-            <LibraryContent initialMovements={initialMovements} />
+            <LibrarySearchWrapper>
+              {/* Streamed content with loading state */}
+              <Suspense fallback={<LibrarySkeleton />}>
+                <LibraryContentServer searchTerm={searchTerm} />
+              </Suspense>
+            </LibrarySearchWrapper>
           </div>
         </main>
       </div>
@@ -32,3 +47,6 @@ export const metadata = {
   title: "Movement Library - Logset",
   description: "Browse and discover exercises for your workouts",
 };
+
+// Enable static generation with revalidation
+export const revalidate = 3600; // Revalidate every hour
