@@ -221,7 +221,7 @@ export default function SetEntryForm({
                   rep{(formValues.reps || 0) !== 1 ? "s" : ""}
                 </div>
               </div>
-              <div className="flex justify-center items-center space-x-4">
+              <div className="flex justify-center items-center space-x-4 h-16">
                 <Button
                   type="button"
                   variant="outline"
@@ -270,8 +270,8 @@ export default function SetEntryForm({
                   </div>
                 </div>
                 <div className="flex flex-col justify-center items-center space-y-2">
-                  <div className="grid grid-cols-3 gap-0 w-28">
-                    <div className="flex justify-center">
+                  <div className="grid grid-cols-3 gap-0 w-28 h-8">
+                    <div className="flex justify-center items-center">
                       <Button
                         type="button"
                         variant="outline"
@@ -285,7 +285,7 @@ export default function SetEntryForm({
                     <div className="flex justify-center items-center text-base text-muted-foreground">
                       1
                     </div>
-                    <div className="flex justify-center">
+                    <div className="flex justify-center items-center">
                       <Button
                         type="button"
                         variant="outline"
@@ -297,8 +297,8 @@ export default function SetEntryForm({
                       </Button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-3 gap-0 w-28">
-                    <div className="flex justify-center">
+                  <div className="grid grid-cols-3 gap-0 w-28 h-8">
+                    <div className="flex justify-center items-center">
                       <Button
                         type="button"
                         variant="outline"
@@ -312,7 +312,7 @@ export default function SetEntryForm({
                     <div className="flex justify-center items-center text-base text-muted-foreground">
                       5
                     </div>
-                    <div className="flex justify-center">
+                    <div className="flex justify-center items-center">
                       <Button
                         type="button"
                         variant="outline"

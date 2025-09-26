@@ -163,7 +163,8 @@ const SearchAndContent = React.memo(function SearchAndContent({
                           >
                             {getTrackingTypeIcon(movement.tracking_type, 16)}
                           </div>
-                          <h3
+                          <Typography
+                            variant="caption"
                             className={`font-medium text-sm truncate ${
                               selectedMovements.has(movement.id)
                                 ? "text-gray-900"
@@ -171,9 +172,10 @@ const SearchAndContent = React.memo(function SearchAndContent({
                             }`}
                           >
                             {movement.name}
-                          </h3>
+                          </Typography>
                         </div>
-                        <p
+                        <Typography
+                          variant="footnote"
                           className={`text-xs ${
                             selectedMovements.has(movement.id)
                               ? "text-gray-600"
@@ -181,7 +183,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
                           }`}
                         >
                           {movement.muscle_groups?.join(", ") || "Unknown"}
-                        </p>
+                        </Typography>
                       </div>
                     </div>
 
@@ -241,7 +243,8 @@ const SearchAndContent = React.memo(function SearchAndContent({
                         >
                           {getTrackingTypeIcon(movement.tracking_type, 16)}
                         </div>
-                        <h3
+                        <Typography
+                          variant="caption"
                           className={`font-medium text-sm truncate ${
                             selectedMovements.has(movement.id)
                               ? "text-gray-900"
@@ -249,9 +252,10 @@ const SearchAndContent = React.memo(function SearchAndContent({
                           }`}
                         >
                           {movement.name}
-                        </h3>
+                        </Typography>
                       </div>
-                      <p
+                      <Typography
+                        variant="footnote"
                         className={`text-xs ${
                           selectedMovements.has(movement.id)
                             ? "text-gray-600"
@@ -259,7 +263,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
                         }`}
                       >
                         {movement.muscle_groups?.join(", ") || "Unknown"}
-                      </p>
+                      </Typography>
                     </div>
                   </div>
 

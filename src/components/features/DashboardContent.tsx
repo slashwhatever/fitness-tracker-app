@@ -11,10 +11,6 @@ import { useCallback } from "react";
 export default function DashboardContent() {
   const queryClient = useQueryClient();
 
-  const handleWorkoutCreated = () => {
-    // Trigger a refresh of the workout list (handled by React Query automatically)
-  };
-
   // Prefetch analytics/library/settings data on hover for instant navigation
   const prefetchPage = useCallback(
     async (page: "analytics" | "library" | "settings") => {
@@ -90,7 +86,7 @@ export default function DashboardContent() {
         </div>
       </div>
 
-      <WorkoutManagement onWorkoutCreated={handleWorkoutCreated} />
+      <WorkoutManagement />
     </>
   );
 }
