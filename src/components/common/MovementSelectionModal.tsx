@@ -1,7 +1,7 @@
 "use client";
 
 import CreateCustomMovementModal from "@/components/common/CreateCustomMovementModal";
-import { Badge } from "@/components/ui/badge";
+import MovementListItem from "@/components/common/MovementListItem";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,16 +28,13 @@ import {
   useWorkoutMovements,
 } from "@/hooks";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import {
-  getExperienceLevelVariant,
-  getTrackingTypeIcon,
-} from "@/lib/utils/typeHelpers";
+
 import {
   getNextOrderIndex,
   prepareWorkoutMovements,
 } from "@/lib/utils/workout-helpers";
 import type { MovementTemplate, UserMovement } from "@/models/types";
-import { Check, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -138,71 +135,13 @@ const SearchAndContent = React.memo(function SearchAndContent({
               </Typography>
               <div className="space-y-2">
                 {filteredUserMovements.map((movement) => (
-                  <div
+                  <MovementListItem
                     key={movement.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
-                      isSaving
-                        ? "opacity-60 cursor-not-allowed"
-                        : "cursor-pointer hover:bg-accent/50"
-                    } ${
-                      selectedMovements.has(movement.id)
-                        ? "bg-white dark:bg-white border-primary/50"
-                        : "border-border hover:border-accent-foreground/20"
-                    }`}
-                    onClick={() => handleMovementToggle(movement.id, movement)}
-                  >
-                    <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2">
-                          <div
-                            className={
-                              selectedMovements.has(movement.id)
-                                ? "text-gray-900"
-                                : ""
-                            }
-                          >
-                            {getTrackingTypeIcon(movement.tracking_type, 16)}
-                          </div>
-                          <Typography
-                            variant="caption"
-                            className={`font-medium text-sm truncate ${
-                              selectedMovements.has(movement.id)
-                                ? "text-gray-900"
-                                : ""
-                            }`}
-                          >
-                            {movement.name}
-                          </Typography>
-                        </div>
-                        <Typography
-                          variant="footnote"
-                          className={`text-xs ${
-                            selectedMovements.has(movement.id)
-                              ? "text-gray-600"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {movement.muscle_groups?.join(", ") || "Unknown"}
-                        </Typography>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2 ml-3">
-                      {!selectedMovements.has(movement.id) && (
-                        <Badge
-                          variant={getExperienceLevelVariant(
-                            movement.experience_level
-                          )}
-                          className="text-xs"
-                        >
-                          {movement.experience_level}
-                        </Badge>
-                      )}
-                      {selectedMovements.has(movement.id) && (
-                        <Check className="w-5 h-5 text-green-600" />
-                      )}
-                    </div>
-                  </div>
+                    movement={movement}
+                    isSelected={selectedMovements.has(movement.id)}
+                    isSaving={isSaving}
+                    onToggle={() => handleMovementToggle(movement.id, movement)}
+                  />
                 ))}
               </div>
             </div>
@@ -215,73 +154,13 @@ const SearchAndContent = React.memo(function SearchAndContent({
             </Typography>
             <div className="space-y-2">
               {filteredLibrary.map((movement) => (
-                <div
+                <MovementListItem
                   key={movement.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
-                    isSaving
-                      ? "opacity-60 cursor-not-allowed"
-                      : "cursor-pointer hover:bg-accent/50"
-                  } ${
-                    selectedMovements.has(movement.id)
-                      ? "bg-white dark:bg-white border-primary/50"
-                      : "border-border hover:border-accent-foreground/20"
-                  }`}
-                  onClick={() => {
-                    // Library movements use their own IDs directly
-                    handleMovementToggle(movement.id, movement);
-                  }}
-                >
-                  <div className="flex items-center space-x-3 flex-1 min-w-0">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2">
-                        <div
-                          className={
-                            selectedMovements.has(movement.id)
-                              ? "text-gray-900"
-                              : ""
-                          }
-                        >
-                          {getTrackingTypeIcon(movement.tracking_type, 16)}
-                        </div>
-                        <Typography
-                          variant="caption"
-                          className={`font-medium text-sm truncate ${
-                            selectedMovements.has(movement.id)
-                              ? "text-gray-900"
-                              : ""
-                          }`}
-                        >
-                          {movement.name}
-                        </Typography>
-                      </div>
-                      <Typography
-                        variant="footnote"
-                        className={`text-xs ${
-                          selectedMovements.has(movement.id)
-                            ? "text-gray-600"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {movement.muscle_groups?.join(", ") || "Unknown"}
-                      </Typography>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-2 ml-3">
-                    {!selectedMovements.has(movement.id) && (
-                      <Badge
-                        variant={getExperienceLevelVariant(
-                          movement.experience_level
-                        )}
-                      >
-                        {movement.experience_level}
-                      </Badge>
-                    )}
-                    {selectedMovements.has(movement.id) && (
-                      <Check className="w-5 h-5 text-green-600" />
-                    )}
-                  </div>
-                </div>
+                  movement={movement}
+                  isSelected={selectedMovements.has(movement.id)}
+                  isSaving={isSaving}
+                  onToggle={() => handleMovementToggle(movement.id, movement)}
+                />
               ))}
             </div>
           </div>

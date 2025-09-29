@@ -1,7 +1,7 @@
 "use client";
 
 import { Set, UserMovement } from "@/models/types";
-import { ChevronDown, ChevronUp, Minus } from "lucide-react";
+import { CircleEqual, Play } from "lucide-react";
 import { Typography } from "./Typography";
 
 /**
@@ -385,11 +385,11 @@ export default function SessionComparison({
                 }`}
               >
                 {metric.diff > 0 ? (
-                  <ChevronUp className="w-5 h-5 font-bold" />
+                  <Play className="w-5 h-5 font-bold rotate-270" fill="green" />
                 ) : metric.diff < 0 ? (
-                  <ChevronDown className="w-5 h-5 font-bold" />
+                  <Play className="w-5 h-5 font-bold rotate-90" fill="red" />
                 ) : (
-                  <Minus className="w-5 h-5 font-bold" />
+                  <CircleEqual className="w-5 h-5 font-bold text-blue-500" />
                 )}
                 <Typography variant="caption" className="whitespace-nowrap">
                   {(() => {

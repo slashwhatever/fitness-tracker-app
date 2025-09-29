@@ -47,21 +47,26 @@ export default function MovementCard({
       }`}
       onClick={handleClick}
     >
-      <CardContent className="p-4 space-y-2">
-        <CardTitle className="text-lg flex items-center gap-2">
-          {getTrackingTypeIcon(movement.tracking_type, 18)} {movement.name}
-        </CardTitle>
-        <CardDescription className="text-muted-foreground text-sm">
-          Focus: {movement.muscle_groups?.join(", ") || "Unknown"}
-        </CardDescription>
-        <CardDescription className="text-muted-foreground text-sm">
-          Tracking: {trackingTypeDisplayName}
-        </CardDescription>
-        <CardDescription className="text-muted-foreground text-sm">
-          <Badge variant={getExperienceLevelVariant(movement.experience_level)}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex-1 space-y-2 min-w-0">
+            <CardTitle className="text-lg flex items-center gap-2">
+              {getTrackingTypeIcon(movement.tracking_type, 18)} {movement.name}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">
+              Focus: {movement.muscle_groups?.join(", ") || "Unknown"}
+            </CardDescription>
+            <CardDescription className="text-muted-foreground text-sm">
+              Tracking: {trackingTypeDisplayName}
+            </CardDescription>
+          </div>
+          <Badge
+            variant={getExperienceLevelVariant(movement.experience_level)}
+            className="flex-shrink-0"
+          >
             {movement.experience_level}
           </Badge>
-        </CardDescription>
+        </div>
       </CardContent>
     </Card>
   );
