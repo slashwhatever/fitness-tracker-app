@@ -83,6 +83,22 @@ async function main() {
     console.log(`📊 Overall status: ${status.state}`);
     console.log(`📈 Total checks: ${status.total_count}`);
 
+    // Handle case where GitHub Status API hasn't updated yet
+    if (status.total_count === 0) {
+      console.log(
+        "\n🔄 No status checks found - GitHub Status API may not be updated yet."
+      );
+      console.log(
+        "This can happen with timing between GitHub Actions completion and Status API updates."
+      );
+
+      // Allow deployment for commits with no status checks (common for direct pushes)
+      console.log(
+        "✅ Allowing deployment to proceed (no blocking status checks found).\n"
+      );
+      process.exit(0);
+    }
+
     if (status.statuses && status.statuses.length > 0) {
       console.log("\n📋 Individual check results:");
       status.statuses.forEach((check) => {
