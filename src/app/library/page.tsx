@@ -4,6 +4,7 @@ import { Typography } from "@/components/common/Typography";
 import LibraryContentServer from "@/components/features/LibraryContentServer";
 import LibrarySearchWrapper from "@/components/features/LibrarySearchWrapper";
 import { LibrarySkeleton } from "@/components/ui/skeleton-patterns";
+import { getMovementTemplates } from "@/lib/data/movement-templates";
 import { Suspense } from "react";
 
 interface MovementLibraryPageProps {
@@ -18,6 +19,9 @@ export default async function MovementLibraryPage({
   const params = await searchParams;
   const searchTerm = params.search || "";
 
+  // Fetch movement templates on server-side
+  const movementTemplates = await getMovementTemplates();
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-background">
@@ -27,13 +31,16 @@ export default async function MovementLibraryPage({
             {/* Header - Renders immediately */}
             <Typography variant="title1">Movement library</Typography>
             <Typography variant="caption">
-              Browse and discover exercises for your workouts
+              Browse your personal movements and discover new exercises
             </Typography>
 
             <LibrarySearchWrapper>
               {/* Streamed content with loading state */}
               <Suspense fallback={<LibrarySkeleton />}>
-                <LibraryContentServer searchTerm={searchTerm} />
+                <LibraryContentServer
+                  searchTerm={searchTerm}
+                  initialMovements={movementTemplates}
+                />
               </Suspense>
             </LibrarySearchWrapper>
           </div>

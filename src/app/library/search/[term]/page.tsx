@@ -89,7 +89,10 @@ export default async function LibrarySearchPage({
             <LibrarySearchWrapper>
               {/* Streamed content with loading state */}
               <Suspense fallback={<LibrarySkeleton />}>
-                <LibraryContentServer searchTerm={searchTerm} />
+                <LibraryContentServer
+                  searchTerm={searchTerm}
+                  initialMovements={movements}
+                />
               </Suspense>
             </LibrarySearchWrapper>
           </div>

@@ -75,12 +75,7 @@ export default function SearchFilters({ onSearchChange }: SearchFiltersProps) {
 
       {/* Clear search button */}
       {hasActiveFilters && (
-        <Button
-          onClick={clearSearch}
-          variant="outline"
-          size="sm"
-          className="w-full"
-        >
+        <Button onClick={clearSearch} variant="outline" className="w-full">
           Clear search
         </Button>
       )}

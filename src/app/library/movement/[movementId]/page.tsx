@@ -4,15 +4,14 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import MovementDetail from "@/components/features/MovementDetail";
 import { useEffect, useState } from "react";
 
-interface MovementDetailPageProps {
-  params: Promise<{ workoutId: string; movementId: string }>;
+interface LibraryMovementDetailPageProps {
+  params: Promise<{ movementId: string }>;
 }
 
-export default function MovementDetailPage({
+export default function LibraryMovementDetailPage({
   params,
-}: MovementDetailPageProps) {
+}: LibraryMovementDetailPageProps) {
   const [paramsResolved, setParamsResolved] = useState<{
-    workoutId: string;
     movementId: string;
   } | null>(null);
 
@@ -33,9 +32,8 @@ export default function MovementDetailPage({
     <ProtectedRoute>
       <MovementDetail
         movementId={paramsResolved.movementId}
-        workoutId={paramsResolved.workoutId}
-        returnPath="/"
-        returnLabel="Return to Dashboard"
+        returnPath="/library"
+        returnLabel="Return to Library"
       />
     </ProtectedRoute>
   );

@@ -1,20 +1,80 @@
+"use client";
+
 import MovementCard from "@/components/common/MovementCard";
 import { Typography } from "@/components/common/Typography";
-import { getMovementTemplates } from "@/lib/data/movement-templates";
+import {
+  useCreateUserMovement,
+  useTrackingTypes,
+  useUserMovements,
+} from "@/hooks";
 import { MovementTemplate } from "@/models/types";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 interface LibraryContentServerProps {
   searchTerm?: string;
+  initialMovements: MovementTemplate[];
 }
 
-export default async function LibraryContentServer({
+export default function LibraryContentServer({
   searchTerm = "",
+  initialMovements,
 }: LibraryContentServerProps) {
-  // Fetch movement templates on server-side
-  const movementTemplates = await getMovementTemplates();
+  const router = useRouter();
+  const [processingMovement, setProcessingMovement] = useState<string | null>(
+    null
+  );
 
-  // Filter movements based on search term (server-side filtering)
-  const filteredMovements = movementTemplates
+  // Get user movements to check if template already has a user movement
+  const { data: userMovements = [] } = useUserMovements();
+  const { data: trackingTypes = [] } = useTrackingTypes();
+  const createUserMovementMutation = useCreateUserMovement();
+
+  // Combine movement templates with user movements
+  const allMovements = useMemo(() => {
+    // Convert user movements to template format for consistent display
+    const userMovementsAsTemplates = userMovements.map((userMovement) => ({
+      id: userMovement.id,
+      name: userMovement.name,
+      muscle_groups: userMovement.muscle_groups,
+      tracking_type:
+        trackingTypes.find((tt) => tt.id === userMovement.tracking_type_id)
+          ?.name || "unknown",
+      experience_level: "Intermediate" as
+        | "Beginner"
+        | "Intermediate"
+        | "Advanced", // Default for user movements
+      instructions: userMovement.personal_notes || null,
+      created_at: userMovement.created_at,
+      tags: userMovement.tags,
+      tracking_type_id: userMovement.tracking_type_id,
+      updated_at: userMovement.updated_at,
+      isUserMovement: true, // Flag to identify user movements
+    }));
+
+    // Add template flag to movement templates
+    const templatesWithFlag = initialMovements.map((template) => ({
+      ...template,
+      isUserMovement: false,
+    }));
+
+    // Combine and deduplicate (user movements take precedence over templates)
+    const combined = [...userMovementsAsTemplates];
+    templatesWithFlag.forEach((template) => {
+      // Only add template if user doesn't have a movement based on this template
+      const hasUserMovement = userMovements.some(
+        (um) => um.template_id === template.id
+      );
+      if (!hasUserMovement) {
+        combined.push(template);
+      }
+    });
+
+    return combined;
+  }, [initialMovements, userMovements, trackingTypes]);
+
+  // Filter movements based on search term
+  const filteredMovements = allMovements
     .filter((movement) => {
       if (!searchTerm) return true;
 
@@ -26,12 +86,12 @@ export default async function LibraryContentServer({
         )
       );
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  const handleMovementClick = (movement: MovementTemplate) => {
-    // TODO: Handle movement selection (for Story 1.4)
-    console.log("Selected movement:", movement);
-  };
+    .sort((a, b) => {
+      // Sort user movements first, then alphabetically
+      if (a.isUserMovement && !b.isUserMovement) return -1;
+      if (!a.isUserMovement && b.isUserMovement) return 1;
+      return a.name.localeCompare(b.name);
+    });
 
   return (
     <>
@@ -41,9 +101,9 @@ export default async function LibraryContentServer({
           Exercises ({filteredMovements.length})
         </Typography>
         <Typography variant="caption">
-          {filteredMovements.length === movementTemplates.length
+          {filteredMovements.length === allMovements.length
             ? "Showing all exercises"
-            : `Filtered from ${movementTemplates.length} total exercises`}
+            : `Filtered from ${allMovements.length} total exercises`}
         </Typography>
       </div>
 
@@ -76,7 +136,56 @@ export default async function LibraryContentServer({
             <MovementCard
               key={movement.id}
               movement={movement}
-              onClick={handleMovementClick}
+              selected={processingMovement === movement.id} // Show loading state
+              onClick={async (movement) => {
+                if (processingMovement === movement.id) return; // Prevent double-clicks
+                setProcessingMovement(movement.id);
+
+                try {
+                  // If this is already a user movement, navigate directly
+                  if ((movement as any).isUserMovement) {
+                    router.push(`/library/movement/${movement.id}`);
+                    return;
+                  }
+
+                  // This is a template - check if user already has a movement for this template
+                  const existingUserMovement = userMovements.find(
+                    (um) => um.template_id === movement.id
+                  );
+
+                  if (existingUserMovement) {
+                    // Navigate to existing user movement
+                    router.push(`/library/movement/${existingUserMovement.id}`);
+                  } else {
+                    // Create new user movement from template
+                    const trackingType = trackingTypes.find(
+                      (tt) => tt.name === movement.tracking_type
+                    );
+
+                    if (!trackingType) {
+                      throw new Error(
+                        `Unknown tracking type: ${movement.tracking_type}`
+                      );
+                    }
+
+                    const newUserMovement =
+                      await createUserMovementMutation.mutateAsync({
+                        template_id: movement.id, // Link to the template
+                        name: movement.name,
+                        muscle_groups: movement.muscle_groups,
+                        tracking_type_id: trackingType.id,
+                        personal_notes: movement.instructions || null,
+                      });
+
+                    // Navigate to the new user movement
+                    router.push(`/library/movement/${newUserMovement.id}`);
+                  }
+                } catch (error) {
+                  console.error("Failed to handle movement click:", error);
+                } finally {
+                  setProcessingMovement(null);
+                }
+              }}
             />
           ))}
         </div>
