@@ -138,6 +138,12 @@ Your deployment pipeline now has a safety gate. Failed tests = blocked deploymen
 
 **Next Steps:**
 
-1. Update the repository configuration (Step 1)
-2. Test with a failing commit
-3. Celebrate safer deployments! 🎉
+1. **Update Repository Configuration**: Edit `scripts/check-ci-status.js` with your GitHub username/repo
+2. **Set GitHub Secrets** (required for CI/build):
+   - `SUPABASE_URL`: Your Supabase project URL
+   - `SUPABASE_PUBLISHABLE_KEY`: Your Supabase anonymous key
+   - `SUPABASE_PROJECT_REF`: Your Supabase project reference
+   - `SUPABASE_ACCESS_TOKEN`: Your Supabase access token
+   - `GITHUB_TOKEN`: GitHub personal access token (optional)
+3. Test with a failing commit
+4. Celebrate safer deployments! 🎉

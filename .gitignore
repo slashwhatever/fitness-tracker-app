@@ -61,3 +61,4 @@ supabase/.temp/storage-version
 *storybook.log
 storybook-static
 .vscode/settings.json
+DEPLOYMENT_GATE_SETUP.md
