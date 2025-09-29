@@ -10,6 +10,7 @@
  * - GITHUB_TOKEN: GitHub personal access token (optional, for higher rate limits)
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const https = require("https");
 
 // GitHub API configuration
@@ -84,7 +85,7 @@ async function main() {
 
     if (status.statuses && status.statuses.length > 0) {
       console.log("\n📋 Individual check results:");
-      status.statuses.forEach((check, index) => {
+      status.statuses.forEach((check) => {
         const emoji =
           check.state === "success"
             ? "✅"

@@ -14,7 +14,7 @@ interface SortableMovementItemProps {
     user_movement: UserMovement | null;
   };
   workoutId: string;
-  movementSets: any[];
+  movementSets: Array<{ id: string; created_at: string; reps?: number | null; weight?: number | null }>;
   lastSetDate: string;
   onEdit: () => void;
   onDelete: () => void;

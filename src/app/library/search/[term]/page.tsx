@@ -83,7 +83,7 @@ export default async function LibrarySearchPage({
             {/* Header - Renders immediately */}
             <Typography variant="title1">Movement library</Typography>
             <Typography variant="caption">
-              Showing results for "{searchTerm}"
+              Showing results for &quot;{searchTerm}&quot;
             </Typography>
 
             <LibrarySearchWrapper>

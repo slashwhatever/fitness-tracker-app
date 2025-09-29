@@ -70,7 +70,6 @@ interface SearchAndContentProps {
     movementId: string,
     movementData: UserMovement | MovementTemplate
   ) => void;
-  userMovements: UserMovement[];
   isSaving: boolean;
 }
 
@@ -84,7 +83,6 @@ const SearchAndContent = React.memo(function SearchAndContent({
   filteredLibrary,
   selectedMovements,
   handleMovementToggle,
-  userMovements,
   isSaving,
 }: SearchAndContentProps) {
   const { register, watch } = useForm<SearchFormData>({
@@ -303,27 +301,20 @@ export default function MovementSelectionModal({
   }, [userMovements, searchTerm, workoutMovements, recentlyCreatedMovements]);
 
   const handleMovementToggle = useCallback(
-    (movementId: string, movementData: UserMovement | MovementTemplate) => {
+    (movementId: string, _movementData: UserMovement | MovementTemplate) => {
       // Don't allow selection changes while saving
       if (isSaving) return;
 
       // Save current scroll position
       const scrollTop = scrollContainerRef.current?.scrollTop || 0;
 
-      // For library movements, we need to use the potential user movement ID
-      let actualMovementId = movementId;
-      const isTemplate = "experience_level" in movementData;
-
-      // Both templates and user movements use their own IDs directly
-      // No need to check for existing relationships since template links are broken
-
       // Toggle selection in local state only
       setSelectedMovements((prev) => {
         const newSet = new Set(prev);
-        if (newSet.has(actualMovementId)) {
-          newSet.delete(actualMovementId);
+        if (newSet.has(movementId)) {
+          newSet.delete(movementId);
         } else {
-          newSet.add(actualMovementId);
+          newSet.add(movementId);
         }
         return newSet;
       });
@@ -335,7 +326,7 @@ export default function MovementSelectionModal({
         }
       });
     },
-    [userMovements, isSaving]
+    [isSaving]
   );
 
   const handleCustomMovementCreated = (userMovementId: string) => {
@@ -501,7 +492,6 @@ export default function MovementSelectionModal({
               filteredLibrary={filteredLibrary}
               selectedMovements={displaySelectedMovements}
               handleMovementToggle={handleMovementToggle}
-              userMovements={userMovements}
               isSaving={isSaving}
             />
             <div className="flex-shrink-0">
@@ -538,7 +528,6 @@ export default function MovementSelectionModal({
             filteredLibrary={filteredLibrary}
             selectedMovements={selectedMovements}
             handleMovementToggle={handleMovementToggle}
-            userMovements={userMovements as UserMovement[]}
             isSaving={isSaving}
           />
           <DrawerFooter className="pt-2 flex-shrink-0">

@@ -27,7 +27,7 @@ export default function PWAInstallPrompt() {
     const checkStandalone = () => {
       const isStandaloneMode =
         window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone ||
+        (window.navigator as typeof window.navigator & { standalone?: boolean }).standalone ||
         document.referrer.includes("android-app://");
       setIsStandalone(isStandaloneMode);
     };

@@ -28,10 +28,10 @@ export async function getMovementTemplates(): Promise<MovementTemplate[]> {
   return data.map((template) => ({
     ...template,
     tracking_type:
-      (template.tracking_type as any)?.name || ("weight" as TrackingTypeName),
+      (template.tracking_type as { name: TrackingTypeName })?.name || ("weight" as TrackingTypeName),
     muscle_groups:
       template.movement_template_muscle_groups
-        ?.map((mtmg: any) => mtmg.muscle_group?.display_name)
+        ?.map((mtmg: { muscle_group?: { display_name: string } }) => mtmg.muscle_group?.display_name)
         .filter((name): name is string => Boolean(name)) || [],
   })) as MovementTemplate[];
 }

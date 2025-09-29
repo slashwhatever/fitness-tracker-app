@@ -126,7 +126,7 @@ export default function LibraryContentServer({
           </div>
           <Typography variant="title3">No exercises found</Typography>
           <Typography variant="caption">
-            Try adjusting your search terms or filters to find what you're
+            Try adjusting your search terms or filters to find what you&apos;re
             looking for.
           </Typography>
         </div>
@@ -143,7 +143,7 @@ export default function LibraryContentServer({
 
                 try {
                   // If this is already a user movement, navigate directly
-                  if ((movement as any).isUserMovement) {
+                  if ("isUserMovement" in movement && movement.isUserMovement) {
                     router.push(`/library/movement/${movement.id}`);
                     return;
                   }

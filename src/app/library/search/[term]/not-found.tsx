@@ -20,7 +20,7 @@ export default function LibrarySearchNotFound() {
                 No movements found
               </Typography>
               <Typography variant="caption" className="mb-6">
-                We couldn't find any movements matching your search. Try a
+                We couldn&apos;t find any movements matching your search. Try a
                 different term or browse all movements.
               </Typography>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">

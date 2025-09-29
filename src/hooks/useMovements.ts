@@ -458,21 +458,32 @@ export function useUpdateUserMovement() {
 
       workoutMovementQueries.forEach(([queryKey, data]) => {
         if (Array.isArray(data)) {
-          queryClient.setQueryData(queryKey, (old: any[]) => {
-            return old.map((workoutMovement: any) => {
-              if (workoutMovement.user_movement?.id === id) {
-                return {
-                  ...workoutMovement,
-                  user_movement: {
-                    ...workoutMovement.user_movement,
-                    ...updates,
-                    updated_at: new Date().toISOString(),
-                  },
-                };
-              }
-              return workoutMovement;
-            });
-          });
+          queryClient.setQueryData(
+            queryKey,
+            (
+              old: Array<WorkoutMovement & { user_movement?: UserMovement }>
+            ) => {
+              return old.map(
+                (
+                  workoutMovement: WorkoutMovement & {
+                    user_movement?: UserMovement;
+                  }
+                ) => {
+                  if (workoutMovement.user_movement?.id === id) {
+                    return {
+                      ...workoutMovement,
+                      user_movement: {
+                        ...workoutMovement.user_movement,
+                        ...updates,
+                        updated_at: new Date().toISOString(),
+                      },
+                    };
+                  }
+                  return workoutMovement;
+                }
+              );
+            }
+          );
         }
       });
 
