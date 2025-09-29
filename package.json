@@ -18,7 +18,8 @@
     "test:storybook": "test-storybook",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "knip": "knip"
+    "knip": "knip",
+    "ci:pre-deploy": "node scripts/check-ci-status.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

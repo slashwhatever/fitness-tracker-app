@@ -3,7 +3,7 @@
 # ============================================================================
 
 [build]
-  command = "pnpm install --frozen-lockfile && pnpm build"
+  command = "pnpm run ci:pre-deploy && pnpm install --frozen-lockfile && pnpm build"
   publish = ".next"
   
 # Fallback build command if pnpm registry issues persist
