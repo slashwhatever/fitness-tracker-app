@@ -23,6 +23,10 @@ type NavigationContext =
       workoutName?: string;
       movementName?: string;
     }
+  | {
+      type: "library-movement-detail";
+      movementName?: string;
+    }
   | { type: "settings" }
   | { type: "library" }
   | { type: "analytics" };
@@ -56,6 +60,12 @@ export default function ContextualNavigation({
         return {
           href: `/workout/${context.workoutId}`,
           label: context.workoutName || "Workout",
+        };
+
+      case "library-movement-detail":
+        return {
+          href: "/library",
+          label: "Movement Library",
         };
 
       case "settings":
@@ -116,6 +126,31 @@ export default function ContextualNavigation({
               <BreadcrumbItem>
                 <BreadcrumbPage>
                   <span className="max-w-[150px] truncate block">
+                    {context.movementName || "Movement"}
+                  </span>
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        );
+
+      case "library-movement-detail":
+        return (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/library">
+                  Movement Library
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>
+                  <span className="max-w-[200px] truncate block">
                     {context.movementName || "Movement"}
                   </span>
                 </BreadcrumbPage>

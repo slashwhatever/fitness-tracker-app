@@ -2,6 +2,7 @@
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import MovementDetail from "@/components/features/MovementDetail";
+import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
 import { useEffect, useState } from "react";
 
 interface LibraryMovementDetailPageProps {
@@ -23,7 +24,7 @@ export default function LibraryMovementDetailPage({
   if (!paramsResolved) {
     return (
       <ProtectedRoute>
-        <div>Loading...</div>
+        <MovementDetailSkeleton />
       </ProtectedRoute>
     );
   }
