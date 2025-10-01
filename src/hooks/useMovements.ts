@@ -644,7 +644,6 @@ export function useAddMovementsToWorkout() {
   return useMutation({
     mutationFn: async ({
       workoutMovements,
-      userMovementsForOptimistic,
     }: {
       workoutMovements: WorkoutMovementInsert[];
       userMovementsForOptimistic?: UserMovement[];
@@ -706,7 +705,7 @@ export function useAddMovementsToWorkout() {
 
       return { previousWorkoutMovements, workoutId };
     },
-    onError: (err, { workoutMovements: newWorkoutMovements }, context) => {
+    onError: (_err, _variables, context) => {
       // If the mutation fails, roll back
       if (context?.workoutId) {
         queryClient.setQueryData(
@@ -734,7 +733,6 @@ export function useReorderWorkoutMovements() {
 
   return useMutation({
     mutationFn: async ({
-      workoutId,
       movements,
     }: {
       workoutId: string;

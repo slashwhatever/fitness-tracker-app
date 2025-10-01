@@ -57,7 +57,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [supabase.auth]);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     try {
       await supabase.auth.signOut();
       setUser(null);
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       console.error("Sign out error:", error);
     }
-  };
+  }, [supabase.auth]);
 
   useEffect(() => {
     // Get initial session
