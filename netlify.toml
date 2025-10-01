@@ -5,7 +5,6 @@
 
 [build]
   command = "pnpm install --frozen-lockfile && pnpm build"
-  publish = ".next"
   # Ignore builds on push - GitHub Actions will trigger deploys after CI passes
   ignore = "exit 1"
 
@@ -17,28 +16,6 @@
   NODE_OPTIONS = "--max-old-space-size=4096"
 
 
-
-# ============================================================================
-# REDIRECTS AND REWRITES
-# ============================================================================
-
-# API routes to Netlify Functions
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# Health check endpoint
-[[redirects]]
-  from = "/health"
-  to = "/.netlify/functions/health"
-  status = 200
-
-# SPA fallback for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
 
 # ============================================================================
 # HEADERS FOR SECURITY AND PERFORMANCE
