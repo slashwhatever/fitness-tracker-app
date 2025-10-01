@@ -1,5 +1,3 @@
-const config = {
+export default {
   '*.{js,jsx,ts,tsx}': ['eslint --fix'],
 };
-
-export default config;
