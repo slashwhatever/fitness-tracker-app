@@ -15,8 +15,6 @@ export default function LibrarySearchWrapper({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const currentSearch = searchParams.get("search") || "";
-
   const handleSearchChange = useCallback(
     (searchTerm: string) => {
       startTransition(() => {

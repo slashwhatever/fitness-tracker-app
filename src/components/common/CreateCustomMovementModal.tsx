@@ -94,7 +94,6 @@ export default function CreateCustomMovementModal({
     handleSubmit,
     formState: { errors, isValid },
     setValue,
-    getValues,
     watch,
     reset,
   } = useForm<FormData>({

@@ -7,7 +7,7 @@
  *
  * Environment variables needed:
  * - COMMIT_REF: Git commit SHA (provided by Netlify)
- * - GITHUB_TOKEN: GitHub personal access token (optional, for higher rate limits)
+ * - GITHUB_TOKEN: GitHub personal access token (required for Checks API)
  */
 
 /* eslint-disable @typescript-eslint/no-require-imports */
@@ -17,21 +17,21 @@ const https = require("https");
 const REPO_OWNER = "slashwhatever";
 const REPO_NAME = "fitness-tracker-app";
 
-async function checkGitHubStatus(commitSha) {
+async function makeGitHubRequest(path) {
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error("GITHUB_TOKEN environment variable is required for Checks API");
+  }
+
   const options = {
     hostname: "api.github.com",
-    path: `/repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/status`,
+    path,
     method: "GET",
     headers: {
       "User-Agent": "Netlify-CI-Checker",
       Accept: "application/vnd.github.v3+json",
+      Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
     },
   };
-
-  // Add GitHub token if available (for higher rate limits)
-  if (process.env.GITHUB_TOKEN) {
-    options.headers["Authorization"] = `token ${process.env.GITHUB_TOKEN}`;
-  }
 
   return new Promise((resolve, reject) => {
     const req = https.request(options, (res) => {
@@ -63,6 +63,26 @@ async function checkGitHubStatus(commitSha) {
   });
 }
 
+async function checkGitHubChecks(commitSha) {
+  // Check both Check Runs (for GitHub Actions) and Commit Status (for other CI)
+  const checksPath = `/repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/check-runs`;
+  const statusPath = `/repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/status`;
+
+  try {
+    const [checksData, statusData] = await Promise.all([
+      makeGitHubRequest(checksPath),
+      makeGitHubRequest(statusPath),
+    ]);
+
+    return {
+      checks: checksData,
+      status: statusData,
+    };
+  } catch (error) {
+    throw new Error(`Failed to fetch CI status: ${error.message}`);
+  }
+}
+
 async function main() {
   const commitSha = process.env.COMMIT_REF || process.env.HEAD;
 
@@ -78,29 +98,55 @@ async function main() {
   );
 
   try {
-    const status = await checkGitHubStatus(commitSha);
+    const { checks, status } = await checkGitHubChecks(commitSha);
 
-    console.log(`📊 Overall status: ${status.state}`);
-    console.log(`📈 Total checks: ${status.total_count}`);
+    console.log(`\n📊 Check Runs: ${checks.total_count} found`);
+    console.log(`📊 Status Checks: ${status.total_count} found`);
 
-    // Handle case where GitHub Status API hasn't updated yet
-    if (status.total_count === 0) {
-      console.log(
-        "\n🔄 No status checks found - GitHub Status API may not be updated yet."
+    // If no checks at all have been created, block deployment
+    if (checks.total_count === 0 && status.total_count === 0) {
+      console.error(
+        "\n❌ No CI checks found for this commit! Deployment blocked."
       );
-      console.log(
-        "This can happen with timing between GitHub Actions completion and Status API updates."
+      console.error(
+        "This usually means GitHub Actions workflow hasn't started yet."
       );
-
-      // Allow deployment for commits with no status checks (common for direct pushes)
-      console.log(
-        "✅ Allowing deployment to proceed (no blocking status checks found).\n"
-      );
-      process.exit(0);
+      console.error("Please wait for CI checks to begin and try again.\n");
+      process.exit(1);
     }
 
-    if (status.statuses && status.statuses.length > 0) {
-      console.log("\n📋 Individual check results:");
+    // Check GitHub Actions check runs
+    let allChecksPassed = true;
+    let anyChecksPending = false;
+
+    if (checks.total_count > 0) {
+      console.log("\n📋 GitHub Actions Check Runs:");
+      checks.check_runs.forEach((check) => {
+        const emoji =
+          check.conclusion === "success"
+            ? "✅"
+            : check.conclusion === "failure"
+            ? "❌"
+            : check.conclusion === null && check.status === "in_progress"
+            ? "⏳"
+            : check.conclusion === null && check.status === "queued"
+            ? "🔄"
+            : "❓";
+
+        console.log(`   ${emoji} ${check.name}: ${check.conclusion || check.status}`);
+
+        if (check.conclusion === "failure") {
+          allChecksPassed = false;
+        }
+        if (check.status === "in_progress" || check.status === "queued") {
+          anyChecksPending = true;
+        }
+      });
+    }
+
+    // Check commit status (for other CI integrations)
+    if (status.total_count > 0) {
+      console.log("\n📋 Commit Status Checks:");
       status.statuses.forEach((check) => {
         const emoji =
           check.state === "success"
@@ -110,38 +156,42 @@ async function main() {
             : check.state === "pending"
             ? "⏳"
             : "❓";
+
         console.log(`   ${emoji} ${check.context}: ${check.state}`);
-        if (check.description) {
-          console.log(`      └─ ${check.description}`);
+
+        if (check.state === "failure") {
+          allChecksPassed = false;
+        }
+        if (check.state === "pending") {
+          anyChecksPending = true;
         }
       });
     }
 
-    // Check if all required checks passed
-    if (status.state === "success") {
-      console.log("\n✅ All CI checks passed! Proceeding with deployment...\n");
-      process.exit(0);
-    } else if (status.state === "pending") {
+    // Decision logic
+    if (!allChecksPassed) {
+      console.error("\n❌ CI checks failed! Deployment blocked.");
+      console.error("Please fix the failing tests and push again.\n");
+      process.exit(1);
+    }
+
+    if (anyChecksPending) {
       console.error(
         "\n⏳ CI checks are still running. Deployment blocked until checks complete."
       );
       console.error("Please wait for all checks to finish and try again.\n");
       process.exit(1);
-    } else {
-      console.error("\n❌ CI checks failed! Deployment blocked.");
-      console.error("Please fix the failing tests and push again.\n");
-      process.exit(1);
     }
+
+    console.log("\n✅ All CI checks passed! Proceeding with deployment...\n");
+    process.exit(0);
   } catch (error) {
     console.error(`\n🚨 Error checking CI status: ${error.message}`);
 
-    // In case of API errors, we can either:
-    // 1. Fail safe (block deployment) - uncomment next line
-    // process.exit(1);
-
-    // 2. Fail open (allow deployment) - current behavior
-    console.log("⚠️  Allowing deployment to proceed due to API error...\n");
-    process.exit(0);
+    // Fail-safe approach: block deployment on API errors
+    // This prevents deploying when we can't verify CI status
+    console.error("❌ Deployment blocked due to CI verification error.\n");
+    process.exit(1);
   }
 }
 

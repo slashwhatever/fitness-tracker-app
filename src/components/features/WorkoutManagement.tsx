@@ -3,7 +3,6 @@
 import { Typography } from "@/components/common/Typography";
 import WorkoutList, { WorkoutListRef } from "@/components/common/WorkoutList";
 import { Button } from "@/components/ui/button";
-import { Workout } from "@/models/types";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { lazy, Suspense, useRef, useState } from "react";
@@ -16,7 +15,7 @@ export default function WorkoutManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const workoutListRef = useRef<WorkoutListRef>(null);
 
-  const handleWorkoutCreated = async (workout: Workout) => {
+  const handleWorkoutCreated = async () => {
     setIsCreateModalOpen(false);
     // Refresh the workout list to show the new workout
     await workoutListRef.current?.refreshWorkouts();

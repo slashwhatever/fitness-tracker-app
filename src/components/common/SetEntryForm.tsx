@@ -7,18 +7,15 @@ import type { Set, UserMovement } from "@/models/types";
 import { Check, Minus, Plus } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
-// Zod schema for form validation
-const setEntrySchema = z.object({
-  reps: z.number().min(0).nullable(),
-  weight: z.number().min(0).nullable(),
-  duration: z.number().min(0).nullable(),
-  distance: z.number().min(0).nullable(),
-  notes: z.string(),
-});
-
-type SetEntryFormData = z.infer<typeof setEntrySchema>;
+// Zod schema for form validation (used for type inference)
+type SetEntryFormData = {
+  reps: number | null;
+  weight: number | null;
+  duration: number | null;
+  distance: number | null;
+  notes: string;
+};
 
 interface SetEntryFormProps {
   movement: UserMovement;

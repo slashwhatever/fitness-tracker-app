@@ -304,7 +304,7 @@ export default function MovementSelectionModal({
   }, [userMovements, searchTerm, workoutMovements, recentlyCreatedMovements]);
 
   const handleMovementToggle = useCallback(
-    (movementId: string, _movementData: UserMovement | MovementTemplate) => {
+    (movementId: string) => {
       // Don't allow selection changes while saving
       if (isSaving) return;
 

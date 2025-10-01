@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { useTimer } from "@/contexts/TimerContext";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 type NavigationContext =
   | { type: "dashboard" }
@@ -38,7 +37,6 @@ interface ContextualNavigationProps {
 export default function ContextualNavigation({
   context,
 }: ContextualNavigationProps) {
-  const router = useRouter();
   const { isActive: timerActive, isPinned: timerPinned } = useTimer();
 
   // Check if timer is pinned and active - if so, we need to position below it

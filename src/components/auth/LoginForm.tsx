@@ -76,7 +76,7 @@ export function LoginForm({ redirectTo = "/" }: LoginFormProps) {
       if (user) {
         router.push(redirectTo);
       }
-    } catch (error) {
+    } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
