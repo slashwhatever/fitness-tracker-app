@@ -3,15 +3,11 @@
 # ============================================================================
 
 [build]
-  command = "pnpm run ci:pre-deploy && pnpm install --frozen-lockfile && pnpm build"
+  command = "pnpm install --frozen-lockfile && pnpm build"
   publish = ".next"
-  
-# Fallback build command if pnpm registry issues persist
-# command = "corepack enable && corepack prepare pnpm@8.15.0 --activate && pnpm install --frozen-lockfile && pnpm build"
+  # Ignore builds on push - GitHub Actions will trigger deploys after CI passes
+  ignore = "exit 1"
 
-# Alternative: Use npm as fallback (uncomment if needed)
-# command = "npm ci && npm run build"
-  
 [build.environment]
   NODE_VERSION = "20"
   # Enable Next.js standalone output for better performance
