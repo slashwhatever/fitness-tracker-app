@@ -1,6 +1,5 @@
 "use client";
 
-import CreateCustomMovementModal from "@/components/common/CreateCustomMovementModal";
 import MovementListItem from "@/components/common/MovementListItem";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +35,8 @@ import {
 import type { MovementTemplate, UserMovement } from "@/models/types";
 import { Plus } from "lucide-react";
 import React, {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -44,6 +45,8 @@ import React, {
 } from "react";
 import { useForm } from "react-hook-form";
 import { Typography } from "./Typography";
+
+const CreateCustomMovementModal = lazy(() => import("@/components/common/CreateCustomMovementModal"));
 
 interface MovementSelectionModalProps {
   isOpen: boolean;
@@ -410,14 +413,7 @@ export default function MovementSelectionModal({
         (id) => !existingUserMovementIds.has(id)
       );
 
-      // Log for debugging
-      if (userMovementIds.length > newUserMovementIds.length) {
-        console.log(
-          `Filtered out ${
-            userMovementIds.length - newUserMovementIds.length
-          } movements that were already in the workout`
-        );
-      }
+      // Filter out movements already in workout
 
       // Batch add movements (single API call)
       if (newUserMovementIds.length > 0) {
@@ -501,12 +497,16 @@ export default function MovementSelectionModal({
         </Dialog>
 
         {/* Custom Movement Creation Modal */}
-        <CreateCustomMovementModal
-          isOpen={showCustomMovementModal}
-          onClose={() => setShowCustomMovementModal(false)}
-          onMovementCreated={handleCustomMovementCreated}
-          initialName={searchTerm.trim()}
-        />
+        {showCustomMovementModal && (
+          <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+            <CreateCustomMovementModal
+              isOpen={showCustomMovementModal}
+              onClose={() => setShowCustomMovementModal(false)}
+              onMovementCreated={handleCustomMovementCreated}
+              initialName={searchTerm.trim()}
+            />
+          </Suspense>
+        )}
       </>
     );
   }
@@ -537,12 +537,16 @@ export default function MovementSelectionModal({
       </Drawer>
 
       {/* Custom Movement Creation Modal */}
-      <CreateCustomMovementModal
-        isOpen={showCustomMovementModal}
-        onClose={() => setShowCustomMovementModal(false)}
-        onMovementCreated={handleCustomMovementCreated}
-        initialName={searchTerm.trim()}
-      />
+      {showCustomMovementModal && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+          <CreateCustomMovementModal
+            isOpen={showCustomMovementModal}
+            onClose={() => setShowCustomMovementModal(false)}
+            onMovementCreated={handleCustomMovementCreated}
+            initialName={searchTerm.trim()}
+          />
+        </Suspense>
+      )}
     </>
   );
 }

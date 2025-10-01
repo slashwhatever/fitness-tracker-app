@@ -7,6 +7,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -92,13 +93,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => subscription?.unsubscribe();
   }, [refreshSession, supabase.auth]);
 
-  const value: AuthContextType = {
-    user,
-    session,
-    loading,
-    signOut: handleSignOut,
-    refreshSession,
-  };
+  const value: AuthContextType = useMemo(
+    () => ({
+      user,
+      session,
+      loading,
+      signOut: handleSignOut,
+      refreshSession,
+    }),
+    [user, session, loading, handleSignOut, refreshSession]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

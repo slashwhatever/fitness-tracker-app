@@ -228,6 +228,7 @@ export default function SetEntryForm({
                   size="icon"
                   onClick={() => adjustValue("reps", -1)}
                   className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                  aria-label="Decrease reps by 1"
                 >
                   <Minus className="h-6 w-6" />
                 </Button>
@@ -237,6 +238,7 @@ export default function SetEntryForm({
                   size="icon"
                   onClick={() => adjustValue("reps", 1)}
                   className="h-12 w-12 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                  aria-label="Increase reps by 1"
                 >
                   <Plus className="h-6 w-6" />
                 </Button>
@@ -278,6 +280,7 @@ export default function SetEntryForm({
                         size="icon"
                         onClick={() => adjustValue("weight", -1)}
                         className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                        aria-label="Decrease weight by 1"
                       >
                         <Minus className="h-6 w-6" />
                       </Button>
@@ -292,6 +295,7 @@ export default function SetEntryForm({
                         size="icon"
                         onClick={() => adjustValue("weight", 1)}
                         className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                        aria-label="Increase weight by 1"
                       >
                         <Plus className="h-6 w-6" />
                       </Button>
@@ -305,6 +309,7 @@ export default function SetEntryForm({
                         size="icon"
                         onClick={() => adjustValue("weight", -5)}
                         className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                        aria-label="Decrease weight by 5"
                       >
                         <Minus className="h-6 w-6" />
                       </Button>
@@ -319,6 +324,7 @@ export default function SetEntryForm({
                         size="icon"
                         onClick={() => adjustValue("weight", 5)}
                         className="h-6 w-6 rounded-full outline-1 outline-offset-2 outline-solid outline-gray-800"
+                        aria-label="Increase weight by 5"
                       >
                         <Plus className="h-6 w-6" />
                       </Button>
@@ -354,6 +360,7 @@ export default function SetEntryForm({
                 size="icon"
                 onClick={() => adjustValue("duration", -5)}
                 className="h-12 w-12 rounded-full"
+                aria-label="Decrease duration by 5 seconds"
               >
                 <Minus className="h-6 w-6" />
               </Button>
@@ -363,6 +370,7 @@ export default function SetEntryForm({
                 size="icon"
                 onClick={() => adjustValue("duration", 5)}
                 className="h-12 w-12 rounded-full"
+                aria-label="Increase duration by 5 seconds"
               >
                 <Plus className="h-6 w-6" />
               </Button>
@@ -397,6 +405,7 @@ export default function SetEntryForm({
                 size="icon"
                 onClick={() => adjustValue("distance", -0.1)}
                 className="h-12 w-12 rounded-full"
+                aria-label="Decrease distance by 0.1"
               >
                 <Minus className="h-6 w-6" />
               </Button>
@@ -406,6 +415,7 @@ export default function SetEntryForm({
                 size="icon"
                 onClick={() => adjustValue("distance", 0.1)}
                 className="h-12 w-12 rounded-full"
+                aria-label="Increase distance by 0.1"
               >
                 <Plus className="h-6 w-6" />
               </Button>

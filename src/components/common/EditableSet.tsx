@@ -194,7 +194,7 @@ const EditableSet = memo(function EditableSet({
             title="Delete"
             icon={Trash2}
             onClick={handleDeleteClick}
-            color="red"
+            color="destructive"
           >
             <Typography variant="body">Delete</Typography>
           </ResponsiveButton>

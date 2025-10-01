@@ -3,9 +3,8 @@
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ContextualNavigation from "@/components/common/ContextualNavigation";
 import MovementList from "@/components/common/MovementList";
-import MovementSelectionModal from "@/components/common/MovementSelectionModal";
+import WorkoutErrorBoundary from "@/components/common/WorkoutErrorBoundary";
 import WorkoutHeader from "@/components/common/WorkoutHeader";
-import WorkoutSettingsModal from "@/components/common/WorkoutSettingsModal";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,7 +18,10 @@ import {
   useWorkoutMovements,
 } from "@/hooks";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+
+const MovementSelectionModal = lazy(() => import("@/components/common/MovementSelectionModal"));
+const WorkoutSettingsModal = lazy(() => import("@/components/common/WorkoutSettingsModal"));
 
 interface WorkoutDetailPageProps {
   params: Promise<{ workoutId: string }>;
@@ -59,12 +61,10 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
       (wm) => wm.user_movement_id === userMovementId
     );
     if (isAlreadyInWorkout) {
-      console.log("🚫 Movement already in workout, skipping");
       return;
     }
 
     if (addingMovements.has(userMovementId)) {
-      console.log("🚫 Already adding this movement, skipping");
       return;
     }
 
@@ -72,21 +72,16 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     setAddingMovements((prev) => new Set([...prev, userMovementId]));
 
     try {
-      console.log("🔄 Adding movement to workout:", {
-        userMovementId,
-        workoutId: paramsResolved.workoutId,
-      });
-
       await addMovementToWorkoutMutation.mutateAsync({
         workout_id: paramsResolved.workoutId,
         user_movement_id: userMovementId,
         order_index: 0, // The mutation will handle finding the right order
       });
-
-      console.log("✅ Movement added successfully");
       // React Query will automatically update the cache
     } catch (error) {
-      console.error("❌ Error adding movement to workout:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error adding movement to workout:", error);
+      }
     } finally {
       // Remove from pending set
       setAddingMovements((prev) => {
@@ -136,7 +131,8 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           }}
         />
         <main className="p-2 sm:p-4 lg:p-6">
-          <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
+          <WorkoutErrorBoundary workoutId={paramsResolved?.workoutId}>
+            <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
             <WorkoutHeader
               workout={workout}
               isLoading={workoutLoading}
@@ -152,30 +148,37 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               expectedCount={workoutMovements.length || 2}
             />
 
-            <MovementSelectionModal
-              isOpen={showMovementModal}
-              onClose={() => {
-                setShowMovementModal(false);
-              }}
-              workoutId={paramsResolved?.workoutId || ""}
-            />
-
-            {workout && (
-              <WorkoutSettingsModal
-                isOpen={showSettingsModal}
-                onClose={() => {
-                  setShowSettingsModal(false);
-                }}
-                workout={workout}
-                onWorkoutUpdated={() => {
-                  // React Query will automatically update the cache
-                }}
-                onWorkoutDeleted={() => {
-                  // React Query will automatically update the cache
-                }}
-              />
+            {showMovementModal && (
+              <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+                <MovementSelectionModal
+                  isOpen={showMovementModal}
+                  onClose={() => {
+                    setShowMovementModal(false);
+                  }}
+                  workoutId={paramsResolved?.workoutId || ""}
+                />
+              </Suspense>
             )}
-          </div>
+
+            {workout && showSettingsModal && (
+              <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+                <WorkoutSettingsModal
+                  isOpen={showSettingsModal}
+                  onClose={() => {
+                    setShowSettingsModal(false);
+                  }}
+                  workout={workout}
+                  onWorkoutUpdated={() => {
+                    // React Query will automatically update the cache
+                  }}
+                  onWorkoutDeleted={() => {
+                    // React Query will automatically update the cache
+                  }}
+                />
+              </Suspense>
+            )}
+            </div>
+          </WorkoutErrorBoundary>
         </main>
       </div>
     </ProtectedRoute>

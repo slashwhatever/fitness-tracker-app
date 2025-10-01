@@ -70,17 +70,17 @@ export default function PWAInstallPrompt() {
       const choiceResult = await deferredPrompt.userChoice;
       
       if (choiceResult.outcome === "accepted") {
-        console.log("PWA installation accepted");
         localStorage.setItem("pwa-installed", "true");
       } else {
-        console.log("PWA installation dismissed");
         localStorage.setItem("pwa-prompt-dismissed", "true");
       }
       
       setDeferredPrompt(null);
       setShowPrompt(false);
     } catch (error) {
-      console.error("Error during PWA installation:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error during PWA installation:", error);
+      }
     }
   };
 
@@ -115,6 +115,7 @@ export default function PWAInstallPrompt() {
               size="sm"
               onClick={handleDismiss}
               className="h-8 w-8 p-0 hover:bg-muted"
+              aria-label="Dismiss PWA installation prompt"
             >
               <X className="w-4 h-4" />
             </Button>

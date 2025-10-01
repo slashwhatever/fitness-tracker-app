@@ -165,7 +165,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                     <ResponsiveButton
                       onClick={(e) => handleDeleteClick(e, workout)}
                       icon={Trash2}
-                      color="red"
+                      color="destructive"
                     >
                       <Typography variant="body">Delete</Typography>
                     </ResponsiveButton>

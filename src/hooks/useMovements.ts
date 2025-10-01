@@ -39,17 +39,22 @@ export function useMovementTemplates(initialData?: MovementTemplate[]) {
   return useQuery({
     queryKey: movementKeys.templates(),
     queryFn: async () => {
+      // Optimized query: use simpler joins and let PostgREST handle the optimization
       const query = supabase
         .from("movement_templates")
         .select(
           `
-          *,
-          tracking_type:tracking_types(name),
-          movement_template_muscle_groups(
-            muscle_group:muscle_groups(
-              name,
-              display_name
-            )
+          id,
+          name,
+          instructions,
+          tags,
+          experience_level,
+          tracking_type_id,
+          created_at,
+          updated_at,
+          tracking_types!inner(name),
+          movement_template_muscle_groups!inner(
+            muscle_groups!inner(name, display_name)
           )
         `
         )
@@ -64,10 +69,10 @@ export function useMovementTemplates(initialData?: MovementTemplate[]) {
       return (data as QueryResult).map((template) => ({
         ...template,
         tracking_type:
-          template.tracking_type?.name || ("weight" as TrackingTypeName),
+          template.tracking_types?.name || ("weight" as TrackingTypeName),
         muscle_groups:
           template.movement_template_muscle_groups
-            ?.map((mtmg) => mtmg.muscle_group?.display_name)
+            ?.map((mtmg) => mtmg.muscle_groups?.display_name)
             .filter((name): name is string => Boolean(name)) || [],
       })) as MovementTemplate[];
     },
@@ -87,17 +92,30 @@ export function useUserMovements() {
     queryFn: async () => {
       if (!user?.id) return [];
 
+      // Optimized query: use simpler joins for better performance
       const query = supabase
         .from("user_movements")
         .select(
           `
-          *,
-          tracking_type:tracking_types(name),
-          user_movement_muscle_groups(
-            muscle_group:muscle_groups(
-              name,
-              display_name
-            )
+          id,
+          name,
+          personal_notes,
+          tags,
+          experience_level,
+          tracking_type_id,
+          custom_rest_timer,
+          last_used_at,
+          manual_1rm,
+          migrated_from_template,
+          migration_date,
+          original_template_id,
+          template_id,
+          user_id,
+          created_at,
+          updated_at,
+          tracking_types!inner(name),
+          user_movement_muscle_groups!inner(
+            muscle_groups!inner(name, display_name)
           )
         `
         )
@@ -113,10 +131,10 @@ export function useUserMovements() {
       return (data as QueryResult).map((movement) => ({
         ...movement,
         tracking_type:
-          movement.tracking_type?.name || ("weight" as TrackingTypeName),
+          movement.tracking_types?.name || ("weight" as TrackingTypeName),
         muscle_groups:
           movement.user_movement_muscle_groups
-            ?.map((ummg) => ummg.muscle_group?.display_name)
+            ?.map((ummg) => ummg.muscle_groups?.display_name)
             .filter((name): name is string => Boolean(name)) || [],
       })) as UserMovement[];
     },
@@ -138,13 +156,25 @@ export function useUserMovement(movementId: string) {
         .from("user_movements")
         .select(
           `
-          *,
-          tracking_type:tracking_types(name),
-          user_movement_muscle_groups(
-            muscle_group:muscle_groups(
-              name,
-              display_name
-            )
+          id,
+          name,
+          personal_notes,
+          tags,
+          experience_level,
+          tracking_type_id,
+          custom_rest_timer,
+          last_used_at,
+          manual_1rm,
+          migrated_from_template,
+          migration_date,
+          original_template_id,
+          template_id,
+          user_id,
+          created_at,
+          updated_at,
+          tracking_types!inner(name),
+          user_movement_muscle_groups!inner(
+            muscle_groups!inner(name, display_name)
           )
         `
         )
@@ -161,10 +191,10 @@ export function useUserMovement(movementId: string) {
       return {
         ...transformedData,
         tracking_type:
-          transformedData.tracking_type?.name || ("weight" as TrackingTypeName),
+          transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
         muscle_groups:
           transformedData.user_movement_muscle_groups
-            ?.map((ummg) => ummg.muscle_group?.display_name)
+            ?.map((ummg) => ummg.muscle_groups?.display_name)
             .filter((name): name is string => Boolean(name)) || [],
       } as UserMovement;
     },
@@ -183,15 +213,31 @@ export function useWorkoutMovements(workoutId: string) {
         .from("workout_movements")
         .select(
           `
-          *,
-          user_movement:user_movements(
-            *,
-            tracking_type:tracking_types(name),
-            user_movement_muscle_groups(
-              muscle_group:muscle_groups(
-                name,
-                display_name
-              )
+          id,
+          workout_id,
+          user_movement_id,
+          order_index,
+          created_at,
+          user_movements!inner(
+            id,
+            name,
+            personal_notes,
+            tags,
+            experience_level,
+            tracking_type_id,
+            custom_rest_timer,
+            last_used_at,
+            manual_1rm,
+            migrated_from_template,
+            migration_date,
+            original_template_id,
+            template_id,
+            user_id,
+            created_at,
+            updated_at,
+            tracking_types!inner(name),
+            user_movement_muscle_groups!inner(
+              muscle_groups!inner(name, display_name)
             )
           )
         `
@@ -207,15 +253,15 @@ export function useWorkoutMovements(workoutId: string) {
       // Transform the data to include muscle_groups and tracking_type for user_movements
       return (data as QueryResult).map((workoutMovement) => ({
         ...workoutMovement,
-        user_movement: workoutMovement.user_movement
+        user_movement: workoutMovement.user_movements
           ? ({
-              ...workoutMovement.user_movement,
+              ...workoutMovement.user_movements,
               tracking_type:
-                workoutMovement.user_movement.tracking_type?.name ||
+                workoutMovement.user_movements.tracking_types?.name ||
                 ("weight" as TrackingTypeName),
               muscle_groups:
-                workoutMovement.user_movement.user_movement_muscle_groups
-                  ?.map((ummg) => ummg.muscle_group?.display_name)
+                workoutMovement.user_movements.user_movement_muscle_groups
+                  ?.map((ummg) => ummg.muscle_groups?.display_name)
                   .filter((name): name is string => Boolean(name)) || [],
             } as UserMovement)
           : null,

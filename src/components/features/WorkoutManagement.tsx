@@ -1,13 +1,16 @@
 "use client";
 
-import CreateWorkoutModal from "@/components/common/CreateWorkoutModal";
 import { Typography } from "@/components/common/Typography";
 import WorkoutList, { WorkoutListRef } from "@/components/common/WorkoutList";
 import { Button } from "@/components/ui/button";
 import { Workout } from "@/models/types";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
+
+const CreateWorkoutModal = lazy(
+  () => import("@/components/common/CreateWorkoutModal")
+);
 
 export default function WorkoutManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -63,9 +66,9 @@ export default function WorkoutManagement() {
                 />
               </svg>
               <div className="text-left">
-                <p className="font-medium">Browse Movement Library</p>
+                <p className="font-medium">Browse movement library</p>
                 <p className="text-sm text-muted-foreground">
-                  Explore exercises, create workouts add ad-hoc movements
+                  Explore exercises, add ad-hoc movements
                 </p>
               </div>
             </Link>
@@ -77,11 +80,21 @@ export default function WorkoutManagement() {
       <WorkoutList ref={workoutListRef} />
 
       {/* Create Workout Modal */}
-      <CreateWorkoutModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onWorkoutCreated={handleWorkoutCreated}
-      />
+      {isCreateModalOpen && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+            </div>
+          }
+        >
+          <CreateWorkoutModal
+            isOpen={isCreateModalOpen}
+            onClose={() => setIsCreateModalOpen(false)}
+            onWorkoutCreated={handleWorkoutCreated}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

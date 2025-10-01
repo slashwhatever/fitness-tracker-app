@@ -1,5 +1,6 @@
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ContextualNavigation from "@/components/common/ContextualNavigation";
+import LibraryErrorBoundary from "@/components/common/LibraryErrorBoundary";
 import { Typography } from "@/components/common/Typography";
 import LibraryContentServer from "@/components/features/LibraryContentServer";
 import LibrarySearchWrapper from "@/components/features/LibrarySearchWrapper";
@@ -27,23 +28,25 @@ export default async function MovementLibraryPage({
       <div className="min-h-screen bg-background">
         <ContextualNavigation context={{ type: "library" }} />
         <main className="p-2 sm:p-4 lg:p-6">
-          <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-4">
-            {/* Header - Renders immediately */}
-            <Typography variant="title1">Movement library</Typography>
-            <Typography variant="caption">
-              Browse your personal movements and discover new exercises
-            </Typography>
+          <LibraryErrorBoundary>
+            <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-4">
+              {/* Header - Renders immediately */}
+              <Typography variant="title1">Movement library</Typography>
+              <Typography variant="caption">
+                Browse your personal movements and discover new exercises
+              </Typography>
 
-            <LibrarySearchWrapper>
-              {/* Streamed content with loading state */}
-              <Suspense fallback={<LibrarySkeleton />}>
-                <LibraryContentServer
-                  searchTerm={searchTerm}
-                  initialMovements={movementTemplates}
-                />
-              </Suspense>
-            </LibrarySearchWrapper>
-          </div>
+              <LibrarySearchWrapper>
+                {/* Streamed content with loading state */}
+                <Suspense fallback={<LibrarySkeleton />}>
+                  <LibraryContentServer
+                    searchTerm={searchTerm}
+                    initialMovements={movementTemplates}
+                  />
+                </Suspense>
+              </LibrarySearchWrapper>
+            </div>
+          </LibraryErrorBoundary>
         </main>
       </div>
     </ProtectedRoute>

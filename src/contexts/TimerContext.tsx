@@ -7,6 +7,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -194,7 +195,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
     } catch (error) {
-      console.log("Audio notification not available:", error);
+      // Audio notification not available - silent fallback
     }
   }, []);
 
@@ -279,23 +280,42 @@ export function TimerProvider({ children }: TimerProviderProps) {
   const isComplete = timeLeft <= 0 && isActive;
   const isWarning = timeLeft <= 10 && timeLeft > 0 && isActive;
 
-  const value: TimerContextType = {
-    isActive,
-    timeLeft,
-    duration,
-    isPaused,
-    isComplete,
-    isWarning,
-    progressPercentage,
-    isPinned,
-    startTimer,
-    pauseTimer,
-    resumeTimer,
-    resetTimer,
-    skipTimer,
-    stopTimer,
-    formatTime,
-  };
+  const value: TimerContextType = useMemo(
+    () => ({
+      isActive,
+      timeLeft,
+      duration,
+      isPaused,
+      isComplete,
+      isWarning,
+      progressPercentage,
+      isPinned,
+      startTimer,
+      pauseTimer,
+      resumeTimer,
+      resetTimer,
+      skipTimer,
+      stopTimer,
+      formatTime,
+    }),
+    [
+      isActive,
+      timeLeft,
+      duration,
+      isPaused,
+      isComplete,
+      isWarning,
+      progressPercentage,
+      isPinned,
+      startTimer,
+      pauseTimer,
+      resumeTimer,
+      resetTimer,
+      skipTimer,
+      stopTimer,
+      formatTime,
+    ]
+  );
 
   return (
     <TimerContext.Provider value={value}>{children}</TimerContext.Provider>

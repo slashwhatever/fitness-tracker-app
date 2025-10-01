@@ -1,6 +1,5 @@
 "use client";
 
-import EditMovementModal from "@/components/common/EditMovementModal";
 import SortableMovementItem from "@/components/common/SortableMovementItem";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
@@ -28,7 +27,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Plus, SearchX } from "lucide-react";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
+
+const EditMovementModal = lazy(() => import("@/components/common/EditMovementModal"));
 
 interface MovementListProps {
   workoutId: string;
@@ -186,11 +187,15 @@ export default function MovementList({
         </div>
       </DndContext>
 
-      <EditMovementModal
-        isOpen={!!editingMovementId}
-        onClose={() => setEditingMovementId(null)}
-        movement={editingMovement as UserMovement | null}
-      />
+      {editingMovementId && (
+        <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+          <EditMovementModal
+            isOpen={!!editingMovementId}
+            onClose={() => setEditingMovementId(null)}
+            movement={editingMovement as UserMovement | null}
+          />
+        </Suspense>
+      )}
 
       <ConfirmationModal
         isOpen={!!deletingMovement}

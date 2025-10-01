@@ -64,7 +64,6 @@ export default function SettingsContent() {
 
       await updateProfileMutation.mutateAsync(updates);
       // Show success feedback (could add toast notification here)
-      console.log("Profile updated successfully");
     } catch (error) {
       console.error("Failed to update profile:", error);
     } finally {

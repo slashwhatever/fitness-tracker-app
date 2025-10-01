@@ -99,7 +99,7 @@ export default function SortableMovementItem({
             <ResponsiveButton icon={Edit3} color="blue" onClick={onEdit}>
               Edit
             </ResponsiveButton>
-            <ResponsiveButton icon={Trash2} color="red" onClick={onDelete}>
+            <ResponsiveButton icon={Trash2} color="destructive" onClick={onDelete}>
               Delete
             </ResponsiveButton>
           </div>
