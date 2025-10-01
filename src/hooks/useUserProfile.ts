@@ -6,7 +6,6 @@ import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import type { QueryData } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-type UserProfileInsert = TablesInsert<"user_profiles">;
 type UserProfileUpdate = TablesUpdate<"user_profiles">;
 
 // Query keys

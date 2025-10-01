@@ -75,7 +75,7 @@ export async function loginAction(
 
     revalidatePath("/");
     redirect("/");
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",
@@ -119,7 +119,7 @@ export async function registerAction(
 
     revalidatePath("/");
     redirect("/login?message=Check your email to confirm your account");
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",
@@ -141,7 +141,7 @@ export async function signOutAction(): Promise<AuthActionResult> {
 
     revalidatePath("/");
     redirect("/login");
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",

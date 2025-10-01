@@ -84,7 +84,7 @@ export async function createWorkoutAction(
       success: true,
       data: data as Workout,
     };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",
@@ -140,7 +140,7 @@ export async function deleteWorkoutAction(
     return {
       success: true,
     };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",
