@@ -1,5 +1,6 @@
 # ============================================================================
 # NETLIFY CONFIGURATION - SINGLE PRODUCTION ENVIRONMENT
+# Deployments are controlled by GitHub Actions, not auto-triggered by git push
 # ============================================================================
 
 [build]
