@@ -46,23 +46,3 @@ export function ProtectedRoute({
 
   return <>{children}</>;
 }
-
-// Higher-order component version for easier usage
-export function withAuth<P extends object>(
-  Component: React.ComponentType<P>,
-  options?: {
-    redirectTo?: string;
-    fallback?: React.ReactNode;
-  }
-) {
-  return function AuthenticatedComponent(props: P) {
-    return (
-      <ProtectedRoute 
-        redirectTo={options?.redirectTo}
-        fallback={options?.fallback}
-      >
-        <Component {...props} />
-      </ProtectedRoute>
-    );
-  };
-}

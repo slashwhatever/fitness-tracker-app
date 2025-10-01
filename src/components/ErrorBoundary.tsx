@@ -202,30 +202,3 @@ function DefaultErrorFallback({
     </div>
   );
 }
-
-// Hook for functional components to handle errors
-export function useErrorHandler() {
-  return (error: Error, errorInfo?: React.ErrorInfo) => {
-    console.error('Error caught by useErrorHandler:', error, errorInfo);
-    
-    // In a real app, you might want to show a toast notification
-    // or trigger a global error state
-    throw error; // Re-throw to be caught by ErrorBoundary
-  };
-}
-
-// Higher-order component for wrapping components with error boundary
-export function withErrorBoundary<P extends object>(
-  Component: React.ComponentType<P>,
-  fallback?: React.ComponentType<{ error: Error; retry: () => void }>
-) {
-  const WrappedComponent = (props: P) => (
-    <ErrorBoundary fallback={fallback}>
-      <Component {...props} />
-    </ErrorBoundary>
-  );
-  
-  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-  
-  return WrappedComponent;
-}
