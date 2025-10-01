@@ -93,6 +93,7 @@
     "msw": "^2.11.2",
     "msw-storybook-addon": "^2.0.5",
     "playwright": "^1.55.0",
+    "prettier": "^3.6.2",
     "storybook": "^9.1.5",
     "supabase": "^2.39.2",
     "tailwindcss": "^4",

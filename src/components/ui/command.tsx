@@ -166,4 +166,14 @@ function CommandShortcut({
   );
 }
 
-export { Command, CommandGroup, CommandItem, CommandList };
+export {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+};
