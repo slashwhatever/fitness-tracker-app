@@ -26,6 +26,10 @@ type NavigationContext =
       type: "library-movement-detail";
       movementName?: string;
     }
+  | {
+      type: "quick-log-movement-detail";
+      movementName?: string;
+    }
   | { type: "settings" }
   | { type: "library" }
   | { type: "analytics" };
@@ -64,6 +68,12 @@ export default function ContextualNavigation({
         return {
           href: "/library",
           label: "Movement Library",
+        };
+
+      case "quick-log-movement-detail":
+        return {
+          href: "/",
+          label: "Dashboard",
         };
 
       case "settings":
@@ -144,6 +154,25 @@ export default function ContextualNavigation({
                 <BreadcrumbLink href="/library">
                   Movement Library
                 </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>
+                  <span className="max-w-[200px] truncate block">
+                    {context.movementName || "Movement"}
+                  </span>
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        );
+
+      case "quick-log-movement-detail":
+        return (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>

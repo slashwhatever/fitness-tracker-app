@@ -94,18 +94,16 @@ export default function LibraryContentServer({
     });
 
   return (
-    <>
+    <div className="space-y-2">
       {/* Movement Grid */}
-      <div className="mb-6">
-        <Typography variant="title2">
-          Exercises ({filteredMovements.length})
-        </Typography>
-        <Typography variant="caption">
-          {filteredMovements.length === allMovements.length
-            ? "Showing all exercises"
-            : `Filtered from ${allMovements.length} total exercises`}
-        </Typography>
-      </div>
+      <Typography variant="title2">
+        Exercises ({filteredMovements.length})
+      </Typography>
+      <Typography variant="caption">
+        {filteredMovements.length === allMovements.length
+          ? "Showing all exercises"
+          : `Filtered from ${allMovements.length} total exercises`}
+      </Typography>
 
       {filteredMovements.length === 0 ? (
         <div className="text-center py-12">
@@ -131,7 +129,7 @@ export default function LibraryContentServer({
           </Typography>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2">
           {filteredMovements.map((movement) => (
             <MovementCard
               key={movement.id}
@@ -190,6 +188,6 @@ export default function LibraryContentServer({
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

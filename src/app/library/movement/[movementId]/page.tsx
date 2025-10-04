@@ -3,6 +3,7 @@
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import MovementDetail from "@/components/features/MovementDetail";
 import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface LibraryMovementDetailPageProps {
@@ -15,6 +16,8 @@ export default function LibraryMovementDetailPage({
   const [paramsResolved, setParamsResolved] = useState<{
     movementId: string;
   } | null>(null);
+  const searchParams = useSearchParams();
+  const isQuickLog = searchParams.get("quickLog") === "true";
 
   // Resolve async params
   useEffect(() => {
@@ -33,8 +36,9 @@ export default function LibraryMovementDetailPage({
     <ProtectedRoute>
       <MovementDetail
         movementId={paramsResolved.movementId}
-        returnPath="/library"
-        returnLabel="Return to Library"
+        returnPath={isQuickLog ? "/" : "/library"}
+        returnLabel={isQuickLog ? "Return to Dashboard" : "Return to Library"}
+        isQuickLog={isQuickLog}
       />
     </ProtectedRoute>
   );

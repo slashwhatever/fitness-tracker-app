@@ -35,8 +35,8 @@ import {
 import type { MovementTemplate, UserMovement } from "@/models/types";
 import { Plus } from "lucide-react";
 import React, {
-  lazy,
   Suspense,
+  lazy,
   useCallback,
   useEffect,
   useMemo,
@@ -46,7 +46,9 @@ import React, {
 import { useForm } from "react-hook-form";
 import { Typography } from "./Typography";
 
-const CreateCustomMovementModal = lazy(() => import("@/components/common/CreateCustomMovementModal"));
+const CreateCustomMovementModal = lazy(
+  () => import("@/components/common/CreateCustomMovementModal")
+);
 
 interface MovementSelectionModalProps {
   isOpen: boolean;
@@ -115,7 +117,7 @@ const SearchAndContent = React.memo(function SearchAndContent({
           type="button"
           variant="outline"
           onClick={() => setShowCustomMovementModal(true)}
-          className="flex items-center space-x-2 whitespace-nowrap"
+          className="flex items-center space-x-2 whitespace-nowrap h-12"
         >
           <Plus className="w-4 h-4" />
           <span>Add Custom</span>
@@ -498,7 +500,13 @@ export default function MovementSelectionModal({
 
         {/* Custom Movement Creation Modal */}
         {showCustomMovementModal && (
-          <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+          <Suspense
+            fallback={
+              <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+              </div>
+            }
+          >
             <CreateCustomMovementModal
               isOpen={showCustomMovementModal}
               onClose={() => setShowCustomMovementModal(false)}
@@ -538,7 +546,13 @@ export default function MovementSelectionModal({
 
       {/* Custom Movement Creation Modal */}
       {showCustomMovementModal && (
-        <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+            </div>
+          }
+        >
           <CreateCustomMovementModal
             isOpen={showCustomMovementModal}
             onClose={() => setShowCustomMovementModal(false)}

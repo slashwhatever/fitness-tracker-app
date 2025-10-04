@@ -4,21 +4,32 @@ import { Typography } from "@/components/common/Typography";
 import WorkoutList, { WorkoutListRef } from "@/components/common/WorkoutList";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { lazy, Suspense, useRef, useState } from "react";
 
 const CreateWorkoutModal = lazy(
   () => import("@/components/common/CreateWorkoutModal")
 );
+const QuickLogMovementModal = lazy(
+  () => import("@/components/common/QuickLogMovementModal")
+);
 
 export default function WorkoutManagement() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isQuickLogModalOpen, setIsQuickLogModalOpen] = useState(false);
   const workoutListRef = useRef<WorkoutListRef>(null);
+  const router = useRouter();
 
   const handleWorkoutCreated = async () => {
     setIsCreateModalOpen(false);
     // Refresh the workout list to show the new workout
     await workoutListRef.current?.refreshWorkouts();
+  };
+
+  const handleMovementSelected = (movementId: string) => {
+    setIsQuickLogModalOpen(false);
+    // Navigate to the movement detail page with quickLog param to indicate it should return to dashboard
+    router.push(`/library/movement/${movementId}?quickLog=true`);
   };
 
   return (
@@ -46,12 +57,12 @@ export default function WorkoutManagement() {
           </Button>
           <Button
             variant="outline"
-            asChild
-            className="w-full justify-start h-auto p-4"
+            onClick={() => setIsQuickLogModalOpen(true)}
+            className="w-full justify-start h-auto p-3 sm:p-4"
           >
-            <Link href="/library" className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3">
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -65,12 +76,12 @@ export default function WorkoutManagement() {
                 />
               </svg>
               <div className="text-left">
-                <p className="font-medium">Browse movement library</p>
-                <p className="text-sm text-muted-foreground">
-                  Explore exercises, add ad-hoc movements
-                </p>
+                <Typography variant="body">Log a movement</Typography>
+                <Typography variant="caption">
+                  Quickly log a movement
+                </Typography>
               </div>
-            </Link>
+            </div>
           </Button>
         </div>
       </div>
@@ -91,6 +102,23 @@ export default function WorkoutManagement() {
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
             onWorkoutCreated={handleWorkoutCreated}
+          />
+        </Suspense>
+      )}
+
+      {/* Quick Log Movement Modal */}
+      {isQuickLogModalOpen && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+            </div>
+          }
+        >
+          <QuickLogMovementModal
+            isOpen={isQuickLogModalOpen}
+            onClose={() => setIsQuickLogModalOpen(false)}
+            onMovementSelected={handleMovementSelected}
           />
         </Suspense>
       )}

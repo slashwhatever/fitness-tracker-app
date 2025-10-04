@@ -33,6 +33,7 @@ interface MovementDetailProps {
   workoutId?: string; // Optional - for workout context
   returnPath: string; // Where to navigate back to
   returnLabel: string; // Label for the return button
+  isQuickLog?: boolean; // Whether this is a quick log from dashboard
 }
 
 export default function MovementDetail({
@@ -40,6 +41,7 @@ export default function MovementDetail({
   workoutId,
   returnPath,
   returnLabel,
+  isQuickLog = false,
 }: MovementDetailProps) {
   const [isMovementInfoOpen, setIsMovementInfoOpen] = useState(false);
 
@@ -136,6 +138,11 @@ export default function MovementDetail({
                 type: "movement-detail",
                 workoutId,
                 workoutName: workout?.name,
+                movementName: movement?.name,
+              }
+            : isQuickLog
+            ? {
+                type: "quick-log-movement-detail",
                 movementName: movement?.name,
               }
             : {
