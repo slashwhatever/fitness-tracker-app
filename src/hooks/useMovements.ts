@@ -191,7 +191,8 @@ export function useUserMovement(movementId: string) {
       return {
         ...transformedData,
         tracking_type:
-          transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
+          transformedData.tracking_types?.name ||
+          ("weight" as TrackingTypeName),
         muscle_groups:
           transformedData.user_movement_muscle_groups
             ?.map((ummg) => ummg.muscle_groups?.display_name)
@@ -456,8 +457,15 @@ export function useUpdateUserMovement() {
       await queryClient.cancelQueries({
         queryKey: movementKeys.userMovement(id),
       });
+      // Cancel workout movements queries that might contain this user movement
       await queryClient.cancelQueries({
-        queryKey: movementKeys.workoutMovements(),
+        queryKey: movementKeys.all,
+        predicate: (query) => {
+          return (
+            query.queryKey.includes("workout") &&
+            query.queryKey.includes("movement")
+          );
+        },
       });
 
       // Snapshot the previous values
@@ -499,7 +507,13 @@ export function useUpdateUserMovement() {
 
       // Optimistically update workout movements that contain this user movement
       const workoutMovementQueries = queryClient.getQueriesData({
-        queryKey: movementKeys.workoutMovements(),
+        queryKey: movementKeys.all,
+        predicate: (query) => {
+          return (
+            query.queryKey.includes("workout") &&
+            query.queryKey.includes("movement")
+          );
+        },
       });
 
       workoutMovementQueries.forEach(([queryKey, data]) => {
@@ -561,9 +575,17 @@ export function useUpdateUserMovement() {
         queryClient.invalidateQueries({
           queryKey: movementKeys.userMovement(id),
         });
-        // Invalidate workout movements that might contain this user movement
+        // Only invalidate specific workout movements that might contain this user movement
+        // This is more targeted than invalidating ALL workout movements
         queryClient.invalidateQueries({
-          queryKey: movementKeys.workoutMovements(),
+          queryKey: movementKeys.all,
+          predicate: (query) => {
+            // Only invalidate workout movements queries that might contain this user movement
+            return (
+              query.queryKey.includes("workout") &&
+              query.queryKey.includes("movement")
+            );
+          },
         });
       }
     },
