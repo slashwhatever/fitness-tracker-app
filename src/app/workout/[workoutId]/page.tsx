@@ -18,7 +18,7 @@ import {
   useWorkoutMovements,
 } from "@/hooks";
 import Link from "next/link";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, use, useState } from "react";
 
 const MovementSelectionModal = lazy(
   () => import("@/components/common/MovementSelectionModal")
@@ -33,32 +33,25 @@ interface WorkoutDetailPageProps {
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [showMovementModal, setShowMovementModal] = useState(false);
-  const [paramsResolved, setParamsResolved] = useState<{
-    workoutId: string;
-  } | null>(null);
   const [addingMovements, setAddingMovements] = useState<Set<string>>(
     new Set()
   );
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const addMovementToWorkoutMutation = useAddMovementToWorkout();
 
-  // Resolve async params
-  useEffect(() => {
-    params.then(setParamsResolved);
-  }, [params]);
+  // Use React's `use` hook to unwrap the Promise directly
+  const { workoutId } = use(params);
 
   // Use our new React Query hooks
   const {
     data: workout,
     isLoading: workoutLoading,
     status: workoutStatus,
-  } = useWorkout(paramsResolved?.workoutId || "");
-  const { data: workoutMovements = [] } = useWorkoutMovements(
-    paramsResolved?.workoutId || ""
-  );
+  } = useWorkout(workoutId);
+  const { data: workoutMovements = [] } = useWorkoutMovements(workoutId);
 
   const handleMovementAdded = async (userMovementId: string) => {
-    if (!paramsResolved?.workoutId) return;
+    if (!workoutId) return;
 
     // Check if movement is already in workout to avoid duplicates
     const isAlreadyInWorkout = workoutMovements.some(
@@ -77,7 +70,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
 
     try {
       await addMovementToWorkoutMutation.mutateAsync({
-        workout_id: paramsResolved.workoutId,
+        workout_id: workoutId,
         user_movement_id: userMovementId,
         order_index: 0, // The mutation will handle finding the right order
       });
@@ -135,7 +128,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
           }}
         />
         <main className="p-2 sm:p-4 lg:p-6">
-          <WorkoutErrorBoundary workoutId={paramsResolved?.workoutId}>
+          <WorkoutErrorBoundary workoutId={workoutId}>
             <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
               <WorkoutHeader
                 workout={workout}
@@ -146,7 +139,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               />
 
               <MovementList
-                workoutId={paramsResolved?.workoutId || ""}
+                workoutId={workoutId}
                 onMovementAdded={handleMovementAdded}
                 onAddMovementClick={() => setShowMovementModal(true)}
                 expectedCount={workoutMovements.length || 2}
@@ -165,7 +158,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                     onClose={() => {
                       setShowMovementModal(false);
                     }}
-                    workoutId={paramsResolved?.workoutId || ""}
+                    workoutId={workoutId}
                   />
                 </Suspense>
               )}

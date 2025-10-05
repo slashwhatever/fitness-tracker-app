@@ -474,6 +474,35 @@ export type Database = {
         }
         Relationships: []
       }
+      workout_movement_counts: {
+        Row: {
+          movement_count: number | null
+          updated_at: string | null
+          user_id: string
+          workout_id: string
+        }
+        Insert: {
+          movement_count?: number | null
+          updated_at?: string | null
+          user_id: string
+          workout_id: string
+        }
+        Update: {
+          movement_count?: number | null
+          updated_at?: string | null
+          user_id?: string
+          workout_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_movement_counts_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: true
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workout_movements: {
         Row: {
           created_at: string

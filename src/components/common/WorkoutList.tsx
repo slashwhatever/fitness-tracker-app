@@ -2,7 +2,8 @@
 
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDeleteWorkout, useWorkoutMovements, useWorkouts } from "@/hooks";
+import { useDeleteWorkout, useWorkouts } from "@/hooks";
+import { useWorkoutMovementCounts } from "@/hooks/useWorkoutMovementCounts";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -32,10 +33,18 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   const deleteWorkoutMutation = useDeleteWorkout();
   const queryClient = useQueryClient();
 
+  // Get workout IDs for efficient movement count lookup
+  const workoutIds = workouts.map((w) => w.id);
+  const { data: movementCountsData = [] } =
+    useWorkoutMovementCounts(workoutIds);
+
   // Simple component for showing movement count
   function MovementCount({ workoutId }: { workoutId: string }) {
-    const { data: movements = [] } = useWorkoutMovements(workoutId);
-    return <span>{movements.length} movements</span>;
+    const countData = movementCountsData.find(
+      (data) => data.workout_id === workoutId
+    );
+    const count = countData?.movement_count || 0;
+    return <span>{count} movements</span>;
   }
 
   // Expose refresh function to parent

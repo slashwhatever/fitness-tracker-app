@@ -6,4 +6,5 @@ export * from "./usePersonalRecords";
 export * from "./useSets";
 export * from "./useTrackingTypes";
 export * from "./useUserProfile";
+export * from "./useWorkoutMovementCounts";
 export * from "./useWorkouts";

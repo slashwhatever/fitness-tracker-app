@@ -2,7 +2,7 @@
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import MovementDetail from "@/components/features/MovementDetail";
-import { useEffect, useState } from "react";
+import { use } from "react";
 
 interface MovementDetailPageProps {
   params: Promise<{ workoutId: string; movementId: string }>;
@@ -11,29 +11,14 @@ interface MovementDetailPageProps {
 export default function MovementDetailPage({
   params,
 }: MovementDetailPageProps) {
-  const [paramsResolved, setParamsResolved] = useState<{
-    workoutId: string;
-    movementId: string;
-  } | null>(null);
-
-  // Resolve async params
-  useEffect(() => {
-    params.then(setParamsResolved);
-  }, [params]);
-
-  if (!paramsResolved) {
-    return (
-      <ProtectedRoute>
-        <div>Loading...</div>
-      </ProtectedRoute>
-    );
-  }
+  // Use React's `use` hook to unwrap the Promise directly
+  const { workoutId, movementId } = use(params);
 
   return (
     <ProtectedRoute>
       <MovementDetail
-        movementId={paramsResolved.movementId}
-        workoutId={paramsResolved.workoutId}
+        movementId={movementId}
+        workoutId={workoutId}
         returnPath="/"
         returnLabel="Return to Dashboard"
       />

@@ -14,7 +14,12 @@ interface SortableMovementItemProps {
     user_movement: UserMovement | null;
   };
   workoutId: string;
-  movementSets: Array<{ id: string; created_at: string; reps?: number | null; weight?: number | null }>;
+  movementSets: Array<{
+    id: string;
+    created_at: string;
+    reps?: number | null;
+    weight?: number | null;
+  }>;
   lastSetDate: string;
   onEdit: () => void;
   onDelete: () => void;
@@ -81,10 +86,6 @@ export default function SortableMovementItem({
                 className="line-clamp-2 block select-none"
               >
                 {lastSetDate}
-                {movementSets.length > 0 &&
-                  ` • ${movementSets.length} set${
-                    movementSets.length > 1 ? "s" : ""
-                  }`}
               </Typography>
             </div>
           </Link>
@@ -99,7 +100,11 @@ export default function SortableMovementItem({
             <ResponsiveButton icon={Edit3} color="blue" onClick={onEdit}>
               Edit
             </ResponsiveButton>
-            <ResponsiveButton icon={Trash2} color="destructive" onClick={onDelete}>
+            <ResponsiveButton
+              icon={Trash2}
+              color="destructive"
+              onClick={onDelete}
+            >
               Delete
             </ResponsiveButton>
           </div>
