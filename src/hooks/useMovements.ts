@@ -114,8 +114,8 @@ export function useUserMovements() {
           created_at,
           updated_at,
           tracking_types!inner(name),
-          user_movement_muscle_groups!inner(
-            muscle_groups!inner(name, display_name)
+          user_movement_muscle_groups(
+            muscle_groups(name, display_name)
           )
         `
         )
@@ -173,8 +173,8 @@ export function useUserMovement(movementId: string) {
           created_at,
           updated_at,
           tracking_types!inner(name),
-          user_movement_muscle_groups!inner(
-            muscle_groups!inner(name, display_name)
+          user_movement_muscle_groups(
+            muscle_groups(name, display_name)
           )
         `
         )
@@ -237,8 +237,8 @@ export function useWorkoutMovements(workoutId: string) {
             created_at,
             updated_at,
             tracking_types!inner(name),
-            user_movement_muscle_groups!inner(
-              muscle_groups!inner(name, display_name)
+            user_movement_muscle_groups(
+              muscle_groups(name, display_name)
             )
           )
         `

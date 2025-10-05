@@ -50,6 +50,10 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   // Expose refresh function to parent
   useImperativeHandle(ref, () => ({
     refreshWorkouts: async () => {
+      // Invalidate movement counts cache to force refresh
+      queryClient.invalidateQueries({
+        queryKey: ["workout-movement-counts"],
+      });
       await refetch();
     },
   }));
