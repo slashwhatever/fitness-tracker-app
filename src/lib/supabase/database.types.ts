@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      movement_last_sets: {
+        Row: {
+          last_set_date: string | null
+          movement_name: string
+          total_sets: number | null
+          updated_at: string | null
+          user_id: string
+          user_movement_id: string
+        }
+        Insert: {
+          last_set_date?: string | null
+          movement_name: string
+          total_sets?: number | null
+          updated_at?: string | null
+          user_id: string
+          user_movement_id: string
+        }
+        Update: {
+          last_set_date?: string | null
+          movement_name?: string
+          total_sets?: number | null
+          updated_at?: string | null
+          user_id?: string
+          user_movement_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movement_last_sets_user_movement_id_fkey"
+            columns: ["user_movement_id"]
+            isOneToOne: true
+            referencedRelation: "user_movements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       movement_template_muscle_groups: {
         Row: {
           created_at: string | null
@@ -396,36 +431,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      user_movements_template_backup: {
-        Row: {
-          backup_created_at: string
-          id: string
-          migration_version: string
-          name: string
-          original_row: Json
-          template_id: string | null
-          user_id: string
-        }
-        Insert: {
-          backup_created_at?: string
-          id: string
-          migration_version?: string
-          name: string
-          original_row: Json
-          template_id?: string | null
-          user_id: string
-        }
-        Update: {
-          backup_created_at?: string
-          id?: string
-          migration_version?: string
-          name?: string
-          original_row?: Json
-          template_id?: string | null
-          user_id?: string
-        }
-        Relationships: []
       }
       user_profiles: {
         Row: {

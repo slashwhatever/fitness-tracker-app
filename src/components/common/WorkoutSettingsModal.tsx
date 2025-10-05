@@ -39,8 +39,6 @@ interface WorkoutSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   workout: Workout;
-  onWorkoutUpdated: (workout: Workout) => void;
-  onWorkoutDeleted: (workoutId: string) => void;
 }
 
 // Zod schema for form validation
@@ -66,8 +64,6 @@ export default function WorkoutSettingsModal({
   isOpen,
   onClose,
   workout,
-  onWorkoutUpdated,
-  onWorkoutDeleted,
 }: WorkoutSettingsModalProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -125,7 +121,6 @@ export default function WorkoutSettingsModal({
       });
 
       if (updatedWorkout) {
-        onWorkoutUpdated(updatedWorkout);
         handleClose();
       }
     } catch (error) {
@@ -138,7 +133,6 @@ export default function WorkoutSettingsModal({
   const handleDelete = async () => {
     try {
       await deleteWorkoutMutation.mutateAsync(workout.id);
-      onWorkoutDeleted(workout.id);
       onClose();
     } catch (error) {
       console.error("Failed to delete workout:", error);

@@ -18,10 +18,14 @@ import {
   useWorkoutMovements,
 } from "@/hooks";
 import Link from "next/link";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 
-const MovementSelectionModal = lazy(() => import("@/components/common/MovementSelectionModal"));
-const WorkoutSettingsModal = lazy(() => import("@/components/common/WorkoutSettingsModal"));
+const MovementSelectionModal = lazy(
+  () => import("@/components/common/MovementSelectionModal")
+);
+const WorkoutSettingsModal = lazy(
+  () => import("@/components/common/WorkoutSettingsModal")
+);
 
 interface WorkoutDetailPageProps {
   params: Promise<{ workoutId: string }>;
@@ -133,50 +137,56 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
         <main className="p-2 sm:p-4 lg:p-6">
           <WorkoutErrorBoundary workoutId={paramsResolved?.workoutId}>
             <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
-            <WorkoutHeader
-              workout={workout}
-              isLoading={workoutLoading}
-              movementCount={workoutMovements.length}
-              onAddMovement={() => setShowMovementModal(true)}
-              onSettings={() => setShowSettingsModal(true)}
-            />
+              <WorkoutHeader
+                workout={workout}
+                isLoading={workoutLoading}
+                movementCount={workoutMovements.length}
+                onAddMovement={() => setShowMovementModal(true)}
+                onSettings={() => setShowSettingsModal(true)}
+              />
 
-            <MovementList
-              workoutId={paramsResolved?.workoutId || ""}
-              onMovementAdded={handleMovementAdded}
-              onAddMovementClick={() => setShowMovementModal(true)}
-              expectedCount={workoutMovements.length || 2}
-            />
+              <MovementList
+                workoutId={paramsResolved?.workoutId || ""}
+                onMovementAdded={handleMovementAdded}
+                onAddMovementClick={() => setShowMovementModal(true)}
+                expectedCount={workoutMovements.length || 2}
+              />
 
-            {showMovementModal && (
-              <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
-                <MovementSelectionModal
-                  isOpen={showMovementModal}
-                  onClose={() => {
-                    setShowMovementModal(false);
-                  }}
-                  workoutId={paramsResolved?.workoutId || ""}
-                />
-              </Suspense>
-            )}
+              {showMovementModal && (
+                <Suspense
+                  fallback={
+                    <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+                      <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                    </div>
+                  }
+                >
+                  <MovementSelectionModal
+                    isOpen={showMovementModal}
+                    onClose={() => {
+                      setShowMovementModal(false);
+                    }}
+                    workoutId={paramsResolved?.workoutId || ""}
+                  />
+                </Suspense>
+              )}
 
-            {workout && showSettingsModal && (
-              <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
-                <WorkoutSettingsModal
-                  isOpen={showSettingsModal}
-                  onClose={() => {
-                    setShowSettingsModal(false);
-                  }}
-                  workout={workout}
-                  onWorkoutUpdated={() => {
-                    // React Query will automatically update the cache
-                  }}
-                  onWorkoutDeleted={() => {
-                    // React Query will automatically update the cache
-                  }}
-                />
-              </Suspense>
-            )}
+              {workout && showSettingsModal && (
+                <Suspense
+                  fallback={
+                    <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+                      <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                    </div>
+                  }
+                >
+                  <WorkoutSettingsModal
+                    isOpen={showSettingsModal}
+                    onClose={() => {
+                      setShowSettingsModal(false);
+                    }}
+                    workout={workout}
+                  />
+                </Suspense>
+              )}
             </div>
           </WorkoutErrorBoundary>
         </main>

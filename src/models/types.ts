@@ -33,6 +33,7 @@ export type Workout = Tables<"workouts">;
 export type WorkoutMovement = Tables<"workout_movements">;
 export type Set = Tables<"sets">;
 export type PersonalRecord = Tables<"personal_records">;
+export type MovementLastSet = Tables<"movement_last_sets">;
 
 // Junction table types
 export type MovementTemplateMuscleGroup =

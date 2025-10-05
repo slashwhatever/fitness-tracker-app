@@ -10,7 +10,7 @@ import {
   useUserMovement,
   useWorkoutMovements,
 } from "@/hooks";
-import { useSets, useSetsByWorkout } from "@/hooks/useSets";
+import { useMovementLastSets } from "@/hooks/useMovementLastSets";
 import { formatLastSetDate } from "@/lib/utils/dateHelpers";
 import type { UserMovement } from "@/models/types";
 import {
@@ -27,9 +27,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Plus, SearchX } from "lucide-react";
-import { lazy, Suspense, useState } from "react";
+import { Suspense, lazy, useState } from "react";
 
-const EditMovementModal = lazy(() => import("@/components/common/EditMovementModal"));
+const EditMovementModal = lazy(
+  () => import("@/components/common/EditMovementModal")
+);
 
 interface MovementListProps {
   workoutId: string;
@@ -43,8 +45,10 @@ export default function MovementList({
   onAddMovementClick,
 }: MovementListProps) {
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
-  const { data: workoutSets = [] } = useSetsByWorkout(workoutId);
-  const { data: allSets = [] } = useSets();
+
+  // Get movement IDs for efficient last set date lookup
+  const movementIds = movements.map((m) => m.user_movement_id);
+  const { data: lastSetsData = [] } = useMovementLastSets(movementIds);
   const removeMovementMutation = useRemoveMovementFromWorkout();
   const reorderMutation = useReorderWorkoutMovements();
   const [editingMovementId, setEditingMovementId] = useState<string | null>(
@@ -92,15 +96,27 @@ export default function MovementList({
   };
 
   const getMovementSets = (userMovementId: string) => {
-    return workoutSets.filter((set) => set.user_movement_id === userMovementId);
+    // Get set count from optimized data instead of filtering all workout sets
+    const lastSetData = lastSetsData.find(
+      (data) => data.user_movement_id === userMovementId
+    );
+    return Array.from({ length: lastSetData?.total_sets || 0 }, (_, i) => ({
+      id: `placeholder-${i}`,
+      created_at: new Date().toISOString(),
+    }));
   };
 
   const getLastSetDate = (userMovementId: string) => {
-    // Get all sets for this specific movement
-    const movementSets = allSets.filter(
-      (set) => set.user_movement_id === userMovementId
+    // Use the optimized last sets data instead of filtering all sets
+    const lastSetData = lastSetsData.find(
+      (data) => data.user_movement_id === userMovementId
     );
-    return formatLastSetDate(movementSets);
+
+    if (!lastSetData?.last_set_date) {
+      return "No sets";
+    }
+
+    return formatLastSetDate([{ created_at: lastSetData.last_set_date }]);
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -188,7 +204,13 @@ export default function MovementList({
       </DndContext>
 
       {editingMovementId && (
-        <Suspense fallback={<div className="fixed inset-0 bg-black/20 flex items-center justify-center"><div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div></div>}>
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+            </div>
+          }
+        >
           <EditMovementModal
             isOpen={!!editingMovementId}
             onClose={() => setEditingMovementId(null)}

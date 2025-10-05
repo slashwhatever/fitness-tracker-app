@@ -3,7 +3,7 @@
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
-import type { QueryData } from '@supabase/supabase-js';
+import type { QueryData } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 type SetInsert = TablesInsert<"sets">;
@@ -44,12 +44,35 @@ export function useSets() {
         .order("created_at", { ascending: false });
 
       type QueryResult = QueryData<typeof query>;
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as QueryResult;
     },
     enabled: !!user?.id,
+  });
+}
+
+export function useSetsCountByMovement(movementId: string) {
+  const { user } = useAuth();
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: setKeys.byMovement(user?.id || "", movementId),
+    queryFn: async () => {
+      if (!user?.id) return 0;
+
+      const query = supabase
+        .from("sets")
+        .select("*", { count: "exact" })
+        .eq("user_id", user.id)
+        .eq("user_movement_id", movementId);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data?.length || 0;
+    },
+    enabled: !!user?.id && !!movementId,
   });
 }
 
@@ -76,7 +99,7 @@ export function useSetsByMovement(movementId: string) {
         .order("created_at", { ascending: false });
 
       type QueryResult = QueryData<typeof query>;
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as QueryResult;
@@ -106,7 +129,7 @@ export function useSetsByWorkout(workoutId: string) {
         .order("created_at");
 
       type QueryResult = QueryData<typeof query>;
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as QueryResult;
@@ -147,11 +170,15 @@ export function useCreateSet() {
       if (!user?.id) return;
 
       // Cancel outgoing refetches to avoid conflicts
-      await queryClient.cancelQueries({ queryKey: setKeys.byMovement(user.id, newSet.user_movement_id) });
-      
+      await queryClient.cancelQueries({
+        queryKey: setKeys.byMovement(user.id, newSet.user_movement_id),
+      });
+
       // Snapshot previous value
-      const previousSets = queryClient.getQueryData(setKeys.byMovement(user.id, newSet.user_movement_id));
-      
+      const previousSets = queryClient.getQueryData(
+        setKeys.byMovement(user.id, newSet.user_movement_id)
+      );
+
       // Create optimistic set with temporary ID and current timestamp
       const optimisticSet = {
         id: `temp-${Date.now()}`,
@@ -163,10 +190,13 @@ export function useCreateSet() {
       };
 
       // Optimistically update the cache by adding the new set at the beginning (most recent)
-      queryClient.setQueryData(setKeys.byMovement(user.id, newSet.user_movement_id), (old: unknown) => {
-        if (!old || !Array.isArray(old)) return [optimisticSet];
-        return [optimisticSet, ...old];
-      });
+      queryClient.setQueryData(
+        setKeys.byMovement(user.id, newSet.user_movement_id),
+        (old: unknown) => {
+          if (!old || !Array.isArray(old)) return [optimisticSet];
+          return [optimisticSet, ...old];
+        }
+      );
 
       // Also update the general sets list if it exists
       queryClient.setQueryData(setKeys.list(user.id), (old: unknown) => {
@@ -179,20 +209,28 @@ export function useCreateSet() {
     onError: (err, variables, context) => {
       // Revert optimistic update on error
       if (context?.previousSets && user?.id) {
-        queryClient.setQueryData(setKeys.byMovement(user.id, variables.user_movement_id), context.previousSets);
+        queryClient.setQueryData(
+          setKeys.byMovement(user.id, variables.user_movement_id),
+          context.previousSets
+        );
       }
     },
     onSuccess: (data) => {
       if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });
+        // Only invalidate the specific movement's sets - this is what the UI actually needs
         queryClient.invalidateQueries({
           queryKey: setKeys.byMovement(user.id, data.user_movement_id),
         });
+
+        // Only invalidate workout sets if we're in a workout context
         if (data.workout_id) {
           queryClient.invalidateQueries({
             queryKey: setKeys.byWorkout(data.workout_id),
           });
         }
+
+        // Don't invalidate all user sets unless absolutely necessary
+        // This prevents the expensive "all sets" query from running
       }
     },
   });
@@ -227,14 +265,14 @@ export function useUpdateSet() {
 
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: setKeys.list(user.id) });
-      
+
       // Snapshot previous value
       const previousSets = queryClient.getQueryData(setKeys.list(user.id));
-      
+
       // Optimistically update
       queryClient.setQueryData(setKeys.list(user.id), (old: unknown) => {
         if (!old || !Array.isArray(old)) return old;
-        return old.map((set: Record<string, unknown>) => 
+        return old.map((set: Record<string, unknown>) =>
           set.id === id ? { ...set, ...updates } : set
         );
       });
@@ -249,15 +287,19 @@ export function useUpdateSet() {
     },
     onSuccess: (data) => {
       if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });
+        // Only invalidate the specific movement's sets
         queryClient.invalidateQueries({
           queryKey: setKeys.byMovement(user.id, data.user_movement_id),
         });
+
+        // Only invalidate workout sets if we're in a workout context
         if (data.workout_id) {
           queryClient.invalidateQueries({
             queryKey: setKeys.byWorkout(data.workout_id),
           });
         }
+
+        // Update the specific set detail cache
         queryClient.setQueryData(setKeys.detail(data.id), data);
       }
     },
@@ -286,15 +328,19 @@ export function useDeleteSet() {
     },
     onSuccess: ({ setId, setData }) => {
       if (user?.id && setData) {
-        queryClient.invalidateQueries({ queryKey: setKeys.list(user.id) });
+        // Only invalidate the specific movement's sets
         queryClient.invalidateQueries({
           queryKey: setKeys.byMovement(user.id, setData.user_movement_id),
         });
+
+        // Only invalidate workout sets if we're in a workout context
         if (setData.workout_id) {
           queryClient.invalidateQueries({
             queryKey: setKeys.byWorkout(setData.workout_id),
           });
         }
+
+        // Remove the specific set detail cache
         queryClient.removeQueries({ queryKey: setKeys.detail(setId) });
       }
     },
