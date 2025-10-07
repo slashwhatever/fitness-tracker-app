@@ -2,11 +2,17 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ContextualNavigation from "@/components/common/ContextualNavigation";
 import LibraryErrorBoundary from "@/components/common/LibraryErrorBoundary";
 import { Typography } from "@/components/common/Typography";
-import LibraryContentServer from "@/components/features/LibraryContentServer";
-import LibrarySearchWrapper from "@/components/features/LibrarySearchWrapper";
 import { LibrarySkeleton } from "@/components/ui/skeleton-patterns";
 import { getMovementTemplates } from "@/lib/data/movement-templates";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
+
+// Lazy load heavy library components
+const LibraryContentServer = lazy(
+  () => import("@/components/features/LibraryContentServer")
+);
+const LibrarySearchWrapper = lazy(
+  () => import("@/components/features/LibrarySearchWrapper")
+);
 
 interface MovementLibraryPageProps {
   searchParams: Promise<{
@@ -36,15 +42,17 @@ export default async function MovementLibraryPage({
                 Browse your personal movements and discover new exercises
               </Typography>
 
-              <LibrarySearchWrapper>
-                {/* Streamed content with loading state */}
-                <Suspense fallback={<LibrarySkeleton />}>
-                  <LibraryContentServer
-                    searchTerm={searchTerm}
-                    initialMovements={movementTemplates}
-                  />
-                </Suspense>
-              </LibrarySearchWrapper>
+              <Suspense fallback={<LibrarySkeleton />}>
+                <LibrarySearchWrapper>
+                  {/* Streamed content with loading state */}
+                  <Suspense fallback={<LibrarySkeleton />}>
+                    <LibraryContentServer
+                      searchTerm={searchTerm}
+                      initialMovements={movementTemplates}
+                    />
+                  </Suspense>
+                </LibrarySearchWrapper>
+              </Suspense>
             </div>
           </LibraryErrorBoundary>
         </main>

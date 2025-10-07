@@ -239,6 +239,80 @@ export function LibrarySkeleton() {
   );
 }
 
+// Dashboard skeleton for the main dashboard page
+export function DashboardSkeleton() {
+  return (
+    <div className="space-y-2 sm:space-y-4">
+      {/* Quick Actions */}
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+        <Skeleton className="h-9 w-full sm:w-32" />
+        <Skeleton className="h-9 w-full sm:w-32" />
+        <Skeleton className="h-9 w-full sm:w-32" />
+        <Skeleton className="h-9 w-full sm:w-32" />
+      </div>
+
+      {/* Workout Management Section */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <Skeleton className="h-6 w-6" />
+            <Skeleton className="h-6 w-20" />
+          </div>
+          <div className="flex space-x-2">
+            <Skeleton className="h-9 w-16" />
+            <Skeleton className="h-9 w-20" />
+            <Skeleton className="h-9 w-16" />
+          </div>
+        </div>
+
+        {/* Workout List */}
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-card border border-default rounded-lg p-4"
+            >
+              <div className="flex justify-between items-center">
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <div className="flex space-x-2">
+                  <Skeleton className="h-8 w-8" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Modal skeleton for loading modals
+export function ModalSkeleton() {
+  return (
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center p-4">
+      <div className="bg-card border border-default rounded-lg p-6 w-full max-w-md space-y-4">
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+        <div className="space-y-3">
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+        </div>
+        <div className="flex justify-end space-x-2">
+          <Skeleton className="h-9 w-20" />
+          <Skeleton className="h-9 w-20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Simple card skeleton for small loading areas
 export function CardSkeleton() {
   return (

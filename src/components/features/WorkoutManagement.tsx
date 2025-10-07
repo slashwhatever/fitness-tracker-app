@@ -3,6 +3,7 @@
 import { Typography } from "@/components/common/Typography";
 import WorkoutList, { WorkoutListRef } from "@/components/common/WorkoutList";
 import { Button } from "@/components/ui/button";
+import { ModalSkeleton } from "@/components/ui/skeleton-patterns";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { lazy, Suspense, useRef, useState } from "react";
@@ -91,13 +92,7 @@ export default function WorkoutManagement() {
 
       {/* Create Workout Modal */}
       {isCreateModalOpen && (
-        <Suspense
-          fallback={
-            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
-              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-            </div>
-          }
-        >
+        <Suspense fallback={<ModalSkeleton />}>
           <CreateWorkoutModal
             isOpen={isCreateModalOpen}
             onClose={() => setIsCreateModalOpen(false)}
@@ -108,13 +103,7 @@ export default function WorkoutManagement() {
 
       {/* Quick Log Movement Modal */}
       {isQuickLogModalOpen && (
-        <Suspense
-          fallback={
-            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
-              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-            </div>
-          }
-        >
+        <Suspense fallback={<ModalSkeleton />}>
           <QuickLogMovementModal
             isOpen={isQuickLogModalOpen}
             onClose={() => setIsQuickLogModalOpen(false)}

@@ -1,8 +1,13 @@
 "use client";
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import MovementDetail from "@/components/features/MovementDetail";
-import { use } from "react";
+import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
+import { Suspense, lazy, use } from "react";
+
+// Lazy load the heavy MovementDetail component
+const MovementDetail = lazy(
+  () => import("@/components/features/MovementDetail")
+);
 
 interface MovementDetailPageProps {
   params: Promise<{ workoutId: string; movementId: string }>;
@@ -16,12 +21,14 @@ export default function MovementDetailPage({
 
   return (
     <ProtectedRoute>
-      <MovementDetail
-        movementId={movementId}
-        workoutId={workoutId}
-        returnPath="/"
-        returnLabel="Return to Dashboard"
-      />
+      <Suspense fallback={<MovementDetailSkeleton />}>
+        <MovementDetail
+          movementId={movementId}
+          workoutId={workoutId}
+          returnPath="/"
+          returnLabel="Return to Dashboard"
+        />
+      </Suspense>
     </ProtectedRoute>
   );
 }

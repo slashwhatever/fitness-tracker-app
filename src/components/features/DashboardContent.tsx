@@ -2,11 +2,16 @@
 
 import ResponsiveButton from "@/components/common/ResponsiveButton";
 import { Typography } from "@/components/common/Typography";
-import WorkoutManagement from "@/components/features/WorkoutManagement";
+import { DashboardSkeleton } from "@/components/ui/skeleton-patterns";
 import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, Dumbbell, Library, Settings } from "lucide-react";
 import Link from "next/link";
-import { useCallback } from "react";
+import { Suspense, lazy, useCallback } from "react";
+
+// Lazy load the heavy WorkoutManagement component
+const WorkoutManagement = lazy(
+  () => import("@/components/features/WorkoutManagement")
+);
 
 export default function DashboardContent() {
   const queryClient = useQueryClient();
@@ -25,7 +30,8 @@ export default function DashboardContent() {
             queryFn: async () => {
               const { data } = await supabase
                 .from("movement_templates")
-                .select(`
+                .select(
+                  `
                   id,
                   name,
                   description,
@@ -37,7 +43,8 @@ export default function DashboardContent() {
                   movement_template_muscle_groups!inner(
                     muscle_groups!inner(name, display_name)
                   )
-                `)
+                `
+                )
                 .order("name");
               return data || [];
             },
@@ -74,9 +81,11 @@ export default function DashboardContent() {
           await queryClient.prefetchQuery({
             queryKey: ["user_profile"],
             queryFn: async () => {
-              const { data: { user } } = await supabase.auth.getUser();
+              const {
+                data: { user },
+              } = await supabase.auth.getUser();
               if (!user) return null;
-              
+
               const { data } = await supabase
                 .from("user_profiles")
                 .select("*")
@@ -91,9 +100,11 @@ export default function DashboardContent() {
           await queryClient.prefetchQuery({
             queryKey: ["analytics", "overview"],
             queryFn: async () => {
-              const { data: { user } } = await supabase.auth.getUser();
+              const {
+                data: { user },
+              } = await supabase.auth.getUser();
               if (!user) return null;
-              
+
               // Prefetch recent workout count and other basic analytics
               const { data } = await supabase
                 .from("workouts")
@@ -164,7 +175,9 @@ export default function DashboardContent() {
         </div>
       </div>
 
-      <WorkoutManagement />
+      <Suspense fallback={<DashboardSkeleton />}>
+        <WorkoutManagement />
+      </Suspense>
     </>
   );
 }

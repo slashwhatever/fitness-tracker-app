@@ -1,4 +1,5 @@
 // Export all hooks from a single entry point
+export * from "./useBackgroundSync";
 export * from "./useMovementLastSets";
 export * from "./useMovements";
 export * from "./useMuscleGroups";

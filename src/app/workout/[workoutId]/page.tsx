@@ -2,9 +2,7 @@
 
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ContextualNavigation from "@/components/common/ContextualNavigation";
-import MovementList from "@/components/common/MovementList";
 import WorkoutErrorBoundary from "@/components/common/WorkoutErrorBoundary";
-import WorkoutHeader from "@/components/common/WorkoutHeader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +10,11 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  ModalSkeleton,
+  MovementListSkeleton,
+  WorkoutPageSkeleton,
+} from "@/components/ui/skeleton-patterns";
 import {
   useAddMovementToWorkout,
   useWorkout,
@@ -26,6 +29,8 @@ const MovementSelectionModal = lazy(
 const WorkoutSettingsModal = lazy(
   () => import("@/components/common/WorkoutSettingsModal")
 );
+const MovementList = lazy(() => import("@/components/common/MovementList"));
+const WorkoutHeader = lazy(() => import("@/components/common/WorkoutHeader"));
 
 interface WorkoutDetailPageProps {
   params: Promise<{ workoutId: string }>;
@@ -130,29 +135,27 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
         <main className="p-2 sm:p-4 lg:p-6">
           <WorkoutErrorBoundary workoutId={workoutId}>
             <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
-              <WorkoutHeader
-                workout={workout}
-                isLoading={workoutLoading}
-                movementCount={workoutMovements.length}
-                onAddMovement={() => setShowMovementModal(true)}
-                onSettings={() => setShowSettingsModal(true)}
-              />
+              <Suspense fallback={<WorkoutPageSkeleton />}>
+                <WorkoutHeader
+                  workout={workout}
+                  isLoading={workoutLoading}
+                  movementCount={workoutMovements.length}
+                  onAddMovement={() => setShowMovementModal(true)}
+                  onSettings={() => setShowSettingsModal(true)}
+                />
+              </Suspense>
 
-              <MovementList
-                workoutId={workoutId}
-                onMovementAdded={handleMovementAdded}
-                onAddMovementClick={() => setShowMovementModal(true)}
-                expectedCount={workoutMovements.length || 2}
-              />
+              <Suspense fallback={<MovementListSkeleton />}>
+                <MovementList
+                  workoutId={workoutId}
+                  onMovementAdded={handleMovementAdded}
+                  onAddMovementClick={() => setShowMovementModal(true)}
+                  expectedCount={workoutMovements.length || 2}
+                />
+              </Suspense>
 
               {showMovementModal && (
-                <Suspense
-                  fallback={
-                    <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
-                      <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-                    </div>
-                  }
-                >
+                <Suspense fallback={<ModalSkeleton />}>
                   <MovementSelectionModal
                     isOpen={showMovementModal}
                     onClose={() => {
@@ -164,13 +167,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
               )}
 
               {workout && showSettingsModal && (
-                <Suspense
-                  fallback={
-                    <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
-                      <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-                    </div>
-                  }
-                >
+                <Suspense fallback={<ModalSkeleton />}>
                   <WorkoutSettingsModal
                     isOpen={showSettingsModal}
                     onClose={() => {
