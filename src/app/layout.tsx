@@ -1,15 +1,13 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
+import BackgroundSyncProvider from "@/components/common/BackgroundSyncProvider";
 import MobileViewportOptimizer from "@/components/common/MobileViewportOptimizer";
 import PWAInstallPrompt from "@/components/common/PWAInstallPrompt";
 import TimerBanner from "@/components/common/TimerBanner";
 import { TimerProvider } from "@/contexts/TimerContext";
-import { useBackgroundSync } from "@/hooks";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
-import { registerServiceWorker } from "@/lib/serviceWorker";
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import React from "react";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,18 +47,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: "#3b82f6",
 };
-
-// Client component for background sync and service worker
-function BackgroundSyncProvider({ children }: { children: React.ReactNode }) {
-  useBackgroundSync();
-
-  // Register service worker
-  React.useEffect(() => {
-    registerServiceWorker();
-  }, []);
-
-  return <>{children}</>;
-}
 
 export default function RootLayout({
   children,
