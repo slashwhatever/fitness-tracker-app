@@ -217,20 +217,21 @@ export function useCreateSet() {
     },
     onSuccess: (data) => {
       if (user?.id) {
-        // Only invalidate the specific movement's sets - this is what the UI actually needs
+        // Invalidate the specific movement's sets for the movement detail page
         queryClient.invalidateQueries({
           queryKey: setKeys.byMovement(user.id, data.user_movement_id),
         });
 
-        // Only invalidate workout sets if we're in a workout context
-        if (data.workout_id) {
-          queryClient.invalidateQueries({
-            queryKey: setKeys.byWorkout(data.workout_id),
-          });
-        }
+        // Invalidate movement last sets to update workout page display
+        // This uses a partial match so it invalidates all movement-last-sets queries for this user
+        queryClient.invalidateQueries({
+          queryKey: ["movement-last-sets", user.id],
+        });
 
-        // Don't invalidate all user sets unless absolutely necessary
-        // This prevents the expensive "all sets" query from running
+        // Also invalidate the specific movement's last set query
+        queryClient.invalidateQueries({
+          queryKey: ["movement-last-set", user.id, data.user_movement_id],
+        });
       }
     },
   });
@@ -287,17 +288,19 @@ export function useUpdateSet() {
     },
     onSuccess: (data) => {
       if (user?.id) {
-        // Only invalidate the specific movement's sets
+        // Invalidate the specific movement's sets for the movement detail page
         queryClient.invalidateQueries({
           queryKey: setKeys.byMovement(user.id, data.user_movement_id),
         });
 
-        // Only invalidate workout sets if we're in a workout context
-        if (data.workout_id) {
-          queryClient.invalidateQueries({
-            queryKey: setKeys.byWorkout(data.workout_id),
-          });
-        }
+        // Invalidate movement last sets to update workout page display
+        queryClient.invalidateQueries({
+          queryKey: ["movement-last-sets", user.id],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["movement-last-set", user.id, data.user_movement_id],
+        });
 
         // Update the specific set detail cache
         queryClient.setQueryData(setKeys.detail(data.id), data);
@@ -328,17 +331,19 @@ export function useDeleteSet() {
     },
     onSuccess: ({ setId, setData }) => {
       if (user?.id && setData) {
-        // Only invalidate the specific movement's sets
+        // Invalidate the specific movement's sets for the movement detail page
         queryClient.invalidateQueries({
           queryKey: setKeys.byMovement(user.id, setData.user_movement_id),
         });
 
-        // Only invalidate workout sets if we're in a workout context
-        if (setData.workout_id) {
-          queryClient.invalidateQueries({
-            queryKey: setKeys.byWorkout(setData.workout_id),
-          });
-        }
+        // Invalidate movement last sets to update workout page display
+        queryClient.invalidateQueries({
+          queryKey: ["movement-last-sets", user.id],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: ["movement-last-set", user.id, setData.user_movement_id],
+        });
 
         // Remove the specific set detail cache
         queryClient.removeQueries({ queryKey: setKeys.detail(setId) });
