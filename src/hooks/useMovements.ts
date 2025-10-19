@@ -219,6 +219,7 @@ export function useWorkoutMovements(workoutId: string) {
           user_movement_id,
           order_index,
           created_at,
+          workout_notes,
           user_movements!inner(
             id,
             name,
@@ -936,6 +937,38 @@ export function useRemoveMovementsFromWorkout() {
       // Always refetch after error or success
       queryClient.invalidateQueries({
         queryKey: movementKeys.workoutMovementsList(workoutId),
+      });
+    },
+  });
+}
+
+// Update workout-movement notes
+export function useUpdateWorkoutMovementNotes() {
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workoutMovementId,
+      workout_notes,
+    }: {
+      workoutMovementId: string;
+      workout_notes: string | null;
+    }) => {
+      const { data, error } = await supabase
+        .from("workout_movements")
+        .update({ workout_notes })
+        .eq("id", workoutMovementId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      // Invalidate the workout movements query to refresh the UI
+      queryClient.invalidateQueries({
+        queryKey: movementKeys.workoutMovementsList(data.workout_id),
       });
     },
   });

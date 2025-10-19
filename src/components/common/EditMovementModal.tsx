@@ -32,6 +32,7 @@ import {
   useMuscleGroups,
   useTrackingTypes,
   useUpdateUserMovement,
+  useUpdateWorkoutMovementNotes,
 } from "@/hooks";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { UserMovement } from "@/models/types";
@@ -42,6 +43,10 @@ interface EditMovementModalProps {
   isOpen: boolean;
   onClose: () => void;
   movement: UserMovement | null;
+  workoutContext?: {
+    workoutMovementId: string;
+    workoutNotes: string | null;
+  };
 }
 
 // Muscle groups are now loaded dynamically from database
@@ -71,6 +76,7 @@ const formSchema = z.object({
       return !isNaN(num) && num >= 0;
     }, "Rest timer must be a valid number (0 or greater)"),
   personal_notes: z.string().optional(),
+  workout_notes: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -79,8 +85,10 @@ export default function EditMovementModal({
   isOpen,
   onClose,
   movement,
+  workoutContext,
 }: EditMovementModalProps) {
   const updateUserMovementMutation = useUpdateUserMovement();
+  const updateWorkoutNotesMutation = useUpdateWorkoutMovementNotes();
   const { data: trackingTypes = [] } = useTrackingTypes();
   const { data: muscleGroups = [] } = useMuscleGroups();
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -103,6 +111,7 @@ export default function EditMovementModal({
       tracking_type: "weight",
       custom_rest_timer: "",
       personal_notes: "",
+      workout_notes: "",
     },
   });
 
@@ -122,10 +131,11 @@ export default function EditMovementModal({
           | "reps",
         custom_rest_timer: movement.custom_rest_timer?.toString() || "",
         personal_notes: movement.personal_notes || "",
+        workout_notes: workoutContext?.workoutNotes || "",
       });
       setError(""); // Clear any previous errors when opening
     }
-  }, [movement, isOpen, reset]);
+  }, [movement, isOpen, reset, workoutContext]);
 
   const onSubmit = handleSubmit(async (values: FormData) => {
     if (!movement) return;
@@ -139,6 +149,7 @@ export default function EditMovementModal({
         throw new Error(`Unknown tracking type: ${values.tracking_type}`);
       }
 
+      // Update the movement
       await updateUserMovementMutation.mutateAsync({
         id: movement.id,
         updates: {
@@ -151,6 +162,14 @@ export default function EditMovementModal({
           personal_notes: values.personal_notes?.trim() || null,
         },
       });
+
+      // Update workout-specific notes if in workout context
+      if (workoutContext) {
+        await updateWorkoutNotesMutation.mutateAsync({
+          workoutMovementId: workoutContext.workoutMovementId,
+          workout_notes: values.workout_notes?.trim() || null,
+        });
+      }
 
       handleClose();
     } catch (error) {
@@ -172,6 +191,7 @@ export default function EditMovementModal({
       tracking_type: "weight",
       custom_rest_timer: "",
       personal_notes: "",
+      workout_notes: "",
     });
     setError(""); // Clear any error messages
     onClose();
@@ -204,7 +224,6 @@ export default function EditMovementModal({
           <p className="text-sm text-destructive">{errors.name.message}</p>
         )}
       </div>
-
       {/* Tracking Type */}
       <div className="space-y-2">
         <Label
@@ -254,7 +273,6 @@ export default function EditMovementModal({
           </p>
         )}
       </div>
-
       {/* Muscle Groups */}
       <div className="space-y-2">
         <Label
@@ -279,7 +297,6 @@ export default function EditMovementModal({
           </p>
         )}
       </div>
-
       {/* Custom Rest Timer */}
       <div className="space-y-2">
         <Label
@@ -301,7 +318,6 @@ export default function EditMovementModal({
           </p>
         )}
       </div>
-
       {/* Personal Notes */}
       <div className="space-y-2">
         <Label
@@ -323,6 +339,31 @@ export default function EditMovementModal({
         )}
       </div>
 
+      {/* Workout-Specific Notes - Only show when in workout context */}
+      {workoutContext && (
+        <div className="space-y-2">
+          <Label
+            htmlFor="workout_notes"
+            className="text-sm font-medium text-muted-foreground"
+          >
+            Workout notes (for this workout only)
+          </Label>
+          <Textarea
+            id="workout_notes"
+            placeholder="Notes specific to this movement in this workout..."
+            rows={3}
+            {...register("workout_notes")}
+          />
+          <p className="text-xs text-muted-foreground">
+            These notes apply only when this movement is used in this workout.
+          </p>
+          {errors.workout_notes && (
+            <p className="text-sm text-destructive">
+              {errors.workout_notes.message}
+            </p>
+          )}
+        </div>
+      )}
       {error && (
         <div className="text-destructive text-sm bg-destructive/10 border border-destructive/20 rounded-md p-3 mt-4">
           {error}

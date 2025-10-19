@@ -203,21 +203,35 @@ export default function MovementList({
         </div>
       </DndContext>
 
-      {editingMovementId && (
-        <Suspense
-          fallback={
-            <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
-              <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-            </div>
-          }
-        >
-          <EditMovementModal
-            isOpen={!!editingMovementId}
-            onClose={() => setEditingMovementId(null)}
-            movement={editingMovement as UserMovement | null}
-          />
-        </Suspense>
-      )}
+      {editingMovementId &&
+        (() => {
+          const workoutMovement = movements.find(
+            (m) => m.user_movement_id === editingMovementId
+          );
+          const context = workoutMovement
+            ? {
+                workoutMovementId: workoutMovement.id,
+                workoutNotes: workoutMovement.workout_notes,
+              }
+            : undefined;
+
+          return (
+            <Suspense
+              fallback={
+                <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
+                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                </div>
+              }
+            >
+              <EditMovementModal
+                isOpen={!!editingMovementId}
+                onClose={() => setEditingMovementId(null)}
+                movement={editingMovement as UserMovement | null}
+                workoutContext={context}
+              />
+            </Suspense>
+          );
+        })()}
 
       <ConfirmationModal
         isOpen={!!deletingMovement}

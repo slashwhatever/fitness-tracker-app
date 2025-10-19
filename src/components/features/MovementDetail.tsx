@@ -20,6 +20,7 @@ import {
   useTrackingTypes,
   useUserMovement,
   useWorkout,
+  useWorkoutMovements,
 } from "@/hooks";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { getTrackingTypeIcon } from "@/lib/utils/typeHelpers";
@@ -56,10 +57,16 @@ export default function MovementDetail({
   const { data: workout, isLoading: workoutLoading } = useWorkout(
     workoutId || ""
   );
+  const { data: workoutMovements = [] } = useWorkoutMovements(workoutId || "");
   const { data: userProfile } = useUserProfile();
   const { data: trackingTypes = [] } = useTrackingTypes();
   const createSetMutation = useCreateSet();
   const { startTimer } = useTimer();
+
+  // Find the workout_movement entry to get workout-specific notes
+  const workoutMovement = workoutMovements.find(
+    (wm) => wm.user_movement_id === movementId
+  );
 
   const handleDuplicateSet = async (originalSet: Set) => {
     try {
@@ -141,14 +148,14 @@ export default function MovementDetail({
                 movementName: movement?.name,
               }
             : isQuickLog
-            ? {
-                type: "quick-log-movement-detail",
-                movementName: movement?.name,
-              }
-            : {
-                type: "library-movement-detail",
-                movementName: movement?.name,
-              }
+              ? {
+                  type: "quick-log-movement-detail",
+                  movementName: movement?.name,
+                }
+              : {
+                  type: "library-movement-detail",
+                  movementName: movement?.name,
+                }
         }
       />
       <main className="p-2 sm:p-4 lg:p-6">
@@ -197,6 +204,11 @@ export default function MovementDetail({
                 {movement?.personal_notes && (
                   <Typography variant="caption" className="break-words">
                     Notes: {movement?.personal_notes}
+                  </Typography>
+                )}
+                {workoutMovement?.workout_notes && (
+                  <Typography variant="caption" className="break-words">
+                    Workout notes: {workoutMovement?.workout_notes}
                   </Typography>
                 )}
               </div>

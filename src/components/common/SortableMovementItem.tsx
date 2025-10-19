@@ -57,12 +57,12 @@ export default function SortableMovementItem({
         style={style}
         className={`${isDragging ? "z-[9999] relative" : ""}`}
       >
-        <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all bg-card select-none">
+        <div className="flex items-center p-3 sm:p-4 hover:bg-muted/50 transition-all bg-card select-none gap-2 sm:gap-3">
           {/* Drag Handle - Larger touch target for mobile */}
           <div
             {...attributes}
             {...listeners}
-            className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 mr-2 sm:mr-3 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none select-none"
+            className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none select-none"
             role="button"
             tabIndex={0}
             aria-label="Drag to reorder movement"
@@ -72,7 +72,7 @@ export default function SortableMovementItem({
 
           <Link
             href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}
-            className="flex items-center space-x-2 sm:space-x-3 flex-1 cursor-pointer min-w-0 overflow-hidden select-text"
+            className="flex items-center min-w-0 flex-1 cursor-pointer overflow-hidden select-text"
           >
             <div className="min-w-0 flex-1 overflow-hidden">
               <Typography
@@ -89,7 +89,9 @@ export default function SortableMovementItem({
               </Typography>
             </div>
           </Link>
-          <div className="flex items-center space-x-1 sm:space-x-2 ml-2 flex-shrink-0">
+
+          {/* Button container with horizontal scroll on mobile */}
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 overflow-x-auto scrollbar-hide">
             <ResponsiveButton icon={Dumbbell} color="green" asChild>
               <Link
                 href={`/workout/${workoutId}/movement/${movement.user_movement_id}`}

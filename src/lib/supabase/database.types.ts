@@ -510,6 +510,7 @@ export type Database = {
           order_index: number
           user_movement_id: string
           workout_id: string
+          workout_notes: string | null
         }
         Insert: {
           created_at?: string
@@ -517,6 +518,7 @@ export type Database = {
           order_index: number
           user_movement_id: string
           workout_id: string
+          workout_notes?: string | null
         }
         Update: {
           created_at?: string
@@ -524,6 +526,7 @@ export type Database = {
           order_index?: number
           user_movement_id?: string
           workout_id?: string
+          workout_notes?: string | null
         }
         Relationships: [
           {
