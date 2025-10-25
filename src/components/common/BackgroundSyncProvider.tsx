@@ -1,6 +1,6 @@
 "use client";
 
-import { useBackgroundSync } from "@/hooks";
+import { useBackgroundSync } from "@/hooks/useBackgroundSync";
 import { registerServiceWorker } from "@/lib/serviceWorker";
 import React from "react";
 

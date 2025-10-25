@@ -2,19 +2,33 @@
 
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDeleteWorkout, useWorkouts } from "@/hooks";
+import {
+  useDeleteWorkout,
+  useReorderWorkouts,
+  useWorkouts,
+} from "@/hooks/useWorkouts";
 import { useWorkoutMovementCounts } from "@/hooks/useWorkoutMovementCounts";
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Trash2 } from "lucide-react";
-import Link from "next/link";
 import React, {
   forwardRef,
   useCallback,
   useImperativeHandle,
   useState,
 } from "react";
-import { Separator } from "../ui/separator";
-import ResponsiveButton from "./ResponsiveButton";
+import SortableWorkoutItem from "./SortableWorkoutItem";
 import { Typography } from "./Typography";
 
 export interface WorkoutListRef {
@@ -31,21 +45,28 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   // Use our new React Query hooks
   const { data: workouts = [], isLoading, refetch } = useWorkouts();
   const deleteWorkoutMutation = useDeleteWorkout();
+  const reorderMutation = useReorderWorkouts();
   const queryClient = useQueryClient();
+
+  // Drag and drop sensors for both mouse and touch
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px of movement before drag starts
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 100, // Shorter delay for better responsiveness
+        tolerance: 8, // Larger tolerance to prevent accidental drags while scrolling
+      },
+    })
+  );
 
   // Get workout IDs for efficient movement count lookup
   const workoutIds = workouts.map((w) => w.id);
   const { data: movementCountsData = [] } =
     useWorkoutMovementCounts(workoutIds);
-
-  // Simple component for showing movement count
-  function MovementCount({ workoutId }: { workoutId: string }) {
-    const countData = movementCountsData.find(
-      (data) => data.workout_id === workoutId
-    );
-    const count = countData?.movement_count || 0;
-    return <span>{count} movements</span>;
-  }
 
   // Expose refresh function to parent
   useImperativeHandle(ref, () => ({
@@ -113,6 +134,38 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
     [queryClient]
   );
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = workouts.findIndex((workout) => workout.id === active.id);
+    const newIndex = workouts.findIndex((workout) => workout.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    // Create the reordered array
+    const reorderedWorkouts = arrayMove(workouts, oldIndex, newIndex);
+
+    // Update order_index for all affected workouts
+    const updatedWorkouts = reorderedWorkouts.map((workout, index) => ({
+      id: workout.id,
+      order_index: index,
+    }));
+
+    try {
+      await reorderMutation.mutateAsync({
+        workouts: updatedWorkouts,
+      });
+    } catch (error) {
+      console.error("Failed to reorder workouts:", error);
+    }
+  };
+
   return (
     <>
       <div className="space-y-2">
@@ -147,47 +200,32 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
             </Typography>
           </div>
         ) : (
-          <div className="bg-card border border-default rounded-lg overflow-hidden">
-            {workouts.map((workout, index) => (
-              <React.Fragment key={workout.id}>
-                <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all cursor-pointer">
-                  <Link
-                    href={`/workout/${workout.id}`}
-                    className="flex-1 min-w-0"
-                    onMouseEnter={() => prefetchWorkoutData(workout.id)}
-                  >
-                    <div className="text-left">
-                      <Typography variant="title3">{workout.name}</Typography>
-                      {workout.description && (
-                        <Typography variant="caption">
-                          {workout.description}
-                        </Typography>
-                      )}
-                      <Typography variant="caption">
-                        <MovementCount workoutId={workout.id} />
-                      </Typography>
-                    </div>
-                  </Link>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <div className="bg-card border border-default rounded-lg overflow-hidden select-none">
+              <SortableContext
+                items={workouts.map((w) => w.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {workouts.map((workout, index) => {
+                  const countData = movementCountsData.find(
+                    (data) => data.workout_id === workout.id
+                  );
+                  const movementCount = countData?.movement_count || 0;
 
-                  <div className="flex items-center space-x-1 ml-2">
-                    <Link href={`/workout/${workout.id}`}>
-                      <ResponsiveButton icon={ChevronRight} color="blue">
-                        <Typography variant="body">View</Typography>
-                      </ResponsiveButton>
-                    </Link>
-                    <ResponsiveButton
-                      onClick={(e) => handleDeleteClick(e, workout)}
-                      icon={Trash2}
-                      color="destructive"
-                    >
-                      <Typography variant="body">Delete</Typography>
-                    </ResponsiveButton>
-                  </div>
-                </div>
-                {index < workouts.length - 1 && <Separator />}
-              </React.Fragment>
-            ))}
-          </div>
+                  return (
+                    <SortableWorkoutItem
+                      key={workout.id}
+                      workout={workout}
+                      movementCount={movementCount}
+                      onDelete={(e) => handleDeleteClick(e, workout)}
+                      onMouseEnter={() => prefetchWorkoutData(workout.id)}
+                      showSeparator={index < workouts.length - 1}
+                    />
+                  );
+                })}
+              </SortableContext>
+            </div>
+          </DndContext>
         )}
       </div>
 

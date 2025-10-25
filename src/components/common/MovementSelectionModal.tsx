@@ -22,10 +22,10 @@ import {
   useCreateUserMovement,
   useMovementTemplates,
   useRemoveMovementsFromWorkout,
-  useTrackingTypes,
   useUserMovements,
   useWorkoutMovements,
-} from "@/hooks";
+} from "@/hooks/useMovements";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 import {

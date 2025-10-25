@@ -552,6 +552,7 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          order_index: number
           updated_at: string
           user_id: string
         }
@@ -561,6 +562,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          order_index: number
           updated_at?: string
           user_id: string
         }
@@ -570,6 +572,7 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          order_index?: number
           updated_at?: string
           user_id?: string
         }
@@ -588,10 +591,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_migration_backup_24: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      cleanup_migration_backup_24: { Args: never; Returns: number }
       reorder_workout_movements: {
         Args: { workout_uuid: string }
         Returns: undefined

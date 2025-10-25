@@ -7,7 +7,7 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-import { useTrackingTypes } from "@/hooks";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import {
   getExperienceLevelVariant,
   getTrackingTypeIcon,

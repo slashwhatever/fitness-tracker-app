@@ -1,21 +1,23 @@
-'use client';
+"use client";
 
-import { createClient } from '@/lib/supabase/client';
-import { useAuth } from '@/lib/auth/AuthProvider';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { TablesInsert, TablesUpdate } from '@/lib/supabase/types';
-import type { QueryData } from '@supabase/supabase-js';
-import { isSafeForQueries } from '@/lib/utils/validation';
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
+import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import { isSafeForQueries } from "@/lib/utils/validation";
+import type { QueryData } from "@supabase/supabase-js";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-type WorkoutInsert = TablesInsert<'workouts'>;
-type WorkoutUpdate = TablesUpdate<'workouts'>;
+// Force recompile for Turbopack
+
+type WorkoutInsert = TablesInsert<"workouts">;
+type WorkoutUpdate = TablesUpdate<"workouts">;
 
 // Query keys
 const workoutKeys = {
-  all: ['workouts'] as const,
-  lists: () => [...workoutKeys.all, 'list'] as const,
+  all: ["workouts"] as const,
+  lists: () => [...workoutKeys.all, "list"] as const,
   list: (userId: string) => [...workoutKeys.lists(), userId] as const,
-  details: () => [...workoutKeys.all, 'detail'] as const,
+  details: () => [...workoutKeys.all, "detail"] as const,
   detail: (id: string) => [...workoutKeys.details(), id] as const,
 };
 
@@ -25,18 +27,18 @@ export function useWorkouts() {
   const supabase = createClient();
 
   return useQuery({
-    queryKey: workoutKeys.list(user?.id || ''),
+    queryKey: workoutKeys.list(user?.id || ""),
     queryFn: async () => {
       if (!user?.id) return [];
-      
+
       const query = supabase
-        .from('workouts')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .from("workouts")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("order_index", { ascending: true });
 
       type QueryResult = QueryData<typeof query>;
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as QueryResult;
@@ -56,13 +58,13 @@ export function useWorkout(workoutId: string) {
     queryKey: workoutKeys.detail(workoutId),
     queryFn: async () => {
       const query = supabase
-        .from('workouts')
-        .select('*')
-        .eq('id', workoutId)
+        .from("workouts")
+        .select("*")
+        .eq("id", workoutId)
         .single();
 
       type QueryResult = QueryData<typeof query>;
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as QueryResult;
@@ -81,14 +83,25 @@ export function useCreateWorkout() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async (workout: Omit<WorkoutInsert, 'user_id'>) => {
-      if (!user?.id) throw new Error('User not authenticated');
+    mutationFn: async (workout: Omit<WorkoutInsert, "user_id">) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      // Get the current max order_index to place new workout at the end
+      const { data: existingWorkouts } = await supabase
+        .from("workouts")
+        .select("order_index")
+        .eq("user_id", user.id)
+        .order("order_index", { ascending: false })
+        .limit(1);
+
+      const maxOrderIndex = existingWorkouts?.[0]?.order_index ?? -1;
 
       const { data, error } = await supabase
-        .from('workouts')
+        .from("workouts")
         .insert({
           ...workout,
           user_id: user.id,
+          order_index: maxOrderIndex + 1,
         })
         .select()
         .single();
@@ -103,7 +116,9 @@ export function useCreateWorkout() {
       await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
 
       // Snapshot the previous value
-      const previousWorkouts = queryClient.getQueryData(workoutKeys.list(user.id));
+      const previousWorkouts = queryClient.getQueryData(
+        workoutKeys.list(user.id)
+      );
 
       // Optimistically update to the new value
       const optimisticWorkout = {
@@ -114,17 +129,20 @@ export function useCreateWorkout() {
         updated_at: new Date().toISOString(),
       };
 
-      queryClient.setQueryData(
-        workoutKeys.list(user.id),
-        (old: unknown[]) => [optimisticWorkout, ...(old || [])]
-      );
+      queryClient.setQueryData(workoutKeys.list(user.id), (old: unknown[]) => [
+        optimisticWorkout,
+        ...(old || []),
+      ]);
 
       return { previousWorkouts };
     },
     onError: (err, newWorkout, context) => {
       // If the mutation fails, roll back
       if (user?.id) {
-        queryClient.setQueryData(workoutKeys.list(user.id), context?.previousWorkouts);
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          context?.previousWorkouts
+        );
       }
     },
     onSettled: () => {
@@ -143,11 +161,17 @@ export function useUpdateWorkout() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: WorkoutUpdate }) => {
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: WorkoutUpdate;
+    }) => {
       const { data, error } = await supabase
-        .from('workouts')
+        .from("workouts")
         .update(updates)
-        .eq('id', id)
+        .eq("id", id)
         .select()
         .single();
 
@@ -172,9 +196,9 @@ export function useDeleteWorkout() {
   return useMutation({
     mutationFn: async (workoutId: string) => {
       const { error } = await supabase
-        .from('workouts')
+        .from("workouts")
         .delete()
-        .eq('id', workoutId);
+        .eq("id", workoutId);
 
       if (error) throw error;
       return workoutId;
@@ -186,13 +210,18 @@ export function useDeleteWorkout() {
       await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
 
       // Snapshot the previous value
-      const previousWorkouts = queryClient.getQueryData(workoutKeys.list(user.id));
+      const previousWorkouts = queryClient.getQueryData(
+        workoutKeys.list(user.id)
+      );
 
       // Optimistically remove the workout
-      queryClient.setQueryData(
-        workoutKeys.list(user.id),
-        (old: unknown[]) => (old || []).filter((workout: unknown) => 
-          typeof workout === 'object' && workout !== null && 'id' in workout && (workout as {id: string}).id !== workoutId
+      queryClient.setQueryData(workoutKeys.list(user.id), (old: unknown[]) =>
+        (old || []).filter(
+          (workout: unknown) =>
+            typeof workout === "object" &&
+            workout !== null &&
+            "id" in workout &&
+            (workout as { id: string }).id !== workoutId
         )
       );
 
@@ -201,7 +230,10 @@ export function useDeleteWorkout() {
     onError: (err, workoutId, context) => {
       // If the mutation fails, roll back
       if (user?.id) {
-        queryClient.setQueryData(workoutKeys.list(user.id), context?.previousWorkouts);
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          context?.previousWorkouts
+        );
       }
     },
     onSettled: (workoutId) => {
@@ -209,8 +241,107 @@ export function useDeleteWorkout() {
       if (user?.id) {
         queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
         if (workoutId) {
-          queryClient.removeQueries({ queryKey: workoutKeys.detail(workoutId) });
+          queryClient.removeQueries({
+            queryKey: workoutKeys.detail(workoutId),
+          });
         }
+      }
+    },
+  });
+}
+
+// Reorder workouts
+export function useReorderWorkouts() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workouts,
+    }: {
+      workouts: { id: string; order_index: number }[];
+    }) => {
+      // Update all workouts with their new order_index
+      const promises = workouts.map(({ id, order_index }) =>
+        supabase.from("workouts").update({ order_index }).eq("id", id)
+      );
+
+      const results = await Promise.all(promises);
+      const error = results.find((result) => result.error)?.error;
+      if (error) throw error;
+
+      return workouts;
+    },
+    onMutate: async ({ workouts: reorderedWorkouts }) => {
+      if (!user?.id) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: workoutKeys.list(user.id),
+      });
+
+      // Snapshot the previous value
+      const previousWorkouts = queryClient.getQueryData(
+        workoutKeys.list(user.id)
+      ) as unknown[] | undefined;
+
+      if (previousWorkouts) {
+        // Create new order map
+        const orderMap = new Map(
+          reorderedWorkouts.map((w) => [w.id, w.order_index])
+        );
+
+        // Optimistically update with new order
+        const reorderedList = [...previousWorkouts]
+          .map((workout) => {
+            if (
+              typeof workout === "object" &&
+              workout !== null &&
+              "id" in workout
+            ) {
+              const newOrder = orderMap.get((workout as { id: string }).id);
+              return newOrder !== undefined
+                ? { ...workout, order_index: newOrder }
+                : workout;
+            }
+            return workout;
+          })
+          .sort((a, b) => {
+            if (
+              typeof a === "object" &&
+              a !== null &&
+              "order_index" in a &&
+              typeof b === "object" &&
+              b !== null &&
+              "order_index" in b
+            ) {
+              return (
+                (a as { order_index: number }).order_index -
+                (b as { order_index: number }).order_index
+              );
+            }
+            return 0;
+          });
+
+        queryClient.setQueryData(workoutKeys.list(user.id), reorderedList);
+      }
+
+      return { previousWorkouts };
+    },
+    onError: (err, variables, context) => {
+      // If the mutation fails, roll back
+      if (user?.id && context?.previousWorkouts) {
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          context.previousWorkouts
+        );
+      }
+    },
+    onSettled: () => {
+      // Refetch to ensure consistency
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
       }
     },
   });

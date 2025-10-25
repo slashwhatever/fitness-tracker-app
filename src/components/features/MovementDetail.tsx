@@ -15,13 +15,12 @@ import {
 import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
 import { useTimer } from "@/contexts/TimerContext";
 import {
-  useCreateSet,
-  useSetsByMovement,
-  useTrackingTypes,
   useUserMovement,
-  useWorkout,
   useWorkoutMovements,
-} from "@/hooks";
+} from "@/hooks/useMovements";
+import { useCreateSet, useSetsByMovement } from "@/hooks/useSets";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
+import { useWorkout } from "@/hooks/useWorkouts";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { getTrackingTypeIcon } from "@/lib/utils/typeHelpers";
 import { Set, UserMovement, getEffectiveRestTimer } from "@/models/types";

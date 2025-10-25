@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/skeleton-patterns";
 import {
   useAddMovementToWorkout,
-  useWorkout,
   useWorkoutMovements,
-} from "@/hooks";
+} from "@/hooks/useMovements";
+import { useWorkout } from "@/hooks/useWorkouts";
 import Link from "next/link";
 import { Suspense, lazy, use, useState } from "react";
 

@@ -29,11 +29,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  useCreateUserMovement,
-  useMuscleGroups,
-  useTrackingTypes,
-} from "@/hooks";
+import { useCreateUserMovement } from "@/hooks/useMovements";
+import { useMuscleGroups } from "@/hooks/useMuscleGroups";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useEffect } from "react";
 

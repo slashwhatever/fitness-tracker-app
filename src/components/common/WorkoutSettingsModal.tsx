@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useDeleteWorkout, useUpdateWorkout } from "@/hooks";
+import { useDeleteWorkout, useUpdateWorkout } from "@/hooks/useWorkouts";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { TIMER_PRESETS, Workout } from "@/models/types";
 import { Trash2 } from "lucide-react";

@@ -28,12 +28,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useMuscleGroups } from "@/hooks/useMuscleGroups";
 import {
-  useMuscleGroups,
-  useTrackingTypes,
   useUpdateUserMovement,
   useUpdateWorkoutMovementNotes,
-} from "@/hooks";
+} from "@/hooks/useMovements";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import type { UserMovement } from "@/models/types";
 import { useEffect, useState } from "react";

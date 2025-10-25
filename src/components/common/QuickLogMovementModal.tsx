@@ -20,9 +20,9 @@ import { Input } from "@/components/ui/input";
 import {
   useCreateUserMovement,
   useMovementTemplates,
-  useTrackingTypes,
   useUserMovements,
-} from "@/hooks";
+} from "@/hooks/useMovements";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 import type { MovementTemplate, UserMovement } from "@/models/types";

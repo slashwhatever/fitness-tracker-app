@@ -4,13 +4,13 @@ import SortableMovementItem from "@/components/common/SortableMovementItem";
 import { Button } from "@/components/ui/button";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { MovementListSkeleton } from "@/components/ui/skeleton-patterns";
+import { useMovementLastSets } from "@/hooks/useMovementLastSets";
 import {
   useRemoveMovementFromWorkout,
   useReorderWorkoutMovements,
   useUserMovement,
   useWorkoutMovements,
-} from "@/hooks";
-import { useMovementLastSets } from "@/hooks/useMovementLastSets";
+} from "@/hooks/useMovements";
 import { formatLastSetDate } from "@/lib/utils/dateHelpers";
 import type { UserMovement } from "@/models/types";
 import {
