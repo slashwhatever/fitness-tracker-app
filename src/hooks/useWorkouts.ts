@@ -7,8 +7,6 @@ import { isSafeForQueries } from "@/lib/utils/validation";
 import type { QueryData } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// Force recompile for Turbopack
-
 type WorkoutInsert = TablesInsert<"workouts">;
 type WorkoutUpdate = TablesUpdate<"workouts">;
 
@@ -83,7 +81,9 @@ export function useCreateWorkout() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async (workout: Omit<WorkoutInsert, "user_id">) => {
+    mutationFn: async (
+      workout: Omit<WorkoutInsert, "user_id" | "order_index">
+    ) => {
       if (!user?.id) throw new Error("User not authenticated");
 
       // Get the current max order_index to place new workout at the end

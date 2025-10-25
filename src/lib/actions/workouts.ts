@@ -58,6 +58,16 @@ export async function createWorkoutAction(
       };
     }
 
+    // Get the current max order_index to place new workout at the end
+    const { data: existingWorkouts } = await supabase
+      .from("workouts")
+      .select("order_index")
+      .eq("user_id", user.id)
+      .order("order_index", { ascending: false })
+      .limit(1);
+
+    const maxOrderIndex = existingWorkouts?.[0]?.order_index ?? -1;
+
     // Create workout
     const { data, error } = await supabase
       .from("workouts")
@@ -65,6 +75,7 @@ export async function createWorkoutAction(
         name: name.trim(),
         description: description?.trim() || null,
         user_id: user.id,
+        order_index: maxOrderIndex + 1,
       })
       .select()
       .single();
