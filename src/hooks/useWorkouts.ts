@@ -346,3 +346,75 @@ export function useReorderWorkouts() {
     },
   });
 }
+
+// Archive/Unarchive a workout
+export function useArchiveWorkout() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workoutId,
+      archived,
+    }: {
+      workoutId: string;
+      archived: boolean;
+    }) => {
+      const { data, error } = await supabase
+        .from("workouts")
+        .update({ archived })
+        .eq("id", workoutId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onMutate: async ({ workoutId, archived }) => {
+      if (!user?.id) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
+
+      // Snapshot the previous value
+      const previousWorkouts = queryClient.getQueryData(
+        workoutKeys.list(user.id)
+      ) as unknown[] | undefined;
+
+      // Optimistically update the workout's archived status
+      if (previousWorkouts) {
+        const updatedWorkouts = previousWorkouts.map((workout) => {
+          if (
+            typeof workout === "object" &&
+            workout !== null &&
+            "id" in workout &&
+            (workout as { id: string }).id === workoutId
+          ) {
+            return { ...workout, archived };
+          }
+          return workout;
+        });
+
+        queryClient.setQueryData(workoutKeys.list(user.id), updatedWorkouts);
+      }
+
+      return { previousWorkouts };
+    },
+    onError: (err, variables, context) => {
+      // If the mutation fails, roll back
+      if (user?.id && context?.previousWorkouts) {
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          context.previousWorkouts
+        );
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      if (user?.id) {
+        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
+      }
+    },
+  });
+}

@@ -1,13 +1,20 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ConfirmationModal } from "@/components/ui/confirmation-modal";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWorkoutMovementCounts } from "@/hooks/useWorkoutMovementCounts";
 import {
+  useArchiveWorkout,
   useDeleteWorkout,
   useReorderWorkouts,
   useWorkouts,
 } from "@/hooks/useWorkouts";
-import { useWorkoutMovementCounts } from "@/hooks/useWorkoutMovementCounts";
 import {
   DndContext,
   DragEndEvent,
@@ -22,6 +29,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import React, {
   forwardRef,
   useCallback,
@@ -41,12 +49,18 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
     id: string;
     name: string;
   } | null>(null);
+  const [isArchivedOpen, setIsArchivedOpen] = useState(false);
 
   // Use our new React Query hooks
   const { data: workouts = [], isLoading, refetch } = useWorkouts();
   const deleteWorkoutMutation = useDeleteWorkout();
   const reorderMutation = useReorderWorkouts();
+  const archiveWorkoutMutation = useArchiveWorkout();
   const queryClient = useQueryClient();
+
+  // Separate active and archived workouts
+  const activeWorkouts = workouts.filter((w) => !w.archived);
+  const archivedWorkouts = workouts.filter((w) => w.archived);
 
   // Drag and drop sensors for both mouse and touch
   const sensors = useSensors(
@@ -107,6 +121,20 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
     setShowDeleteConfirm(false);
   };
 
+  const handleArchiveClick = async (
+    e: React.MouseEvent,
+    workoutId: string,
+    archived: boolean
+  ) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation();
+    try {
+      await archiveWorkoutMutation.mutateAsync({ workoutId, archived });
+    } catch (error) {
+      console.error("Failed to archive/unarchive workout:", error);
+    }
+  };
+
   // Prefetch workout details and movements on hover for better UX
   const prefetchWorkoutData = useCallback(
     async (workoutId: string) => {
@@ -141,18 +169,27 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
       return;
     }
 
-    const oldIndex = workouts.findIndex((workout) => workout.id === active.id);
-    const newIndex = workouts.findIndex((workout) => workout.id === over.id);
+    // Only allow reordering within active workouts
+    const oldIndex = activeWorkouts.findIndex(
+      (workout) => workout.id === active.id
+    );
+    const newIndex = activeWorkouts.findIndex(
+      (workout) => workout.id === over.id
+    );
 
     if (oldIndex === -1 || newIndex === -1) {
       return;
     }
 
-    // Create the reordered array
-    const reorderedWorkouts = arrayMove(workouts, oldIndex, newIndex);
+    // Create the reordered array (only active workouts)
+    const reorderedActiveWorkouts = arrayMove(
+      activeWorkouts,
+      oldIndex,
+      newIndex
+    );
 
-    // Update order_index for all affected workouts
-    const updatedWorkouts = reorderedWorkouts.map((workout, index) => ({
+    // Update order_index for all affected active workouts
+    const updatedWorkouts = reorderedActiveWorkouts.map((workout, index) => ({
       id: workout.id,
       order_index: index,
     }));
@@ -168,7 +205,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
 
   return (
     <>
-      <div className="space-y-2">
+      <div className="space-y-4">
         <div className="flex items-center space-x-2">
           <Typography variant="title2">Your workouts</Typography>
         </div>
@@ -200,32 +237,99 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
             </Typography>
           </div>
         ) : (
-          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <div className="bg-card border border-default rounded-lg overflow-hidden select-none">
-              <SortableContext
-                items={workouts.map((w) => w.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {workouts.map((workout, index) => {
-                  const countData = movementCountsData.find(
-                    (data) => data.workout_id === workout.id
-                  );
-                  const movementCount = countData?.movement_count || 0;
+          <>
+            {/* Active Workouts */}
+            {activeWorkouts.length > 0 ? (
+              <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                <div className="bg-card border border-default rounded-lg overflow-hidden select-none">
+                  <SortableContext
+                    items={activeWorkouts.map((w) => w.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {activeWorkouts.map((workout, index) => {
+                      const countData = movementCountsData.find(
+                        (data) => data.workout_id === workout.id
+                      );
+                      const movementCount = countData?.movement_count || 0;
 
-                  return (
-                    <SortableWorkoutItem
-                      key={workout.id}
-                      workout={workout}
-                      movementCount={movementCount}
-                      onDelete={(e) => handleDeleteClick(e, workout)}
-                      onMouseEnter={() => prefetchWorkoutData(workout.id)}
-                      showSeparator={index < workouts.length - 1}
-                    />
-                  );
-                })}
-              </SortableContext>
-            </div>
-          </DndContext>
+                      return (
+                        <SortableWorkoutItem
+                          key={workout.id}
+                          workout={workout}
+                          movementCount={movementCount}
+                          onDelete={(e) => handleDeleteClick(e, workout)}
+                          onArchive={(e) =>
+                            handleArchiveClick(e, workout.id, true)
+                          }
+                          onMouseEnter={() => prefetchWorkoutData(workout.id)}
+                          showSeparator={index < activeWorkouts.length - 1}
+                          isArchived={false}
+                        />
+                      );
+                    })}
+                  </SortableContext>
+                </div>
+              </DndContext>
+            ) : (
+              <div className="text-center py-6 p-4 bg-muted/30 rounded-lg border-dashed border">
+                <Typography variant="body">
+                  All workouts are archived.
+                </Typography>
+                <Typography variant="caption">
+                  Unarchive a workout or create a new one!
+                </Typography>
+              </div>
+            )}
+
+            {/* Archived Workouts Section */}
+            {archivedWorkouts.length > 0 && (
+              <Collapsible
+                open={isArchivedOpen}
+                onOpenChange={setIsArchivedOpen}
+                className="flex w-full flex-col"
+              >
+                <CollapsibleTrigger asChild>
+                  <div className="flex items-center justify-between gap-4">
+                    <Typography variant="title2">
+                      Archived workouts ({archivedWorkouts.length})
+                    </Typography>
+                    <Button variant="ghost">
+                      {isArchivedOpen ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="bg-card border border-default rounded-lg overflow-hidden select-none mt-4">
+                    {archivedWorkouts.map((workout, index) => {
+                      const countData = movementCountsData.find(
+                        (data) => data.workout_id === workout.id
+                      );
+                      const movementCount = countData?.movement_count || 0;
+
+                      return (
+                        <SortableWorkoutItem
+                          key={workout.id}
+                          workout={workout}
+                          movementCount={movementCount}
+                          onDelete={(e) => handleDeleteClick(e, workout)}
+                          onArchive={(e) =>
+                            handleArchiveClick(e, workout.id, false)
+                          }
+                          onMouseEnter={() => prefetchWorkoutData(workout.id)}
+                          showSeparator={index < archivedWorkouts.length - 1}
+                          isArchived={true}
+                        />
+                      );
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </>
         )}
       </div>
 

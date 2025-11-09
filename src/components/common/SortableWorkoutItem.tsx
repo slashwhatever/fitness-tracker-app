@@ -4,7 +4,13 @@ import { Separator } from "@/components/ui/separator";
 import type { Workout } from "@/models/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ChevronRight, GripVertical, Trash2 } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  ChevronRight,
+  GripVertical,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import ResponsiveButton from "./ResponsiveButton";
@@ -14,16 +20,20 @@ interface SortableWorkoutItemProps {
   workout: Workout;
   movementCount: number;
   onDelete: (e: React.MouseEvent) => void;
+  onArchive: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   showSeparator: boolean;
+  isArchived: boolean;
 }
 
 export default function SortableWorkoutItem({
   workout,
   movementCount,
   onDelete,
+  onArchive,
   onMouseEnter,
   showSeparator,
+  isArchived,
 }: SortableWorkoutItemProps) {
   const {
     attributes,
@@ -32,7 +42,7 @@ export default function SortableWorkoutItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: workout.id });
+  } = useSortable({ id: workout.id, disabled: isArchived });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -48,21 +58,23 @@ export default function SortableWorkoutItem({
         className={`${isDragging ? "z-[9999] relative" : ""}`}
       >
         <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all cursor-pointer bg-card select-none gap-2 sm:gap-3">
-          {/* Drag Handle - Larger touch target for mobile */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none select-none"
-            role="button"
-            tabIndex={0}
-            aria-label="Drag to reorder workout"
-          >
-            <GripVertical className="w-5 h-5 sm:w-4 sm:h-4" />
-          </div>
+          {/* Drag Handle - Only show for active workouts */}
+          {!isArchived && (
+            <div
+              {...attributes}
+              {...listeners}
+              className="flex items-center justify-center w-10 h-10 sm:w-8 sm:h-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors flex-shrink-0 touch-none select-none"
+              role="button"
+              tabIndex={0}
+              aria-label="Drag to reorder workout"
+            >
+              <GripVertical className="w-5 h-5 sm:w-4 sm:h-4" />
+            </div>
+          )}
 
           <Link
             href={`/workout/${workout.id}`}
-            className="flex-1 min-w-0"
+            className={`flex-1 min-w-0 ${isArchived ? "ml-3" : ""}`}
             onMouseEnter={onMouseEnter}
           >
             <div className="text-left">
@@ -82,6 +94,15 @@ export default function SortableWorkoutItem({
                 <Typography variant="body">View</Typography>
               </ResponsiveButton>
             </Link>
+            <ResponsiveButton
+              onClick={onArchive}
+              icon={isArchived ? ArchiveRestore : Archive}
+              color={isArchived ? "primary" : "gray"}
+            >
+              <Typography variant="body">
+                {isArchived ? "Unarchive" : "Archive"}
+              </Typography>
+            </ResponsiveButton>
             <ResponsiveButton
               onClick={onDelete}
               icon={Trash2}

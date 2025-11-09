@@ -547,6 +547,7 @@ export type Database = {
       }
       workouts: {
         Row: {
+          archived: boolean
           created_at: string
           default_rest_timer: number | null
           description: string | null
@@ -557,6 +558,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          archived?: boolean
           created_at?: string
           default_rest_timer?: number | null
           description?: string | null
@@ -567,6 +569,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          archived?: boolean
           created_at?: string
           default_rest_timer?: number | null
           description?: string | null
