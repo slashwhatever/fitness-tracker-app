@@ -5,13 +5,12 @@
 
 [build]
   command = "pnpm install --frozen-lockfile && pnpm build"
+  publish = ".next"
   # Ignore builds on push - GitHub Actions will trigger deploys after CI passes
   ignore = "exit 1"
 
 [build.environment]
   NODE_VERSION = "20"
-  # Enable Next.js standalone output for better performance
-  NEXT_PRIVATE_STANDALONE = "true"
   # Disable CSS optimization that conflicts with Tailwind v4
   NODE_OPTIONS = "--max-old-space-size=4096"
 
@@ -67,6 +66,16 @@
   for = "/api/*"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
+
+# ============================================================================
+# REDIRECTS FOR CLIENT-SIDE ROUTING
+# ============================================================================
+
+# SPA fallback - catch all routes and send to Next.js
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # ============================================================================
 # FUNCTIONS CONFIGURATION
