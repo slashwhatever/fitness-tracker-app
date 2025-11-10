@@ -46,7 +46,6 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
-    "supabase": "^2.54.11",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.2",
@@ -83,6 +82,7 @@
     "playwright": "^1.55.0",
     "prettier": "^3.6.2",
     "storybook": "^9.1.5",
+    "supabase": "^2.54.11",
     "tailwindcss": "^4",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
