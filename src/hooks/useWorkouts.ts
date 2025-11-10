@@ -2,11 +2,12 @@
 
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import { isSafeForQueries } from "@/lib/utils/validation";
 import type { QueryData } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+type Workout = Tables<"workouts">;
 type WorkoutInsert = TablesInsert<"workouts">;
 type WorkoutUpdate = TablesUpdate<"workouts">;
 
@@ -144,11 +145,23 @@ export function useCreateWorkout() {
           context?.previousWorkouts
         );
       }
+      console.error("Error creating workout:", err);
     },
-    onSettled: () => {
-      // Always refetch after error or success
+    onSuccess: (data) => {
       if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
+        // Update the cache with the real data from the server
+        const previousWorkouts = queryClient.getQueryData<Workout[]>(
+          workoutKeys.list(user.id)
+        );
+        if (previousWorkouts) {
+          // Replace optimistic workout with real data
+          const updatedWorkouts = previousWorkouts.map((w) =>
+            w.id.toString().startsWith("temp-") ? data : w
+          );
+          queryClient.setQueryData(workoutKeys.list(user.id), updatedWorkouts);
+        }
+        // Set individual workout detail
+        queryClient.setQueryData(workoutKeys.detail(data.id), data);
       }
     },
   });
@@ -180,7 +193,15 @@ export function useUpdateWorkout() {
     },
     onSuccess: (data) => {
       if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
+        // Update the individual workout in the list cache
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          (old: Workout[] | undefined) => {
+            if (!old) return old;
+            return old.map((w) => (w.id === data.id ? data : w));
+          }
+        );
+        // Update the detail cache
         queryClient.setQueryData(workoutKeys.detail(data.id), data);
       }
     },
@@ -235,16 +256,14 @@ export function useDeleteWorkout() {
           context?.previousWorkouts
         );
       }
+      console.error("Error deleting workout:", err);
     },
-    onSettled: (workoutId) => {
-      // Always refetch after error or success
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
-        if (workoutId) {
-          queryClient.removeQueries({
-            queryKey: workoutKeys.detail(workoutId),
-          });
-        }
+    onSuccess: (workoutId) => {
+      if (user?.id && workoutId) {
+        // Remove from detail cache
+        queryClient.removeQueries({
+          queryKey: workoutKeys.detail(workoutId),
+        });
       }
     },
   });
@@ -337,12 +356,7 @@ export function useReorderWorkouts() {
           context.previousWorkouts
         );
       }
-    },
-    onSettled: () => {
-      // Refetch to ensure consistency
-      if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
-      }
+      console.error("Error reordering workouts:", err);
     },
   });
 }
@@ -409,11 +423,20 @@ export function useArchiveWorkout() {
           context.previousWorkouts
         );
       }
+      console.error("Error archiving/unarchiving workout:", err);
     },
-    onSettled: () => {
-      // Always refetch after error or success
+    onSuccess: (data) => {
       if (user?.id) {
-        queryClient.invalidateQueries({ queryKey: workoutKeys.list(user.id) });
+        // Update the workout in the list cache with server response
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          (old: Workout[] | undefined) => {
+            if (!old) return old;
+            return old.map((w) => (w.id === data.id ? data : w));
+          }
+        );
+        // Update the detail cache
+        queryClient.setQueryData(workoutKeys.detail(data.id), data);
       }
     },
   });

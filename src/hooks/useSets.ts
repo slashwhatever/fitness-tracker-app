@@ -2,10 +2,11 @@
 
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import type { TablesInsert, TablesUpdate } from "@/lib/supabase/types";
+import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import type { QueryData } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+type Set = Tables<"sets">;
 type SetInsert = TablesInsert<"sets">;
 type SetUpdate = TablesUpdate<"sets">;
 
@@ -217,18 +218,29 @@ export function useCreateSet() {
     },
     onSuccess: (data) => {
       if (user?.id) {
-        // Invalidate the specific movement's sets for the movement detail page
-        queryClient.invalidateQueries({
-          queryKey: setKeys.byMovement(user.id, data.user_movement_id),
+        // Replace optimistic set with real server data in main sets list
+        queryClient.setQueryData(setKeys.list(user.id), (old: Set[] | undefined) => {
+          if (!old) return [data];
+          return old.map((s) =>
+            s.id.toString().startsWith("temp-") ? data : s
+          );
         });
 
-        // Invalidate movement last sets to update workout page display
-        // This uses a partial match so it invalidates all movement-last-sets queries for this user
+        // Update the specific movement's sets cache
+        queryClient.setQueryData(
+          setKeys.byMovement(user.id, data.user_movement_id),
+          (old: Set[] | undefined) => {
+            if (!old) return [data];
+            return old.map((s) =>
+              s.id.toString().startsWith("temp-") ? data : s
+            );
+          }
+        );
+
+        // Invalidate movement last sets queries (these are separate queries that need refetching)
         queryClient.invalidateQueries({
           queryKey: ["movement-last-sets", user.id],
         });
-
-        // Also invalidate the specific movement's last set query
         queryClient.invalidateQueries({
           queryKey: ["movement-last-set", user.id, data.user_movement_id],
         });
@@ -288,16 +300,25 @@ export function useUpdateSet() {
     },
     onSuccess: (data) => {
       if (user?.id) {
-        // Invalidate the specific movement's sets for the movement detail page
-        queryClient.invalidateQueries({
-          queryKey: setKeys.byMovement(user.id, data.user_movement_id),
+        // Update the main sets list cache with server response
+        queryClient.setQueryData(setKeys.list(user.id), (old: Set[] | undefined) => {
+          if (!old) return [data];
+          return old.map((s) => (s.id === data.id ? data : s));
         });
 
-        // Invalidate movement last sets to update workout page display
+        // Update the specific movement's sets cache
+        queryClient.setQueryData(
+          setKeys.byMovement(user.id, data.user_movement_id),
+          (old: Set[] | undefined) => {
+            if (!old) return [data];
+            return old.map((s) => (s.id === data.id ? data : s));
+          }
+        );
+
+        // Invalidate movement last sets queries (separate queries that need refetching)
         queryClient.invalidateQueries({
           queryKey: ["movement-last-sets", user.id],
         });
-
         queryClient.invalidateQueries({
           queryKey: ["movement-last-set", user.id, data.user_movement_id],
         });
@@ -329,18 +350,65 @@ export function useDeleteSet() {
       if (error) throw error;
       return { setId, setData };
     },
+    onMutate: async (setId) => {
+      if (!user?.id) return;
+
+      // Find the set in cache to get movement_id for rollback
+      const allSets = queryClient.getQueryData<Set[]>(setKeys.list(user.id));
+      const setToDelete = allSets?.find((s) => s.id === setId);
+
+      if (!setToDelete) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: setKeys.list(user.id) });
+      await queryClient.cancelQueries({
+        queryKey: setKeys.byMovement(user.id, setToDelete.user_movement_id),
+      });
+
+      // Snapshot the previous values
+      const previousSets = allSets;
+      const previousMovementSets = queryClient.getQueryData<Set[]>(
+        setKeys.byMovement(user.id, setToDelete.user_movement_id)
+      );
+
+      // Optimistically remove the set from main list
+      queryClient.setQueryData(setKeys.list(user.id), (old: Set[] | undefined) =>
+        (old || []).filter((s) => s.id !== setId)
+      );
+
+      // Optimistically remove from movement-specific list
+      queryClient.setQueryData(
+        setKeys.byMovement(user.id, setToDelete.user_movement_id),
+        (old: Set[] | undefined) => (old || []).filter((s) => s.id !== setId)
+      );
+
+      return {
+        previousSets,
+        previousMovementSets,
+        movementId: setToDelete.user_movement_id,
+      };
+    },
+    onError: (err, setId, context) => {
+      // Roll back on error
+      if (user?.id && context) {
+        if (context.previousSets) {
+          queryClient.setQueryData(setKeys.list(user.id), context.previousSets);
+        }
+        if (context.previousMovementSets && context.movementId) {
+          queryClient.setQueryData(
+            setKeys.byMovement(user.id, context.movementId),
+            context.previousMovementSets
+          );
+        }
+      }
+      console.error("Error deleting set:", err);
+    },
     onSuccess: ({ setId, setData }) => {
       if (user?.id && setData) {
-        // Invalidate the specific movement's sets for the movement detail page
-        queryClient.invalidateQueries({
-          queryKey: setKeys.byMovement(user.id, setData.user_movement_id),
-        });
-
-        // Invalidate movement last sets to update workout page display
+        // Invalidate movement last sets queries (separate queries that need refetching)
         queryClient.invalidateQueries({
           queryKey: ["movement-last-sets", user.id],
         });
-
         queryClient.invalidateQueries({
           queryKey: ["movement-last-set", user.id, setData.user_movement_id],
         });

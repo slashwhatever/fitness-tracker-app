@@ -400,13 +400,22 @@ export function useCreateUserMovement() {
           context?.previousUserMovements
         );
       }
+      console.error("Error creating user movement:", err);
     },
-    onSettled: () => {
-      // Always refetch after error or success
+    onSuccess: (data) => {
       if (user?.id) {
-        queryClient.invalidateQueries({
-          queryKey: movementKeys.userMovementsList(user.id),
-        });
+        // Replace optimistic movement with real data from server
+        queryClient.setQueryData(
+          movementKeys.userMovementsList(user.id),
+          (old: UserMovement[] | undefined) => {
+            if (!old) return [data];
+            return old.map((m) =>
+              m.id.toString().startsWith("temp-") ? data : m
+            );
+          }
+        );
+        // Set individual movement cache
+        queryClient.setQueryData(movementKeys.userMovement(data.id), data);
       }
     },
   });
@@ -567,26 +576,23 @@ export function useUpdateUserMovement() {
         }
       }
     },
-    onSettled: (data, error, { id }) => {
-      // Always refetch after error or success
+        onSuccess: (data, { id }) => {
       if (user?.id) {
+        // Update the user movements list cache
+        queryClient.setQueryData(
+          movementKeys.userMovementsList(user.id),
+          (old: UserMovement[] | undefined) => {
+            if (!old) return [data];
+            return old.map((m) => (m.id === id ? data : m));
+          }
+        );
+        // Update the individual movement cache
+        queryClient.setQueryData(movementKeys.userMovement(id), data);
+        
+        // Only invalidate workout movements that use this user movement
+        // This is necessary because workout movements include joined user movement data
         queryClient.invalidateQueries({
-          queryKey: movementKeys.userMovementsList(user.id),
-        });
-        queryClient.invalidateQueries({
-          queryKey: movementKeys.userMovement(id),
-        });
-        // Only invalidate specific workout movements that might contain this user movement
-        // This is more targeted than invalidating ALL workout movements
-        queryClient.invalidateQueries({
-          queryKey: movementKeys.all,
-          predicate: (query) => {
-            // Only invalidate workout movements queries that might contain this user movement
-            return (
-              query.queryKey.includes("workout") &&
-              query.queryKey.includes("movement")
-            );
-          },
+          queryKey: movementKeys.workoutMovements(),
         });
       }
     },
@@ -649,12 +655,19 @@ export function useAddMovementToWorkout() {
         movementKeys.workoutMovementsList(newWorkoutMovement.workout_id),
         context?.previousWorkoutMovements
       );
+      console.error("Error adding movement to workout:", err);
     },
-    onSettled: (_, __, variables) => {
-      // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: movementKeys.workoutMovementsList(variables.workout_id),
-      });
+    onSuccess: (data, variables) => {
+      // Replace optimistic movement with real server data
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(variables.workout_id),
+        (old: WorkoutMovement[] | undefined) => {
+          if (!old) return [data];
+          return old.map((m) =>
+            m.id.toString().startsWith("temp-") ? data : m
+          );
+        }
+      );
     },
   });
 }
@@ -728,7 +741,7 @@ export function useAddMovementsToWorkout() {
 
       return { previousWorkoutMovements, workoutId };
     },
-    onError: (_err, _variables, context) => {
+    onError: (err, _variables, context) => {
       // If the mutation fails, roll back
       if (context?.workoutId) {
         queryClient.setQueryData(
@@ -736,14 +749,28 @@ export function useAddMovementsToWorkout() {
           context.previousWorkoutMovements
         );
       }
+      console.error("Error adding movements to workout:", err);
     },
-    onSettled: (_, __, { workoutMovements }) => {
-      // Always refetch after error or success to ensure consistency
+    onSuccess: (data, { workoutMovements }) => {
       if (workoutMovements.length > 0) {
         const workoutId = workoutMovements[0].workout_id;
-        queryClient.invalidateQueries({
-          queryKey: movementKeys.workoutMovementsList(workoutId),
-        });
+        // Replace optimistic movements with real server data
+        queryClient.setQueryData(
+          movementKeys.workoutMovementsList(workoutId),
+          (old: WorkoutMovement[] | undefined) => {
+            if (!old) return data;
+            // Replace all temp movements with real ones
+            const tempIds = new Set(
+              old
+                .filter((m) => m.id.toString().startsWith("temp-"))
+                .map((m) => m.id)
+            );
+            const realMovements = old.filter((m) => !tempIds.has(m.id));
+            return [...realMovements, ...data].sort(
+              (a, b) => (a.order_index || 0) - (b.order_index || 0)
+            );
+          }
+        );
       }
     },
   });
@@ -811,12 +838,7 @@ export function useReorderWorkoutMovements() {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-    },
-    onSettled: (_, __, { workoutId }) => {
-      // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({
-        queryKey: movementKeys.workoutMovementsList(workoutId),
-      });
+      console.error("Error reordering workout movements:", err);
     },
   });
 }
@@ -869,12 +891,7 @@ export function useRemoveMovementFromWorkout() {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-    },
-    onSettled: (data, error, { workoutId }) => {
-      // Always refetch after error or success
-      queryClient.invalidateQueries({
-        queryKey: movementKeys.workoutMovementsList(workoutId),
-      });
+      console.error("Error removing movement from workout:", err);
     },
   });
 }
@@ -932,12 +949,7 @@ export function useRemoveMovementsFromWorkout() {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-    },
-    onSettled: (data, error, { workoutId }) => {
-      // Always refetch after error or success
-      queryClient.invalidateQueries({
-        queryKey: movementKeys.workoutMovementsList(workoutId),
-      });
+      console.error("Error removing movements from workout:", err);
     },
   });
 }
@@ -965,11 +977,69 @@ export function useUpdateWorkoutMovementNotes() {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      // Invalidate the workout movements query to refresh the UI
-      queryClient.invalidateQueries({
-        queryKey: movementKeys.workoutMovementsList(data.workout_id),
+    onMutate: async ({ workoutMovementId, workout_notes }) => {
+      // Find the workout_id by checking all workout movements caches
+      let workoutId: string | null = null;
+      const caches = queryClient.getQueriesData({
+        queryKey: movementKeys.workoutMovements(),
       });
+
+      for (const [, data] of caches) {
+        if (Array.isArray(data)) {
+          const movement = (data as WorkoutMovement[]).find(
+            (m) => m.id === workoutMovementId
+          );
+          if (movement) {
+            workoutId = movement.workout_id;
+            break;
+          }
+        }
+      }
+
+      if (!workoutId) return;
+
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: movementKeys.workoutMovementsList(workoutId),
+      });
+
+      // Snapshot the previous value
+      const previousWorkoutMovements = queryClient.getQueryData<
+        WorkoutMovement[]
+      >(movementKeys.workoutMovementsList(workoutId));
+
+      // Optimistically update the notes
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(workoutId),
+        (old: WorkoutMovement[] | undefined) => {
+          if (!old) return old;
+          return old.map((m) =>
+            m.id === workoutMovementId ? { ...m, workout_notes } : m
+          );
+        }
+      );
+
+      return { previousWorkoutMovements, workoutId };
+    },
+    onError: (err, variables, context) => {
+      // If the mutation fails, roll back
+      if (context?.workoutId && context?.previousWorkoutMovements) {
+        queryClient.setQueryData(
+          movementKeys.workoutMovementsList(context.workoutId),
+          context.previousWorkoutMovements
+        );
+      }
+      console.error("Error updating workout movement notes:", err);
+    },
+    onSuccess: (data) => {
+      // Update cache with server response
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(data.workout_id),
+        (old: WorkoutMovement[] | undefined) => {
+          if (!old) return [data];
+          return old.map((m) => (m.id === data.id ? data : m));
+        }
+      );
     },
   });
 }
