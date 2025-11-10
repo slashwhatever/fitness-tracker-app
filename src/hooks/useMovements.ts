@@ -576,7 +576,7 @@ export function useUpdateUserMovement() {
         }
       }
     },
-        onSuccess: (data, { id }) => {
+    onSuccess: (data, { id }) => {
       if (user?.id) {
         // Update the user movements list cache
         queryClient.setQueryData(
@@ -588,7 +588,7 @@ export function useUpdateUserMovement() {
         );
         // Update the individual movement cache
         queryClient.setQueryData(movementKeys.userMovement(id), data);
-        
+
         // Only invalidate workout movements that use this user movement
         // This is necessary because workout movements include joined user movement data
         queryClient.invalidateQueries({

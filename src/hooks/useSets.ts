@@ -219,12 +219,15 @@ export function useCreateSet() {
     onSuccess: (data) => {
       if (user?.id) {
         // Replace optimistic set with real server data in main sets list
-        queryClient.setQueryData(setKeys.list(user.id), (old: Set[] | undefined) => {
-          if (!old) return [data];
-          return old.map((s) =>
-            s.id.toString().startsWith("temp-") ? data : s
-          );
-        });
+        queryClient.setQueryData(
+          setKeys.list(user.id),
+          (old: Set[] | undefined) => {
+            if (!old) return [data];
+            return old.map((s) =>
+              s.id.toString().startsWith("temp-") ? data : s
+            );
+          }
+        );
 
         // Update the specific movement's sets cache
         queryClient.setQueryData(
@@ -301,10 +304,13 @@ export function useUpdateSet() {
     onSuccess: (data) => {
       if (user?.id) {
         // Update the main sets list cache with server response
-        queryClient.setQueryData(setKeys.list(user.id), (old: Set[] | undefined) => {
-          if (!old) return [data];
-          return old.map((s) => (s.id === data.id ? data : s));
-        });
+        queryClient.setQueryData(
+          setKeys.list(user.id),
+          (old: Set[] | undefined) => {
+            if (!old) return [data];
+            return old.map((s) => (s.id === data.id ? data : s));
+          }
+        );
 
         // Update the specific movement's sets cache
         queryClient.setQueryData(
@@ -372,8 +378,9 @@ export function useDeleteSet() {
       );
 
       // Optimistically remove the set from main list
-      queryClient.setQueryData(setKeys.list(user.id), (old: Set[] | undefined) =>
-        (old || []).filter((s) => s.id !== setId)
+      queryClient.setQueryData(
+        setKeys.list(user.id),
+        (old: Set[] | undefined) => (old || []).filter((s) => s.id !== setId)
       );
 
       // Optimistically remove from movement-specific list
