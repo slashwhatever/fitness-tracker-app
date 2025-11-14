@@ -46,6 +46,8 @@ export function useWorkouts() {
     // Workout list changes moderately - cache for reasonable time
     staleTime: 3 * 60 * 1000, // 3 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes
+    // Always refetch on mount to ensure fresh data when returning to dashboard
+    refetchOnMount: "always",
   });
 }
 

@@ -609,7 +609,38 @@ export function useAddMovementToWorkout() {
       const { data, error } = await supabase
         .from("workout_movements")
         .insert(workoutMovement)
-        .select()
+        .select(
+          `
+          id,
+          workout_id,
+          user_movement_id,
+          order_index,
+          created_at,
+          workout_notes,
+          user_movements!inner(
+            id,
+            name,
+            personal_notes,
+            tags,
+            experience_level,
+            tracking_type_id,
+            custom_rest_timer,
+            last_used_at,
+            manual_1rm,
+            migrated_from_template,
+            migration_date,
+            original_template_id,
+            template_id,
+            user_id,
+            created_at,
+            updated_at,
+            tracking_types!inner(name),
+            user_movement_muscle_groups(
+              muscle_groups(name, display_name)
+            )
+          )
+        `
+        )
         .single();
 
       if (error) throw error;
@@ -668,6 +699,11 @@ export function useAddMovementToWorkout() {
           );
         }
       );
+      
+      // Invalidate workout movement counts so dashboard shows updated counts
+      queryClient.invalidateQueries({
+        queryKey: ["workout-movement-counts"],
+      });
     },
   });
 }
@@ -690,7 +726,38 @@ export function useAddMovementsToWorkout() {
       const { data, error } = await supabase
         .from("workout_movements")
         .insert(workoutMovements)
-        .select();
+        .select(
+          `
+          id,
+          workout_id,
+          user_movement_id,
+          order_index,
+          created_at,
+          workout_notes,
+          user_movements!inner(
+            id,
+            name,
+            personal_notes,
+            tags,
+            experience_level,
+            tracking_type_id,
+            custom_rest_timer,
+            last_used_at,
+            manual_1rm,
+            migrated_from_template,
+            migration_date,
+            original_template_id,
+            template_id,
+            user_id,
+            created_at,
+            updated_at,
+            tracking_types!inner(name),
+            user_movement_muscle_groups(
+              muscle_groups(name, display_name)
+            )
+          )
+        `
+        );
 
       if (error) throw error;
       return data as WorkoutMovement[];
@@ -772,6 +839,11 @@ export function useAddMovementsToWorkout() {
           }
         );
       }
+      
+      // Invalidate workout movement counts so dashboard shows updated counts
+      queryClient.invalidateQueries({
+        queryKey: ["workout-movement-counts"],
+      });
     },
   });
 }
@@ -893,6 +965,12 @@ export function useRemoveMovementFromWorkout() {
       );
       console.error("Error removing movement from workout:", err);
     },
+    onSuccess: () => {
+      // Invalidate workout movement counts so dashboard shows updated counts
+      queryClient.invalidateQueries({
+        queryKey: ["workout-movement-counts"],
+      });
+    },
   });
 }
 
@@ -951,6 +1029,12 @@ export function useRemoveMovementsFromWorkout() {
       );
       console.error("Error removing movements from workout:", err);
     },
+    onSuccess: () => {
+      // Invalidate workout movement counts so dashboard shows updated counts
+      queryClient.invalidateQueries({
+        queryKey: ["workout-movement-counts"],
+      });
+    },
   });
 }
 
@@ -971,7 +1055,38 @@ export function useUpdateWorkoutMovementNotes() {
         .from("workout_movements")
         .update({ workout_notes })
         .eq("id", workoutMovementId)
-        .select()
+        .select(
+          `
+          id,
+          workout_id,
+          user_movement_id,
+          order_index,
+          created_at,
+          workout_notes,
+          user_movements!inner(
+            id,
+            name,
+            personal_notes,
+            tags,
+            experience_level,
+            tracking_type_id,
+            custom_rest_timer,
+            last_used_at,
+            manual_1rm,
+            migrated_from_template,
+            migration_date,
+            original_template_id,
+            template_id,
+            user_id,
+            created_at,
+            updated_at,
+            tracking_types!inner(name),
+            user_movement_muscle_groups(
+              muscle_groups(name, display_name)
+            )
+          )
+        `
+        )
         .single();
 
       if (error) throw error;

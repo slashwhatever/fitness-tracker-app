@@ -27,6 +27,8 @@ export function useWorkoutMovementCounts(workoutIds: string[]) {
     enabled: !!user?.id && workoutIds.length > 0,
     staleTime: 1000 * 60 * 5, // 5 minutes - movement counts don't change frequently
     gcTime: 1000 * 60 * 10, // 10 minutes garbage collection
+    // Always refetch on mount to ensure fresh data when returning to dashboard
+    refetchOnMount: "always",
   });
 }
 
