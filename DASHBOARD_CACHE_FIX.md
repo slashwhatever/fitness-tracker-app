@@ -1,9 +1,11 @@
 # Dashboard Cache Invalidation Fix
 
 ## Issue
+
 When returning to the main dashboard page after modifying workouts (e.g., adding or removing movements), some workouts would appear to be missing or show stale data. The data would only refresh correctly after a full page refresh.
 
 ## Root Cause
+
 The issue was caused by **improper cache invalidation** in React Query:
 
 1. **Missing Query Invalidation**: When movements were added or removed from workouts using mutations like `useAddMovementToWorkout` and `useRemoveMovementFromWorkout`, these mutations were not invalidating the `workout-movement-counts` query that displays movement counts on the dashboard.
@@ -21,18 +23,19 @@ The issue was caused by **improper cache invalidation** in React Query:
 Updated the following mutation hooks in `/src/hooks/useMovements.ts` to invalidate `workout-movement-counts`:
 
 - **`useAddMovementToWorkout`**: Now invalidates movement counts after successfully adding a movement
-- **`useRemoveMovementFromWorkout`**: Now invalidates movement counts after successfully removing a movement  
+- **`useRemoveMovementFromWorkout`**: Now invalidates movement counts after successfully removing a movement
 - **`useAddMovementsToWorkout`**: Now invalidates movement counts after batch adding movements
 - **`useRemoveMovementsFromWorkout`**: Now invalidates movement counts after batch removing movements
 
 Each mutation now includes:
+
 ```typescript
 onSuccess: () => {
   // Invalidate workout movement counts so dashboard shows updated counts
   queryClient.invalidateQueries({
     queryKey: ["workout-movement-counts"],
   });
-}
+};
 ```
 
 ### 2. Added `refetchOnMount: "always"` to Critical Queries
@@ -71,20 +74,60 @@ This provides a safety net that ensures data freshness even if cache invalidatio
 # "Unknown Movement" Display Fix
 
 ## Issue
+
 When adding a movement to a workout, it would initially display as "Unknown Movement" until the page was refreshed. This created a poor user experience and made it unclear whether the operation succeeded.
 
 ## Root Cause
-The issue was caused by **incomplete data fetching** in mutation responses:
 
-1. **Missing Joined Data**: The mutations (`useAddMovementToWorkout`, `useAddMovementsToWorkout`, `useUpdateWorkoutMovementNotes`) were using `.select()` without specifying which fields to return, which resulted in only the base `workout_movements` table data being returned.
+The issue was caused by **incomplete data in both optimistic updates and mutation responses**:
 
-2. **No User Movement Data**: The UI components (`SortableMovementItem.tsx`, `MovementList.tsx`) display movement information using `movement.user_movement?.name || "Unknown Movement"`. Without the joined `user_movements` data, the name was undefined, triggering the fallback text.
+1. **Missing Joined Data in Mutations**: The mutations (`useAddMovementToWorkout`, `useAddMovementsToWorkout`, `useUpdateWorkoutMovementNotes`) were using `.select()` without specifying which fields to return, which resulted in only the base `workout_movements` table data being returned.
 
-3. **Inconsistent Select Statements**: The query (`useWorkoutMovements`) included a comprehensive `.select()` statement with all joined tables, but the mutations did not use the same select statement.
+2. **Null User Movement in Optimistic Updates**: The `onMutate` callback in `useAddMovementToWorkout` was setting `user_movement: null` in the optimistic update, causing "Unknown Movement" to display immediately while waiting for the server response.
+
+3. **No User Movement Data**: The UI components (`SortableMovementItem.tsx`, `MovementList.tsx`) display movement information using `movement.user_movement?.name || "Unknown Movement"`. Without the joined `user_movements` data, the name was undefined, triggering the fallback text.
+
+4. **Inconsistent Select Statements**: The query (`useWorkoutMovements`) included a comprehensive `.select()` statement with all joined tables, but the mutations did not use the same select statement.
 
 ## Solution
 
-### Updated Mutation Select Statements
+### 1. Updated Optimistic Update to Include User Movement Data
+
+Modified the `onMutate` callback in `useAddMovementToWorkout` to fetch the user movement data from the React Query cache and include it in the optimistic update:
+
+```typescript
+// Try to get the user movement data from cache for optimistic display
+let userMovement = queryClient.getQueryData(
+  movementKeys.userMovement(newWorkoutMovement.user_movement_id)
+) as UserMovement | undefined;
+
+// If not in individual cache, search in the list cache
+if (!userMovement) {
+  const allUserMovementsCaches = queryClient.getQueriesData({
+    queryKey: movementKeys.userMovements(),
+  });
+
+  for (const [, data] of allUserMovementsCaches) {
+    if (Array.isArray(data)) {
+      userMovement = data.find(
+        (m: UserMovement) => m.id === newWorkoutMovement.user_movement_id
+      );
+      if (userMovement) break;
+    }
+  }
+}
+
+const optimisticMovement = {
+  id: `temp-${Date.now()}-${Math.random()}`,
+  ...newWorkoutMovement,
+  created_at: new Date().toISOString(),
+  user_movement: userMovement || null, // Use cached data for immediate display
+};
+```
+
+This ensures the movement name displays correctly immediately, even before the server responds.
+
+### 2. Updated Mutation Select Statements
 
 Modified the following mutations in `/src/hooks/useMovements.ts` to include the full joined data:
 

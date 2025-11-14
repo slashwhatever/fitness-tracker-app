@@ -659,12 +659,33 @@ export function useAddMovementToWorkout() {
         movementKeys.workoutMovementsList(newWorkoutMovement.workout_id)
       );
 
+      // Try to get the user movement data from cache for optimistic display
+      let userMovement = queryClient.getQueryData(
+        movementKeys.userMovement(newWorkoutMovement.user_movement_id)
+      ) as UserMovement | undefined;
+
+      // If not in individual cache, search in the list cache
+      if (!userMovement) {
+        const allUserMovementsCaches = queryClient.getQueriesData({
+          queryKey: movementKeys.userMovements(),
+        });
+
+        for (const [, data] of allUserMovementsCaches) {
+          if (Array.isArray(data)) {
+            userMovement = data.find(
+              (m: UserMovement) => m.id === newWorkoutMovement.user_movement_id
+            );
+            if (userMovement) break;
+          }
+        }
+      }
+
       // Optimistically update to the new value
       const optimisticMovement = {
         id: `temp-${Date.now()}-${Math.random()}`, // Unique temporary ID
         ...newWorkoutMovement,
         created_at: new Date().toISOString(),
-        user_movement: null, // Will be populated by real response
+        user_movement: userMovement || null, // Use cached data for immediate display
       };
 
       queryClient.setQueryData(
@@ -699,7 +720,7 @@ export function useAddMovementToWorkout() {
           );
         }
       );
-      
+
       // Invalidate workout movement counts so dashboard shows updated counts
       queryClient.invalidateQueries({
         queryKey: ["workout-movement-counts"],
@@ -839,7 +860,7 @@ export function useAddMovementsToWorkout() {
           }
         );
       }
-      
+
       // Invalidate workout movement counts so dashboard shows updated counts
       queryClient.invalidateQueries({
         queryKey: ["workout-movement-counts"],
