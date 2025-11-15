@@ -710,16 +710,10 @@ export function useAddMovementToWorkout() {
       console.error("Error adding movement to workout:", err);
     },
     onSuccess: (data, variables) => {
-      // Replace optimistic movement with real server data
-      queryClient.setQueryData(
-        movementKeys.workoutMovementsList(variables.workout_id),
-        (old: WorkoutMovement[] | undefined) => {
-          if (!old) return [data];
-          return old.map((m) =>
-            m.id.toString().startsWith("temp-") ? data : m
-          );
-        }
-      );
+      // Invalidate the workout movements query so it refetches with proper data transformation
+      queryClient.invalidateQueries({
+        queryKey: movementKeys.workoutMovementsList(variables.workout_id),
+      });
 
       // Invalidate workout movement counts so dashboard shows updated counts
       queryClient.invalidateQueries({
@@ -842,23 +836,10 @@ export function useAddMovementsToWorkout() {
     onSuccess: (data, { workoutMovements }) => {
       if (workoutMovements.length > 0) {
         const workoutId = workoutMovements[0].workout_id;
-        // Replace optimistic movements with real server data
-        queryClient.setQueryData(
-          movementKeys.workoutMovementsList(workoutId),
-          (old: WorkoutMovement[] | undefined) => {
-            if (!old) return data;
-            // Replace all temp movements with real ones
-            const tempIds = new Set(
-              old
-                .filter((m) => m.id.toString().startsWith("temp-"))
-                .map((m) => m.id)
-            );
-            const realMovements = old.filter((m) => !tempIds.has(m.id));
-            return [...realMovements, ...data].sort(
-              (a, b) => (a.order_index || 0) - (b.order_index || 0)
-            );
-          }
-        );
+        // Invalidate the workout movements query so it refetches with proper data transformation
+        queryClient.invalidateQueries({
+          queryKey: movementKeys.workoutMovementsList(workoutId),
+        });
       }
 
       // Invalidate workout movement counts so dashboard shows updated counts
