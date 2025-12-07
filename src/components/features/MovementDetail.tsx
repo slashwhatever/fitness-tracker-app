@@ -14,17 +14,14 @@ import {
 } from "@/components/ui/collapsible";
 import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
 import { useTimer } from "@/contexts/TimerContext";
-import {
-  useUserMovement,
-  useWorkoutMovements,
-} from "@/hooks/useMovements";
+import { useUserMovement, useWorkoutMovements } from "@/hooks/useMovements";
 import { useCreateSet, useSetsByMovement } from "@/hooks/useSets";
 import { useTrackingTypes } from "@/hooks/useTrackingTypes";
-import { useWorkout } from "@/hooks/useWorkouts";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { useWorkout } from "@/hooks/useWorkouts";
 import { getTrackingTypeIcon } from "@/lib/utils/typeHelpers";
 import { Set, UserMovement, getEffectiveRestTimer } from "@/models/types";
-import { Calendar, ChevronsUpDown } from "lucide-react";
+import { Calendar, ChevronsUpDown, Settings } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -173,15 +170,32 @@ export default function MovementDetail({
                   {movement?.name}
                 </Typography>
               </div>
-              <CollapsibleTrigger asChild>
-                <ResponsiveButton
-                  icon={ChevronsUpDown}
-                  color="primary"
-                  variant="outline"
+              <div className="flex space-x-2">
+                <CollapsibleTrigger asChild>
+                  <ResponsiveButton
+                    icon={ChevronsUpDown}
+                    color="primary"
+                    variant="outline"
+                  >
+                    <Typography variant="body">Details</Typography>
+                  </ResponsiveButton>
+                </CollapsibleTrigger>
+                <Link
+                  href={
+                    workoutId
+                      ? `/workout/${workoutId}/movement/${movementId}/settings`
+                      : `/library/movement/${movementId}/settings`
+                  }
                 >
-                  <Typography variant="body">Movement details</Typography>
-                </ResponsiveButton>
-              </CollapsibleTrigger>
+                  <ResponsiveButton
+                    icon={Settings}
+                    color="primary"
+                    variant="outline"
+                  >
+                    <Typography variant="body">Settings</Typography>
+                  </ResponsiveButton>
+                </Link>
+              </div>
             </div>
             <CollapsibleContent className="space-y-1">
               <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">

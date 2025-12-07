@@ -11,21 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  ModalSkeleton,
   MovementListSkeleton,
   WorkoutPageSkeleton,
 } from "@/components/ui/skeleton-patterns";
-import {
-  useAddMovementToWorkout,
-  useWorkoutMovements,
-} from "@/hooks/useMovements";
+import { useWorkoutMovements } from "@/hooks/useMovements";
 import { useWorkout } from "@/hooks/useWorkouts";
 import Link from "next/link";
-import { Suspense, lazy, use, useState } from "react";
+import { Suspense, lazy, use } from "react";
 
-const MovementSelectionModal = lazy(
-  () => import("@/components/common/MovementSelectionModal")
-);
 const MovementList = lazy(() => import("@/components/common/MovementList"));
 const WorkoutHeader = lazy(() => import("@/components/common/WorkoutHeader"));
 
@@ -34,12 +27,6 @@ interface WorkoutDetailPageProps {
 }
 
 export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
-  const [showMovementModal, setShowMovementModal] = useState(false);
-  const [addingMovements, setAddingMovements] = useState<Set<string>>(
-    new Set()
-  );
-  const addMovementToWorkoutMutation = useAddMovementToWorkout();
-
   // Use React's `use` hook to unwrap the Promise directly
   const { workoutId } = use(params);
 
@@ -50,45 +37,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
     status: workoutStatus,
   } = useWorkout(workoutId);
   const { data: workoutMovements = [] } = useWorkoutMovements(workoutId);
-
-  const handleMovementAdded = async (userMovementId: string) => {
-    if (!workoutId) return;
-
-    // Check if movement is already in workout to avoid duplicates
-    const isAlreadyInWorkout = workoutMovements.some(
-      (wm) => wm.user_movement_id === userMovementId
-    );
-    if (isAlreadyInWorkout) {
-      return;
-    }
-
-    if (addingMovements.has(userMovementId)) {
-      return;
-    }
-
-    // Add to pending set immediately to prevent double-adds
-    setAddingMovements((prev) => new Set([...prev, userMovementId]));
-
-    try {
-      await addMovementToWorkoutMutation.mutateAsync({
-        workout_id: workoutId,
-        user_movement_id: userMovementId,
-        order_index: 0, // The mutation will handle finding the right order
-      });
-      // React Query will automatically update the cache
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Error adding movement to workout:", error);
-      }
-    } finally {
-      // Remove from pending set
-      setAddingMovements((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(userMovementId);
-        return newSet;
-      });
-    }
-  };
 
   // Only show "not found" if we've finished fetching and there's no workout
   // Don't show it during loading or if we haven't attempted to fetch yet
@@ -136,30 +84,16 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                   workout={workout}
                   isLoading={workoutLoading}
                   movementCount={workoutMovements.length}
-                  onAddMovement={() => setShowMovementModal(true)}
+                  workoutId={workoutId}
                 />
               </Suspense>
 
               <Suspense fallback={<MovementListSkeleton />}>
                 <MovementList
                   workoutId={workoutId}
-                  onMovementAdded={handleMovementAdded}
-                  onAddMovementClick={() => setShowMovementModal(true)}
                   expectedCount={workoutMovements.length || 2}
                 />
               </Suspense>
-
-              {showMovementModal && (
-                <Suspense fallback={<ModalSkeleton />}>
-                  <MovementSelectionModal
-                    isOpen={showMovementModal}
-                    onClose={() => {
-                      setShowMovementModal(false);
-                    }}
-                    workoutId={workoutId}
-                  />
-                </Suspense>
-              )}
             </div>
           </WorkoutErrorBoundary>
         </main>

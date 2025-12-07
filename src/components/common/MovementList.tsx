@@ -8,11 +8,9 @@ import { useMovementLastSets } from "@/hooks/useMovementLastSets";
 import {
   useRemoveMovementFromWorkout,
   useReorderWorkoutMovements,
-  useUserMovement,
   useWorkoutMovements,
 } from "@/hooks/useMovements";
 import { formatLastSetDate } from "@/lib/utils/dateHelpers";
-import type { UserMovement } from "@/models/types";
 import {
   DndContext,
   DragEndEvent,
@@ -27,23 +25,17 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Plus, SearchX } from "lucide-react";
-import { Suspense, lazy, useState } from "react";
-
-const EditMovementModal = lazy(
-  () => import("@/components/common/EditMovementModal")
-);
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface MovementListProps {
   workoutId: string;
-  onMovementAdded: (userMovementId: string) => Promise<void>;
-  onAddMovementClick: () => void;
-  expectedCount?: number; // Number of movements we expect to load
+  expectedCount?: number;
 }
 
-export default function MovementList({
-  workoutId,
-  onAddMovementClick,
-}: MovementListProps) {
+export default function MovementList({ workoutId }: MovementListProps) {
+  const router = useRouter();
   const { data: movements = [], isLoading } = useWorkoutMovements(workoutId);
 
   // Get movement IDs for efficient last set date lookup
@@ -51,9 +43,6 @@ export default function MovementList({
   const { data: lastSetsData = [] } = useMovementLastSets(movementIds);
   const removeMovementMutation = useRemoveMovementFromWorkout();
   const reorderMutation = useReorderWorkoutMovements();
-  const [editingMovementId, setEditingMovementId] = useState<string | null>(
-    null
-  );
   const [deletingMovement, setDeletingMovement] = useState<{
     id: string;
     name: string;
@@ -63,19 +52,21 @@ export default function MovementList({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8, // Require 8px of movement before drag starts
+        distance: 8,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 100, // Shorter delay for better responsiveness
-        tolerance: 8, // Larger tolerance to prevent accidental drags while scrolling
+        delay: 100,
+        tolerance: 8,
       },
     })
   );
 
-  // Get the movement data for editing
-  const { data: editingMovement } = useUserMovement(editingMovementId || "");
+  const handleEditClick = (userMovementId: string) => {
+    // Navigate to the movement settings page
+    router.push(`/workout/${workoutId}/movement/${userMovementId}/settings`);
+  };
 
   const handleDeleteClick = (movementId: string, movementName: string) => {
     setDeletingMovement({ id: movementId, name: movementName });
@@ -96,7 +87,6 @@ export default function MovementList({
   };
 
   const getMovementSets = (userMovementId: string) => {
-    // Get set count from optimized data instead of filtering all workout sets
     const lastSetData = lastSetsData.find(
       (data) => data.user_movement_id === userMovementId
     );
@@ -107,7 +97,6 @@ export default function MovementList({
   };
 
   const getLastSetDate = (userMovementId: string) => {
-    // Use the optimized last sets data instead of filtering all sets
     const lastSetData = lastSetsData.find(
       (data) => data.user_movement_id === userMovementId
     );
@@ -135,10 +124,8 @@ export default function MovementList({
       return;
     }
 
-    // Create the reordered array
     const reorderedMovements = arrayMove(movements, oldIndex, newIndex);
 
-    // Update order_index for all affected movements
     const updatedMovements = reorderedMovements.map((movement, index) => ({
       id: movement.id,
       order_index: index,
@@ -163,12 +150,11 @@ export default function MovementList({
       <div className="text-center py-8 border-2 border-dotted border-muted-foreground/30 rounded-lg p-4 flex flex-col items-center justify-center">
         <SearchX className="mb-4" size={48} />
         <p className="text-muted-foreground mb-4">No movements added yet.</p>
-        <Button
-          onClick={onAddMovementClick}
-          className="flex items-center space-x-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Movement</span>
+        <Button asChild className="flex items-center space-x-2">
+          <Link href={`/workout/${workoutId}/movements`}>
+            <Plus className="w-4 h-4" />
+            <span>Add Movement</span>
+          </Link>
         </Button>
       </div>
     );
@@ -189,7 +175,7 @@ export default function MovementList({
                 workoutId={workoutId}
                 movementSets={getMovementSets(movement.user_movement_id)}
                 lastSetDate={getLastSetDate(movement.user_movement_id)}
-                onEdit={() => setEditingMovementId(movement.user_movement_id)}
+                onEdit={() => handleEditClick(movement.user_movement_id)}
                 onDelete={() =>
                   handleDeleteClick(
                     movement.user_movement_id,
@@ -202,36 +188,6 @@ export default function MovementList({
           </SortableContext>
         </div>
       </DndContext>
-
-      {editingMovementId &&
-        (() => {
-          const workoutMovement = movements.find(
-            (m) => m.user_movement_id === editingMovementId
-          );
-          const context = workoutMovement
-            ? {
-                workoutMovementId: workoutMovement.id,
-                workoutNotes: workoutMovement.workout_notes,
-              }
-            : undefined;
-
-          return (
-            <Suspense
-              fallback={
-                <div className="fixed inset-0 bg-black/20 flex items-center justify-center">
-                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-                </div>
-              }
-            >
-              <EditMovementModal
-                isOpen={!!editingMovementId}
-                onClose={() => setEditingMovementId(null)}
-                movement={editingMovement as UserMovement | null}
-                workoutContext={context}
-              />
-            </Suspense>
-          );
-        })()}
 
       <ConfirmationModal
         isOpen={!!deletingMovement}

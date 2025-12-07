@@ -9,14 +9,14 @@ interface WorkoutHeaderProps {
   workout?: Workout;
   isLoading: boolean;
   movementCount?: number;
-  onAddMovement: () => void;
+  workoutId: string;
 }
 
 export default function WorkoutHeader({
   workout,
   isLoading,
   movementCount = 0,
-  onAddMovement,
+  workoutId,
 }: WorkoutHeaderProps) {
   if (isLoading) {
     return (
@@ -55,15 +55,12 @@ export default function WorkoutHeader({
       </div>
 
       <div className="flex space-x-2 ml-4">
-        <ResponsiveButton
-          onClick={onAddMovement}
-          icon={Plus}
-          color="primary"
-          variant="outline"
-        >
-          <Typography variant="body">Add</Typography>
-        </ResponsiveButton>
-        <Link href={`/workout/${workout.id}/settings`}>
+        <Link href={`/workout/${workoutId}/movements`}>
+          <ResponsiveButton icon={Plus} color="primary" variant="outline">
+            <Typography variant="body">Add</Typography>
+          </ResponsiveButton>
+        </Link>
+        <Link href={`/workout/${workoutId}/settings`}>
           <ResponsiveButton icon={Settings} color="primary" variant="outline">
             <Typography variant="body">Settings</Typography>
           </ResponsiveButton>

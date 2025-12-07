@@ -3,35 +3,14 @@
 import { Typography } from "@/components/common/Typography";
 import WorkoutList, { WorkoutListRef } from "@/components/common/WorkoutList";
 import { Button } from "@/components/ui/button";
-import { ModalSkeleton } from "@/components/ui/skeleton-patterns";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { lazy, Suspense, useRef, useState } from "react";
-
-const CreateWorkoutModal = lazy(
-  () => import("@/components/common/CreateWorkoutModal")
-);
-const QuickLogMovementModal = lazy(
-  () => import("@/components/common/QuickLogMovementModal")
-);
+import { useRef } from "react";
 
 export default function WorkoutManagement() {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isQuickLogModalOpen, setIsQuickLogModalOpen] = useState(false);
   const workoutListRef = useRef<WorkoutListRef>(null);
   const router = useRouter();
-
-  const handleWorkoutCreated = async () => {
-    setIsCreateModalOpen(false);
-    // Refresh the workout list to show the new workout
-    await workoutListRef.current?.refreshWorkouts();
-  };
-
-  const handleMovementSelected = (movementId: string) => {
-    setIsQuickLogModalOpen(false);
-    // Navigate to the movement detail page with quickLog param to indicate it should return to dashboard
-    router.push(`/library/movement/${movementId}?quickLog=true`);
-  };
 
   return (
     <div className="space-y-2 sm:space-y-4">
@@ -42,23 +21,22 @@ export default function WorkoutManagement() {
         </div>
 
         <div className="space-y-2">
-          <Button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="w-full justify-start h-auto p-3 sm:p-4"
-          >
-            <div className="flex items-center space-x-3">
-              <Plus className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
-              <div className="text-left">
-                <Typography variant="body">Create new workout</Typography>
-                <Typography variant="caption">
-                  Start building your routine
-                </Typography>
+          <Button asChild className="w-full justify-start h-auto p-3 sm:p-4">
+            <Link href="/workout/new">
+              <div className="flex items-center space-x-3">
+                <Plus className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
+                <div className="text-left">
+                  <Typography variant="body">Create new workout</Typography>
+                  <Typography variant="caption">
+                    Start building your routine
+                  </Typography>
+                </div>
               </div>
-            </div>
+            </Link>
           </Button>
           <Button
             variant="outline"
-            onClick={() => setIsQuickLogModalOpen(true)}
+            onClick={() => router.push("/quick-log")}
             className="w-full justify-start h-auto p-3 sm:p-4"
           >
             <div className="flex items-center space-x-3">
@@ -89,28 +67,6 @@ export default function WorkoutManagement() {
 
       {/* Workout List */}
       <WorkoutList ref={workoutListRef} />
-
-      {/* Create Workout Modal */}
-      {isCreateModalOpen && (
-        <Suspense fallback={<ModalSkeleton />}>
-          <CreateWorkoutModal
-            isOpen={isCreateModalOpen}
-            onClose={() => setIsCreateModalOpen(false)}
-            onWorkoutCreated={handleWorkoutCreated}
-          />
-        </Suspense>
-      )}
-
-      {/* Quick Log Movement Modal */}
-      {isQuickLogModalOpen && (
-        <Suspense fallback={<ModalSkeleton />}>
-          <QuickLogMovementModal
-            isOpen={isQuickLogModalOpen}
-            onClose={() => setIsQuickLogModalOpen(false)}
-            onMovementSelected={handleMovementSelected}
-          />
-        </Suspense>
-      )}
     </div>
   );
 }

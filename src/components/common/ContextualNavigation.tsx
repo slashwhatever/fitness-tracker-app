@@ -15,6 +15,7 @@ import Link from "next/link";
 
 type NavigationContext =
   | { type: "dashboard" }
+  | { type: "create-workout" }
   | { type: "workout-detail"; workoutName?: string }
   | {
       type: "workout-settings";
@@ -35,6 +36,7 @@ type NavigationContext =
       type: "quick-log-movement-detail";
       movementName?: string;
     }
+  | { type: "create-movement" }
   | { type: "settings" }
   | { type: "library" }
   | { type: "analytics" };
@@ -56,6 +58,12 @@ export default function ContextualNavigation({
     switch (context.type) {
       case "dashboard":
         return null; // No back button on dashboard (root)
+
+      case "create-workout":
+        return {
+          href: "/",
+          label: "Dashboard",
+        };
 
       case "workout-detail":
         return {
@@ -87,6 +95,12 @@ export default function ContextualNavigation({
           label: "Dashboard",
         };
 
+      case "create-movement":
+        return {
+          href: "/library",
+          label: "Movement Library",
+        };
+
       case "settings":
       case "library":
       case "analytics":
@@ -108,6 +122,21 @@ export default function ContextualNavigation({
     switch (context.type) {
       case "dashboard":
         return null;
+
+      case "create-workout":
+        return (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>New workout</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        );
 
       case "workout-detail":
         return (
@@ -215,6 +244,27 @@ export default function ContextualNavigation({
                     {context.movementName || "Movement"}
                   </span>
                 </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        );
+
+      case "create-movement":
+        return (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/library">
+                  Movement Library
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>New movement</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
