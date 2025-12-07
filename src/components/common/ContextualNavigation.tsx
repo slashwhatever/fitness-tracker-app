@@ -17,6 +17,11 @@ type NavigationContext =
   | { type: "dashboard" }
   | { type: "workout-detail"; workoutName?: string }
   | {
+      type: "workout-settings";
+      workoutId: string;
+      workoutName?: string;
+    }
+  | {
       type: "movement-detail";
       workoutId: string;
       workoutName?: string;
@@ -56,6 +61,12 @@ export default function ContextualNavigation({
         return {
           href: "/",
           label: "Dashboard",
+        };
+
+      case "workout-settings":
+        return {
+          href: `/workout/${context.workoutId}`,
+          label: context.workoutName || "Workout",
         };
 
       case "movement-detail":
@@ -110,6 +121,29 @@ export default function ContextualNavigation({
                 <BreadcrumbPage>
                   {context.workoutName || "Workout"}
                 </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        );
+
+      case "workout-settings":
+        return (
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/workout/${context.workoutId}`}>
+                  <span className="max-w-[150px] truncate block">
+                    {context.workoutName || "Workout"}
+                  </span>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Settings</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

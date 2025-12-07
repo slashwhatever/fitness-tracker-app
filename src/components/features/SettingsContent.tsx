@@ -2,6 +2,7 @@
 
 import { Typography } from "@/components/common/Typography";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -11,14 +12,64 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SettingsSkeleton } from "@/components/ui/skeleton-patterns";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
 import { signOut } from "@/lib/supabase/auth-utils";
 import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@/models/types";
-import { LogOut, Save } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+function SettingsPageSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Profile Section */}
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-20" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </div>
+
+      {/* Workout Preferences */}
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-40" />
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-3 w-48" />
+          </div>
+          <Skeleton className="h-6 w-10" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t">
+        <Skeleton className="h-10 w-full sm:w-28" />
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Skeleton className="h-10 w-full sm:w-32" />
+          <Skeleton className="h-10 w-full sm:w-32" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function SettingsContent() {
   const { data: userProfile, isLoading } = useUserProfile();
@@ -94,139 +145,165 @@ export default function SettingsContent() {
     }
   };
 
-  if (isLoading) {
-    return <SettingsSkeleton />;
-  }
-
   return (
-    <div className="space-y-6">
-      {/* Profile Section */}
-      <div className="space-y-4">
-        <div>
-          <Typography variant="title3">Profile</Typography>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="display-name">Display Name</Label>
-          <Input
-            id="display-name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Enter your display name"
-          />
-          <Typography variant="caption">
-            This name will be displayed on your profile
-          </Typography>
-        </div>
-      </div>
-
-      {/* Workout Preferences */}
-      <Typography variant="title3">Workout preferences</Typography>
-      <div className="space-y-2">
-        <div className="space-y-2">
-          <Label htmlFor="rest-timer">Default Rest Timer</Label>
-          <Select value={defaultRestTimer} onValueChange={setDefaultRestTimer}>
-            <SelectTrigger id="rest-timer">
-              <SelectValue placeholder="Select default rest timer" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No default timer</SelectItem>
-              {TIMER_PRESETS.map((preset) => (
-                <SelectItem
-                  key={preset.seconds}
-                  value={preset.seconds.toString()}
+    <Card>
+      <CardContent className="p-4 sm:p-6">
+        {isLoading ? (
+          <SettingsPageSkeleton />
+        ) : (
+          <div className="space-y-6">
+            {/* Profile Section */}
+            <div className="space-y-4">
+              <Typography variant="title3">Profile</Typography>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="display-name"
+                  className="text-sm font-medium text-muted-foreground"
                 >
-                  {preset.label} ({preset.seconds}s)
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Typography variant="caption">
-            This timer will be used for all movements unless overridden
-          </Typography>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="timer-pin">Pin Timer</Label>
-              <Typography variant="caption">
-                Keep the timer visible at the top of the screen when scrolling
-              </Typography>
+                  Display Name
+                </Label>
+                <Input
+                  id="display-name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Enter your display name"
+                />
+                <p className="text-xs text-muted-foreground">
+                  This name will be displayed on your profile
+                </p>
+              </div>
             </div>
-            <Switch
-              id="timer-pin"
-              checked={timerPinEnabled}
-              onCheckedChange={setTimerPinEnabled}
-            />
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="weight-unit">Weight Unit</Label>
-            <Select
-              value={weightUnit}
-              onValueChange={(value: WeightUnit) => setWeightUnit(value)}
-            >
-              <SelectTrigger id="weight-unit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="lbs">Pounds (lbs)</SelectItem>
-                <SelectItem value="kg">Kilograms (kg)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* Workout Preferences */}
+            <div className="space-y-4">
+              <Typography variant="title3">Workout preferences</Typography>
 
-          <div className="space-y-2">
-            <Label htmlFor="distance-unit">Distance Unit</Label>
-            <Select
-              value={distanceUnit}
-              onValueChange={(value: DistanceUnit) => setDistanceUnit(value)}
-            >
-              <SelectTrigger id="distance-unit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="miles">Miles</SelectItem>
-                <SelectItem value="km">Kilometers</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="rest-timer"
+                  className="text-sm font-medium text-muted-foreground"
+                >
+                  Default Rest Timer
+                </Label>
+                <Select
+                  value={defaultRestTimer}
+                  onValueChange={setDefaultRestTimer}
+                >
+                  <SelectTrigger id="rest-timer">
+                    <SelectValue placeholder="Select default rest timer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No default timer</SelectItem>
+                    {TIMER_PRESETS.map((preset) => (
+                      <SelectItem
+                        key={preset.seconds}
+                        value={preset.seconds.toString()}
+                      >
+                        {preset.label} ({preset.seconds}s)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  This timer will be used for all movements unless overridden
+                </p>
+              </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between pt-6 border-t">
-        <div className="flex flex-col-reverse sm:flex-row gap-3 order-2 sm:order-1">
-          <Button
-            variant="outline"
-            onClick={handleSignOut}
-            className="w-full sm:w-auto text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-        <div className="flex flex-col-reverse sm:flex-row gap-3 order-1 sm:order-2">
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="w-full sm:w-auto"
-          >
-            Reset Changes
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="w-full sm:w-auto"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            {isSaving ? "Saving..." : "Save Settings"}
-          </Button>
-        </div>
-      </div>
-    </div>
+              <div className="flex items-center justify-between py-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="timer-pin">Pin Timer</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Keep the timer visible at the top of the screen when
+                    scrolling
+                  </p>
+                </div>
+                <Switch
+                  id="timer-pin"
+                  checked={timerPinEnabled}
+                  onCheckedChange={setTimerPinEnabled}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="weight-unit"
+                    className="text-sm font-medium text-muted-foreground"
+                  >
+                    Weight Unit
+                  </Label>
+                  <Select
+                    value={weightUnit}
+                    onValueChange={(value: WeightUnit) => setWeightUnit(value)}
+                  >
+                    <SelectTrigger id="weight-unit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lbs">Pounds (lbs)</SelectItem>
+                      <SelectItem value="kg">Kilograms (kg)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="distance-unit"
+                    className="text-sm font-medium text-muted-foreground"
+                  >
+                    Distance Unit
+                  </Label>
+                  <Select
+                    value={distanceUnit}
+                    onValueChange={(value: DistanceUnit) =>
+                      setDistanceUnit(value)
+                    }
+                  >
+                    <SelectTrigger id="distance-unit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="miles">Miles</SelectItem>
+                      <SelectItem value="km">Kilometers</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t justify-between">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleSignOut}
+                className="w-full sm:w-auto"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign out
+              </Button>
+
+              <div className="flex flex-col-reverse sm:flex-row gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleReset}
+                  className="w-full sm:w-auto"
+                >
+                  Reset changes
+                </Button>
+                <Button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto"
+                >
+                  {isSaving ? "Saving..." : "Save changes"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

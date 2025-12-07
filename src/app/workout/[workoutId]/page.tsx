@@ -26,9 +26,6 @@ import { Suspense, lazy, use, useState } from "react";
 const MovementSelectionModal = lazy(
   () => import("@/components/common/MovementSelectionModal")
 );
-const WorkoutSettingsModal = lazy(
-  () => import("@/components/common/WorkoutSettingsModal")
-);
 const MovementList = lazy(() => import("@/components/common/MovementList"));
 const WorkoutHeader = lazy(() => import("@/components/common/WorkoutHeader"));
 
@@ -41,7 +38,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
   const [addingMovements, setAddingMovements] = useState<Set<string>>(
     new Set()
   );
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const addMovementToWorkoutMutation = useAddMovementToWorkout();
 
   // Use React's `use` hook to unwrap the Promise directly
@@ -141,7 +137,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                   isLoading={workoutLoading}
                   movementCount={workoutMovements.length}
                   onAddMovement={() => setShowMovementModal(true)}
-                  onSettings={() => setShowSettingsModal(true)}
                 />
               </Suspense>
 
@@ -162,18 +157,6 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
                       setShowMovementModal(false);
                     }}
                     workoutId={workoutId}
-                  />
-                </Suspense>
-              )}
-
-              {workout && showSettingsModal && (
-                <Suspense fallback={<ModalSkeleton />}>
-                  <WorkoutSettingsModal
-                    isOpen={showSettingsModal}
-                    onClose={() => {
-                      setShowSettingsModal(false);
-                    }}
-                    workout={workout}
                   />
                 </Suspense>
               )}

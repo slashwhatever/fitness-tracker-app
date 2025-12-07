@@ -1,10 +1,19 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { AlertTriangle, RefreshCw, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AlertTriangle, RefreshCw, Settings } from "lucide-react";
+import React from "react";
+
+// Use compile-time constant to avoid process polyfill issues with Turbopack
+const IS_DEV = process.env.NODE_ENV === "development";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -17,7 +26,10 @@ interface ErrorBoundaryProps {
   fallback?: React.ComponentType<{ error: Error; retry: () => void }>;
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
@@ -35,17 +47,17 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+
     this.setState({
       error,
       errorInfo,
     });
 
     // Log to external service in production
-    if (process.env.NODE_ENV === 'production') {
+    if (!IS_DEV) {
       // TODO: Send to error tracking service (Sentry, etc.)
-      console.error('Production error:', {
+      console.error("Production error:", {
         error: error.message,
         stack: error.stack,
         componentStack: errorInfo.componentStack,
@@ -64,18 +76,28 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (this.state.hasError && this.state.error) {
       // Check if it's a Supabase configuration error
-      if (this.state.error.message.includes('Supabase client not available')) {
+      if (this.state.error.message.includes("Supabase client not available")) {
         return <SupabaseConfigError onRetry={this.handleRetry} />;
       }
 
       // Use custom fallback if provided
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;
-        return <FallbackComponent error={this.state.error} retry={this.handleRetry} />;
+        return (
+          <FallbackComponent
+            error={this.state.error}
+            retry={this.handleRetry}
+          />
+        );
       }
 
       // Default error UI
-      return <DefaultErrorFallback error={this.state.error} onRetry={this.handleRetry} />;
+      return (
+        <DefaultErrorFallback
+          error={this.state.error}
+          onRetry={this.handleRetry}
+        />
+      );
     }
 
     return this.props.children;
@@ -84,7 +106,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
 // Supabase configuration error component
 function SupabaseConfigError({ onRetry }: { onRetry: () => void }) {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = IS_DEV;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -95,7 +117,8 @@ function SupabaseConfigError({ onRetry }: { onRetry: () => void }) {
           </div>
           <CardTitle>Configuration Required</CardTitle>
           <CardDescription>
-            The application needs to be configured with Supabase credentials to function properly.
+            The application needs to be configured with Supabase credentials to
+            function properly.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -106,9 +129,28 @@ function SupabaseConfigError({ onRetry }: { onRetry: () => void }) {
               <AlertDescription className="space-y-2">
                 <p>To run this application locally, you need to:</p>
                 <ol className="list-decimal list-inside space-y-1 text-sm">
-                  <li>Create a Supabase project at <a href="https://supabase.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">supabase.com</a></li>
-                  <li>Copy <code className="bg-muted px-1 rounded">.env.local.example</code> to <code className="bg-muted px-1 rounded">.env.local</code></li>
-                  <li>Add your Supabase URL and anon key to <code className="bg-muted px-1 rounded">.env.local</code></li>
+                  <li>
+                    Create a Supabase project at{" "}
+                    <a
+                      href="https://supabase.com"
+                      className="text-blue-600 hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      supabase.com
+                    </a>
+                  </li>
+                  <li>
+                    Copy{" "}
+                    <code className="bg-muted px-1 rounded">
+                      .env.local.example
+                    </code>{" "}
+                    to <code className="bg-muted px-1 rounded">.env.local</code>
+                  </li>
+                  <li>
+                    Add your Supabase URL and anon key to{" "}
+                    <code className="bg-muted px-1 rounded">.env.local</code>
+                  </li>
                   <li>Restart the development server</li>
                 </ol>
               </AlertDescription>
@@ -118,21 +160,22 @@ function SupabaseConfigError({ onRetry }: { onRetry: () => void }) {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Service Unavailable</AlertTitle>
               <AlertDescription>
-                The application is temporarily unavailable due to a configuration issue. 
-                Please try again later or contact support if the problem persists.
+                The application is temporarily unavailable due to a
+                configuration issue. Please try again later or contact support
+                if the problem persists.
               </AlertDescription>
             </Alert>
           )}
-          
+
           <div className="flex gap-2">
             <Button onClick={onRetry} className="flex-1">
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry
             </Button>
             {isDevelopment && (
-              <Button 
-                variant="outline" 
-                onClick={() => window.open('/docs/setup', '_blank')}
+              <Button
+                variant="outline"
+                onClick={() => window.open("/docs/setup", "_blank")}
                 className="flex-1"
               >
                 Setup Guide
@@ -146,14 +189,14 @@ function SupabaseConfigError({ onRetry }: { onRetry: () => void }) {
 }
 
 // Default error fallback component
-function DefaultErrorFallback({ 
-  error, 
-  onRetry 
-}: { 
-  error: Error; 
+function DefaultErrorFallback({
+  error,
+  onRetry,
+}: {
+  error: Error;
   onRetry: () => void;
 }) {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = IS_DEV;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -174,23 +217,25 @@ function DefaultErrorFallback({
               <AlertTitle>Development Error</AlertTitle>
               <AlertDescription>
                 <details className="mt-2">
-                  <summary className="cursor-pointer font-medium">Error Details</summary>
+                  <summary className="cursor-pointer font-medium">
+                    Error Details
+                  </summary>
                   <pre className="mt-2 text-xs bg-muted p-2 rounded overflow-auto">
                     {error.message}
-                    {error.stack && '\n\n' + error.stack}
+                    {error.stack && "\n\n" + error.stack}
                   </pre>
                 </details>
               </AlertDescription>
             </Alert>
           )}
-          
+
           <div className="flex gap-2">
             <Button onClick={onRetry} className="flex-1">
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => window.location.reload()}
               className="flex-1"
             >

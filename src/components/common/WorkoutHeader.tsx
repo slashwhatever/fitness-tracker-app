@@ -1,15 +1,15 @@
-import ResponsiveButton from '@/components/common/ResponsiveButton';
-import { Typography } from '@/components/common/Typography';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { Workout } from '@/models/types';
-import { Plus, Settings } from 'lucide-react';
+import ResponsiveButton from "@/components/common/ResponsiveButton";
+import { Typography } from "@/components/common/Typography";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Workout } from "@/models/types";
+import { Plus, Settings } from "lucide-react";
+import Link from "next/link";
 
 interface WorkoutHeaderProps {
   workout?: Workout;
   isLoading: boolean;
   movementCount?: number;
   onAddMovement: () => void;
-  onSettings: () => void;
 }
 
 export default function WorkoutHeader({
@@ -17,7 +17,6 @@ export default function WorkoutHeader({
   isLoading,
   movementCount = 0,
   onAddMovement,
-  onSettings
 }: WorkoutHeaderProps) {
   if (isLoading) {
     return (
@@ -51,12 +50,12 @@ export default function WorkoutHeader({
           </Typography>
         )}
         <Typography variant="caption" className="mt-0">
-          {movementCount} movement{movementCount !== 1 ? 's' : ''}
+          {movementCount} movement{movementCount !== 1 ? "s" : ""}
         </Typography>
       </div>
 
       <div className="flex space-x-2 ml-4">
-        <ResponsiveButton 
+        <ResponsiveButton
           onClick={onAddMovement}
           icon={Plus}
           color="primary"
@@ -64,14 +63,11 @@ export default function WorkoutHeader({
         >
           <Typography variant="body">Add</Typography>
         </ResponsiveButton>
-        <ResponsiveButton 
-          icon={Settings}
-          color="primary"
-          variant="outline"
-          onClick={onSettings}
-        >
-          <Typography variant="body">Settings</Typography>
-        </ResponsiveButton>
+        <Link href={`/workout/${workout.id}/settings`}>
+          <ResponsiveButton icon={Settings} color="primary" variant="outline">
+            <Typography variant="body">Settings</Typography>
+          </ResponsiveButton>
+        </Link>
       </div>
     </div>
   );
