@@ -443,3 +443,101 @@ export function useArchiveWorkout() {
     },
   });
 }
+
+// Duplicate a workout (including all movements)
+export function useDuplicateWorkout() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async (workoutId: string) => {
+      if (!user?.id) throw new Error("User not authenticated");
+
+      // Fetch the original workout
+      const { data: originalWorkout, error: workoutError } = await supabase
+        .from("workouts")
+        .select("*")
+        .eq("id", workoutId)
+        .single();
+
+      if (workoutError) throw workoutError;
+
+      // Fetch the workout's movements
+      const { data: originalMovements, error: movementsError } = await supabase
+        .from("workout_movements")
+        .select("user_movement_id, order_index, workout_notes")
+        .eq("workout_id", workoutId)
+        .order("order_index");
+
+      if (movementsError) throw movementsError;
+
+      // Get the current max order_index to place new workout at the end
+      const { data: existingWorkouts } = await supabase
+        .from("workouts")
+        .select("order_index")
+        .eq("user_id", user.id)
+        .order("order_index", { ascending: false })
+        .limit(1);
+
+      const maxOrderIndex = existingWorkouts?.[0]?.order_index ?? -1;
+
+      // Create the duplicated workout with "(Copy)" suffix
+      const { data: newWorkout, error: createError } = await supabase
+        .from("workouts")
+        .insert({
+          name: `${originalWorkout.name} (Copy)`,
+          description: originalWorkout.description,
+          default_rest_timer: originalWorkout.default_rest_timer,
+          user_id: user.id,
+          order_index: maxOrderIndex + 1,
+          archived: false, // New copy is always unarchived
+        })
+        .select()
+        .single();
+
+      if (createError) throw createError;
+
+      // Copy all movements to the new workout
+      if (originalMovements && originalMovements.length > 0) {
+        const newMovements = originalMovements.map((movement) => ({
+          workout_id: newWorkout.id,
+          user_movement_id: movement.user_movement_id,
+          order_index: movement.order_index,
+          workout_notes: movement.workout_notes,
+        }));
+
+        const { error: copyMovementsError } = await supabase
+          .from("workout_movements")
+          .insert(newMovements);
+
+        if (copyMovementsError) throw copyMovementsError;
+      }
+
+      return newWorkout;
+    },
+    onSuccess: (data) => {
+      if (user?.id) {
+        // Add the new workout to the list cache
+        queryClient.setQueryData(
+          workoutKeys.list(user.id),
+          (old: Workout[] | undefined) => {
+            if (!old) return [data];
+            return [...old, data].sort(
+              (a, b) => (a.order_index ?? 0) - (b.order_index ?? 0)
+            );
+          }
+        );
+        // Set individual workout detail cache
+        queryClient.setQueryData(workoutKeys.detail(data.id), data);
+        // Invalidate movement counts to include the new workout
+        queryClient.invalidateQueries({
+          queryKey: ["workout-movement-counts"],
+        });
+      }
+    },
+    onError: (err) => {
+      console.error("Error duplicating workout:", err);
+    },
+  });
+}

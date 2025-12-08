@@ -12,6 +12,7 @@ import { useWorkoutMovementCounts } from "@/hooks/useWorkoutMovementCounts";
 import {
   useArchiveWorkout,
   useDeleteWorkout,
+  useDuplicateWorkout,
   useReorderWorkouts,
   useWorkouts,
 } from "@/hooks/useWorkouts";
@@ -56,6 +57,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   const deleteWorkoutMutation = useDeleteWorkout();
   const reorderMutation = useReorderWorkouts();
   const archiveWorkoutMutation = useArchiveWorkout();
+  const duplicateWorkoutMutation = useDuplicateWorkout();
   const queryClient = useQueryClient();
 
   // Separate active and archived workouts
@@ -132,6 +134,19 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
       await archiveWorkoutMutation.mutateAsync({ workoutId, archived });
     } catch (error) {
       console.error("Failed to archive/unarchive workout:", error);
+    }
+  };
+
+  const handleDuplicateClick = async (
+    e: React.MouseEvent,
+    workoutId: string
+  ) => {
+    e.preventDefault(); // Prevent navigation
+    e.stopPropagation();
+    try {
+      await duplicateWorkoutMutation.mutateAsync(workoutId);
+    } catch (error) {
+      console.error("Failed to duplicate workout:", error);
     }
   };
 
@@ -261,9 +276,16 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                           onArchive={(e) =>
                             handleArchiveClick(e, workout.id, true)
                           }
+                          onDuplicate={(e) =>
+                            handleDuplicateClick(e, workout.id)
+                          }
                           onMouseEnter={() => prefetchWorkoutData(workout.id)}
                           showSeparator={index < activeWorkouts.length - 1}
                           isArchived={false}
+                          isDuplicating={
+                            duplicateWorkoutMutation.isPending &&
+                            duplicateWorkoutMutation.variables === workout.id
+                          }
                         />
                       );
                     })}
@@ -319,9 +341,16 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
                           onArchive={(e) =>
                             handleArchiveClick(e, workout.id, false)
                           }
+                          onDuplicate={(e) =>
+                            handleDuplicateClick(e, workout.id)
+                          }
                           onMouseEnter={() => prefetchWorkoutData(workout.id)}
                           showSeparator={index < archivedWorkouts.length - 1}
                           isArchived={true}
+                          isDuplicating={
+                            duplicateWorkoutMutation.isPending &&
+                            duplicateWorkoutMutation.variables === workout.id
+                          }
                         />
                       );
                     })}

@@ -1,5 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import type { Workout } from "@/models/types";
 import { useSortable } from "@dnd-kit/sortable";
@@ -7,8 +15,9 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   Archive,
   ArchiveRestore,
-  ChevronRight,
+  Copy,
   GripVertical,
+  MoreVertical,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -21,9 +30,11 @@ interface SortableWorkoutItemProps {
   movementCount: number;
   onDelete: (e: React.MouseEvent) => void;
   onArchive: (e: React.MouseEvent) => void;
+  onDuplicate: (e: React.MouseEvent) => void;
   onMouseEnter: () => void;
   showSeparator: boolean;
   isArchived: boolean;
+  isDuplicating?: boolean;
 }
 
 export default function SortableWorkoutItem({
@@ -31,9 +42,11 @@ export default function SortableWorkoutItem({
   movementCount,
   onDelete,
   onArchive,
+  onDuplicate,
   onMouseEnter,
   showSeparator,
   isArchived,
+  isDuplicating = false,
 }: SortableWorkoutItemProps) {
   const {
     attributes,
@@ -89,27 +102,47 @@ export default function SortableWorkoutItem({
           </Link>
 
           <div className="flex items-center space-x-1 ml-2">
-            <Link href={`/workout/${workout.id}`}>
-              <ResponsiveButton icon={ChevronRight} color="blue">
-                <Typography variant="body">View</Typography>
-              </ResponsiveButton>
-            </Link>
             <ResponsiveButton
-              onClick={onArchive}
-              icon={isArchived ? ArchiveRestore : Archive}
-              color={isArchived ? "primary" : "gray"}
+              onClick={onDuplicate}
+              icon={Copy}
+              color="primary"
+              disabled={isDuplicating}
             >
               <Typography variant="body">
-                {isArchived ? "Unarchive" : "Archive"}
+                {isDuplicating ? "Duplicating..." : "Duplicate"}
               </Typography>
             </ResponsiveButton>
-            <ResponsiveButton
-              onClick={onDelete}
-              icon={Trash2}
-              color="destructive"
-            >
-              <Typography variant="body">Delete</Typography>
-            </ResponsiveButton>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">More options</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onArchive}>
+                  {isArchived ? (
+                    <ArchiveRestore className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Archive className="mr-2 h-4 w-4" />
+                  )}
+                  {isArchived ? "Unarchive" : "Archive"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={onDelete}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
