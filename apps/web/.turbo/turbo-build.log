@@ -1,0 +1,44 @@
+
+
+> @fitness/web@0.1.0 build /Users/james/dev/fitness-tracking-app/apps/web
+> next build
+
+   [1m[38;2;173;127;168m▲ Next.js 16.0.8[39m[22m (Turbopack)
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+ [37m[1m [22m[39m Creating an optimized production build ...
+ [32m[1m✓[22m[39m Compiled successfully in 2.5s
+[?25l [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G [37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[?25h[?25l [37m[1m [22m[39m Finished TypeScript in 3.8s  [36m.[39m[2K[1G[?25h [37m[1m [22m[39m Finished TypeScript in 3.8s     [32m[1m✓[22m[39m Finished TypeScript in 3.8s 
+[?25l [37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G [37m[1m [22m[39m Collecting page data using 9 workers  [36m..[39m[2K[1G[?25h [37m[1m [22m[39m Collecting page data using 9 workers in 363.0ms     [32m[1m✓[22m[39m Collecting page data using 9 workers in 363.0ms 
+[?25l [37m[1m [22m[39m Generating static pages using 9 workers (0/26)  [36m[    ][39m[2K[1G [37m[1m [22m[39m Generating static pages using 9 workers (0/26)  [36m[=   ][39m[2K[1G [37m[1m [22m[39m Generating static pages using 9 workers (16/26)  [36m[==  ][39m[2K[1G[?25h [32m[1m✓[22m[39m Generating static pages using 9 workers (26/26) in 427.9ms
+[?25l [37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[?25h [37m[1m [22m[39m Finalizing page optimization in 5.2ms     [32m[1m✓[22m[39m Finalizing page optimization in 5.2ms 
+
+[4mRoute (app)[24m
+┌ ○ /
+├ ○ /_not-found
+├ ○ /analytics
+├ ○ /docs/setup
+├ ƒ /library
+├ ƒ /library/movement/[movementId]
+├ ƒ /library/movement/[movementId]/settings
+├ ƒ /library/search/[term]
+├ ƒ /login
+├ ○ /movement/new
+├ ○ /quick-log
+├ ƒ /register
+├ ○ /reset-password
+├ ○ /settings
+├ ƒ /workout/[workoutId]
+├ ƒ /workout/[workoutId]/movement/[movementId]
+├ ƒ /workout/[workoutId]/movement/[movementId]/settings
+├ ƒ /workout/[workoutId]/movements
+├ ƒ /workout/[workoutId]/settings
+└ ○ /workout/new
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+[?25h
