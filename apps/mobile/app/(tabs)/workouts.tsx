@@ -13,7 +13,6 @@ import {
   Dumbbell,
   MoreVertical,
   Pencil,
-  Trash,
   Undo2,
 } from "lucide-react-native";
 import { useMemo, useState } from "react";
@@ -28,6 +27,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TimedConfirmDeleteButton } from "../../components/TimedConfirmDeleteButton";
 
 interface WorkoutActionModalProps {
   visible: boolean;
@@ -100,16 +100,12 @@ function WorkoutActionModal({
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-red-500/10 rounded-xl gap-4"
-              onPress={() => {
+            <TimedConfirmDeleteButton
+              onConfirm={() => {
                 onSelect("delete");
                 onClose();
               }}
-            >
-              <Trash size={20} color="#ef4444" />
-              <Text className="text-red-500 font-medium text-lg">Delete</Text>
-            </TouchableOpacity>
+            />
           </View>
           <TouchableOpacity
             className="mx-4 p-4 bg-dark-bg rounded-xl items-center"
@@ -192,24 +188,11 @@ export default function WorkoutsScreen() {
           });
           break;
         case "delete":
-          Alert.alert(
-            "Delete Workout",
-            `Are you sure you want to delete "${selectedWorkout.name}"? This cannot be undone.`,
-            [
-              { text: "Cancel", style: "cancel" },
-              {
-                text: "Delete",
-                style: "destructive",
-                onPress: async () => {
-                  try {
-                    await deleteMutation.mutateAsync(selectedWorkout.id);
-                  } catch (error) {
-                    Alert.alert("Error", "Failed to delete workout");
-                  }
-                },
-              },
-            ]
-          );
+          try {
+            await deleteMutation.mutateAsync(selectedWorkout.id);
+          } catch (error) {
+            Alert.alert("Error", "Failed to delete workout");
+          }
           break;
       }
     } catch (error) {
