@@ -15,8 +15,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
-import { signOut } from "@/lib/supabase/auth-utils";
 import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@/models/types";
+import { signOut } from "@fitness/shared";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

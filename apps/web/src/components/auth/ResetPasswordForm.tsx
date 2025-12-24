@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { resetPassword } from "@/lib/supabase/auth-utils";
+import { resetPassword } from "@fitness/shared";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Dumbbell, Loader2 } from "lucide-react";
 import Link from "next/link";

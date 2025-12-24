@@ -8,8 +8,12 @@ export default function SettingsScreen() {
   const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut();
-    // Router should auto-redirect if protected, but explicitly doing so is fine too
+    try {
+      await signOut();
+      router.replace("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   return (

@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUpWithEmail } from "@/lib/supabase/auth-utils";
+import { signUpWithEmail } from "@fitness/shared";
 import { Check, Dumbbell, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";

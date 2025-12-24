@@ -1,5 +1,5 @@
 import type { Session, User } from "@supabase/supabase-js";
-import { createClient } from "./client";
+import { createClient } from "../supabase/client";
 
 /**
  * Get Supabase client
@@ -165,7 +165,11 @@ export async function resetPassword(
   try {
     const client = getSupabaseClient();
     const { error } = await client.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectTo || `${window.location.origin}/reset-password`,
+      redirectTo:
+        redirectTo ||
+        (typeof window !== "undefined"
+          ? `${window.location.origin}/reset-password`
+          : undefined),
     });
 
     if (error) {
@@ -279,5 +283,3 @@ export async function getCurrentUserId(): Promise<string | null> {
     return null;
   }
 }
-
-// Functions are exported individually above
