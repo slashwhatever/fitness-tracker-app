@@ -74,7 +74,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-dark-bg">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -86,17 +86,17 @@ export default function LoginScreen() {
           <View className="flex-1 px-6 justify-center max-w-md mx-auto w-full space-y-8">
             {/* Header */}
             <View className="items-center space-y-2">
-              <View className="bg-primary/10 p-3 rounded-full mb-2">
+              <View className="bg-primary/20 p-3 rounded-full mb-2">
                 <Dumbbell
                   className="text-primary w-12 h-12"
                   size={48}
-                  color="black"
+                  color="#6366f1"
                 />
               </View>
-              <Text className="text-3xl font-bold text-center text-foreground">
+              <Text className="text-3xl font-bold text-center text-white">
                 Welcome to Logset
               </Text>
-              <Text className="text-muted-foreground text-center text-base text-gray-500">
+              <Text className="text-gray-400 text-center text-base">
                 Sign in to your account to continue
               </Text>
             </View>
@@ -105,7 +105,7 @@ export default function LoginScreen() {
             <View className="space-y-4">
               {/* Email Input */}
               <View className="space-y-2">
-                <Text className="text-sm font-medium text-gray-700">
+                <Text className="text-sm font-medium text-gray-300">
                   Email address
                 </Text>
                 <Controller
@@ -113,8 +113,9 @@ export default function LoginScreen() {
                   name="email"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-base"
+                      className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white placeholder:text-gray-600"
                       placeholder="Enter your email"
+                      placeholderTextColor="#64748b"
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
@@ -133,7 +134,7 @@ export default function LoginScreen() {
 
               {/* Password Input */}
               <View className="space-y-2">
-                <Text className="text-sm font-medium text-gray-700">
+                <Text className="text-sm font-medium text-gray-300">
                   Password
                 </Text>
                 <View className="relative">
@@ -142,8 +143,9 @@ export default function LoginScreen() {
                     name="password"
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-base pr-12"
+                        className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white pr-12 placeholder:text-gray-600"
                         placeholder="Enter your password"
+                        placeholderTextColor="#64748b"
                         onBlur={onBlur}
                         onChangeText={onChange}
                         value={value}
@@ -157,9 +159,9 @@ export default function LoginScreen() {
                     className="absolute right-0 top-0 h-full px-3 justify-center"
                   >
                     {showPassword ? (
-                      <EyeOff size={20} color="gray" />
+                      <EyeOff size={20} color="#94a3b8" />
                     ) : (
-                      <Eye size={20} color="gray" />
+                      <Eye size={20} color="#94a3b8" />
                     )}
                   </Pressable>
                 </View>
@@ -172,8 +174,8 @@ export default function LoginScreen() {
 
               {/* Error Message */}
               {error ? (
-                <View className="bg-red-50 border border-red-100 rounded-lg p-3">
-                  <Text className="text-red-600 text-sm text-center">
+                <View className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                  <Text className="text-red-500 text-sm text-center">
                     {error}
                   </Text>
                 </View>
@@ -183,8 +185,8 @@ export default function LoginScreen() {
               <Pressable
                 onPress={handleSubmit(onSubmit)}
                 disabled={loading}
-                className={`w-full bg-black rounded-lg py-4 flex-row justify-center items-center ${
-                  loading ? "opacity-70" : ""
+                className={`w-full bg-primary rounded-lg py-4 flex-row justify-center items-center ${
+                  loading ? "opacity-70" : "active:opacity-90"
                 }`}
               >
                 {loading ? (
@@ -201,19 +203,19 @@ export default function LoginScreen() {
             <View className="items-center space-y-4 pt-4">
               <Link href="/reset-password" asChild>
                 <Pressable>
-                  <Text className="text-sm text-gray-500">
+                  <Text className="text-sm text-gray-400">
                     Forgot your password?
                   </Text>
                 </Pressable>
               </Link>
 
               <View className="flex-row items-center">
-                <Text className="text-sm text-gray-500">
+                <Text className="text-sm text-gray-400">
                   Don't have an account?{" "}
                 </Text>
                 <Link href="/register" asChild>
                   <Pressable>
-                    <Text className="text-sm font-semibold text-black">
+                    <Text className="text-sm font-semibold text-primary-400">
                       Sign up
                     </Text>
                   </Pressable>

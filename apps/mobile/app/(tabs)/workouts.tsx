@@ -80,48 +80,50 @@ export default function WorkoutsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg p-4 pb-0">
-      <View className="flex-row justify-between items-center mb-6">
-        <Text className="text-3xl font-bold text-white">Workouts</Text>
-        <View className="flex-row gap-2">
-          <TouchableOpacity
-            className="bg-dark-card border border-dark-border px-4 py-2 rounded-full"
-            onPress={() => router.push("/groups/modal")}
-          >
-            <Text className="text-white font-semibold">Groups</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="bg-primary-500 px-4 py-2 rounded-full"
-            onPress={() => router.push("/workout/new")}
-          >
-            <Text className="text-white font-semibold">+ New</Text>
-          </TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-dark-bg">
+      <View className="flex-1 p-4 pb-0">
+        <View className="flex-row justify-between items-center mb-6">
+          <Text className="text-3xl font-bold text-white">Workouts</Text>
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              className="bg-dark-card border border-dark-border px-4 py-2 rounded-full"
+              onPress={() => router.push("/groups/modal")}
+            >
+              <Text className="text-white font-semibold">Groups</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-primary-500 px-4 py-2 rounded-full"
+              onPress={() => router.push("/workout/new")}
+            >
+              <Text className="text-white font-semibold">+ New</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
 
-      <SectionList
-        sections={sections}
-        renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-        stickySectionHeadersEnabled={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={refetch}
-            tintColor="#fff"
-          />
-        }
-        ListEmptyComponent={
-          !loading ? (
-            <View className="items-center justify-center py-20">
-              <Text className="text-gray-500 text-lg">No workouts found</Text>
-            </View>
-          ) : null
-        }
-      />
+        <SectionList
+          sections={sections}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+          stickySectionHeadersEnabled={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={refetch}
+              tintColor="#fff"
+            />
+          }
+          ListEmptyComponent={
+            !loading ? (
+              <View className="items-center justify-center py-20">
+                <Text className="text-gray-500 text-lg">No workouts found</Text>
+              </View>
+            ) : null
+          }
+        />
+      </View>
     </SafeAreaView>
   );
 }
