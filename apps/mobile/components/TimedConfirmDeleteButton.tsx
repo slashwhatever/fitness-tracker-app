@@ -6,12 +6,16 @@ interface TimedConfirmDeleteButtonProps {
   onConfirm: () => void;
   title?: string;
   confirmTitle?: string;
+  variant?: "default" | "icon";
+  size?: number;
 }
 
 export function TimedConfirmDeleteButton({
   onConfirm,
   title = "Delete",
   confirmTitle = "Confirm Delete",
+  variant = "default",
+  size = 20,
 }: TimedConfirmDeleteButtonProps) {
   const [isConfirming, setIsConfirming] = useState(false);
   const [timeLeft, setTimeLeft] = useState(5);
@@ -48,15 +52,34 @@ export function TimedConfirmDeleteButton({
   };
 
   if (isConfirming) {
+    if (variant === "icon") {
+      return (
+        <TouchableOpacity
+          className="p-2 bg-red-500 rounded-full"
+          onPress={handlePress}
+        >
+          <Timer size={size} color="#ffffff" />
+        </TouchableOpacity>
+      );
+    }
+
     return (
       <TouchableOpacity
         className="flex-row items-center p-4 bg-red-500 rounded-xl gap-4"
         onPress={handlePress}
       >
-        <Timer size={20} color="#ffffff" />
+        <Timer size={size} color="#ffffff" />
         <Text className="text-white font-medium text-lg flex-1">
           {confirmTitle} ({timeLeft})
         </Text>
+      </TouchableOpacity>
+    );
+  }
+
+  if (variant === "icon") {
+    return (
+      <TouchableOpacity className="p-2" onPress={handlePress}>
+        <Trash size={size} color="#ef4444" />
       </TouchableOpacity>
     );
   }
@@ -66,7 +89,7 @@ export function TimedConfirmDeleteButton({
       className="flex-row items-center p-4 bg-red-500/10 rounded-xl gap-4"
       onPress={handlePress}
     >
-      <Trash size={20} color="#ef4444" />
+      <Trash size={size} color="#ef4444" />
       <Text className="text-red-500 font-medium text-lg flex-1">{title}</Text>
     </TouchableOpacity>
   );

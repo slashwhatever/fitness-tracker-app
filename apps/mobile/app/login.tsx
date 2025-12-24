@@ -85,7 +85,7 @@ export default function LoginScreen() {
         >
           <View className="flex-1 px-6 justify-center max-w-md mx-auto w-full space-y-8">
             {/* Header */}
-            <View className="items-center space-y-2">
+            <View className="items-center gap-2 mb-8">
               <View className="bg-primary/20 p-3 rounded-full mb-2">
                 <Dumbbell
                   className="text-primary w-12 h-12"
@@ -102,75 +102,70 @@ export default function LoginScreen() {
             </View>
 
             {/* Form */}
-            <View className="space-y-4">
-              {/* Email Input */}
-              <View className="space-y-2">
-                <Text className="text-sm font-medium text-gray-300">
-                  Email address
+            <View className="gap-4">
+              <Text className="text-sm font-medium text-gray-300">
+                Email address
+              </Text>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white placeholder:text-gray-600"
+                    placeholder="Enter your email"
+                    placeholderTextColor="#64748b"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    editable={!loading}
+                  />
+                )}
+              />
+              {errors.email && (
+                <Text className="text-sm text-red-500">
+                  {errors.email.message}
                 </Text>
+              )}
+
+              {/* Password Input */}
+              <Text className="text-sm font-medium text-gray-300">
+                Password
+              </Text>
+              <View className="relative">
                 <Controller
                   control={control}
-                  name="email"
+                  name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white placeholder:text-gray-600"
-                      placeholder="Enter your email"
+                      className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white pr-12 placeholder:text-gray-600"
+                      placeholder="Enter your password"
                       placeholderTextColor="#64748b"
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
-                      autoCapitalize="none"
-                      keyboardType="email-address"
+                      secureTextEntry={!showPassword}
                       editable={!loading}
                     />
                   )}
                 />
-                {errors.email && (
-                  <Text className="text-sm text-red-500">
-                    {errors.email.message}
-                  </Text>
-                )}
+                <Pressable
+                  onPress={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-0 h-full px-3 justify-center"
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} color="#94a3b8" />
+                  ) : (
+                    <Eye size={20} color="#94a3b8" />
+                  )}
+                </Pressable>
               </View>
-
-              {/* Password Input */}
-              <View className="space-y-2">
-                <Text className="text-sm font-medium text-gray-300">
-                  Password
+              {errors.password && (
+                <Text className="text-sm text-red-500">
+                  {errors.password.message}
                 </Text>
-                <View className="relative">
-                  <Controller
-                    control={control}
-                    name="password"
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <TextInput
-                        className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white pr-12 placeholder:text-gray-600"
-                        placeholder="Enter your password"
-                        placeholderTextColor="#64748b"
-                        onBlur={onBlur}
-                        onChangeText={onChange}
-                        value={value}
-                        secureTextEntry={!showPassword}
-                        editable={!loading}
-                      />
-                    )}
-                  />
-                  <Pressable
-                    onPress={() => setShowPassword(!showPassword)}
-                    className="absolute right-0 top-0 h-full px-3 justify-center"
-                  >
-                    {showPassword ? (
-                      <EyeOff size={20} color="#94a3b8" />
-                    ) : (
-                      <Eye size={20} color="#94a3b8" />
-                    )}
-                  </Pressable>
-                </View>
-                {errors.password && (
-                  <Text className="text-sm text-red-500">
-                    {errors.password.message}
-                  </Text>
-                )}
-              </View>
+              )}
 
               {/* Error Message */}
               {error ? (

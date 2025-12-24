@@ -1,0 +1,444 @@
+import {
+  useCreateSet,
+  useDeleteSet,
+  useSetsByMovement,
+  useUserMovement,
+} from "@fitness/shared";
+import { format } from "date-fns";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Calendar,
+  Check,
+  ChevronLeft,
+  Copy,
+  Minus,
+  MoreVertical,
+  Pencil,
+  Plus,
+  Settings,
+} from "lucide-react-native";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { EditSetSheet } from "../../../../components/EditSetSheet";
+import { SessionComparison } from "../../../../components/SessionComparison";
+import { TimedConfirmDeleteButton } from "../../../../components/TimedConfirmDeleteButton";
+
+interface SetActionModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onSelect: (action: "duplicate" | "edit" | "delete") => void;
+  setDetails: string;
+}
+
+function SetActionModal({
+  visible,
+  onClose,
+  onSelect,
+  setDetails,
+}: SetActionModalProps) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable className="flex-1 bg-black/80 justify-end" onPress={onClose}>
+        <View className="bg-dark-card rounded-t-3xl overflow-hidden pb-8 border-t border-dark-border">
+          <View className="p-4 border-b border-dark-border">
+            <Text className="text-lg font-semibold text-white text-center">
+              {setDetails}
+            </Text>
+          </View>
+          <View className="p-4 gap-2">
+            <TouchableOpacity
+              className="flex-row items-center p-4 bg-dark-bg/50 rounded-xl gap-4"
+              onPress={() => {
+                onSelect("edit");
+                onClose();
+              }}
+            >
+              <Pencil size={20} color="green" />
+              <Text className="text-white font-medium text-lg">Edit</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="flex-row items-center p-4 bg-dark-bg/50 rounded-xl gap-4"
+              onPress={() => {
+                onSelect("duplicate");
+                onClose();
+              }}
+            >
+              <Copy size={20} color="#6366f1" />
+              <Text className="text-white font-medium text-lg">Duplicate</Text>
+            </TouchableOpacity>
+
+            <TimedConfirmDeleteButton
+              onConfirm={() => {
+                onSelect("delete");
+                onClose();
+              }}
+            />
+          </View>
+          <TouchableOpacity
+            className="mx-4 p-4 bg-dark-bg rounded-xl items-center"
+            onPress={onClose}
+          >
+            <Text className="text-white font-semibold text-lg">Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </Pressable>
+    </Modal>
+  );
+}
+
+export default function MovementDetailScreen() {
+  const { id: workoutId, movementId } = useLocalSearchParams<{
+    id: string;
+    movementId: string;
+  }>();
+  const router = useRouter();
+
+  const { data: movement, isLoading: movementLoading } =
+    useUserMovement(movementId);
+  const { data: sets, isLoading: setsLoading } = useSetsByMovement(movementId);
+  const createSetMutation = useCreateSet();
+  const deleteSetMutation = useDeleteSet();
+
+  const [weight, setWeight] = useState("0");
+  const [reps, setReps] = useState("0");
+  const [rpe, setRpe] = useState<number | null>(null);
+  const [notes, setNotes] = useState("");
+
+  const [selectedSet, setSelectedSet] = useState<any>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editSheetVisible, setEditSheetVisible] = useState(false);
+
+  // Initialize with values from the most recent set if available
+  useEffect(() => {
+    if (sets && sets.length > 0) {
+      const lastSet = sets[0];
+      setWeight(lastSet.weight?.toString() || "0");
+      setReps(lastSet.reps?.toString() || "0");
+      // Don't auto-fill RPE as that likely changes
+    }
+  }, [setsLoading]); // Only run once when sets load initially
+
+  // Clear inputs after successful log
+  useEffect(() => {
+    if (createSetMutation.isSuccess) {
+      setNotes("");
+      createSetMutation.reset();
+    }
+  }, [createSetMutation.isSuccess]);
+
+  const handleAdjust = (
+    setter: (val: string) => void,
+    current: string,
+    delta: number
+  ) => {
+    const val = parseFloat(current) || 0;
+    const newVal = Math.max(0, val + delta);
+    // Remove decimal if whole number
+    setter(newVal % 1 === 0 ? newVal.toString() : newVal.toFixed(1));
+  };
+
+  const handleLogSet = async () => {
+    if (!workoutId || !movementId) return;
+
+    try {
+      await createSetMutation.mutateAsync({
+        workout_id: workoutId,
+        user_movement_id: movementId,
+        weight: parseFloat(weight) || 0,
+        reps: parseInt(reps) || 0,
+        rpe: rpe,
+        notes: notes.trim() || undefined,
+      });
+      // Optional: Give feedback or clear inputs
+    } catch (error) {
+      Alert.alert("Error", "Failed to log set");
+    }
+  };
+
+  const handleSetAction = async (action: "duplicate" | "edit" | "delete") => {
+    if (!selectedSet) return;
+
+    try {
+      switch (action) {
+        case "delete":
+          await deleteSetMutation.mutateAsync(selectedSet.id);
+          break;
+        case "duplicate":
+          await createSetMutation.mutateAsync({
+            workout_id: workoutId,
+            user_movement_id: movementId,
+            weight: selectedSet.weight,
+            reps: selectedSet.reps,
+            rpe: selectedSet.rpe,
+          });
+          break;
+        case "edit":
+          setEditSheetVisible(true);
+          break;
+      }
+    } catch (error) {
+      Alert.alert("Error", `Failed to ${action} set`);
+    }
+  };
+
+  const loading = movementLoading || setsLoading;
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-dark-bg items-center justify-center">
+        <ActivityIndicator size="large" color="#6366f1" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!movement) {
+    return (
+      <SafeAreaView className="flex-1 bg-dark-bg items-center justify-center">
+        <Text className="text-white text-lg">Movement not found</Text>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="mt-4 bg-primary-500 px-4 py-2 rounded-full"
+        >
+          <Text className="text-white font-semibold">Go Back</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
+
+  // Group sets by date
+  const groupedSets = (sets || []).reduce((acc: any, set) => {
+    const date = format(new Date(set.created_at), "EEE, MMM d, yyyy");
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(set);
+    return acc;
+  }, {});
+
+  return (
+    <SafeAreaView className="flex-1 bg-dark-bg">
+      <View className="flex-1">
+        {/* Header */}
+        <View className="px-4 pb-2 flex-row items-center justify-between">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="flex-row items-center p-2 -ml-2"
+          >
+            <ChevronLeft size={24} color="#fff" />
+          </TouchableOpacity>
+          <Text className="text-white text-lg font-semibold flex-1 text-center mx-2 numberOfLines={1}">
+            {movement.name}
+          </Text>
+          <TouchableOpacity
+            className="p-2 -mr-2"
+            onPress={() => {
+              /* Open movement settings */
+            }}
+          >
+            <Settings size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView className="flex-1">
+          {/* Input Section */}
+          <View className="p-4 gap-6">
+            <View className="flex-row gap-4 justify-between">
+              {/* Reps Input */}
+              <View className="flex-1 items-center gap-4">
+                <Text className="text-white text-4xl font-bold">{reps}</Text>
+                <Text className="text-gray-400 text-sm uppercase font-semibold">
+                  Reps
+                </Text>
+                <View className="flex-row gap-4 items-center">
+                  <TouchableOpacity
+                    onPress={() => handleAdjust(setReps, reps, -1)}
+                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
+                  >
+                    <Minus size={24} color="#94a3b8" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleAdjust(setReps, reps, 1)}
+                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
+                  >
+                    <Plus size={24} color="#94a3b8" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Weight Input */}
+              <View className="flex-1 items-center gap-4">
+                <Text className="text-white text-4xl font-bold">{weight}</Text>
+                <Text className="text-gray-400 text-sm uppercase font-semibold">
+                  kg
+                </Text>
+                <View className="flex-row gap-4 items-center">
+                  <TouchableOpacity
+                    onPress={() => handleAdjust(setWeight, weight, -2.5)}
+                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
+                  >
+                    <Minus size={24} color="#94a3b8" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleAdjust(setWeight, weight, 2.5)}
+                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
+                  >
+                    <Plus size={24} color="#94a3b8" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              className="bg-green-600 rounded-full py-2 items-center flex-row justify-center gap-2 active:bg-green-700"
+              onPress={handleLogSet}
+              disabled={createSetMutation.isPending}
+            >
+              {createSetMutation.isPending ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <>
+                  <Check size={24} color="white" />
+                  <Text className="text-white text-lg font-bold">Log Set</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            <View className="bg-dark-card rounded-xl border border-dark-border p-3">
+              <TextInput
+                placeholder="Add note..."
+                placeholderTextColor="#9ca3af"
+                className="text-white text-base"
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+                maxLength={500}
+              />
+            </View>
+          </View>
+
+          {/* History Section */}
+          <View className="px-4 pb-20">
+            <View className="flex-row items-center flex-start mb-4 gap-2">
+              <Calendar size={24} color="#fff" />
+              <Text className="text-lg font-bold text-white">Set history</Text>
+            </View>
+
+            {Object.entries(groupedSets)
+              .sort(
+                ([dateA], [dateB]) =>
+                  new Date(dateB).getTime() - new Date(dateA).getTime()
+              )
+              .map(([date, dateSets], index, array) => {
+                const nextSession = array[index + 1];
+                const previousSets = nextSession ? (nextSession[1] as any) : [];
+
+                const showComparison =
+                  index === 0 && previousSets && previousSets.length > 0;
+
+                return (
+                  <View
+                    key={date}
+                    className="bg-dark-card rounded-xl border border-dark-border mb-4 overflow-hidden"
+                  >
+                    <View className="bg-dark-bg/50 p-3 border-b border-dark-border gap-1">
+                      <Text className="text-gray-300 font-semibold text-base">
+                        {date}
+                      </Text>
+                      {showComparison && (
+                        <>
+                          <Text className="text-xs text-gray-500">
+                            Compared to previous
+                          </Text>
+
+                          {/* Use SessionComparison Component */}
+                          <View className="border-dark-border/50">
+                            <SessionComparison
+                              currentSets={dateSets as any[]}
+                              previousSets={previousSets}
+                              movement={movement}
+                            />
+                          </View>
+                        </>
+                      )}
+                    </View>
+
+                    <View>
+                      {(dateSets as any[]).map((set, index) => (
+                        <View
+                          key={set.id}
+                          className={`flex-row items-center justify-between p-3 ${
+                            index !== (dateSets as any[]).length - 1
+                              ? "border-b border-dark-border/30"
+                              : ""
+                          }`}
+                        >
+                          <View className="flex-row items-center gap-1">
+                            <Text className="text-white font-bold text-xl w-8 text-center">
+                              {set.reps}
+                            </Text>
+                            <Text className="text-gray-500 text-sm">
+                              reps x
+                            </Text>
+                            <Text className="text-white font-bold text-xl w-12 text-center">
+                              {set.weight}
+                            </Text>
+                            <Text className="text-gray-500 text-sm">kg</Text>
+                          </View>
+
+                          <TouchableOpacity
+                            className="p-2 -mr-2"
+                            onPress={() => {
+                              setSelectedSet(set);
+                              setModalVisible(true);
+                            }}
+                            hitSlop={{
+                              top: 10,
+                              bottom: 10,
+                              left: 10,
+                              right: 10,
+                            }}
+                          >
+                            <MoreVertical size={20} color="#94a3b8" />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                );
+              })}
+          </View>
+        </ScrollView>
+        <SetActionModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSelect={handleSetAction}
+          setDetails={
+            selectedSet
+              ? `${selectedSet.reps} reps x ${selectedSet.weight} kg`
+              : ""
+          }
+        />
+        <EditSetSheet
+          visible={editSheetVisible}
+          onClose={() => setEditSheetVisible(false)}
+          set={selectedSet}
+        />
+      </View>
+    </SafeAreaView>
+  );
+}

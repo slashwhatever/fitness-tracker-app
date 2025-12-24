@@ -1,5 +1,4 @@
 import { useWorkout, useWorkoutMovements } from "@fitness/shared";
-import { format } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, Dumbbell, MoreVertical } from "lucide-react-native";
 import {
@@ -44,8 +43,13 @@ export default function WorkoutDetailScreen() {
   }
 
   const renderMovement = ({ item }: { item: any }) => (
-    <View className="bg-dark-card p-4 rounded-xl border border-dark-border mb-3">
-      <View className="flex-row items-center justify-between mb-2">
+    <TouchableOpacity
+      className="bg-dark-card p-4 rounded-xl border border-dark-border mb-3"
+      onPress={() =>
+        router.push(`/workout/${id}/movement/${item.user_movement.id}`)
+      }
+    >
+      <View className="flex-row items-center justify-between">
         <View className="flex-row items-center flex-1">
           <View className="h-10 w-10 rounded-full bg-secondary-500/20 items-center justify-center mr-3">
             <Dumbbell size={20} color="#ec4899" />
@@ -54,67 +58,59 @@ export default function WorkoutDetailScreen() {
             <Text className="text-white font-bold text-base">
               {item.user_movement?.name}
             </Text>
-            <Text className="text-gray-400 text-xs uppercase">
-              {item.user_movement?.tracking_type}
-            </Text>
           </View>
         </View>
       </View>
-      {/* Placeholder for sets - can be expanded later */}
-      <View className="mt-2 bg-dark-bg/50 p-2 rounded-lg">
-        <Text className="text-gray-500 text-xs text-center">
-          Tap to log sets (Coming Soon)
-        </Text>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg p-4 pb-0">
-      <View className="flex-row items-center justify-between mb-6">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="flex-row items-center p-2 -ml-2"
-        >
-          <ChevronLeft size={24} color="#fff" />
-          <Text className="text-white text-lg font-semibold ml-1">Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="p-2 -mr-2">
-          <MoreVertical size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView className="flex-1 bg-dark-bg">
+      <View className="flex-1 p-4 pb-0">
+        <View className="flex-row items-center justify-between mb-6">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="flex-row items-center p-2 -ml-2"
+          >
+            <ChevronLeft size={24} color="#fff" />
+            <Text className="text-white text-lg font-semibold ml-1">Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="p-2 -mr-2">
+            <MoreVertical size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
 
-      <View className="mb-6">
-        <Text className="text-3xl font-bold text-white mb-1">
-          {workout.name}
-        </Text>
-        {workout.description && (
-          <Text className="text-gray-400 text-base">{workout.description}</Text>
-        )}
-        <Text className="text-gray-500 text-sm mt-2">
-          Created {format(new Date(workout.created_at), "MMM d, yyyy")}
-        </Text>
-      </View>
-
-      <FlatList
-        data={movements}
-        renderItem={renderMovement}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View className="items-center justify-center py-20 bg-dark-card rounded-2xl border border-dashed border-gray-700">
-            <Text className="text-gray-500 text-lg mb-2">
-              No exercises added
+        <View className="mb-6">
+          <Text className="text-3xl font-bold text-white mb-1">
+            {workout.name}
+          </Text>
+          {workout.description && (
+            <Text className="text-gray-400 text-base">
+              {workout.description}
             </Text>
-            <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-full mt-2">
-              <Text className="text-white font-semibold">
-                + Add Exercise (Coming Soon)
+          )}
+        </View>
+
+        <FlatList
+          data={movements}
+          renderItem={renderMovement}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View className="items-center justify-center py-20 bg-dark-card rounded-2xl border border-dashed border-gray-700">
+              <Text className="text-gray-500 text-lg mb-2">
+                No exercises added
               </Text>
-            </TouchableOpacity>
-          </View>
-        }
-      />
+              <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-full mt-2">
+                <Text className="text-white font-semibold">
+                  + Add Exercise (Coming Soon)
+                </Text>
+              </TouchableOpacity>
+            </View>
+          }
+        />
+      </View>
     </SafeAreaView>
   );
 }
