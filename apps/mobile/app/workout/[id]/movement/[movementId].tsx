@@ -3,6 +3,7 @@ import {
   useDeleteSet,
   useSetsByMovement,
   useUserMovement,
+  useUserProfile,
 } from "@fitness/shared";
 import { format } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -11,10 +12,8 @@ import {
   Check,
   ChevronLeft,
   Copy,
-  Minus,
   MoreVertical,
   Pencil,
-  Plus,
   Settings,
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -32,6 +31,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EditSetSheet } from "../../../../components/EditSetSheet";
 import { SessionComparison } from "../../../../components/SessionComparison";
+import { SetAdjuster } from "../../../../components/SetAdjuster";
 import { TimedConfirmDeleteButton } from "../../../../components/TimedConfirmDeleteButton";
 
 interface SetActionModalProps {
@@ -113,6 +113,7 @@ export default function MovementDetailScreen() {
   const { data: movement, isLoading: movementLoading } =
     useUserMovement(movementId);
   const { data: sets, isLoading: setsLoading } = useSetsByMovement(movementId);
+  const { data: profile } = useUserProfile();
   const createSetMutation = useCreateSet();
   const deleteSetMutation = useDeleteSet();
 
@@ -258,53 +259,31 @@ export default function MovementDetailScreen() {
           {/* Input Section */}
           <View className="p-4 gap-6">
             <View className="flex-row gap-4 justify-between">
-              {/* Reps Input */}
-              <View className="flex-1 items-center gap-4">
-                <Text className="text-white text-4xl font-bold">{reps}</Text>
-                <Text className="text-gray-400 text-sm uppercase font-semibold">
-                  Reps
-                </Text>
-                <View className="flex-row gap-4 items-center">
-                  <TouchableOpacity
-                    onPress={() => handleAdjust(setReps, reps, -1)}
-                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
-                  >
-                    <Minus size={24} color="#94a3b8" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleAdjust(setReps, reps, 1)}
-                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
-                  >
-                    <Plus size={24} color="#94a3b8" />
-                  </TouchableOpacity>
-                </View>
+              <View className="flex-1">
+                <SetAdjuster
+                  label="REPS"
+                  value={reps}
+                  onChangeText={setReps}
+                  onAdjust={(delta) => handleAdjust(setReps, reps, delta)}
+                  steps={[1]}
+                  variant="primary"
+                />
               </View>
 
-              {/* Weight Input */}
-              <View className="flex-1 items-center gap-4">
-                <Text className="text-white text-4xl font-bold">{weight}</Text>
-                <Text className="text-gray-400 text-sm uppercase font-semibold">
-                  kg
-                </Text>
-                <View className="flex-row gap-4 items-center">
-                  <TouchableOpacity
-                    onPress={() => handleAdjust(setWeight, weight, -2.5)}
-                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
-                  >
-                    <Minus size={24} color="#94a3b8" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleAdjust(setWeight, weight, 2.5)}
-                    className="w-12 h-12 rounded-full bg-dark-card border border-dark-border items-center justify-center"
-                  >
-                    <Plus size={24} color="#94a3b8" />
-                  </TouchableOpacity>
-                </View>
+              <View className="flex-1">
+                <SetAdjuster
+                  label={profile?.weight_unit?.toUpperCase() || "KG"}
+                  value={weight}
+                  onChangeText={setWeight}
+                  onAdjust={(delta) => handleAdjust(setWeight, weight, delta)}
+                  steps={[1, 5]}
+                  variant="secondary"
+                />
               </View>
             </View>
 
             <TouchableOpacity
-              className="bg-green-600 rounded-full py-2 items-center flex-row justify-center gap-2 active:bg-green-700"
+              className="bg-green-600 rounded-full py-4 items-center flex-row justify-center gap-2 active:bg-green-700"
               onPress={handleLogSet}
               disabled={createSetMutation.isPending}
             >
@@ -397,7 +376,9 @@ export default function MovementDetailScreen() {
                             <Text className="text-white font-bold text-xl w-12 text-center">
                               {set.weight}
                             </Text>
-                            <Text className="text-gray-500 text-sm">kg</Text>
+                            <Text className="text-gray-500 text-sm">
+                              {profile?.weight_unit || "kg"}
+                            </Text>
                           </View>
 
                           <TouchableOpacity
@@ -429,7 +410,9 @@ export default function MovementDetailScreen() {
           onSelect={handleSetAction}
           setDetails={
             selectedSet
-              ? `${selectedSet.reps} reps x ${selectedSet.weight} kg`
+              ? `${selectedSet.reps} reps x ${selectedSet.weight} ${
+                  profile?.weight_unit || "kg"
+                }`
               : ""
           }
         />

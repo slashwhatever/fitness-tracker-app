@@ -98,17 +98,17 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
                   label="reps"
                   value={reps}
                   onChangeText={setReps}
-                  onIncrement={() => handleAdjust(setReps, reps, 1)}
-                  onDecrement={() => handleAdjust(setReps, reps, -1)}
+                  onAdjust={(delta) => handleAdjust(setReps, reps, delta)}
+                  steps={[1]}
+                  variant="primary"
                 />
                 <SetAdjuster
                   label="kg"
                   value={weight}
                   onChangeText={setWeight}
-                  onIncrement={() => handleAdjust(setWeight, weight, 5)}
-                  onDecrement={() => handleAdjust(setWeight, weight, -5)}
-                  incrementValue={5}
-                  decrementValue={5}
+                  onAdjust={(delta) => handleAdjust(setWeight, weight, delta)}
+                  steps={[1, 5]}
+                  variant="secondary"
                 />
               </View>
 
