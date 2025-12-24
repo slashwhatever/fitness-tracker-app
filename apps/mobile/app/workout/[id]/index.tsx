@@ -1,6 +1,9 @@
 import {
   formatLastSetDate,
+  useArchiveWorkout,
+  useDeleteWorkout,
   useDeleteWorkoutMovement,
+  useDuplicateWorkout,
   useMovementLastSets,
   useWorkout,
   useWorkoutMovements,
@@ -18,6 +21,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MovementActionSheet } from "../../../components/MovementActionSheet";
+import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -31,11 +35,52 @@ export default function WorkoutDetailScreen() {
   // Get movement IDs for efficient last set date lookup
   const movementIds = movements?.map((m) => m.user_movement_id) || [];
   const { data: lastSetsData = [] } = useMovementLastSets(movementIds);
+  const archiveMutation = useArchiveWorkout();
+  const duplicateMutation = useDuplicateWorkout();
+  const deleteMutation = useDeleteWorkout();
 
   const [selectedMovement, setSelectedMovement] = useState<any>(null);
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const [workoutActionSheetVisible, setWorkoutActionSheetVisible] =
+    useState(false);
 
   const loading = workoutLoading || movementsLoading;
+
+  const handleWorkoutAction = async (
+    action: "duplicate" | "archive" | "delete" | "edit"
+  ) => {
+    if (!workout) return;
+
+    try {
+      switch (action) {
+        case "edit":
+          router.push(`/workout/${workout.id}/settings`);
+          break;
+        case "duplicate":
+          await duplicateMutation.mutateAsync(workout.id);
+          Alert.alert("Success", "Workout duplicated");
+          break;
+        case "archive":
+          await archiveMutation.mutateAsync({
+            workoutId: workout.id,
+            archived: !workout.archived,
+          });
+          break;
+        case "delete":
+          try {
+            await deleteMutation.mutateAsync(workout.id);
+            router.replace("/(tabs)/workouts");
+          } catch (error) {
+            Alert.alert("Error", "Failed to delete workout");
+          }
+          break;
+      }
+    } catch (error) {
+      if (action !== "delete") {
+        Alert.alert("Error", `Failed to ${action} workout`);
+      }
+    }
+  };
 
   const handleOpenActionSheet = (movement: any) => {
     setSelectedMovement(movement);
@@ -84,7 +129,7 @@ export default function WorkoutDetailScreen() {
     // Assuming placeholder for now or navigate to detail.
     if (selectedMovement) {
       router.push(
-        `/workout/${id}/movement/${selectedMovement.user_movement.id}`
+        `/workout/${id}/movement/${selectedMovement.user_movement.id}/settings`
       );
     }
   };
@@ -162,13 +207,18 @@ export default function WorkoutDetailScreen() {
       <View className="flex-1 p-4 pb-0">
         <View className="flex-row items-center justify-between mb-6">
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={() => router.replace("/(tabs)/workouts")}
             className="flex-row items-center p-2 -ml-2"
           >
             <ChevronLeft size={24} color="#fff" />
-            <Text className="text-white text-lg font-semibold ml-1">Back</Text>
+            <Text className="text-white text-lg font-semibold ml-1">
+              Workouts
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity className="p-2 -mr-2">
+          <TouchableOpacity
+            className="p-2 -mr-2"
+            onPress={() => setWorkoutActionSheetVisible(true)}
+          >
             <MoreVertical size={24} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -211,6 +261,14 @@ export default function WorkoutDetailScreen() {
         onEdit={handleEditMovement}
         onDelete={handleDeleteMovement}
         title={selectedMovement?.user_movement?.name}
+      />
+
+      <WorkoutActionSheet
+        visible={workoutActionSheetVisible}
+        onClose={() => setWorkoutActionSheetVisible(false)}
+        onSelect={handleWorkoutAction}
+        workoutName={workout?.name || ""}
+        isArchived={workout?.archived || false}
       />
     </SafeAreaView>
   );
