@@ -1167,3 +1167,67 @@ export function useUpdateWorkoutMovementNotes() {
     },
   });
 }
+
+// Delete a movement from a workout
+export function useDeleteWorkoutMovement() {
+  const queryClient = useQueryClient();
+  const supabase = createClient();
+
+  return useMutation({
+    mutationFn: async ({
+      workoutMovementId,
+      workoutId,
+    }: {
+      workoutMovementId: string;
+      workoutId: string;
+    }) => {
+      const { error } = await supabase
+        .from("workout_movements")
+        .delete()
+        .eq("id", workoutMovementId);
+
+      if (error) throw error;
+      return { workoutMovementId, workoutId };
+    },
+    onMutate: async ({ workoutMovementId, workoutId }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({
+        queryKey: movementKeys.workoutMovementsList(workoutId),
+      });
+
+      // Snapshot the previous value
+      const previousWorkoutMovements = queryClient.getQueryData(
+        movementKeys.workoutMovementsList(workoutId)
+      );
+
+      // Optimistically remove the item
+      queryClient.setQueryData(
+        movementKeys.workoutMovementsList(workoutId),
+        (old: any[]) => {
+          if (!old) return [];
+          return old.filter((movement) => movement.id !== workoutMovementId);
+        }
+      );
+
+      return { previousWorkoutMovements };
+    },
+    onError: (err, { workoutId }, context) => {
+      // If the mutation fails, roll back
+      if (context?.previousWorkoutMovements) {
+        queryClient.setQueryData(
+          movementKeys.workoutMovementsList(workoutId),
+          context.previousWorkoutMovements
+        );
+      }
+      console.error("Error deleting workout movement:", err);
+    },
+    onSuccess: ({ workoutId }) => {
+      queryClient.invalidateQueries({
+        queryKey: movementKeys.workoutMovementsList(workoutId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["workout-movement-counts"],
+      });
+    },
+  });
+}

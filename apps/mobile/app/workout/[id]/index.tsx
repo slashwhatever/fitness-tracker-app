@@ -1,14 +1,23 @@
-import { useWorkout, useWorkoutMovements } from "@fitness/shared";
+import {
+  formatLastSetDate,
+  useDeleteWorkoutMovement,
+  useMovementLastSets,
+  useWorkout,
+  useWorkoutMovements,
+} from "@fitness/shared";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft, Dumbbell, MoreVertical } from "lucide-react-native";
+import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MovementActionSheet } from "../../../components/MovementActionSheet";
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -17,8 +26,68 @@ export default function WorkoutDetailScreen() {
   const { data: workout, isLoading: workoutLoading } = useWorkout(id);
   const { data: movements, isLoading: movementsLoading } =
     useWorkoutMovements(id);
+  const deleteMovementMutation = useDeleteWorkoutMovement();
+
+  // Get movement IDs for efficient last set date lookup
+  const movementIds = movements?.map((m) => m.user_movement_id) || [];
+  const { data: lastSetsData = [] } = useMovementLastSets(movementIds);
+
+  const [selectedMovement, setSelectedMovement] = useState<any>(null);
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
 
   const loading = workoutLoading || movementsLoading;
+
+  const handleOpenActionSheet = (movement: any) => {
+    setSelectedMovement(movement);
+    setActionSheetVisible(true);
+  };
+
+  const handleDeleteMovement = () => {
+    if (!selectedMovement) return;
+
+    Alert.alert(
+      "Remove Exercise",
+      "Are you sure you want to remove this exercise from the workout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => {
+            deleteMovementMutation.mutate(
+              {
+                workoutMovementId: selectedMovement.id,
+                workoutId: id,
+              },
+              {
+                onSuccess: () => {
+                  setActionSheetVisible(false);
+                  setSelectedMovement(null);
+                },
+              }
+            );
+          },
+        },
+      ]
+    );
+  };
+
+  const handleEditMovement = () => {
+    setActionSheetVisible(false);
+    // Determine target route based on navigation structure
+    // For now, we can perhaps just close it as "Edit" might imply reordering or changing settings
+    // which might not be implemented yet. Or navigate to movement detail?
+    // User requested "Edit" button but didn't specify action details.
+    // Assuming placeholder for now or navigate to detail.
+    if (selectedMovement) {
+      router.push(
+        `/workout/${id}/movement/${selectedMovement.user_movement.id}`
+      );
+    }
+  };
 
   if (loading) {
     return (
@@ -42,6 +111,18 @@ export default function WorkoutDetailScreen() {
     );
   }
 
+  const getLastSetDate = (userMovementId: string) => {
+    const lastSetData = lastSetsData.find(
+      (data) => data.user_movement_id === userMovementId
+    );
+
+    if (!lastSetData?.last_set_date) {
+      return "No sets";
+    }
+
+    return formatLastSetDate([{ created_at: lastSetData.last_set_date }]);
+  };
+
   const renderMovement = ({ item }: { item: any }) => (
     <TouchableOpacity
       className="bg-dark-card p-4 rounded-xl border border-dark-border mb-3"
@@ -58,8 +139,20 @@ export default function WorkoutDetailScreen() {
             <Text className="text-white font-bold text-base">
               {item.user_movement?.name}
             </Text>
+            <Text className="text-gray-400 text-sm">
+              {getLastSetDate(item.user_movement.id)}
+            </Text>
           </View>
         </View>
+        <TouchableOpacity
+          onPress={(e) => {
+            e.stopPropagation();
+            handleOpenActionSheet(item);
+          }}
+          className="p-2"
+        >
+          <MoreVertical size={20} color="#9ca3af" />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -111,6 +204,14 @@ export default function WorkoutDetailScreen() {
           }
         />
       </View>
+
+      <MovementActionSheet
+        visible={actionSheetVisible}
+        onClose={() => setActionSheetVisible(false)}
+        onEdit={handleEditMovement}
+        onDelete={handleDeleteMovement}
+        title={selectedMovement?.user_movement?.name}
+      />
     </SafeAreaView>
   );
 }

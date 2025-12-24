@@ -59,7 +59,7 @@ function RestTimerSelectModal({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable className="flex-1 bg-black/80 justify-end" onPress={onClose}>
+      <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
         <View className="bg-dark-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-dark-border">
           <View className="p-4 border-b border-dark-border flex-row justify-between items-center">
             <Text className="text-lg font-semibold text-white">

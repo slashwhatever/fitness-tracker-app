@@ -1,3 +1,4 @@
+export * from "./src/hooks/useMovementLastSets";
 export * from "./src/hooks/useMovements";
 export * from "./src/hooks/useSets";
 export * from "./src/hooks/useUserProfile";
@@ -7,5 +8,6 @@ export * from "./src/lib/auth/AuthProvider";
 export * from "./src/lib/auth/utils";
 export * from "./src/lib/session-metrics";
 export * from "./src/lib/supabase/client";
+export * from "./src/lib/utils/dateHelpers";
 export * from "./src/models/types";
 export * from "./src/types/database.types";
