@@ -26,6 +26,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Quick Stats Card */}
+
         <LinearGradient
           colors={["#6366f1", "#4f46e5", "#4338ca"]}
           className="rounded-3xl p-6 mb-6 shadow-lg shadow-indigo-500/30"

@@ -185,12 +185,14 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-dark-bg">
       <ScrollView className="flex-1">
-        <View className="p-4 space-y-8">
+        <View className="flex-1 p-4 pb-0 gap-4">
           <Text className="text-3xl font-bold text-white">Settings</Text>
 
           {/* Profile Section */}
-          <View className="space-y-4">
-            <Text className="text-lg font-semibold text-white">Profile</Text>
+          <View className="gap-4">
+            <Text className="text-lg font-semibold text-white ml-1">
+              Profile
+            </Text>
             <View className="bg-dark-card p-4 rounded-xl border border-dark-border">
               <Text className="text-sm font-medium text-gray-400 mb-2">
                 Display Name
@@ -209,8 +211,8 @@ export default function SettingsScreen() {
           </View>
 
           {/* Workout Preferences */}
-          <View className="space-y-4">
-            <Text className="text-lg font-semibold text-white">
+          <View className="gap-4">
+            <Text className="text-lg font-semibold text-white ml-1">
               Workout preferences
             </Text>
             <View className="bg-dark-card rounded-xl border border-dark-border overflow-hidden">
@@ -290,9 +292,9 @@ export default function SettingsScreen() {
             <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={handleReset}
-                className="flex-1 bg-dark-card border border-dark-border p-4 rounded-xl flex-row justify-center items-center active:bg-dark-bg/50"
+                className="flex-1 bg-dark-card border border-dark-border p-4 rounded-xl flex-row justify-center items-center active:bg-dark-bg/50 "
               >
-                <Undo2 size={20} className="text-white mr-2" />
+                <Undo2 size={20} color="white" className="mr-2" />
                 <Text className="font-semibold text-white">Reset</Text>
               </TouchableOpacity>
 
@@ -306,7 +308,7 @@ export default function SettingsScreen() {
                 {isSaving ? (
                   <ActivityIndicator color="white" className="mr-2" />
                 ) : (
-                  <Save size={20} className="text-white mr-2" />
+                  <Save size={20} color="white" className="mr-2" />
                 )}
                 <Text className="font-semibold text-white">
                   {isSaving ? "Saving..." : "Save changes"}

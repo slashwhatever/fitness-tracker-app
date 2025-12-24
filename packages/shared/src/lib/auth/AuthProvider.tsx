@@ -35,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const refreshSession = useCallback(async () => {
     console.log("Refreshing session...");
