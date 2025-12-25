@@ -6,9 +6,12 @@ import {
   Chrome as Home,
   Settings,
 } from "lucide-react-native";
-import { Platform } from "react-native";
+import { useColorScheme } from "nativewind";
 
 export default function TabLayout() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+
   return (
     <Tabs
       screenOptions={{
@@ -16,17 +19,19 @@ export default function TabLayout() {
         tabBarStyle: {
           position: "absolute",
           borderTopWidth: 0,
-          backgroundColor: Platform.OS === "ios" ? "transparent" : "#1e293b",
           elevation: 0,
           height: 60,
           paddingBottom: 10,
         },
-        tabBarBackground: () =>
-          Platform.OS === "ios" ? (
-            <BlurView intensity={80} tint="dark" style={{ flex: 1 }} />
-          ) : undefined,
+        tabBarBackground: () => (
+          <BlurView
+            intensity={80}
+            tint={isDark ? "dark" : "light"}
+            style={{ flex: 1 }}
+          />
+        ),
         tabBarActiveTintColor: "#ec4899", // Pink 500
-        tabBarInactiveTintColor: "#94a3b8", // Slate 400
+        tabBarInactiveTintColor: isDark ? "#94a3b8" : "#64748b", // Slate 400 : Slate 500
       }}
     >
       <Tabs.Screen

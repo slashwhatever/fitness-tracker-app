@@ -45,9 +45,11 @@ export default function ManageGroupsScreen() {
   };
 
   const renderItem = ({ item }: { item: any }) => (
-    <View className="flex-row items-center bg-dark-card p-4 rounded-xl border border-dark-border mb-3">
-      <GripVertical size={20} color="#64748b" className="mr-3" />
-      <Text className="flex-1 text-white font-medium text-lg">{item.name}</Text>
+    <View className="flex-row items-center bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border mb-3">
+      <GripVertical size={20} className="text-slate-400 mr-3" />
+      <Text className="flex-1 text-slate-900 dark:text-white font-medium text-lg">
+        {item.name}
+      </Text>
       <TouchableOpacity
         onPress={() => handleDelete(item.id, item.name)}
         className="p-2"
@@ -59,7 +61,7 @@ export default function ManageGroupsScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-dark-bg p-4"
+      className="flex-1 bg-slate-50 dark:bg-dark-bg p-4"
       edges={["bottom", "left", "right"]}
     >
       {/* Header handled by Stack usually, but we want custom control or if it's a modal */}
@@ -73,7 +75,7 @@ export default function ManageGroupsScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 100 }}
           ListHeaderComponent={
-            <Text className="text-gray-400 mb-4">
+            <Text className="text-slate-500 dark:text-gray-400 mb-4">
               Create groups to organize your workouts (e.g., "Push/Pull/Legs",
               "Cardio").
             </Text>
@@ -87,9 +89,9 @@ export default function ManageGroupsScreen() {
         >
           <View className="flex-row items-center space-x-2">
             <TextInput
-              className="flex-1 bg-dark-card text-white p-4 rounded-xl border border-dark-border"
+              className="flex-1 bg-white dark:bg-dark-card text-slate-900 dark:text-white p-4 rounded-xl border border-slate-200 dark:border-dark-border"
               placeholder="New Group Name"
-              placeholderTextColor="#64748b"
+              placeholderTextColor="#94a3b8"
               value={newGroupName}
               onChangeText={setNewGroupName}
             />

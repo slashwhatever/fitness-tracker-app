@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
+import { ThemeProvider } from "../components/ThemeProvider";
 import "../global.css";
 
 const queryClient = new QueryClient({
@@ -20,15 +21,17 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <View className="flex-1">
-          <StatusBar style="auto" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "#0f172a" },
-            }}
-          />
-        </View>
+        <ThemeProvider>
+          <View className="flex-1 bg-white dark:bg-slate-900">
+            <StatusBar style="auto" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "transparent" },
+              }}
+            />
+          </View>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

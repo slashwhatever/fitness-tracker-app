@@ -1,6 +1,6 @@
 import { useUpdateWorkout, useWorkout } from "@fitness/shared";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ChevronLeft, ChevronRight, Clock, Save, X } from "lucide-react-native";
+import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { GlassHeader } from "../../../components/GlassHeader";
 
 const REST_TIMER_OPTIONS = [
   { label: "None", value: null },
@@ -60,13 +60,13 @@ function RestTimerSelectModal({
       onRequestClose={onClose}
     >
       <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <View className="bg-dark-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-dark-border">
-          <View className="p-4 border-b border-dark-border flex-row justify-between items-center">
-            <Text className="text-lg font-semibold text-white">
+        <View className="bg-white dark:bg-dark-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-slate-200 dark:border-dark-border">
+          <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center">
+            <Text className="text-lg font-semibold text-slate-900 dark:text-white">
               Default Rest Timer
             </Text>
             <TouchableOpacity onPress={onClose} className="p-2 -mr-2">
-              <X size={24} color="#94a3b8" />
+              <X size={24} className="text-slate-400 dark:text-slate-500" />
             </TouchableOpacity>
           </View>
           <ScrollView className="p-4">
@@ -76,7 +76,7 @@ function RestTimerSelectModal({
                 className={`p-4 rounded-xl mb-2 flex-row justify-between items-center ${
                   currentValue === option.value
                     ? "bg-primary-500/20 border border-primary-500"
-                    : "bg-dark-bg/50 border border-transparent"
+                    : "bg-slate-50 dark:bg-dark-bg/50 border border-transparent"
                 }`}
                 onPress={() => {
                   onSelect(option.value);
@@ -148,38 +148,31 @@ export default function WorkoutSettingsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-dark-bg items-center justify-center">
+      <View className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg">
-      <View className="flex-row items-center justify-between px-6 py-4 border-b border-dark-border">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="flex-row items-center p-2 -ml-2"
-        >
-          <ChevronLeft size={24} color="#fff" />
-          <Text className="text-white text-lg font-semibold ml-1">Back</Text>
-        </TouchableOpacity>
-        <Text className="text-white font-bold text-lg">Workout Settings</Text>
-        <View className="w-16" />
-      </View>
+    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+      <GlassHeader title="Workout Settings" backPath={`/workout/${id}`} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
-        <ScrollView className="flex-1 p-6">
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ padding: 24, paddingTop: 120 }}
+        >
           <View className="gap-4">
             <View>
-              <Text className="text-sm font-medium text-gray-400 mb-2">
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Workout Name
               </Text>
               <TextInput
-                className="w-full bg-dark-card border border-dark-border rounded-xl px-4 py-3 text-base text-white placeholder:text-gray-600"
+                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 value={name}
                 onChangeText={setName}
                 placeholder="e.g. Upper Body Power"
@@ -188,35 +181,41 @@ export default function WorkoutSettingsScreen() {
             </View>
 
             <View>
-              <Text className="text-sm font-medium text-gray-400 mb-2">
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Description (Optional)
               </Text>
               <TextInput
-                className="w-full bg-dark-card border border-dark-border rounded-xl px-4 py-3 text-base text-white placeholder:text-gray-600 min-h-[100px]"
+                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
                 value={description}
                 onChangeText={setDescription}
                 placeholder="Add notes about this workout..."
-                placeholderTextColor="#64748b"
+                placeholderTextColor="#94a3b8"
                 multiline
                 textAlignVertical="top"
               />
             </View>
 
             <View>
-              <Text className="text-sm font-medium text-gray-400 mb-2">
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Default Rest Timer
               </Text>
               <TouchableOpacity
-                className="w-full bg-dark-card border border-dark-border rounded-xl px-4 py-3 flex-row items-center justify-between"
+                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 flex-row items-center justify-between"
                 onPress={() => setShowRestTimerModal(true)}
               >
                 <View className="flex-row items-center gap-2">
-                  <Clock size={20} color="#94a3b8" />
-                  <Text className="text-white text-base">
+                  <Clock
+                    size={20}
+                    className="text-slate-400 dark:text-slate-500"
+                  />
+                  <Text className="text-slate-900 dark:text-white text-base">
                     {formatDuration(defaultRestTimer)}
                   </Text>
                 </View>
-                <ChevronRight size={20} color="#64748b" />
+                <ChevronRight
+                  size={20}
+                  className="text-slate-400 dark:text-slate-500"
+                />
               </TouchableOpacity>
             </View>
 
@@ -248,6 +247,6 @@ export default function WorkoutSettingsScreen() {
         onSelect={setDefaultRestTimer}
         currentValue={defaultRestTimer}
       />
-    </SafeAreaView>
+    </View>
   );
 }

@@ -9,16 +9,15 @@ import {
   useWorkoutMovements,
 } from "@fitness/shared";
 import { format } from "date-fns";
-import { BlurView } from "expo-blur";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Calendar,
   Check,
-  ChevronLeft,
   Copy,
   MoreVertical,
   Pencil,
 } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -33,6 +32,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EditSetSheet } from "../../../../components/EditSetSheet";
+import { GlassHeader } from "../../../../components/GlassHeader";
 import { MovementActionSheet } from "../../../../components/MovementActionSheet";
 import { SessionComparison } from "../../../../components/SessionComparison";
 import { SetAdjuster } from "../../../../components/SetAdjuster";
@@ -59,33 +59,37 @@ function SetActionModal({
       onRequestClose={onClose}
     >
       <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <View className="bg-dark-card rounded-t-3xl overflow-hidden pb-8 border-t border-dark-border">
-          <View className="p-4 border-b border-dark-border">
-            <Text className="text-lg font-semibold text-white text-center">
+        <View className="bg-white dark:bg-dark-card rounded-t-3xl overflow-hidden pb-8 border-t border-slate-200 dark:border-dark-border">
+          <View className="p-4 border-b border-slate-200 dark:border-dark-border">
+            <Text className="text-lg font-semibold text-slate-900 dark:text-white text-center">
               {setDetails}
             </Text>
           </View>
           <View className="p-4 gap-2">
             <TouchableOpacity
-              className="flex-row items-center p-4 bg-dark-bg/50 rounded-xl gap-4"
+              className="flex-row items-center p-4 bg-slate-50 dark:bg-dark-bg/50 rounded-xl gap-4"
               onPress={() => {
                 onSelect("edit");
                 onClose();
               }}
             >
               <Pencil size={20} color="green" />
-              <Text className="text-white font-medium text-lg">Edit</Text>
+              <Text className="text-slate-900 dark:text-white font-medium text-lg">
+                Edit
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="flex-row items-center p-4 bg-dark-bg/50 rounded-xl gap-4"
+              className="flex-row items-center p-4 bg-slate-50 dark:bg-dark-bg/50 rounded-xl gap-4"
               onPress={() => {
                 onSelect("duplicate");
                 onClose();
               }}
             >
               <Copy size={20} color="#6366f1" />
-              <Text className="text-white font-medium text-lg">Duplicate</Text>
+              <Text className="text-slate-900 dark:text-white font-medium text-lg">
+                Duplicate
+              </Text>
             </TouchableOpacity>
 
             <TimedConfirmDeleteButton
@@ -96,10 +100,12 @@ function SetActionModal({
             />
           </View>
           <TouchableOpacity
-            className="mx-4 p-4 bg-dark-bg rounded-xl items-center"
+            className="mx-4 p-4 bg-slate-50 dark:bg-dark-bg rounded-xl items-center"
             onPress={onClose}
           >
-            <Text className="text-white font-semibold text-lg">Cancel</Text>
+            <Text className="text-slate-900 dark:text-white font-semibold text-lg">
+              Cancel
+            </Text>
           </TouchableOpacity>
         </View>
       </Pressable>
@@ -113,6 +119,11 @@ export default function MovementDetailScreen() {
     movementId: string;
   }>();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
+  const headerIconColor = isDark ? "#ffffff" : "#0f172a"; // white : slate-900
+  const calendarIconColor = isDark ? "#ffffff" : "#0f172a"; // white : slate-900 Note: text-slate-900 is 0f172a
 
   const { data: movement, isLoading: movementLoading } =
     useUserMovement(movementId);
@@ -216,7 +227,7 @@ export default function MovementDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-dark-bg items-center justify-center">
+      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
       </SafeAreaView>
     );
@@ -224,8 +235,10 @@ export default function MovementDetailScreen() {
 
   if (!movement) {
     return (
-      <SafeAreaView className="flex-1 bg-dark-bg items-center justify-center">
-        <Text className="text-white text-lg">Movement not found</Text>
+      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
+        <Text className="text-slate-900 dark:text-white text-lg">
+          Movement not found
+        </Text>
         <TouchableOpacity
           onPress={() => router.back()}
           className="mt-4 bg-primary-500 px-4 py-2 rounded-full"
@@ -245,44 +258,28 @@ export default function MovementDetailScreen() {
   }, {});
 
   return (
-    <View className="flex-1 bg-dark-bg">
-      <BlurView
-        intensity={50}
-        experimentalBlurMethod="dimezisBlurView" // Better Android support if available
-        tint="systemThickMaterialDark"
-        style={{ backgroundColor: "rgba(15,23,42,0.5)" }}
-        className="absolute top-0 left-0 right-0 z-10 pt-12 pb-4 border-b border-white/10"
-      >
-        <View className="px-4 flex-row items-center justify-between">
-          <TouchableOpacity
-            onPress={() => router.replace(`/workout/${workoutId}`)}
-            className="flex-row items-center p-2 -ml-2"
-          >
-            <ChevronLeft size={24} color="#fff" />
-            <Text
-              className="text-white text-lg font-semibold ml-1 max-w-[200px]"
-              numberOfLines={1}
-            >
-              {workout?.name || "Back"}
-            </Text>
-          </TouchableOpacity>
+    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+      <GlassHeader
+        title={workout?.name || "Back"}
+        backPath={`/workout/${workoutId}`}
+        rightAction={
           <TouchableOpacity
             className="p-2 -mr-2"
             onPress={() => {
               setActionSheetVisible(true);
             }}
           >
-            <MoreVertical size={24} color="#fff" />
+            <MoreVertical size={24} color={headerIconColor} />
           </TouchableOpacity>
-        </View>
-      </BlurView>
+        }
+      />
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingTop: 120 }}
       >
         <View className="px-4 mb-6">
-          <Text className="text-3xl font-bold text-white text-left">
+          <Text className="text-3xl font-bold text-slate-900 dark:text-white text-left">
             {movement.name}
           </Text>
         </View>
@@ -327,11 +324,11 @@ export default function MovementDetailScreen() {
             )}
           </TouchableOpacity>
 
-          <View className="bg-dark-card rounded-xl border border-dark-border p-3">
+          <View className="bg-white dark:bg-dark-card rounded-xl border border-slate-200 dark:border-dark-border p-3">
             <TextInput
               placeholder="Add note..."
               placeholderTextColor="#9ca3af"
-              className="text-white text-base"
+              className="text-slate-900 dark:text-white text-base"
               value={notes}
               onChangeText={setNotes}
               multiline
@@ -343,8 +340,10 @@ export default function MovementDetailScreen() {
         {/* History Section */}
         <View className="px-4 pb-20">
           <View className="flex-row items-center flex-start mb-4 gap-2">
-            <Calendar size={24} color="#fff" />
-            <Text className="text-lg font-bold text-white">Set history</Text>
+            <Calendar size={24} color={calendarIconColor} />
+            <Text className="text-lg font-bold text-slate-900 dark:text-white">
+              Set history
+            </Text>
           </View>
 
           {Object.entries(groupedSets)
@@ -362,10 +361,10 @@ export default function MovementDetailScreen() {
               return (
                 <View
                   key={date}
-                  className="bg-dark-card rounded-xl border border-dark-border mb-4 overflow-hidden"
+                  className="bg-white dark:bg-dark-card rounded-xl border border-slate-200 dark:border-dark-border mb-4 overflow-hidden"
                 >
-                  <View className="bg-dark-bg/50 p-3 border-b border-dark-border gap-1">
-                    <Text className="text-gray-300 font-semibold text-base">
+                  <View className="bg-slate-50/50 dark:bg-dark-bg/50 p-3 border-b border-slate-200 dark:border-dark-border gap-1">
+                    <Text className="text-slate-700 dark:text-gray-300 font-semibold text-base">
                       {date}
                     </Text>
                     {showComparison && (
@@ -375,7 +374,7 @@ export default function MovementDetailScreen() {
                         </Text>
 
                         {/* Use SessionComparison Component */}
-                        <View className="border-dark-border/50">
+                        <View className="border-slate-200/50 dark:border-dark-border/50">
                           <SessionComparison
                             currentSets={dateSets as any[]}
                             previousSets={previousSets}
@@ -392,19 +391,21 @@ export default function MovementDetailScreen() {
                         key={set.id}
                         className={`flex-row items-center justify-between p-3 ${
                           index !== (dateSets as any[]).length - 1
-                            ? "border-b border-dark-border/30"
+                            ? "border-b border-slate-100 dark:border-dark-border/30"
                             : ""
                         }`}
                       >
                         <View className="flex-row items-center gap-2">
-                          <Text className="text-white font-bold text-xl text-center">
+                          <Text className="text-slate-900 dark:text-white font-bold text-xl text-center">
                             {set.reps}
                           </Text>
-                          <Text className="text-gray-500 text-sm">reps x</Text>
-                          <Text className="text-white font-bold text-xl text-center">
+                          <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                            reps x
+                          </Text>
+                          <Text className="text-slate-900 dark:text-white font-bold text-xl text-center">
                             {set.weight}
                           </Text>
-                          <Text className="text-gray-500 text-sm">
+                          <Text className="text-slate-500 dark:text-gray-500 text-sm">
                             {profile?.weight_unit || "kg"}
                           </Text>
                         </View>
@@ -422,7 +423,7 @@ export default function MovementDetailScreen() {
                             right: 10,
                           }}
                         >
-                          <MoreVertical size={20} color="#94a3b8" />
+                          <MoreVertical size={20} color={iconColor} />
                         </TouchableOpacity>
                       </View>
                     ))}

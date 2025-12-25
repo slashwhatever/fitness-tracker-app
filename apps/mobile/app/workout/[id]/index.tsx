@@ -9,7 +9,8 @@ import {
   useWorkoutMovements,
 } from "@fitness/shared";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ChevronLeft, Dumbbell, MoreVertical } from "lucide-react-native";
+import { Dumbbell, MoreVertical } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -20,12 +21,17 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { GlassHeader } from "../../../components/GlassHeader";
 import { MovementActionSheet } from "../../../components/MovementActionSheet";
 import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
+  const headerIconColor = isDark ? "#ffffff" : "#0f172a"; // white : slate-900
 
   const { data: workout, isLoading: workoutLoading } = useWorkout(id);
   const { data: movements, isLoading: movementsLoading } =
@@ -136,7 +142,7 @@ export default function WorkoutDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-dark-bg items-center justify-center">
+      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
       </SafeAreaView>
     );
@@ -144,8 +150,10 @@ export default function WorkoutDetailScreen() {
 
   if (!workout) {
     return (
-      <SafeAreaView className="flex-1 bg-dark-bg items-center justify-center">
-        <Text className="text-white text-lg">Workout not found</Text>
+      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
+        <Text className="text-slate-900 dark:text-white text-lg">
+          Workout not found
+        </Text>
         <TouchableOpacity
           onPress={() => router.back()}
           className="mt-4 bg-primary-500 px-4 py-2 rounded-full"
@@ -170,7 +178,7 @@ export default function WorkoutDetailScreen() {
 
   const renderMovement = ({ item }: { item: any }) => (
     <TouchableOpacity
-      className="bg-dark-card p-4 rounded-xl border border-dark-border mb-3"
+      className="bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border mb-3"
       onPress={() =>
         router.push(`/workout/${id}/movement/${item.user_movement.id}`)
       }
@@ -181,10 +189,10 @@ export default function WorkoutDetailScreen() {
             <Dumbbell size={20} color="#ec4899" />
           </View>
           <View className="flex-1">
-            <Text className="text-white font-bold text-base">
+            <Text className="text-slate-900 dark:text-white font-bold text-base">
               {item.user_movement?.name}
             </Text>
-            <Text className="text-gray-400 text-sm">
+            <Text className="text-slate-500 dark:text-gray-400 text-sm">
               {getLastSetDate(item.user_movement.id)}
             </Text>
           </View>
@@ -196,53 +204,55 @@ export default function WorkoutDetailScreen() {
           }}
           className="p-2"
         >
-          <MoreVertical size={20} color="#9ca3af" />
+          <MoreVertical size={20} color={iconColor} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg">
-      <View className="flex-1 p-4 pb-0">
-        <View className="flex-row items-center justify-between mb-6">
-          <TouchableOpacity
-            onPress={() => router.replace("/(tabs)/workouts")}
-            className="flex-row items-center p-2 -ml-2"
-          >
-            <ChevronLeft size={24} color="#fff" />
-            <Text className="text-white text-lg font-semibold ml-1">
-              Workouts
-            </Text>
-          </TouchableOpacity>
+    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+      <GlassHeader
+        title="Workouts"
+        backPath="/(tabs)/workouts"
+        rightAction={
           <TouchableOpacity
             className="p-2 -mr-2"
             onPress={() => setWorkoutActionSheetVisible(true)}
           >
-            <MoreVertical size={24} color="#fff" />
+            <MoreVertical size={24} color={headerIconColor} />
           </TouchableOpacity>
-        </View>
+        }
+      />
 
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-white mb-1">
-            {workout.name}
-          </Text>
-          {workout.description && (
-            <Text className="text-gray-400 text-base">
-              {workout.description}
-            </Text>
-          )}
-        </View>
+      <View className="flex-1 pb-0">
+        {/* Header Removed */}
 
         <FlatList
           data={movements}
           renderItem={renderMovement}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{
+            paddingBottom: 100,
+            paddingTop: 120,
+            paddingHorizontal: 16,
+          }}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <View className="mb-6">
+              <Text className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+                {workout.name}
+              </Text>
+              {workout.description && (
+                <Text className="text-slate-500 dark:text-gray-400 text-base">
+                  {workout.description}
+                </Text>
+              )}
+            </View>
+          }
           ListEmptyComponent={
-            <View className="items-center justify-center py-20 bg-dark-card rounded-2xl border border-dashed border-gray-700">
-              <Text className="text-gray-500 text-lg mb-2">
+            <View className="items-center justify-center py-20 bg-white dark:bg-dark-card rounded-2xl border border-dashed border-slate-300 dark:border-gray-700">
+              <Text className="text-slate-500 dark:text-gray-500 text-lg mb-2">
                 No exercises added
               </Text>
               <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-full mt-2">
@@ -270,6 +280,6 @@ export default function WorkoutDetailScreen() {
         workoutName={workout?.name || ""}
         isArchived={workout?.archived || false}
       />
-    </SafeAreaView>
+    </View>
   );
 }

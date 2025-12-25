@@ -75,7 +75,7 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
       <TouchableWithoutFeedback onPress={onClose}>
         <View className="flex-1 bg-black/50 justify-end">
           <TouchableWithoutFeedback>
-            <View className="bg-dark-card rounded-t-3xl border-t border-dark-border p-6 pb-12">
+            <View className="bg-white dark:bg-dark-card rounded-t-3xl border-t border-slate-200 dark:border-dark-border p-6 pb-12">
               {/* Handle bar */}
               <View className="items-center mb-6">
                 <View className="w-12 h-1 bg-gray-600 rounded-full" />
@@ -83,10 +83,10 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
 
               {/* Header */}
               <View className="items-center mb-8">
-                <Text className="text-white text-xl font-bold mb-1">
+                <Text className="text-slate-900 dark:text-white text-xl font-bold mb-1">
                   Edit set
                 </Text>
-                <Text className="text-gray-400 text-sm max-w-[80%] text-center">
+                <Text className="text-slate-500 dark:text-gray-400 text-sm max-w-[80%] text-center">
                   Modify the values for this set from{" "}
                   {new Date(set.created_at).toLocaleString()}
                 </Text>
@@ -131,11 +131,11 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
               </TouchableOpacity>
 
               {/* Notes */}
-              <View className="bg-dark-bg/50 rounded-xl border border-dark-border p-3 flex-row items-center justify-between">
+              <View className="bg-slate-50 dark:bg-dark-bg/50 rounded-xl border border-slate-200 dark:border-dark-border p-3 flex-row items-center justify-between">
                 <TextInput
                   placeholder="Add note"
-                  placeholderTextColor="#64748b"
-                  className="text-white text-base flex-1"
+                  placeholderTextColor="#9ca3af"
+                  className="text-slate-900 dark:text-white text-base flex-1"
                   value={notes}
                   onChangeText={setNotes}
                   multiline

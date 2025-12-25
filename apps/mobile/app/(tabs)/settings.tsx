@@ -21,7 +21,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { GlassHeader } from "../../components/GlassHeader";
+import { ThemeSelector } from "../../components/ThemeSelector";
 
 interface SelectOption {
   label: string;
@@ -51,9 +52,11 @@ function SelectModal({
       onRequestClose={onClose}
     >
       <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <View className="bg-dark-card rounded-t-3xl overflow-hidden pb-8 border-t border-dark-border">
-          <View className="p-4 border-b border-dark-border flex-row justify-between items-center">
-            <Text className="text-lg font-semibold text-white">{title}</Text>
+        <View className="bg-white dark:bg-dark-card rounded-t-3xl overflow-hidden pb-8 border-t border-slate-200 dark:border-dark-border">
+          <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center">
+            <Text className="text-lg font-semibold text-slate-900 dark:text-white">
+              {title}
+            </Text>
             <TouchableOpacity onPress={onClose}>
               <Text className="text-primary font-medium">Done</Text>
             </TouchableOpacity>
@@ -62,8 +65,8 @@ function SelectModal({
             {options.map((option) => (
               <TouchableOpacity
                 key={option.value}
-                className={`p-4 border-b border-dark-border flex-row justify-between items-center ${
-                  value === option.value ? "bg-dark-bg/50" : ""
+                className={`p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center ${
+                  value === option.value ? "bg-slate-50 dark:bg-dark-bg/50" : ""
                 }`}
                 onPress={() => {
                   onSelect(option.value);
@@ -74,7 +77,7 @@ function SelectModal({
                   className={`text-base ${
                     value === option.value
                       ? "text-primary font-semibold"
-                      : "text-gray-300"
+                      : "text-slate-500 dark:text-gray-300"
                   }`}
                 >
                   {option.label}
@@ -176,70 +179,80 @@ export default function SettingsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-dark-bg">
+      <View className="flex-1 justify-center items-center bg-slate-50 dark:bg-dark-bg">
         <ActivityIndicator size="large" className="text-primary" />
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg">
+    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+      <GlassHeader title="Settings" showBack={false} />
       <ScrollView className="flex-1">
-        <View className="flex-1 p-4 pb-0 gap-4">
-          <Text className="text-3xl font-bold text-white">Settings</Text>
-
+        <View className="flex-1 p-4 pb-0 gap-4 pt-[120px]">
           {/* Profile Section */}
           <View className="gap-4">
-            <Text className="text-lg font-semibold text-white ml-1">
+            <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">
               Profile
             </Text>
-            <View className="bg-dark-card p-4 rounded-xl border border-dark-border">
-              <Text className="text-sm font-medium text-gray-400 mb-2">
+            <View className="bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border">
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Display Name
               </Text>
               <TextInput
-                className="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-base text-white placeholder:text-gray-600"
+                className="w-full bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 value={displayName}
                 onChangeText={setDisplayName}
                 placeholder="Enter your display name"
-                placeholderTextColor="#64748b"
+                placeholderTextColor="#94a3b8"
               />
-              <Text className="text-xs text-gray-500 mt-2">
+              <Text className="text-xs text-slate-500 dark:text-gray-500 mt-2">
                 This name will be displayed on your profile
               </Text>
             </View>
           </View>
 
+          {/* Appearance Section */}
+          <View className="gap-4">
+            <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">
+              Appearance
+            </Text>
+            <ThemeSelector />
+          </View>
+
           {/* Workout Preferences */}
           <View className="gap-4">
-            <Text className="text-lg font-semibold text-white ml-1">
+            <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">
               Workout preferences
             </Text>
-            <View className="bg-dark-card rounded-xl border border-dark-border overflow-hidden">
+            <View className="bg-white dark:bg-dark-card rounded-xl border border-slate-200 dark:border-dark-border overflow-hidden">
               {/* Default Rest Timer */}
               <TouchableOpacity
-                className="p-4 border-b border-dark-border flex-row justify-between items-center bg-dark-card active:bg-dark-bg/50"
+                className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card active:bg-slate-50 dark:active:bg-dark-bg/50"
                 onPress={() => setActiveModal("restTimer")}
               >
                 <View className="flex-1">
-                  <Text className="text-sm font-medium text-gray-400 mb-1">
+                  <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
                     Default Rest Timer
                   </Text>
-                  <Text className="text-base font-medium text-white">
+                  <Text className="text-base font-medium text-slate-900 dark:text-white">
                     {timerOptions.find((o) => o.value === defaultRestTimer)
                       ?.label || "Select timer"}
                   </Text>
                 </View>
-                <ChevronDown size={20} className="text-gray-500" />
+                <ChevronDown
+                  size={20}
+                  className="text-slate-400 dark:text-gray-500"
+                />
               </TouchableOpacity>
 
               {/* Pin Timer */}
-              <View className="p-4 border-b border-dark-border flex-row justify-between items-center bg-dark-card">
+              <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card">
                 <View className="flex-1 pr-4">
-                  <Text className="text-sm font-medium text-white">
+                  <Text className="text-sm font-medium text-slate-900 dark:text-white">
                     Pin Timer
                   </Text>
-                  <Text className="text-xs text-gray-500 mt-1">
+                  <Text className="text-xs text-slate-500 dark:text-gray-500 mt-1">
                     Keep the timer visible at the top of the screen when
                     scrolling
                   </Text>
@@ -247,7 +260,7 @@ export default function SettingsScreen() {
                 <Switch
                   value={timerPinEnabled}
                   onValueChange={setTimerPinEnabled}
-                  trackColor={{ false: "#334155", true: "#6366f1" }}
+                  trackColor={{ false: "#cbd5e1", true: "#6366f1" }}
                   thumbColor={Platform.OS === "ios" ? "#fff" : "#fff"}
                 />
               </View>
@@ -255,32 +268,38 @@ export default function SettingsScreen() {
               {/* Units */}
               <View className="flex-row">
                 <TouchableOpacity
-                  className="flex-1 p-4 border-r border-dark-border border-b-0 active:bg-dark-bg/50"
+                  className="flex-1 p-4 border-r border-slate-200 dark:border-dark-border border-b-0 active:bg-slate-50 dark:active:bg-dark-bg/50"
                   onPress={() => setActiveModal("weight")}
                 >
-                  <Text className="text-sm font-medium text-gray-400 mb-1">
+                  <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
                     Weight Unit
                   </Text>
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-base font-medium text-white">
+                    <Text className="text-base font-medium text-slate-900 dark:text-white">
                       {weightUnit === "lbs" ? "Pounds (lbs)" : "Kilograms (kg)"}
                     </Text>
-                    <ChevronDown size={16} className="text-gray-500" />
+                    <ChevronDown
+                      size={16}
+                      className="text-slate-400 dark:text-gray-500"
+                    />
                   </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="flex-1 p-4 active:bg-dark-bg/50 border-b-0"
+                  className="flex-1 p-4 active:bg-slate-50 dark:active:bg-dark-bg/50 border-b-0"
                   onPress={() => setActiveModal("distance")}
                 >
-                  <Text className="text-sm font-medium text-gray-400 mb-1">
+                  <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
                     Distance Unit
                   </Text>
                   <View className="flex-row items-center justify-between">
-                    <Text className="text-base font-medium text-white">
+                    <Text className="text-base font-medium text-slate-900 dark:text-white">
                       {distanceUnit === "miles" ? "Miles" : "Kilometers"}
                     </Text>
-                    <ChevronDown size={16} className="text-gray-500" />
+                    <ChevronDown
+                      size={16}
+                      className="text-slate-400 dark:text-gray-500"
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -292,10 +311,15 @@ export default function SettingsScreen() {
             <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={handleReset}
-                className="flex-1 bg-dark-card border border-dark-border p-4 rounded-xl flex-row justify-center items-center active:bg-dark-bg/50 "
+                className="flex-1 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border p-4 rounded-xl flex-row justify-center items-center active:bg-slate-50 dark:active:bg-dark-bg/50 "
               >
-                <Undo2 size={20} color="white" className="mr-2" />
-                <Text className="font-semibold text-white">Reset</Text>
+                <Undo2
+                  size={20}
+                  className="text-slate-900 dark:text-white mr-2"
+                />
+                <Text className="font-semibold text-slate-900 dark:text-white">
+                  Reset
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -362,6 +386,6 @@ export default function SettingsScreen() {
         value={distanceUnit}
         onSelect={(v) => setDistanceUnit(v as DistanceUnit)}
       />
-    </SafeAreaView>
+    </View>
   );
 }

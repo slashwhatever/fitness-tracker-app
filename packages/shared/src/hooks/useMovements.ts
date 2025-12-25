@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
-import type { Database } from "../lib/supabase/database.types";
 import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
 import { isSafeForQueries } from "../lib/utils/validation";
 import type {
@@ -17,6 +16,7 @@ import type {
   TrackingTypeName,
   UserMovement,
 } from "../models/types";
+import type { Database } from "../types/database.types";
 
 type UserMovementInsert = TablesInsert<"user_movements">;
 type UserMovementUpdate = TablesUpdate<"user_movements">;

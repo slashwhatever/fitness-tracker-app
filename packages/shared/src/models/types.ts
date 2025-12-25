@@ -1,4 +1,4 @@
-import type { Tables } from "../lib/supabase/database.types";
+import type { Tables } from "../types/database.types";
 
 import type { Enums } from "../types/database.types";
 

@@ -8,6 +8,7 @@ import {
 } from "@fitness/shared";
 import { useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useMemo, useState } from "react";
 import {
   Alert,
@@ -17,13 +18,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { GlassHeader } from "../../components/GlassHeader";
 import { WorkoutActionSheet } from "../../components/WorkoutActionSheet";
 
 export default function WorkoutsScreen() {
   const { workouts, loading, refetch } = useWorkouts();
   const { groups } = useWorkoutGroups();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const moreIconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
 
   const archiveMutation = useArchiveWorkout();
   const duplicateMutation = useDuplicateWorkout();
@@ -107,8 +111,8 @@ export default function WorkoutsScreen() {
     <TouchableOpacity
       className={`p-4 rounded-2xl border mb-3 flex-row items-center ${
         item.archived
-          ? "bg-dark-bg border-dark-border opacity-60"
-          : "bg-dark-card border-dark-border"
+          ? "bg-slate-100 dark:bg-dark-bg border-slate-200 dark:border-dark-border opacity-60"
+          : "bg-white dark:bg-dark-card border-slate-200 dark:border-dark-border"
       }`}
       onPress={() => router.push(`/workout/${item.id}`)}
     >
@@ -120,8 +124,12 @@ export default function WorkoutsScreen() {
         <Dumbbell size={24} color={item.archived ? "#94a3b8" : "#6366f1"} />
       </View>
       <View className="flex-1">
-        <Text className="text-white font-bold text-base">{item.name}</Text>
-        <Text className="text-gray-400 text-sm">{item.description}</Text>
+        <Text className="text-slate-900 dark:text-white font-bold text-base">
+          {item.name}
+        </Text>
+        <Text className="text-slate-500 dark:text-gray-400 text-sm">
+          {item.description}
+        </Text>
       </View>
 
       <TouchableOpacity
@@ -133,7 +141,7 @@ export default function WorkoutsScreen() {
         }}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <MoreVertical size={20} color="#94a3b8" />
+        <MoreVertical size={20} color={moreIconColor} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -143,7 +151,7 @@ export default function WorkoutsScreen() {
   }: {
     section: { title: string };
   }) => (
-    <View className="bg-dark-bg py-2 mb-2">
+    <View className="bg-slate-50 dark:bg-dark-bg py-2 mb-2">
       <Text className="text-gray-400 font-semibold uppercase text-xs tracking-wider">
         {title}
       </Text>
@@ -151,16 +159,26 @@ export default function WorkoutsScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg">
-      <View className="flex-1 p-4 pb-0">
-        <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-3xl font-bold text-white">Workouts</Text>
-          <View className="flex-row gap-4">
+    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+      <GlassHeader title="Workouts" showBack={false} />
+
+      <SectionList
+        sections={sections}
+        renderItem={renderItem}
+        renderSectionHeader={renderSectionHeader}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16, paddingTop: 120, gap: 4 }}
+        showsVerticalScrollIndicator={false}
+        stickySectionHeadersEnabled={false}
+        ListHeaderComponent={
+          <View className="flex-row items-center justify-end gap-4">
             <TouchableOpacity
-              className="bg-dark-card border border-dark-border px-4 py-2 rounded-full"
+              className="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border px-4 py-2 rounded-full"
               onPress={() => router.push("/groups/modal")}
             >
-              <Text className="text-white font-semibold">Groups</Text>
+              <Text className="text-slate-900 dark:text-white font-semibold">
+                Groups
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-primary-500 px-4 py-2 rounded-full"
@@ -169,32 +187,22 @@ export default function WorkoutsScreen() {
               <Text className="text-white font-semibold">+ New</Text>
             </TouchableOpacity>
           </View>
-        </View>
-
-        <SectionList
-          sections={sections}
-          renderItem={renderItem}
-          renderSectionHeader={renderSectionHeader}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          showsVerticalScrollIndicator={false}
-          stickySectionHeadersEnabled={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={refetch}
-              tintColor="#fff"
-            />
-          }
-          ListEmptyComponent={
-            !loading ? (
-              <View className="items-center justify-center py-20">
-                <Text className="text-gray-500 text-lg">No workouts found</Text>
-              </View>
-            ) : null
-          }
-        />
-      </View>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={refetch}
+            tintColor="#6366f1"
+          />
+        }
+        ListEmptyComponent={
+          !loading ? (
+            <View className="items-center justify-center py-20">
+              <Text className="text-gray-500 text-lg">No workouts found</Text>
+            </View>
+          ) : null
+        }
+      />
 
       <WorkoutActionSheet
         visible={modalVisible}
@@ -203,6 +211,6 @@ export default function WorkoutsScreen() {
         workoutName={selectedWorkout?.name || ""}
         isArchived={selectedWorkout?.archived || false}
       />
-    </SafeAreaView>
+    </View>
   );
 }

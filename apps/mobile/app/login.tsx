@@ -74,7 +74,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-dark-bg">
+    <SafeAreaView className="flex-1 bg-white dark:bg-dark-bg">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -93,17 +93,17 @@ export default function LoginScreen() {
                   color="#6366f1"
                 />
               </View>
-              <Text className="text-3xl font-bold text-center text-white">
+              <Text className="text-3xl font-bold text-center text-slate-900 dark:text-white">
                 Welcome to Logset
               </Text>
-              <Text className="text-gray-400 text-center text-base">
+              <Text className="text-slate-500 dark:text-gray-400 text-center text-base">
                 Sign in to your account to continue
               </Text>
             </View>
 
             {/* Form */}
             <View className="gap-4">
-              <Text className="text-sm font-medium text-gray-300">
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-300">
                 Email address
               </Text>
               <Controller
@@ -111,9 +111,9 @@ export default function LoginScreen() {
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white placeholder:text-gray-600"
+                    className="w-full bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     placeholder="Enter your email"
-                    placeholderTextColor="#64748b"
+                    placeholderTextColor="#94a3b8"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -130,7 +130,7 @@ export default function LoginScreen() {
               )}
 
               {/* Password Input */}
-              <Text className="text-sm font-medium text-gray-300">
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-300">
                 Password
               </Text>
               <View className="relative">
@@ -139,9 +139,9 @@ export default function LoginScreen() {
                   name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3 text-base text-white pr-12 placeholder:text-gray-600"
+                      className="w-full bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white pr-12 placeholder:text-gray-400 dark:placeholder:text-gray-600"
                       placeholder="Enter your password"
-                      placeholderTextColor="#64748b"
+                      placeholderTextColor="#94a3b8"
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
@@ -157,7 +157,10 @@ export default function LoginScreen() {
                   {showPassword ? (
                     <EyeOff size={20} color="#94a3b8" />
                   ) : (
-                    <Eye size={20} color="#94a3b8" />
+                    <Eye
+                      size={20}
+                      className="text-slate-400 dark:text-slate-400"
+                    />
                   )}
                 </Pressable>
               </View>
