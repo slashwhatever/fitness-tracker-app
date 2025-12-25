@@ -18,8 +18,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GlassHeader } from "../../components/GlassHeader";
 import { WorkoutActionSheet } from "../../components/WorkoutActionSheet";
+import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 export default function WorkoutsScreen() {
   const { workouts, loading, refetch } = useWorkouts();
@@ -158,16 +158,20 @@ export default function WorkoutsScreen() {
     </View>
   );
 
+  const headerPadding = useHeaderPadding();
+
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader title="Workouts" showBack={false} />
-
       <SectionList
         sections={sections}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 16, paddingTop: 120, gap: 4 }}
+        contentContainerStyle={{
+          padding: 16,
+          paddingTop: headerPadding + 16,
+          gap: 4,
+        }}
         showsVerticalScrollIndicator={false}
         stickySectionHeadersEnabled={false}
         ListHeaderComponent={

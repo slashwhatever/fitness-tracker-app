@@ -1,5 +1,5 @@
 import { useUpdateWorkout, useWorkout } from "@fitness/shared";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { GlassHeader } from "../../../components/GlassHeader";
+import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 const REST_TIMER_OPTIONS = [
   { label: "None", value: null },
@@ -107,6 +108,7 @@ function RestTimerSelectModal({
 
 export default function WorkoutSettingsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const headerPadding = useHeaderPadding();
   const router = useRouter();
   const { data: workout, isLoading } = useWorkout(id);
   const updateMutation = useUpdateWorkout();
@@ -156,7 +158,15 @@ export default function WorkoutSettingsScreen() {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader title="Workout Settings" backPath={`/workout/${id}`} />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          header: () => (
+            <GlassHeader title="Workout Settings" backPath={`/workout/${id}`} />
+          ),
+        }}
+      />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -164,7 +174,10 @@ export default function WorkoutSettingsScreen() {
       >
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 24, paddingTop: 120 }}
+          contentContainerStyle={{
+            padding: 24,
+            paddingTop: headerPadding + 24,
+          }}
         >
           <View className="gap-4">
             <View>

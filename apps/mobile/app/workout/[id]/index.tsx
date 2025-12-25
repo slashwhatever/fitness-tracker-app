@@ -8,7 +8,7 @@ import {
   useWorkout,
   useWorkoutMovements,
 } from "@fitness/shared";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { useState } from "react";
@@ -24,10 +24,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassHeader } from "../../../components/GlassHeader";
 import { MovementActionSheet } from "../../../components/MovementActionSheet";
 import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
+import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const headerPadding = useHeaderPadding();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
@@ -212,17 +214,25 @@ export default function WorkoutDetailScreen() {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader
-        title="Workouts"
-        backPath="/(tabs)/workouts"
-        rightAction={
-          <TouchableOpacity
-            className="p-2 -mr-2"
-            onPress={() => setWorkoutActionSheetVisible(true)}
-          >
-            <MoreVertical size={24} color={headerIconColor} />
-          </TouchableOpacity>
-        }
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          header: () => (
+            <GlassHeader
+              title="Workouts"
+              backPath="/(tabs)/workouts"
+              rightAction={
+                <TouchableOpacity
+                  className="p-2 -mr-2"
+                  onPress={() => setWorkoutActionSheetVisible(true)}
+                >
+                  <MoreVertical size={24} color={headerIconColor} />
+                </TouchableOpacity>
+              }
+            />
+          ),
+        }}
       />
 
       <View className="flex-1 pb-0">
@@ -234,7 +244,7 @@ export default function WorkoutDetailScreen() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{
             paddingBottom: 100,
-            paddingTop: 120,
+            paddingTop: headerPadding + 16,
             paddingHorizontal: 16,
           }}
           showsVerticalScrollIndicator={false}

@@ -7,6 +7,7 @@ import {
   Settings,
 } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
+import { GlassHeader } from "../../components/GlassHeader";
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
@@ -15,7 +16,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerTransparent: true,
+        header: ({ options }) => (
+          <GlassHeader title={options.title} showBack={false} />
+        ),
         tabBarStyle: {
           position: "absolute",
           borderTopWidth: 0,

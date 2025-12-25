@@ -9,7 +9,7 @@ import {
   useWorkoutMovements,
 } from "@fitness/shared";
 import { format } from "date-fns";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
   Calendar,
   Check,
@@ -37,6 +37,7 @@ import { MovementActionSheet } from "../../../../components/MovementActionSheet"
 import { SessionComparison } from "../../../../components/SessionComparison";
 import { SetAdjuster } from "../../../../components/SetAdjuster";
 import { TimedConfirmDeleteButton } from "../../../../components/TimedConfirmDeleteButton";
+import { useHeaderPadding } from "../../../../hooks/useHeaderPadding";
 
 interface SetActionModalProps {
   visible: boolean;
@@ -119,6 +120,7 @@ export default function MovementDetailScreen() {
     movementId: string;
   }>();
   const router = useRouter();
+  const headerPadding = useHeaderPadding();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
@@ -259,24 +261,32 @@ export default function MovementDetailScreen() {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader
-        title={workout?.name || "Back"}
-        backPath={`/workout/${workoutId}`}
-        rightAction={
-          <TouchableOpacity
-            className="p-2 -mr-2"
-            onPress={() => {
-              setActionSheetVisible(true);
-            }}
-          >
-            <MoreVertical size={24} color={headerIconColor} />
-          </TouchableOpacity>
-        }
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          header: () => (
+            <GlassHeader
+              title={workout?.name || "Back"}
+              backPath={`/workout/${workoutId}`}
+              rightAction={
+                <TouchableOpacity
+                  className="p-2 -mr-2"
+                  onPress={() => {
+                    setActionSheetVisible(true);
+                  }}
+                >
+                  <MoreVertical size={24} color={headerIconColor} />
+                </TouchableOpacity>
+              }
+            />
+          ),
+        }}
       />
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingTop: 120 }}
+        contentContainerStyle={{ paddingTop: headerPadding + 16 }}
       >
         <View className="px-4 mb-6">
           <Text className="text-3xl font-bold text-slate-900 dark:text-white text-left">

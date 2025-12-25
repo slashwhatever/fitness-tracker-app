@@ -21,8 +21,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GlassHeader } from "../../components/GlassHeader";
 import { ThemeSelector } from "../../components/ThemeSelector";
+import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 interface SelectOption {
   label: string;
@@ -185,11 +185,15 @@ export default function SettingsScreen() {
     );
   }
 
+  const headerPadding = useHeaderPadding();
+
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader title="Settings" showBack={false} />
       <ScrollView className="flex-1">
-        <View className="flex-1 p-4 pb-0 gap-4 pt-[120px]">
+        <View
+          className="flex-1 p-4 pb-0 gap-4"
+          style={{ paddingTop: headerPadding + 16 }}
+        >
           {/* Profile Section */}
           <View className="gap-4">
             <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">

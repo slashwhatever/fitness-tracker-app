@@ -14,7 +14,10 @@ interface GlassHeaderProps {
   rightAction?: React.ReactNode;
   intensity?: number;
   onBack?: () => void;
+  style?: any;
 }
+
+export const HEADER_CONTENT_HEIGHT = 60;
 
 export function GlassHeader({
   title,
@@ -47,16 +50,25 @@ export function GlassHeader({
       intensity={intensity}
       experimentalBlurMethod="dimezisBlurView"
       tint={isDark ? "systemThickMaterialDark" : "systemThickMaterialLight"}
-      style={{
-        backgroundColor: isDark
-          ? "rgba(15,23,42,0.5)"
-          : "rgba(255,255,255,0.5)",
-      }}
+      style={[
+        {
+          backgroundColor: isDark
+            ? "rgba(15,23,42,0.5)"
+            : "rgba(255,255,255,0.5)",
+        },
+        // If used as a navigation header, absolute positioning might be redundant depending on parent,
+        // but robust for ensure it covers what it needs to.
+        // However, if we want to support non-absolute uses, we might want to make this configurable.
+        // For now, keeping it absolute but allowing style override is safest.
+      ]}
       className="absolute top-0 left-0 right-0 z-50 border-b border-slate-200/50 dark:border-white/10"
     >
       <View
-        style={{ paddingTop: insets.top }}
-        className="px-4 min-h-[60px] flex-row items-center justify-between"
+        style={{
+          paddingTop: insets.top,
+          height: insets.top + HEADER_CONTENT_HEIGHT,
+        }}
+        className="px-4 flex-row items-center justify-between"
       >
         <View className="flex-1 flex-row items-center">
           {showBack && (

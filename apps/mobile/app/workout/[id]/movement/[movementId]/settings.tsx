@@ -4,7 +4,7 @@ import {
   useUserMovement,
   useWorkoutMovements,
 } from "@fitness/shared";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import {
@@ -21,6 +21,7 @@ import {
   View,
 } from "react-native";
 import { GlassHeader } from "../../../../../components/GlassHeader";
+import { useHeaderPadding } from "../../../../../hooks/useHeaderPadding";
 
 const REST_TIMER_OPTIONS = [
   { label: "None", value: null },
@@ -115,6 +116,7 @@ export default function MovementSettingsScreen() {
     id: string;
     movementId: string;
   }>();
+  const headerPadding = useHeaderPadding();
   const router = useRouter();
 
   const { data: movement, isLoading: movementLoading } =
@@ -192,9 +194,17 @@ export default function MovementSettingsScreen() {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader
-        title="Movement Settings"
-        backPath={`/workout/${workoutId}/movement/${movementId}`}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          headerTransparent: true,
+          header: () => (
+            <GlassHeader
+              title="Movement Settings"
+              backPath={`/workout/${workoutId}/movement/${movementId}`}
+            />
+          ),
+        }}
       />
 
       <KeyboardAvoidingView
@@ -203,7 +213,10 @@ export default function MovementSettingsScreen() {
       >
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ padding: 24, paddingTop: 120 }}
+          contentContainerStyle={{
+            padding: 24,
+            paddingTop: headerPadding + 24,
+          }}
         >
           <View className="gap-6">
             <View>

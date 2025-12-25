@@ -1,15 +1,21 @@
 import { useAuth } from "@fitness/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, Text, View } from "react-native";
-import { GlassHeader } from "../../components/GlassHeader";
+import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  const headerPadding = useHeaderPadding();
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      <GlassHeader title="Dashboard" showBack={false} />
-      <ScrollView contentContainerClassName="p-4 pb-24 pt-[120px]">
+      <ScrollView
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 96, // 24 * 4
+          paddingTop: headerPadding + 16, // Add some extra spacing below header
+        }}
+      >
         <View className="flex-row justify-between items-center mb-6">
           <View>
             <Text className="text-slate-500 dark:text-gray-400 text-sm font-medium">
