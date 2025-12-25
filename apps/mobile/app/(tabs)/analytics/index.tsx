@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { useHeaderPadding } from "../../hooks/useHeaderPadding";
+import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 export default function AnalyticsScreen() {
   const headerPadding = useHeaderPadding();

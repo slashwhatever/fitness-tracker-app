@@ -21,8 +21,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ThemeSelector } from "../../components/ThemeSelector";
-import { useHeaderPadding } from "../../hooks/useHeaderPadding";
+import { ThemeSelector } from "../../../components/ThemeSelector";
+import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 interface SelectOption {
   label: string;
@@ -97,6 +97,7 @@ function SelectModal({
 export default function SettingsScreen() {
   const { signOut } = useAuth();
   const router = useRouter();
+  const headerPadding = useHeaderPadding();
   const { data: userProfile, isLoading } = useUserProfile();
   const updateProfileMutation = useUpdateUserProfile();
 
@@ -184,8 +185,6 @@ export default function SettingsScreen() {
       </View>
     );
   }
-
-  const headerPadding = useHeaderPadding();
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">

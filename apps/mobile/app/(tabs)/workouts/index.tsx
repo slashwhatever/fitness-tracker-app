@@ -18,8 +18,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { WorkoutActionSheet } from "../../components/WorkoutActionSheet";
-import { useHeaderPadding } from "../../hooks/useHeaderPadding";
+import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
+import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 export default function WorkoutsScreen() {
   const { workouts, loading, refetch } = useWorkouts();

@@ -1,7 +1,7 @@
 import { useAuth } from "@fitness/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, Text, View } from "react-native";
-import { useHeaderPadding } from "../../hooks/useHeaderPadding";
+import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 export default function HomeScreen() {
   const { user } = useAuth();

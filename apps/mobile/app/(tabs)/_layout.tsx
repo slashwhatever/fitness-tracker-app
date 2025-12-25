@@ -1,78 +1,76 @@
-import { BlurView } from "expo-blur";
-import { Tabs } from "expo-router";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
-  BarChart3,
-  Dumbbell,
-  Chrome as Home,
-  Settings,
-} from "lucide-react-native";
+  Icon,
+  Label,
+  NativeTabs,
+  VectorIcon,
+} from "expo-router/unstable-native-tabs";
 import { useColorScheme } from "nativewind";
-import { GlassHeader } from "../../components/GlassHeader";
+import { Platform } from "react-native";
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        headerTransparent: true,
-        header: ({ options }) => (
-          <GlassHeader title={options.title} showBack={false} />
-        ),
-        tabBarStyle: {
-          position: "absolute",
-          borderTopWidth: 0,
-          elevation: 0,
-          height: 60,
-          paddingBottom: 10,
-        },
-        tabBarBackground: () => (
-          <BlurView
-            intensity={80}
-            tint={isDark ? "dark" : "light"}
-            style={{ flex: 1 }}
-          />
-        ),
-        tabBarActiveTintColor: "#ec4899", // Pink 500
-        tabBarInactiveTintColor: isDark ? "#94a3b8" : "#64748b", // Slate 400 : Slate 500
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
-        }}
-      />
-      <Tabs.Screen
-        name="analytics"
-        options={{
-          title: "Analytics",
-          tabBarIcon: ({ color, size }) => (
-            <BarChart3 color={color} size={size} />
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        {Platform.select({
+          ios: <Icon sf="house.fill" />,
+          android: (
+            <Icon
+              src={<VectorIcon family={MaterialIcons} name="home" size={24} />}
+            />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="workouts"
-        options={{
-          title: "Workouts",
-          tabBarIcon: ({ color, size }) => (
-            <Dumbbell color={color} size={size} />
+        })}
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="workouts">
+        <Label>Workouts</Label>
+        {Platform.select({
+          ios: <Icon sf="dumbbell.fill" />,
+          android: (
+            <Icon
+              src={
+                <VectorIcon
+                  family={MaterialIcons}
+                  name="fitness-center"
+                  size={24}
+                />
+              }
+            />
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Settings color={color} size={size} />
+        })}
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="analytics">
+        <Label>Analytics</Label>
+        {Platform.select({
+          ios: <Icon sf="chart.bar.fill" />,
+          android: (
+            <Icon
+              src={
+                <VectorIcon family={MaterialIcons} name="bar-chart" size={24} />
+              }
+            />
           ),
-        }}
-      />
-    </Tabs>
+        })}
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+        {Platform.select({
+          ios: <Icon sf="gear" />,
+          android: (
+            <Icon
+              src={
+                <VectorIcon family={MaterialIcons} name="settings" size={24} />
+              }
+            />
+          ),
+        })}
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
