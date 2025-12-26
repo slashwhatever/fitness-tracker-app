@@ -1,7 +1,12 @@
 "use client";
 
 import type { QueryData } from "@supabase/supabase-js";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+} from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
 import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
@@ -16,7 +21,18 @@ const groupKeys = {
   list: (userId: string) => [...groupKeys.lists(), userId] as const,
 };
 
-export function useWorkoutGroups() {
+export function useWorkoutGroups(): {
+  groups: WorkoutGroup[];
+  loading: boolean;
+  error: Error | null;
+  createGroup: UseMutationResult<WorkoutGroup, Error, string>;
+  updateGroup: UseMutationResult<
+    WorkoutGroup,
+    Error,
+    { id: string; updates: WorkoutGroupUpdate }
+  >;
+  deleteGroup: UseMutationResult<void, Error, string>;
+} {
   const { user } = useAuth();
   const supabase = createClient();
   const queryClient = useQueryClient();

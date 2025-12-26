@@ -1,14 +1,25 @@
 "use client";
 
+import type { QueryData } from "@supabase/supabase-js";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
 import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
-import type { QueryData } from "@supabase/supabase-js";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { UserMovement } from "../models/types";
 
 type Set = Tables<"sets">;
 type SetInsert = TablesInsert<"sets">;
 type SetUpdate = TablesUpdate<"sets">;
+
+type SetWithMovement = Set & {
+  user_movement: UserMovement | null;
+};
 
 // Query keys
 const setKeys = {
@@ -24,7 +35,7 @@ const setKeys = {
 };
 
 // Get all sets for a user
-export function useSets() {
+export function useSets(): UseQueryResult<SetWithMovement[], Error> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -54,7 +65,9 @@ export function useSets() {
   });
 }
 
-export function useSetsCountByMovement(movementId: string) {
+export function useSetsCountByMovement(
+  movementId: string
+): UseQueryResult<number, Error> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -78,7 +91,9 @@ export function useSetsCountByMovement(movementId: string) {
 }
 
 // Get sets for a specific movement
-export function useSetsByMovement(movementId: string) {
+export function useSetsByMovement(
+  movementId: string
+): UseQueryResult<SetWithMovement[], Error> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -112,7 +127,9 @@ export function useSetsByMovement(movementId: string) {
 }
 
 // Get sets for a specific workout
-export function useSetsByWorkout(workoutId: string) {
+export function useSetsByWorkout(
+  workoutId: string
+): UseQueryResult<SetWithMovement[], Error> {
   const supabase = createClient();
 
   return useQuery({
@@ -140,7 +157,11 @@ export function useSetsByWorkout(workoutId: string) {
 }
 
 // Create a new set
-export function useCreateSet() {
+export function useCreateSet(): UseMutationResult<
+  SetWithMovement,
+  Error,
+  Omit<SetInsert, "user_id">
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -253,7 +274,11 @@ export function useCreateSet() {
 }
 
 // Update a set
-export function useUpdateSet() {
+export function useUpdateSet(): UseMutationResult<
+  SetWithMovement,
+  Error,
+  { id: string; updates: SetUpdate }
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -337,7 +362,14 @@ export function useUpdateSet() {
 }
 
 // Delete a set
-export function useDeleteSet() {
+export function useDeleteSet(): UseMutationResult<
+  {
+    setId: string;
+    setData: { user_movement_id: string; workout_id: string | null } | null;
+  },
+  Error,
+  string
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();

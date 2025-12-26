@@ -1,11 +1,20 @@
 "use client";
 
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import type { Tables } from "../lib/supabase/types";
 
 // Hook to get last set dates for multiple movements efficiently
-export function useMovementLastSets(movementIds: string[]) {
+export function useMovementLastSets(
+  movementIds: string[]
+): UseQueryResult<
+  Pick<
+    Tables<"movement_last_sets">,
+    "user_movement_id" | "last_set_date" | "total_sets"
+  >[],
+  Error
+> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -31,7 +40,12 @@ export function useMovementLastSets(movementIds: string[]) {
 }
 
 // Hook to get last set date for a single movement
-export function useMovementLastSet(movementId: string) {
+export function useMovementLastSet(
+  movementId: string
+): UseQueryResult<
+  Pick<Tables<"movement_last_sets">, "last_set_date" | "total_sets"> | null,
+  Error
+> {
   const { user } = useAuth();
   const supabase = createClient();
 

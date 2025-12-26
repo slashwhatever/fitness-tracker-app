@@ -1,10 +1,16 @@
 "use client";
 
+import type { QueryData } from "@supabase/supabase-js";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  useQueryClient,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
-import type { TablesUpdate } from "../lib/supabase/types";
-import type { QueryData } from "@supabase/supabase-js";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { Tables, TablesUpdate } from "../lib/supabase/types";
 
 type UserProfileUpdate = TablesUpdate<"user_profiles">;
 
@@ -15,7 +21,10 @@ const profileKeys = {
 };
 
 // Get user profile
-export function useUserProfile() {
+export function useUserProfile(): UseQueryResult<
+  Tables<"user_profiles"> | null,
+  Error
+> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -53,7 +62,11 @@ export function useUserProfile() {
 }
 
 // Update user profile
-export function useUpdateUserProfile() {
+export function useUpdateUserProfile(): UseMutationResult<
+  Tables<"user_profiles">,
+  Error,
+  UserProfileUpdate
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();

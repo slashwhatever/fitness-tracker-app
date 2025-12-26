@@ -1,7 +1,13 @@
 "use client";
 
 import type { QueryData } from "@supabase/supabase-js";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
 import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
@@ -10,6 +16,10 @@ import { isSafeForQueries } from "../lib/utils/validation";
 type Workout = Tables<"workouts">;
 type WorkoutInsert = TablesInsert<"workouts">;
 type WorkoutUpdate = TablesUpdate<"workouts">;
+
+type WorkoutWithGroup = Workout & {
+  workout_groups: { name: string } | null;
+};
 
 // Query keys
 const workoutKeys = {
@@ -21,7 +31,13 @@ const workoutKeys = {
 };
 
 // Get all workouts for a user
-export function useWorkouts() {
+export function useWorkouts(): {
+  workouts: WorkoutWithGroup[] | undefined;
+  loading: boolean;
+  error: Error | null;
+  refetch: () => void;
+  isRefetching: boolean;
+} {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -58,7 +74,9 @@ export function useWorkouts() {
 }
 
 // Get a single workout
-export function useWorkout(workoutId: string) {
+export function useWorkout(
+  workoutId: string
+): UseQueryResult<Workout | null, Error> {
   const supabase = createClient();
 
   return useQuery({
@@ -83,7 +101,11 @@ export function useWorkout(workoutId: string) {
 }
 
 // Create a new workout
-export function useCreateWorkout() {
+export function useCreateWorkout(): UseMutationResult<
+  Workout,
+  Error,
+  Omit<WorkoutInsert, "user_id" | "order_index">
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -168,7 +190,11 @@ export function useCreateWorkout() {
 }
 
 // Update a workout
-export function useUpdateWorkout() {
+export function useUpdateWorkout(): UseMutationResult<
+  Workout,
+  Error,
+  { id: string; updates: WorkoutUpdate }
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -207,7 +233,7 @@ export function useUpdateWorkout() {
 }
 
 // Delete a workout
-export function useDeleteWorkout() {
+export function useDeleteWorkout(): UseMutationResult<string, Error, string> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -263,7 +289,11 @@ export function useDeleteWorkout() {
 }
 
 // Reorder workouts
-export function useReorderWorkouts() {
+export function useReorderWorkouts(): UseMutationResult<
+  { id: string; order_index: number }[],
+  Error,
+  { workouts: { id: string; order_index: number }[] }
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -349,7 +379,11 @@ export function useReorderWorkouts() {
 }
 
 // Archive/Unarchive a workout
-export function useArchiveWorkout() {
+export function useArchiveWorkout(): UseMutationResult<
+  Workout,
+  Error,
+  { workoutId: string; archived: boolean }
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -424,7 +458,11 @@ export function useArchiveWorkout() {
 }
 
 // Duplicate a workout (including all movements)
-export function useDuplicateWorkout() {
+export function useDuplicateWorkout(): UseMutationResult<
+  Workout,
+  Error,
+  string
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();

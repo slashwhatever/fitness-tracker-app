@@ -1,9 +1,11 @@
 "use client";
 
+import type { QueryData } from "@supabase/supabase-js";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
-import type { QueryData } from "@supabase/supabase-js";
-import { useQuery } from "@tanstack/react-query";
+import type { Tables } from "../lib/supabase/types";
+import type { UserMovement } from "../models/types";
 
 // Query keys
 const personalRecordKeys = {
@@ -15,7 +17,12 @@ const personalRecordKeys = {
 };
 
 // Get personal records for a specific movement
-export function usePersonalRecordsByMovement(movementId: string) {
+export function usePersonalRecordsByMovement(
+  movementId: string
+): UseQueryResult<
+  (Tables<"personal_records"> & { user_movement: UserMovement | null })[],
+  Error
+> {
   const { user } = useAuth();
   const supabase = createClient();
 

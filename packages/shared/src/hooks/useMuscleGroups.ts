@@ -1,8 +1,9 @@
 "use client";
 
-import { createClient } from "../lib/supabase/client";
 import type { QueryData } from "@supabase/supabase-js";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { createClient } from "../lib/supabase/client";
+import type { Tables } from "../lib/supabase/types";
 
 // Query keys
 const muscleGroupKeys = {
@@ -11,7 +12,10 @@ const muscleGroupKeys = {
 };
 
 // Get all muscle groups
-export function useMuscleGroups() {
+export function useMuscleGroups(): UseQueryResult<
+  Tables<"muscle_groups">[],
+  Error
+> {
   const supabase = createClient();
 
   return useQuery({

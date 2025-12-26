@@ -9,6 +9,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { ChevronDown, LogOut, Save, Undo2 } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -24,6 +25,7 @@ import {
   View,
 } from "react-native";
 import { z } from "zod";
+import { Button } from "../../components/Button";
 import { ThemeSelector } from "../../components/ThemeSelector";
 import { useBottomPadding } from "../../hooks/useBottomPadding";
 import { useHeaderPadding } from "../../hooks/useHeaderPadding";
@@ -109,6 +111,7 @@ const settingsSchema = z.object({
 type SettingsFormData = z.infer<typeof settingsSchema>;
 
 export default function SettingsScreen() {
+  const { colorScheme } = useColorScheme();
   const { signOut } = useAuth();
   const router = useRouter();
   const headerPadding = useHeaderPadding();
@@ -376,44 +379,39 @@ export default function SettingsScreen() {
           {/* Actions */}
           <View className="space-y-3 pt-4">
             <View className="flex-row gap-3">
-              <TouchableOpacity
+              <Button
+                variant="outline"
                 onPress={handleReset}
-                className="flex-1 bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border p-4 rounded-xl flex-row justify-center items-center active:bg-slate-50 dark:active:bg-dark-bg/50 "
+                className="flex-1 bg-white dark:bg-dark-card"
+                icon={
+                  <Undo2
+                    size={20}
+                    color={colorScheme === "dark" ? "#ffffff" : "#0f172a"}
+                  />
+                }
               >
-                <Undo2
-                  size={20}
-                  className="text-slate-900 dark:text-white mr-2"
-                />
-                <Text className="font-semibold text-slate-900 dark:text-white">
-                  Reset
-                </Text>
-              </TouchableOpacity>
+                Reset
+              </Button>
 
-              <TouchableOpacity
+              <Button
+                variant="default"
                 onPress={handleSubmit(onSubmit)}
-                disabled={isSaving}
-                className={`flex-1 bg-primary p-4 rounded-xl flex-row justify-center items-center ${
-                  isSaving ? "opacity-70" : "active:opacity-90"
-                }`}
+                loading={isSaving}
+                className="flex-1"
+                icon={<Save size={20} color="white" />}
               >
-                {isSaving ? (
-                  <ActivityIndicator color="white" className="mr-2" />
-                ) : (
-                  <Save size={20} color="white" className="mr-2" />
-                )}
-                <Text className="font-semibold text-white">
-                  {isSaving ? "Saving..." : "Save changes"}
-                </Text>
-              </TouchableOpacity>
+                {isSaving ? "Saving..." : "Save changes"}
+              </Button>
             </View>
 
-            <TouchableOpacity
+            <Button
+              variant="destructive"
               onPress={handleSignOut}
-              className="bg-red-500/10 p-4 rounded-xl border border-red-500/20 flex-row justify-center items-center active:bg-red-500/20 mt-4"
+              className="mt-4"
+              icon={<LogOut size={20} color="#ef4444" />}
             >
-              <LogOut size={20} className="text-red-500 mr-2" />
-              <Text className="text-red-500 font-semibold">Sign Out</Text>
-            </TouchableOpacity>
+              Sign Out
+            </Button>
           </View>
         </View>
 

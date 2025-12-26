@@ -1,11 +1,17 @@
 "use client";
 
+import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import type { Tables } from "../lib/supabase/types";
 
 // Hook to get movement counts for multiple workouts efficiently
-export function useWorkoutMovementCounts(workoutIds: string[]) {
+export function useWorkoutMovementCounts(
+  workoutIds: string[]
+): UseQueryResult<
+  Pick<Tables<"workout_movement_counts">, "workout_id" | "movement_count">[],
+  Error
+> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -33,7 +39,12 @@ export function useWorkoutMovementCounts(workoutIds: string[]) {
 }
 
 // Hook to get movement count for a single workout
-export function useWorkoutMovementCount(workoutId: string) {
+export function useWorkoutMovementCount(
+  workoutId: string
+): UseQueryResult<
+  Pick<Tables<"workout_movement_counts">, "movement_count"> | null,
+  Error
+> {
   const { user } = useAuth();
   const supabase = createClient();
 

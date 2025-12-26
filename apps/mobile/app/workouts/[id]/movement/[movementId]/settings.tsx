@@ -21,6 +21,7 @@ import {
   View,
 } from "react-native";
 import { GlassHeader } from "../../../../../components/GlassHeader";
+import { useBottomPadding } from "../../../../../hooks/useBottomPadding";
 import { useHeaderPadding } from "../../../../../hooks/useHeaderPadding";
 
 const REST_TIMER_OPTIONS = [

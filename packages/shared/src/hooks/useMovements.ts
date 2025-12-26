@@ -5,6 +5,7 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
+  type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
 import { useAuth } from "../lib/auth/AuthProvider";
@@ -23,6 +24,10 @@ type UserMovementUpdate = TablesUpdate<"user_movements">;
 type WorkoutMovement = Tables<"workout_movements">;
 type WorkoutMovementInsert = TablesInsert<"workout_movements">;
 
+type WorkoutMovementWithDetails = WorkoutMovement & {
+  user_movement: UserMovement | null;
+};
+
 // Query keys
 const movementKeys = {
   all: ["movements"] as const,
@@ -38,7 +43,9 @@ const movementKeys = {
 
 // Get all movement templates from database using QueryData for automatic type inference
 
-export function useMovementTemplates(initialData?: MovementTemplate[]) {
+export function useMovementTemplates(
+  initialData?: MovementTemplate[]
+): UseQueryResult<MovementTemplate[], Error> {
   const supabase = createClient();
 
   return useQuery({
@@ -88,7 +95,7 @@ export function useMovementTemplates(initialData?: MovementTemplate[]) {
 }
 
 // Get all user movements
-export function useUserMovements() {
+export function useUserMovements(): UseQueryResult<UserMovement[], Error> {
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -211,7 +218,9 @@ export function useUserMovement(
 }
 
 // Get workout movements
-export function useWorkoutMovements(workoutId: string) {
+export function useWorkoutMovements(
+  workoutId: string
+): UseQueryResult<WorkoutMovementWithDetails[], Error> {
   const supabase = createClient();
 
   return useQuery({
@@ -334,7 +343,11 @@ async function updateMuscleGroupRelationships(
 }
 
 // Create a new user movement
-export function useCreateUserMovement() {
+export function useCreateUserMovement(): UseMutationResult<
+  UserMovement,
+  Error,
+  Omit<UserMovementInsert, "user_id"> & { muscle_groups: string[] }
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -429,7 +442,14 @@ export function useCreateUserMovement() {
 }
 
 // Update a user movement
-export function useUpdateUserMovement() {
+export function useUpdateUserMovement(): UseMutationResult<
+  UserMovement,
+  Error,
+  {
+    id: string;
+    updates: UserMovementUpdate & { muscle_groups?: string[] };
+  }
+> {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
@@ -607,7 +627,11 @@ export function useUpdateUserMovement() {
 }
 
 // Add movement to workout
-export function useAddMovementToWorkout() {
+export function useAddMovementToWorkout(): UseMutationResult<
+  WorkoutMovement,
+  Error,
+  WorkoutMovementInsert
+> {
   const queryClient = useQueryClient();
   const supabase = createClient();
 
@@ -731,7 +755,14 @@ export function useAddMovementToWorkout() {
 }
 
 // Add multiple movements to workout (batch operation)
-export function useAddMovementsToWorkout() {
+export function useAddMovementsToWorkout(): UseMutationResult<
+  WorkoutMovement[],
+  Error,
+  {
+    workoutMovements: WorkoutMovementInsert[];
+    userMovementsForOptimistic?: UserMovement[];
+  }
+> {
   const queryClient = useQueryClient();
   const supabase = createClient();
 
