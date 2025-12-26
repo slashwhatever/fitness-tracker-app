@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useBottomPadding } from "../../hooks/useBottomPadding";
 
 export default function NewWorkoutScreen() {
   const router = useRouter();
@@ -28,7 +29,7 @@ export default function NewWorkoutScreen() {
     }
 
     try {
-      await createCreate.mutateAsync({
+      await createWorkout.mutateAsync({
         name: name.trim(),
         description: description.trim() || null,
         group_id: selectedGroupId,
@@ -40,15 +41,12 @@ export default function NewWorkoutScreen() {
     }
   };
 
-  // Fix naming confusion: hook returns mutation object directly?
-  // Checking useWorkouts.ts: export function useCreateWorkout() { return useMutation(...) }
-  // So createWorkout IS the mutation object.
-  const createCreate = createWorkout;
+  const bottomPadding = useBottomPadding();
 
   return (
     <SafeAreaView
       className="flex-1 bg-slate-50 dark:bg-dark-bg p-4"
-      edges={["bottom", "left", "right"]}
+      edges={["top", "left", "right"]}
     >
       <View className="flex-row items-center justify-between mb-6">
         <TouchableOpacity
@@ -65,14 +63,17 @@ export default function NewWorkoutScreen() {
         </Text>
         <TouchableOpacity
           onPress={handleCreate}
-          disabled={createCreate.isPending}
+          disabled={createWorkout.isPending}
           className="bg-primary-500 px-4 py-2 rounded-full"
         >
           <Text className="text-white font-semibold">Save</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: bottomPadding }}
+      >
         <View className="mb-6">
           <Text className="text-slate-500 dark:text-gray-400 mb-2 ml-1">
             Name

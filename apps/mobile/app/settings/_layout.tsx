@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { GlassHeader } from "../../../components/GlassHeader";
+import { GlassHeader } from "../../components/GlassHeader";
 
 export default function SettingsLayout() {
   return (

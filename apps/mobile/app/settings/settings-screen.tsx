@@ -6,9 +6,11 @@ import {
   useUpdateUserProfile,
   useUserProfile,
 } from "@fitness/shared";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { ChevronDown, LogOut, Save, Undo2 } from "lucide-react-native";
 import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Modal,
@@ -21,8 +23,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { ThemeSelector } from "../../../components/ThemeSelector";
-import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
+import { z } from "zod";
+import { ThemeSelector } from "../../components/ThemeSelector";
+import { useBottomPadding } from "../../hooks/useBottomPadding";
+import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 interface SelectOption {
   label: string;
@@ -94,19 +98,24 @@ function SelectModal({
   );
 }
 
+const settingsSchema = z.object({
+  display_name: z.string().optional(),
+  default_rest_timer: z.string().optional(),
+  weight_unit: z.enum(["lbs", "kg"]),
+  distance_unit: z.enum(["miles", "km"]),
+  timer_pin_enabled: z.boolean(),
+});
+
+type SettingsFormData = z.infer<typeof settingsSchema>;
+
 export default function SettingsScreen() {
   const { signOut } = useAuth();
   const router = useRouter();
   const headerPadding = useHeaderPadding();
+  const bottomPadding = useBottomPadding();
   const { data: userProfile, isLoading } = useUserProfile();
   const updateProfileMutation = useUpdateUserProfile();
 
-  // Form state
-  const [displayName, setDisplayName] = useState("");
-  const [defaultRestTimer, setDefaultRestTimer] = useState("");
-  const [weightUnit, setWeightUnit] = useState<WeightUnit>("lbs");
-  const [distanceUnit, setDistanceUnit] = useState<DistanceUnit>("miles");
-  const [timerPinEnabled, setTimerPinEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   // Modal state
@@ -114,31 +123,49 @@ export default function SettingsScreen() {
     "restTimer" | "weight" | "distance" | null
   >(null);
 
+  const { control, handleSubmit, reset, setValue, watch, formState } =
+    useForm<SettingsFormData>({
+      resolver: zodResolver(settingsSchema),
+      defaultValues: {
+        display_name: "",
+        default_rest_timer: "none",
+        weight_unit: "lbs",
+        distance_unit: "miles",
+        timer_pin_enabled: true,
+      },
+    });
+
+  // Watch values for modal display
+  const defaultRestTimer = watch("default_rest_timer");
+  const weightUnit = watch("weight_unit");
+  const distanceUnit = watch("distance_unit");
+
   // Populate form
   useEffect(() => {
     if (userProfile) {
-      setDisplayName(userProfile.display_name || "");
-      setDefaultRestTimer(userProfile.default_rest_timer?.toString() || "none");
-      setWeightUnit((userProfile.weight_unit as WeightUnit) || "lbs");
-      setDistanceUnit((userProfile.distance_unit as DistanceUnit) || "miles");
-      setTimerPinEnabled(userProfile.timer_pin_enabled ?? true);
+      reset({
+        display_name: userProfile.display_name || "",
+        default_rest_timer:
+          userProfile.default_rest_timer?.toString() || "none",
+        weight_unit: (userProfile.weight_unit as WeightUnit) || "lbs",
+        distance_unit: (userProfile.distance_unit as DistanceUnit) || "miles",
+        timer_pin_enabled: userProfile.timer_pin_enabled ?? true,
+      });
     }
-  }, [userProfile]);
+  }, [userProfile, reset]);
 
-  const handleSave = async () => {
-    if (!userProfile) return;
-
+  const onSubmit = async (data: SettingsFormData) => {
     setIsSaving(true);
     try {
       const updates = {
-        display_name: displayName.trim() || undefined,
+        display_name: data.display_name?.trim() || undefined,
         default_rest_timer:
-          defaultRestTimer && defaultRestTimer !== "none"
-            ? parseInt(defaultRestTimer)
-            : 90,
-        weight_unit: weightUnit,
-        distance_unit: distanceUnit,
-        timer_pin_enabled: timerPinEnabled,
+          data.default_rest_timer && data.default_rest_timer !== "none"
+            ? parseInt(data.default_rest_timer)
+            : 90, // Default to 90 if something goes wrong, but 'none' should be handled
+        weight_unit: data.weight_unit,
+        distance_unit: data.distance_unit,
+        timer_pin_enabled: data.timer_pin_enabled,
         updated_at: new Date().toISOString(),
       };
 
@@ -153,11 +180,14 @@ export default function SettingsScreen() {
 
   const handleReset = () => {
     if (userProfile) {
-      setDisplayName(userProfile.display_name || "");
-      setDefaultRestTimer(userProfile.default_rest_timer?.toString() || "none");
-      setWeightUnit((userProfile.weight_unit as WeightUnit) || "lbs");
-      setDistanceUnit((userProfile.distance_unit as DistanceUnit) || "miles");
-      setTimerPinEnabled(userProfile.timer_pin_enabled ?? true);
+      reset({
+        display_name: userProfile.display_name || "",
+        default_rest_timer:
+          userProfile.default_rest_timer?.toString() || "none",
+        weight_unit: (userProfile.weight_unit as WeightUnit) || "lbs",
+        distance_unit: (userProfile.distance_unit as DistanceUnit) || "miles",
+        timer_pin_enabled: userProfile.timer_pin_enabled ?? true,
+      });
     }
   };
 
@@ -191,7 +221,10 @@ export default function SettingsScreen() {
       <ScrollView className="flex-1">
         <View
           className="flex-1 p-4 pb-0 gap-4"
-          style={{ paddingTop: headerPadding + 16 }}
+          style={{
+            paddingTop: headerPadding + 16,
+            paddingBottom: bottomPadding,
+          }}
         >
           {/* Profile Section */}
           <View className="gap-4">
@@ -202,12 +235,19 @@ export default function SettingsScreen() {
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Display Name
               </Text>
-              <TextInput
-                className="w-full bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
-                value={displayName}
-                onChangeText={setDisplayName}
-                placeholder="Enter your display name"
-                placeholderTextColor="#94a3b8"
+              <Controller
+                control={control}
+                name="display_name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    className="w-full bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    placeholder="Enter your display name"
+                    placeholderTextColor="#94a3b8"
+                  />
+                )}
               />
               <Text className="text-xs text-slate-500 dark:text-gray-500 mt-2">
                 This name will be displayed on your profile
@@ -230,24 +270,30 @@ export default function SettingsScreen() {
             </Text>
             <View className="bg-white dark:bg-dark-card rounded-xl border border-slate-200 dark:border-dark-border overflow-hidden">
               {/* Default Rest Timer */}
-              <TouchableOpacity
-                className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card active:bg-slate-50 dark:active:bg-dark-bg/50"
-                onPress={() => setActiveModal("restTimer")}
-              >
-                <View className="flex-1">
-                  <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
-                    Default Rest Timer
-                  </Text>
-                  <Text className="text-base font-medium text-slate-900 dark:text-white">
-                    {timerOptions.find((o) => o.value === defaultRestTimer)
-                      ?.label || "Select timer"}
-                  </Text>
-                </View>
-                <ChevronDown
-                  size={20}
-                  className="text-slate-400 dark:text-gray-500"
-                />
-              </TouchableOpacity>
+              <Controller
+                control={control}
+                name="default_rest_timer"
+                render={({ field: { value } }) => (
+                  <TouchableOpacity
+                    className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card active:bg-slate-50 dark:active:bg-dark-bg/50"
+                    onPress={() => setActiveModal("restTimer")}
+                  >
+                    <View className="flex-1">
+                      <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
+                        Default Rest Timer
+                      </Text>
+                      <Text className="text-base font-medium text-slate-900 dark:text-white">
+                        {timerOptions.find((o) => o.value === value)?.label ||
+                          "Select timer"}
+                      </Text>
+                    </View>
+                    <ChevronDown
+                      size={20}
+                      className="text-slate-400 dark:text-gray-500"
+                    />
+                  </TouchableOpacity>
+                )}
+              />
 
               {/* Pin Timer */}
               <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card">
@@ -260,51 +306,69 @@ export default function SettingsScreen() {
                     scrolling
                   </Text>
                 </View>
-                <Switch
-                  value={timerPinEnabled}
-                  onValueChange={setTimerPinEnabled}
-                  trackColor={{ false: "#cbd5e1", true: "#6366f1" }}
-                  thumbColor={Platform.OS === "ios" ? "#fff" : "#fff"}
+                <Controller
+                  control={control}
+                  name="timer_pin_enabled"
+                  render={({ field: { value, onChange } }) => (
+                    <Switch
+                      value={value}
+                      onValueChange={onChange}
+                      trackColor={{ false: "#cbd5e1", true: "#6366f1" }}
+                      thumbColor={Platform.OS === "ios" ? "#fff" : "#fff"}
+                    />
+                  )}
                 />
               </View>
 
               {/* Units */}
               <View className="flex-row">
-                <TouchableOpacity
-                  className="flex-1 p-4 border-r border-slate-200 dark:border-dark-border border-b-0 active:bg-slate-50 dark:active:bg-dark-bg/50"
-                  onPress={() => setActiveModal("weight")}
-                >
-                  <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
-                    Weight Unit
-                  </Text>
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-base font-medium text-slate-900 dark:text-white">
-                      {weightUnit === "lbs" ? "Pounds (lbs)" : "Kilograms (kg)"}
-                    </Text>
-                    <ChevronDown
-                      size={16}
-                      className="text-slate-400 dark:text-gray-500"
-                    />
-                  </View>
-                </TouchableOpacity>
+                <Controller
+                  control={control}
+                  name="weight_unit"
+                  render={({ field: { value } }) => (
+                    <TouchableOpacity
+                      className="flex-1 p-4 border-r border-slate-200 dark:border-dark-border border-b-0 active:bg-slate-50 dark:active:bg-dark-bg/50"
+                      onPress={() => setActiveModal("weight")}
+                    >
+                      <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
+                        Weight Unit
+                      </Text>
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-base font-medium text-slate-900 dark:text-white">
+                          {value === "lbs" ? "Pounds (lbs)" : "Kilograms (kg)"}
+                        </Text>
+                        <ChevronDown
+                          size={16}
+                          className="text-slate-400 dark:text-gray-500"
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                />
 
-                <TouchableOpacity
-                  className="flex-1 p-4 active:bg-slate-50 dark:active:bg-dark-bg/50 border-b-0"
-                  onPress={() => setActiveModal("distance")}
-                >
-                  <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
-                    Distance Unit
-                  </Text>
-                  <View className="flex-row items-center justify-between">
-                    <Text className="text-base font-medium text-slate-900 dark:text-white">
-                      {distanceUnit === "miles" ? "Miles" : "Kilometers"}
-                    </Text>
-                    <ChevronDown
-                      size={16}
-                      className="text-slate-400 dark:text-gray-500"
-                    />
-                  </View>
-                </TouchableOpacity>
+                <Controller
+                  control={control}
+                  name="distance_unit"
+                  render={({ field: { value } }) => (
+                    <TouchableOpacity
+                      className="flex-1 p-4 active:bg-slate-50 dark:active:bg-dark-bg/50 border-b-0"
+                      onPress={() => setActiveModal("distance")}
+                    >
+                      <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
+                        Distance Unit
+                      </Text>
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-base font-medium text-slate-900 dark:text-white">
+                          {value === "miles" ? "Miles" : "Kilometers"}
+                        </Text>
+                        <ChevronDown
+                          size={16}
+                          className="text-slate-400 dark:text-gray-500"
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                />
               </View>
             </View>
           </View>
@@ -326,7 +390,7 @@ export default function SettingsScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={handleSave}
+                onPress={handleSubmit(onSubmit)}
                 disabled={isSaving}
                 className={`flex-1 bg-primary p-4 rounded-xl flex-row justify-center items-center ${
                   isSaving ? "opacity-70" : "active:opacity-90"
@@ -362,8 +426,10 @@ export default function SettingsScreen() {
         onClose={() => setActiveModal(null)}
         title="Select Default Rest Timer"
         options={timerOptions}
-        value={defaultRestTimer}
-        onSelect={setDefaultRestTimer}
+        value={defaultRestTimer || "none"}
+        onSelect={(v) =>
+          setValue("default_rest_timer", v, { shouldDirty: true })
+        }
       />
 
       <SelectModal
@@ -375,7 +441,9 @@ export default function SettingsScreen() {
           { label: "Kilograms (kg)", value: "kg" },
         ]}
         value={weightUnit}
-        onSelect={(v) => setWeightUnit(v as WeightUnit)}
+        onSelect={(v) =>
+          setValue("weight_unit", v as WeightUnit, { shouldDirty: true })
+        }
       />
 
       <SelectModal
@@ -387,7 +455,9 @@ export default function SettingsScreen() {
           { label: "Kilometers", value: "km" },
         ]}
         value={distanceUnit}
-        onSelect={(v) => setDistanceUnit(v as DistanceUnit)}
+        onSelect={(v) =>
+          setValue("distance_unit", v as DistanceUnit, { shouldDirty: true })
+        }
       />
     </View>
   );

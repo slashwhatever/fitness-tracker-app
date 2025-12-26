@@ -24,12 +24,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { GlassHeader } from "../../../components/GlassHeader";
 import { MovementActionSheet } from "../../../components/MovementActionSheet";
 import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
+import { useBottomPadding } from "../../../hooks/useBottomPadding";
 import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const headerPadding = useHeaderPadding();
+  const bottomPadding = useBottomPadding();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
@@ -77,7 +79,7 @@ export default function WorkoutDetailScreen() {
         case "delete":
           try {
             await deleteMutation.mutateAsync(workout.id);
-            router.replace("/(tabs)/workouts");
+            router.replace("/workouts");
           } catch (error) {
             Alert.alert("Error", "Failed to delete workout");
           }
@@ -137,7 +139,7 @@ export default function WorkoutDetailScreen() {
     // Assuming placeholder for now or navigate to detail.
     if (selectedMovement) {
       router.push(
-        `/workout/${id}/movement/${selectedMovement.user_movement.id}/settings`
+        `/workouts/${id}/movement/${selectedMovement.user_movement.id}/settings`
       );
     }
   };
@@ -182,7 +184,7 @@ export default function WorkoutDetailScreen() {
     <TouchableOpacity
       className="bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border mb-3"
       onPress={() =>
-        router.push(`/workout/${id}/movement/${item.user_movement.id}`)
+        router.push(`/workouts/${id}/movement/${item.user_movement.id}`)
       }
     >
       <View className="flex-row items-center justify-between">
@@ -221,7 +223,13 @@ export default function WorkoutDetailScreen() {
           header: () => (
             <GlassHeader
               title="Workouts"
-              backPath="/(tabs)/workouts"
+              onBack={() => {
+                if (router.canGoBack()) {
+                  router.back();
+                } else {
+                  router.replace("/workouts");
+                }
+              }}
               rightAction={
                 <TouchableOpacity
                   className="p-2 -mr-2"
@@ -243,7 +251,7 @@ export default function WorkoutDetailScreen() {
           renderItem={renderMovement}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{
-            paddingBottom: 100,
+            paddingBottom: bottomPadding,
             paddingTop: headerPadding + 16,
             paddingHorizontal: 16,
           }}

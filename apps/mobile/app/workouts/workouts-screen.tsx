@@ -18,8 +18,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
-import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
+import { WorkoutActionSheet } from "../../components/WorkoutActionSheet";
+import { useBottomPadding } from "../../hooks/useBottomPadding";
+import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 export default function WorkoutsScreen() {
   const { workouts, loading, refetch } = useWorkouts();
@@ -81,7 +82,7 @@ export default function WorkoutsScreen() {
     try {
       switch (action) {
         case "edit":
-          router.push(`/workout/${selectedWorkout.id}/settings`);
+          router.push(`/workouts/${selectedWorkout.id}/settings`);
           break;
         case "duplicate":
           await duplicateMutation.mutateAsync(selectedWorkout.id);
@@ -114,7 +115,7 @@ export default function WorkoutsScreen() {
           ? "bg-slate-100 dark:bg-dark-bg border-slate-200 dark:border-dark-border opacity-60"
           : "bg-white dark:bg-dark-card border-slate-200 dark:border-dark-border"
       }`}
-      onPress={() => router.push(`/workout/${item.id}`)}
+      onPress={() => router.push(`/workouts/${item.id}`)}
     >
       <View
         className={`h-12 w-12 rounded-full items-center justify-center mr-4 ${
@@ -159,6 +160,7 @@ export default function WorkoutsScreen() {
   );
 
   const headerPadding = useHeaderPadding();
+  const bottomPadding = useBottomPadding();
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
@@ -170,7 +172,7 @@ export default function WorkoutsScreen() {
         contentContainerStyle={{
           padding: 16,
           paddingTop: headerPadding + 16,
-          paddingBottom: 120,
+          paddingBottom: bottomPadding,
           gap: 4,
         }}
         showsVerticalScrollIndicator={false}
@@ -187,7 +189,7 @@ export default function WorkoutsScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-primary-500 px-4 py-2 rounded-full"
-              onPress={() => router.push("/workout/new")}
+              onPress={() => router.push("/workouts/new")}
             >
               <Text className="text-white font-semibold">+ New</Text>
             </TouchableOpacity>

@@ -1,18 +1,20 @@
 import { useAuth } from "@fitness/shared";
 import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, Text, View } from "react-native";
-import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
+import { useBottomPadding } from "../../hooks/useBottomPadding";
+import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 export default function HomeScreen() {
   const { user } = useAuth();
   const headerPadding = useHeaderPadding();
+  const bottomPadding = useBottomPadding();
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
       <ScrollView
         contentContainerStyle={{
           padding: 16,
-          paddingBottom: 96, // 24 * 4
+          paddingBottom: bottomPadding, // 24 * 4
           paddingTop: headerPadding + 16, // Add some extra spacing below header
         }}
       >

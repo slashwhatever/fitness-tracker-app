@@ -1,4 +1,9 @@
-import { useUpdateWorkout, useWorkout } from "@fitness/shared";
+import {
+  useUpdateUserMovement,
+  useUpdateWorkoutMovementNotes,
+  useUserMovement,
+  useWorkoutMovements,
+} from "@fitness/shared";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -15,8 +20,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GlassHeader } from "../../../components/GlassHeader";
-import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
+import { GlassHeader } from "../../../../../components/GlassHeader";
+import { useHeaderPadding } from "../../../../../hooks/useHeaderPadding";
 
 const REST_TIMER_OPTIONS = [
   { label: "None", value: null },
@@ -88,7 +93,7 @@ function RestTimerSelectModal({
                   className={`font-medium text-lg ${
                     currentValue === option.value
                       ? "text-primary-500 font-bold"
-                      : "text-white"
+                      : "text-slate-900 dark:text-white"
                   }`}
                 >
                   {option.label}
@@ -106,49 +111,81 @@ function RestTimerSelectModal({
   );
 }
 
-export default function WorkoutSettingsScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+export default function MovementSettingsScreen() {
+  const { id: workoutId, movementId } = useLocalSearchParams<{
+    id: string;
+    movementId: string;
+  }>();
   const headerPadding = useHeaderPadding();
+  const bottomPadding = useBottomPadding();
   const router = useRouter();
-  const { data: workout, isLoading } = useWorkout(id);
-  const updateMutation = useUpdateWorkout();
+
+  const { data: movement, isLoading: movementLoading } =
+    useUserMovement(movementId);
+  const { data: workoutMovements } = useWorkoutMovements(workoutId);
+
+  const updateUserMovementMutation = useUpdateUserMovement();
+  const updateWorkoutNotesMutation = useUpdateWorkoutMovementNotes();
 
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [defaultRestTimer, setDefaultRestTimer] = useState<number | null>(null);
+  const [personalNotes, setPersonalNotes] = useState("");
+  const [workoutNotes, setWorkoutNotes] = useState("");
+  const [restTimer, setRestTimer] = useState<number | null>(null);
+
   const [isSaving, setIsSaving] = useState(false);
   const [showRestTimerModal, setShowRestTimerModal] = useState(false);
 
+  // Find workout movement context
+  const workoutMovement = workoutMovements?.find(
+    (wm) => wm.user_movement_id === movementId
+  );
+
   useEffect(() => {
-    if (workout) {
-      setName(workout.name);
-      setDescription(workout.description || "");
-      setDefaultRestTimer(workout.default_rest_timer || null);
+    if (movement) {
+      setName(movement.name);
+      setPersonalNotes(movement.personal_notes || "");
+      setRestTimer(movement.custom_rest_timer || null);
     }
-  }, [workout]);
+  }, [movement]);
+
+  useEffect(() => {
+    if (workoutMovement) {
+      setWorkoutNotes(workoutMovement.workout_notes || "");
+    }
+  }, [workoutMovement]);
 
   const handleSave = async () => {
-    if (!workout || !name.trim()) return;
+    if (!movement || !name.trim()) return;
 
     setIsSaving(true);
     try {
-      await updateMutation.mutateAsync({
-        id: workout.id,
+      // Update movement details
+      await updateUserMovementMutation.mutateAsync({
+        id: movement.id,
         updates: {
           name: name.trim(),
-          description: description.trim() || null,
-          default_rest_timer: defaultRestTimer,
+          personal_notes: personalNotes.trim() || null,
+          custom_rest_timer: restTimer,
         },
       });
+
+      // Update workout-specific notes
+      if (workoutMovement) {
+        await updateWorkoutNotesMutation.mutateAsync({
+          workoutMovementId: workoutMovement.id,
+          workout_notes: workoutNotes.trim() || null,
+        });
+      }
+
       router.back();
     } catch (error) {
-      Alert.alert("Error", "Failed to update workout");
+      Alert.alert("Error", "Failed to update movement settings");
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (isLoading) {
+  if (movementLoading) {
     return (
       <View className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
@@ -163,7 +200,10 @@ export default function WorkoutSettingsScreen() {
           headerShown: true,
           headerTransparent: true,
           header: () => (
-            <GlassHeader title="Workout Settings" backPath={`/workout/${id}`} />
+            <GlassHeader
+              title="Movement Settings"
+              backPath={`/workouts/${workoutId}/movement/${movementId}`}
+            />
           ),
         }}
       />
@@ -177,40 +217,26 @@ export default function WorkoutSettingsScreen() {
           contentContainerStyle={{
             padding: 24,
             paddingTop: headerPadding + 24,
+            paddingBottom: bottomPadding,
           }}
         >
-          <View className="gap-4">
+          <View className="gap-6">
             <View>
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
-                Workout Name
+                Movement Name
               </Text>
               <TextInput
                 className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 value={name}
                 onChangeText={setName}
-                placeholder="e.g. Upper Body Power"
+                placeholder="e.g. Back Squat"
                 placeholderTextColor="#64748b"
               />
             </View>
 
             <View>
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
-                Description (Optional)
-              </Text>
-              <TextInput
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Add notes about this workout..."
-                placeholderTextColor="#94a3b8"
-                multiline
-                textAlignVertical="top"
-              />
-            </View>
-
-            <View>
-              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
-                Default Rest Timer
+                Custom Rest Timer
               </Text>
               <TouchableOpacity
                 className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 flex-row items-center justify-between"
@@ -222,7 +248,7 @@ export default function WorkoutSettingsScreen() {
                     className="text-slate-400 dark:text-slate-500"
                   />
                   <Text className="text-slate-900 dark:text-white text-base">
-                    {formatDuration(defaultRestTimer)}
+                    {formatDuration(restTimer)}
                   </Text>
                 </View>
                 <ChevronRight
@@ -230,10 +256,48 @@ export default function WorkoutSettingsScreen() {
                   className="text-slate-400 dark:text-slate-500"
                 />
               </TouchableOpacity>
+              <Text className="text-xs text-gray-500 mt-1">
+                Overrides workout default for this movement
+              </Text>
             </View>
 
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Personal Notes
+              </Text>
+              <TextInput
+                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                value={personalNotes}
+                onChangeText={setPersonalNotes}
+                placeholder="Technique cues, setup details, etc."
+                placeholderTextColor="#94a3b8"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+            {workoutMovement && (
+              <View>
+                <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                  Workout Notes
+                </Text>
+                <TextInput
+                  className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                  value={workoutNotes}
+                  onChangeText={setWorkoutNotes}
+                  placeholder="Notes specific to this workout..."
+                  placeholderTextColor="#64748b"
+                  multiline
+                  textAlignVertical="top"
+                />
+                <Text className="text-xs text-gray-500 mt-1">
+                  Only applies to this movement within this specific workout
+                </Text>
+              </View>
+            )}
+
             <TouchableOpacity
-              className={`w-full p-4 rounded-xl items-center flex-row justify-center gap-2 ${
+              className={`w-full p-4 rounded-xl items-center flex-row justify-center gap-2 mt-4 ${
                 !name.trim() || isSaving
                   ? "bg-primary-500/50"
                   : "bg-primary-500"
@@ -250,6 +314,8 @@ export default function WorkoutSettingsScreen() {
                 {isSaving ? "Saving..." : "Save Changes"}
               </Text>
             </TouchableOpacity>
+
+            <View className="h-20" />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -257,8 +323,8 @@ export default function WorkoutSettingsScreen() {
       <RestTimerSelectModal
         visible={showRestTimerModal}
         onClose={() => setShowRestTimerModal(false)}
-        onSelect={setDefaultRestTimer}
-        currentValue={defaultRestTimer}
+        onSelect={setRestTimer}
+        currentValue={restTimer}
       />
     </View>
   );

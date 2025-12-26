@@ -64,7 +64,7 @@ export default function LoginScreen() {
       }
 
       if (user) {
-        router.replace("/(tabs)");
+        router.replace("/");
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");

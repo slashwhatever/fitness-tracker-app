@@ -37,6 +37,7 @@ import { MovementActionSheet } from "../../../../components/MovementActionSheet"
 import { SessionComparison } from "../../../../components/SessionComparison";
 import { SetAdjuster } from "../../../../components/SetAdjuster";
 import { TimedConfirmDeleteButton } from "../../../../components/TimedConfirmDeleteButton";
+import { useBottomPadding } from "../../../../hooks/useBottomPadding";
 import { useHeaderPadding } from "../../../../hooks/useHeaderPadding";
 
 interface SetActionModalProps {
@@ -121,6 +122,7 @@ export default function MovementDetailScreen() {
   }>();
   const router = useRouter();
   const headerPadding = useHeaderPadding();
+  const bottomPadding = useBottomPadding();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
@@ -268,7 +270,7 @@ export default function MovementDetailScreen() {
           header: () => (
             <GlassHeader
               title={workout?.name || "Back"}
-              backPath={`/workout/${workoutId}`}
+              backPath={`/workouts/${workoutId}`}
               rightAction={
                 <TouchableOpacity
                   className="p-2 -mr-2"
@@ -286,7 +288,10 @@ export default function MovementDetailScreen() {
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingTop: headerPadding + 16 }}
+        contentContainerStyle={{
+          paddingTop: headerPadding + 16,
+          paddingBottom: bottomPadding,
+        }}
       >
         <View className="px-4 mb-6">
           <Text className="text-3xl font-bold text-slate-900 dark:text-white text-left">
@@ -467,7 +472,7 @@ export default function MovementDetailScreen() {
         title={movement.name}
         onEdit={() => {
           setActionSheetVisible(false);
-          router.push(`/workout/${workoutId}/movement/${movementId}/settings`);
+          router.push(`/workouts/${workoutId}/movement/${movementId}/settings`);
         }}
         onDelete={() => {
           Alert.alert(
@@ -490,7 +495,7 @@ export default function MovementDetailScreen() {
                     },
                     {
                       onSuccess: () => {
-                        router.replace(`/workout/${workoutId}`);
+                        router.replace(`/workouts/${workoutId}`);
                       },
                     }
                   );
