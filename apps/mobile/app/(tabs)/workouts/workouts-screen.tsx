@@ -197,6 +197,7 @@ export default function WorkoutsScreen() {
             refreshing={loading}
             onRefresh={refetch}
             tintColor="#6366f1"
+            progressViewOffset={headerPadding}
           />
         }
         ListEmptyComponent={

@@ -12,7 +12,7 @@ export default function WorkoutsLayout() {
         contentStyle: { backgroundColor: "transparent" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Workouts" }} />
+      <Stack.Screen name="workouts-screen" options={{ title: "Workouts" }} />
     </Stack>
   );
 }

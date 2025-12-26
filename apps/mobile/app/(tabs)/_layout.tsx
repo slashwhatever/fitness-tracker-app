@@ -19,9 +19,7 @@ export default function TabLayout() {
         {Platform.select({
           ios: <Icon sf="house.fill" />,
           android: (
-            <Icon
-              src={<VectorIcon family={MaterialIcons} name="home" size={24} />}
-            />
+            <Icon src={<VectorIcon family={MaterialIcons} name="home" />} />
           ),
         })}
       </NativeTabs.Trigger>
@@ -32,13 +30,7 @@ export default function TabLayout() {
           ios: <Icon sf="dumbbell.fill" />,
           android: (
             <Icon
-              src={
-                <VectorIcon
-                  family={MaterialIcons}
-                  name="fitness-center"
-                  size={24}
-                />
-              }
+              src={<VectorIcon family={MaterialIcons} name="fitness-center" />}
             />
           ),
         })}
@@ -50,9 +42,7 @@ export default function TabLayout() {
           ios: <Icon sf="chart.bar.fill" />,
           android: (
             <Icon
-              src={
-                <VectorIcon family={MaterialIcons} name="bar-chart" size={24} />
-              }
+              src={<VectorIcon family={MaterialIcons} name="bar-chart" />}
             />
           ),
         })}
@@ -63,11 +53,7 @@ export default function TabLayout() {
         {Platform.select({
           ios: <Icon sf="gear" />,
           android: (
-            <Icon
-              src={
-                <VectorIcon family={MaterialIcons} name="settings" size={24} />
-              }
-            />
+            <Icon src={<VectorIcon family={MaterialIcons} name="settings" />} />
           ),
         })}
       </NativeTabs.Trigger>

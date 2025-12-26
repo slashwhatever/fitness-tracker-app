@@ -12,7 +12,7 @@ export default function SettingsLayout() {
         contentStyle: { backgroundColor: "transparent" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Settings" }} />
+      <Stack.Screen name="settings-screen" options={{ title: "Settings" }} />
     </Stack>
   );
 }

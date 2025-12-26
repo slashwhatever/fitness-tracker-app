@@ -12,7 +12,7 @@ export default function AnalyticsLayout() {
         contentStyle: { backgroundColor: "transparent" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Analytics" }} />
+      <Stack.Screen name="analytics-screen" options={{ title: "Analytics" }} />
     </Stack>
   );
 }

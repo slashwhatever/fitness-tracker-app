@@ -12,7 +12,7 @@ export default function HomeLayout() {
         contentStyle: { backgroundColor: "transparent" },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Home" }} />
+      <Stack.Screen name="home-screen" options={{ title: "Home" }} />
     </Stack>
   );
 }
