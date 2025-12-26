@@ -170,6 +170,7 @@ export default function WorkoutsScreen() {
         contentContainerStyle={{
           padding: 16,
           paddingTop: headerPadding + 16,
+          paddingBottom: 120,
           gap: 4,
         }}
         showsVerticalScrollIndicator={false}
