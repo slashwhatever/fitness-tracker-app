@@ -292,7 +292,7 @@ export default function SettingsScreen() {
                     </View>
                     <ChevronDown
                       size={20}
-                      className="text-slate-400 dark:text-gray-500"
+                      color={colorScheme === "dark" ? "#94a3b8" : "#64748b"}
                     />
                   </TouchableOpacity>
                 )}
@@ -342,7 +342,7 @@ export default function SettingsScreen() {
                         </Text>
                         <ChevronDown
                           size={16}
-                          className="text-slate-400 dark:text-gray-500"
+                          color={colorScheme === "dark" ? "#94a3b8" : "#64748b"}
                         />
                       </View>
                     </TouchableOpacity>
@@ -366,7 +366,7 @@ export default function SettingsScreen() {
                         </Text>
                         <ChevronDown
                           size={16}
-                          className="text-slate-400 dark:text-gray-500"
+                          color={colorScheme === "dark" ? "#94a3b8" : "#64748b"}
                         />
                       </View>
                     </TouchableOpacity>

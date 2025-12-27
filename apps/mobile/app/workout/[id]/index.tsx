@@ -139,7 +139,7 @@ export default function WorkoutDetailScreen() {
     // Assuming placeholder for now or navigate to detail.
     if (selectedMovement) {
       router.push(
-        `/workouts/${id}/movement/${selectedMovement.user_movement.id}/settings`
+        `/workout/${id}/movement/${selectedMovement.user_movement.id}/settings`
       );
     }
   };
@@ -159,7 +159,7 @@ export default function WorkoutDetailScreen() {
           Workout not found
         </Text>
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.replace("/workouts")}
           className="mt-4 bg-primary-500 px-4 py-2 rounded-full"
         >
           <Text className="text-white font-semibold">Go Back</Text>
@@ -184,7 +184,7 @@ export default function WorkoutDetailScreen() {
     <TouchableOpacity
       className="bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border mb-3"
       onPress={() =>
-        router.push(`/workouts/${id}/movement/${item.user_movement.id}`)
+        router.push(`/workout/${id}/movement/${item.user_movement.id}`)
       }
     >
       <View className="flex-row items-center justify-between">
@@ -224,11 +224,7 @@ export default function WorkoutDetailScreen() {
             <GlassHeader
               title="Workouts"
               onBack={() => {
-                if (router.canGoBack()) {
-                  router.back();
-                } else {
-                  router.replace("/workouts");
-                }
+                router.replace("/workouts");
               }}
               rightAction={
                 <TouchableOpacity

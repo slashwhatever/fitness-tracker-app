@@ -6,10 +6,6 @@ interface SetAdjusterProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-  // Legacy single-step handlers
-  onIncrement?: () => void;
-  onDecrement?: () => void;
-  // Multi-step handler
   onAdjust?: (amount: number) => void;
   steps?: number[];
   variant?: "primary" | "secondary";
@@ -19,26 +15,16 @@ export function SetAdjuster({
   label,
   value,
   onChangeText,
-  onIncrement,
-  onDecrement,
   onAdjust,
   steps = [1],
   variant = "primary",
 }: SetAdjusterProps) {
   const handleIncrement = (step: number) => {
-    if (onAdjust) {
-      onAdjust(step);
-    } else if (onIncrement) {
-      onIncrement();
-    }
+    onAdjust(step);
   };
 
   const handleDecrement = (step: number) => {
-    if (onAdjust) {
-      onAdjust(-step);
-    } else if (onDecrement) {
-      onDecrement();
-    }
+    onAdjust(-step);
   };
 
   const { colorScheme } = useColorScheme();

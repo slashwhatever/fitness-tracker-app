@@ -1,19 +1,12 @@
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AuthProvider, useAuth } from "@fitness/shared";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  Icon,
-  Label,
-  NativeTabs,
-  VectorIcon,
-} from "expo-router/unstable-native-tabs";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "nativewind";
-import { Platform, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemeProvider } from "../components/ThemeProvider";
 import "../global.css";
-import LoginScreen from "./login"; // Ensure this import path is correct
+import LoginScreen from "./login";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,13 +19,11 @@ const queryClient = new QueryClient({
   },
 });
 
-function AppContent() {
+function AuthenticatedApp() {
   const { session, loading } = useAuth();
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
 
   if (loading) {
-    return null; // Or a splash screen
+    return null;
   }
 
   if (!session) {
@@ -40,51 +31,27 @@ function AppContent() {
   }
 
   return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
-        {Platform.select({
-          ios: <Icon sf="house.fill" />,
-          android: (
-            <Icon src={<VectorIcon family={MaterialIcons} name="home" />} />
-          ),
-        })}
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="workouts">
-        <Label>Workouts</Label>
-        {Platform.select({
-          ios: <Icon sf="dumbbell.fill" />,
-          android: (
-            <Icon
-              src={<VectorIcon family={MaterialIcons} name="fitness-center" />}
-            />
-          ),
-        })}
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="analytics">
-        <Label>Analytics</Label>
-        {Platform.select({
-          ios: <Icon sf="chart.bar.fill" />,
-          android: (
-            <Icon
-              src={<VectorIcon family={MaterialIcons} name="bar-chart" />}
-            />
-          ),
-        })}
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="settings">
-        <Label>Settings</Label>
-        {Platform.select({
-          ios: <Icon sf="gear" />,
-          android: (
-            <Icon src={<VectorIcon family={MaterialIcons} name="settings" />} />
-          ),
-        })}
-      </NativeTabs.Trigger>
-    </NativeTabs>
+    <Stack
+      screenOptions={{
+        contentStyle: { backgroundColor: "transparent" },
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="workout"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="groups/modal"
+        options={{
+          presentation: "modal",
+          headerShown: false,
+        }}
+      />
+      {/* Login route is technically available but we handle auth above */}
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+    </Stack>
   );
 }
 
@@ -96,7 +63,7 @@ export default function RootLayout() {
           <ThemeProvider>
             <View className="flex-1 bg-white dark:bg-slate-900">
               <StatusBar style="auto" />
-              <AppContent />
+              <AuthenticatedApp />
             </View>
           </ThemeProvider>
         </AuthProvider>

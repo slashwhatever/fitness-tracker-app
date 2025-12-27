@@ -165,10 +165,7 @@ export default function WorkoutSettingsScreen() {
           headerShown: true,
           headerTransparent: true,
           header: () => (
-            <GlassHeader
-              title="Workout Settings"
-              backPath={`/workouts/${id}`}
-            />
+            <GlassHeader title="Workout Settings" backPath={`/workout/${id}`} />
           ),
         }}
       />

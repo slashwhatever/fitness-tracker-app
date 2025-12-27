@@ -31,14 +31,14 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { EditSetSheet } from "../../../../components/EditSetSheet";
-import { GlassHeader } from "../../../../components/GlassHeader";
-import { MovementActionSheet } from "../../../../components/MovementActionSheet";
-import { SessionComparison } from "../../../../components/SessionComparison";
-import { SetAdjuster } from "../../../../components/SetAdjuster";
-import { TimedConfirmDeleteButton } from "../../../../components/TimedConfirmDeleteButton";
-import { useBottomPadding } from "../../../../hooks/useBottomPadding";
-import { useHeaderPadding } from "../../../../hooks/useHeaderPadding";
+import { EditSetSheet } from "../../../../../components/EditSetSheet";
+import { GlassHeader } from "../../../../../components/GlassHeader";
+import { MovementActionSheet } from "../../../../../components/MovementActionSheet";
+import { SessionComparison } from "../../../../../components/SessionComparison";
+import { SetAdjuster } from "../../../../../components/SetAdjuster";
+import { TimedConfirmDeleteButton } from "../../../../../components/TimedConfirmDeleteButton";
+import { useBottomPadding } from "../../../../../hooks/useBottomPadding";
+import { useHeaderPadding } from "../../../../../hooks/useHeaderPadding";
 
 interface SetActionModalProps {
   visible: boolean;
@@ -270,7 +270,7 @@ export default function MovementDetailScreen() {
           header: () => (
             <GlassHeader
               title={workout?.name || "Back"}
-              backPath={`/workouts/${workoutId}`}
+              backPath={`/workout/${workoutId}`}
               rightAction={
                 <TouchableOpacity
                   className="p-2 -mr-2"
@@ -472,7 +472,7 @@ export default function MovementDetailScreen() {
         title={movement.name}
         onEdit={() => {
           setActionSheetVisible(false);
-          router.push(`/workouts/${workoutId}/movement/${movementId}/settings`);
+          router.push(`/workout/${workoutId}/movement/${movementId}/settings`);
         }}
         onDelete={() => {
           Alert.alert(
@@ -495,7 +495,7 @@ export default function MovementDetailScreen() {
                     },
                     {
                       onSuccess: () => {
-                        router.replace(`/workouts/${workoutId}`);
+                        router.replace(`/workout/${workoutId}`);
                       },
                     }
                   );

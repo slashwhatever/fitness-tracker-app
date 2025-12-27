@@ -5,16 +5,15 @@ export default function WorkoutsLayout() {
   return (
     <Stack
       screenOptions={{
-        header: ({ options, navigation }) => (
+        header: ({ options }) => (
           <GlassHeader title={options.title || "Workouts"} showBack={false} />
         ),
         contentStyle: { backgroundColor: "transparent" },
       }}
     >
-      <Stack.Screen name="workouts-screen" options={{ title: "Workouts" }} />
       <Stack.Screen name="new" options={{ headerShown: false }} />
       <Stack.Screen
-        name="[id]/movement/[movementId]"
+        name="[id]/movement/[movementId]/index"
         options={{ headerShown: false }}
       />
       <Stack.Screen

@@ -82,7 +82,7 @@ export default function WorkoutsScreen() {
     try {
       switch (action) {
         case "edit":
-          router.push(`/workouts/${selectedWorkout.id}/settings`);
+          router.push(`/workout/${selectedWorkout.id}/settings`);
           break;
         case "duplicate":
           await duplicateMutation.mutateAsync(selectedWorkout.id);
@@ -115,7 +115,7 @@ export default function WorkoutsScreen() {
           ? "bg-slate-100 dark:bg-dark-bg border-slate-200 dark:border-dark-border opacity-60"
           : "bg-white dark:bg-dark-card border-slate-200 dark:border-dark-border"
       }`}
-      onPress={() => router.push(`/workouts/${item.id}`)}
+      onPress={() => router.push(`/workout/${item.id}`)}
     >
       <View
         className={`h-12 w-12 rounded-full items-center justify-center mr-4 ${
@@ -189,7 +189,7 @@ export default function WorkoutsScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-primary-500 px-4 py-2 rounded-full"
-              onPress={() => router.push("/workouts/new")}
+              onPress={() => router.push("/workout/new")}
             >
               <Text className="text-white font-semibold">+ New</Text>
             </TouchableOpacity>
