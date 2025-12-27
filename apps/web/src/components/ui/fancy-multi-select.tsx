@@ -3,13 +3,13 @@
 import { X } from "lucide-react";
 import * as React from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@components/ui/badge";
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
 
 export interface Option {
@@ -47,31 +47,37 @@ export function FancyMultiSelect({
     }
   }, [defaultValue, options]);
 
-  const handleUnselect = React.useCallback((option: Option) => {
-    setSelected((prev) => {
-      const newSelected = prev.filter((s) => s.value !== option.value);
-      // Defer the callback to avoid setState during render
-      setTimeout(() => {
-        if (onValueChange) {
-          onValueChange(newSelected.map((item) => item.value));
-        }
-      }, 0);
-      return newSelected;
-    });
-  }, [onValueChange]);
+  const handleUnselect = React.useCallback(
+    (option: Option) => {
+      setSelected((prev) => {
+        const newSelected = prev.filter((s) => s.value !== option.value);
+        // Defer the callback to avoid setState during render
+        setTimeout(() => {
+          if (onValueChange) {
+            onValueChange(newSelected.map((item) => item.value));
+          }
+        }, 0);
+        return newSelected;
+      });
+    },
+    [onValueChange]
+  );
 
-  const handleSelect = React.useCallback((option: Option) => {
-    setSelected((prev) => {
-      const newSelected = [...prev, option];
-      // Defer the callback to avoid setState during render
-      setTimeout(() => {
-        if (onValueChange) {
-          onValueChange(newSelected.map((item) => item.value));
-        }
-      }, 0);
-      return newSelected;
-    });
-  }, [onValueChange]);
+  const handleSelect = React.useCallback(
+    (option: Option) => {
+      setSelected((prev) => {
+        const newSelected = [...prev, option];
+        // Defer the callback to avoid setState during render
+        setTimeout(() => {
+          if (onValueChange) {
+            onValueChange(newSelected.map((item) => item.value));
+          }
+        }, 0);
+        return newSelected;
+      });
+    },
+    [onValueChange]
+  );
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {

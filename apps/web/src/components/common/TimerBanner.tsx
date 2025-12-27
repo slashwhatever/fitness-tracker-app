@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useTimer } from "@/contexts/TimerContext";
 import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
+import { Button } from "@components/ui/button";
 import { Pause, Pin, PinOff, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -56,8 +56,8 @@ export default function TimerBanner() {
         isComplete
           ? "bg-green-600 text-white"
           : isWarning
-          ? "bg-yellow-500 text-black"
-          : "bg-primary text-primary-foreground"
+            ? "bg-yellow-500 text-black"
+            : "bg-primary text-primary-foreground"
       } ${isPinned ? "sticky top-0 z-[60] shadow-sm" : ""}`}
     >
       <div className="flex items-center justify-between">
@@ -133,8 +133,8 @@ export default function TimerBanner() {
           isComplete
             ? "bg-green-300"
             : isWarning
-            ? "bg-yellow-300"
-            : "bg-blue-500"
+              ? "bg-yellow-300"
+              : "bg-blue-500"
         }`}
         style={{ width: `${Math.min(100, progressPercentage)}%` }}
       />

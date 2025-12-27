@@ -1,10 +1,10 @@
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import ContextualNavigation from "@/components/common/ContextualNavigation";
-import { Typography } from "@/components/common/Typography";
-import LibraryContentServer from "@/components/features/LibraryContentServer";
-import LibrarySearchWrapper from "@/components/features/LibrarySearchWrapper";
-import { LibrarySkeleton } from "@/components/ui/skeleton-patterns";
 import { getMovementTemplates } from "@/lib/data/movement-templates";
+import { ProtectedRoute } from "@components/auth/ProtectedRoute";
+import ContextualNavigation from "@components/common/ContextualNavigation";
+import { Typography } from "@components/common/Typography";
+import LibraryContentServer from "@components/features/LibraryContentServer";
+import LibrarySearchWrapper from "@components/features/LibrarySearchWrapper";
+import { LibrarySkeleton } from "@components/ui/skeleton-patterns";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";

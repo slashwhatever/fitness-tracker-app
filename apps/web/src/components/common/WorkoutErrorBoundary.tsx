@@ -1,24 +1,37 @@
 "use client";
 
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RefreshCw, AlertTriangle } from "lucide-react";
+import { ErrorBoundary } from "@components/ErrorBoundary";
+import { Button } from "@components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
 import { useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 
 interface WorkoutErrorBoundaryProps {
   children: React.ReactNode;
   workoutId?: string;
 }
 
-export default function WorkoutErrorBoundary({ children, workoutId }: WorkoutErrorBoundaryProps) {
+export default function WorkoutErrorBoundary({
+  children,
+  workoutId,
+}: WorkoutErrorBoundaryProps) {
   const queryClient = useQueryClient();
 
   const handleRetry = () => {
     if (workoutId) {
       // Clear workout-specific queries
-      queryClient.invalidateQueries({ queryKey: ["workouts", "detail", workoutId] });
-      queryClient.invalidateQueries({ queryKey: ["movements", "workout", workoutId] });
+      queryClient.invalidateQueries({
+        queryKey: ["workouts", "detail", workoutId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["movements", "workout", workoutId],
+      });
     }
     // Refresh the page as fallback
     window.location.reload();
@@ -39,7 +52,8 @@ export default function WorkoutErrorBoundary({ children, workoutId }: WorkoutErr
               </div>
               <CardTitle className="text-xl">Workout Error</CardTitle>
               <CardDescription>
-                Something went wrong while loading this workout. This could be due to a network issue or temporary server problem.
+                Something went wrong while loading this workout. This could be
+                due to a network issue or temporary server problem.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -48,7 +62,11 @@ export default function WorkoutErrorBoundary({ children, workoutId }: WorkoutErr
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Try Again
                 </Button>
-                <Button variant="outline" onClick={handleGoHome} className="w-full">
+                <Button
+                  variant="outline"
+                  onClick={handleGoHome}
+                  className="w-full"
+                >
                   Go to Dashboard
                 </Button>
               </div>

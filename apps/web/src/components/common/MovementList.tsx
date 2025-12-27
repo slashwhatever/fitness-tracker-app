@@ -1,9 +1,5 @@
 "use client";
 
-import SortableMovementItem from "@/components/common/SortableMovementItem";
-import { Button } from "@/components/ui/button";
-import { ConfirmationModal } from "@/components/ui/confirmation-modal";
-import { MovementListSkeleton } from "@/components/ui/skeleton-patterns";
 import { useMovementLastSets } from "@/hooks/useMovementLastSets";
 import {
   useRemoveMovementFromWorkout,
@@ -11,6 +7,10 @@ import {
   useWorkoutMovements,
 } from "@/hooks/useMovements";
 import { formatLastSetDate } from "@/lib/utils/dateHelpers";
+import SortableMovementItem from "@components/common/SortableMovementItem";
+import { Button } from "@components/ui/button";
+import { ConfirmationModal } from "@components/ui/confirmation-modal";
+import { MovementListSkeleton } from "@components/ui/skeleton-patterns";
 import {
   DndContext,
   DragEndEvent,

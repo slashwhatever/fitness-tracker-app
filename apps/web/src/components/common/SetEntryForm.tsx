@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import type { Set, UserMovement } from "@/models/types";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
 import { Check, Minus, Plus } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -93,8 +93,8 @@ export default function SetEntryForm({
           value === ""
             ? null
             : field === "reps" || field === "duration"
-            ? parseInt(value) || null
-            : parseFloat(value) || null;
+              ? parseInt(value) || null
+              : parseFloat(value) || null;
         setValue(field, numValue);
       }
     },

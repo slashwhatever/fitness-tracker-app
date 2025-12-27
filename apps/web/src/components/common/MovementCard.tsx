@@ -1,18 +1,18 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
 import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import {
   getExperienceLevelVariant,
   getTrackingTypeIcon,
 } from "@/lib/utils/typeHelpers";
 import { MovementTemplate } from "@/models/types";
+import { Badge } from "@components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@components/ui/card";
 
 interface MovementCardProps {
   movement: MovementTemplate;

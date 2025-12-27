@@ -1,5 +1,5 @@
+import { HEADER_CONTENT_HEIGHT } from "@components/GlassHeader";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HEADER_CONTENT_HEIGHT } from "../components/GlassHeader";
 
 export function useHeaderPadding() {
   const insets = useSafeAreaInsets();

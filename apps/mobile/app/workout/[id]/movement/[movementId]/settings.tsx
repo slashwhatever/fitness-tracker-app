@@ -1,9 +1,12 @@
+import { GlassHeader } from "@components/GlassHeader";
 import {
   useUpdateUserMovement,
   useUpdateWorkoutMovementNotes,
   useUserMovement,
   useWorkoutMovements,
 } from "@fitness/shared";
+import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -20,9 +23,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GlassHeader } from "../../../../../components/GlassHeader";
-import { useBottomPadding } from "../../../../../hooks/useBottomPadding";
-import { useHeaderPadding } from "../../../../../hooks/useHeaderPadding";
 
 const REST_TIMER_OPTIONS = [
   { label: "None", value: null },

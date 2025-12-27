@@ -1,5 +1,6 @@
 "use client";
 
+import { useTimer } from "@/contexts/TimerContext";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,9 +8,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { useTimer } from "@/contexts/TimerContext";
+} from "@components/ui/breadcrumb";
+import { Button } from "@components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 

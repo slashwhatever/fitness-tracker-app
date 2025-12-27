@@ -1,13 +1,13 @@
 "use client";
 
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
+import { ProtectedRoute } from "@components/auth/ProtectedRoute";
+import { MovementDetailSkeleton } from "@components/ui/skeleton-patterns";
 import { useSearchParams } from "next/navigation";
 import { Suspense, lazy, use } from "react";
 
 // Lazy load the heavy MovementDetail component
 const MovementDetail = lazy(
-  () => import("@/components/features/MovementDetail")
+  () => import("@components/features/MovementDetail")
 );
 
 interface LibraryMovementDetailPageProps {

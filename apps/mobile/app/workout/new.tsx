@@ -1,4 +1,5 @@
 import { useCreateWorkout, useWorkoutGroups } from "@fitness/shared";
+import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
@@ -11,7 +12,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useBottomPadding } from "../../hooks/useBottomPadding";
 
 export default function NewWorkoutScreen() {
   const router = useRouter();

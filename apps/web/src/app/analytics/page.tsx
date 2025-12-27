@@ -1,6 +1,6 @@
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import ContextualNavigation from "@/components/common/ContextualNavigation";
-import AnalyticsDashboard from "@/components/features/AnalyticsDashboard";
+import { ProtectedRoute } from "@components/auth/ProtectedRoute";
+import ContextualNavigation from "@components/common/ContextualNavigation";
+import AnalyticsDashboard from "@components/features/AnalyticsDashboard";
 
 export default function AnalyticsPage() {
   return (

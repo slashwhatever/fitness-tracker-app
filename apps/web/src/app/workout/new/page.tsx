@@ -4,15 +4,15 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import ContextualNavigation from "@/components/common/ContextualNavigation";
-import { Typography } from "@/components/common/Typography";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useCreateWorkout } from "@/hooks/useWorkouts";
+import { ProtectedRoute } from "@components/auth/ProtectedRoute";
+import ContextualNavigation from "@components/common/ContextualNavigation";
+import { Typography } from "@components/common/Typography";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
+import { Textarea } from "@components/ui/textarea";
 import { useRouter } from "next/navigation";
 
 // Zod schema for form validation

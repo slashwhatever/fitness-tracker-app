@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@components/ThemeProvider";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AuthProvider, useAuth } from "@fitness/shared";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -6,7 +7,6 @@ import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ThemeProvider } from "../components/ThemeProvider";
 import "../global.css";
 import LoginScreen from "./login";
 

@@ -1,3 +1,9 @@
+import { EditSetSheet } from "@components/EditSetSheet";
+import { GlassHeader } from "@components/GlassHeader";
+import { MovementActionSheet } from "@components/MovementActionSheet";
+import { SessionComparison } from "@components/SessionComparison";
+import { SetAdjuster } from "@components/SetAdjuster";
+import { TimedConfirmDeleteButton } from "@components/TimedConfirmDeleteButton";
 import {
   useCreateSet,
   useDeleteSet,
@@ -8,6 +14,8 @@ import {
   useWorkout,
   useWorkoutMovements,
 } from "@fitness/shared";
+import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { format } from "date-fns";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -31,14 +39,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { EditSetSheet } from "../../../../../components/EditSetSheet";
-import { GlassHeader } from "../../../../../components/GlassHeader";
-import { MovementActionSheet } from "../../../../../components/MovementActionSheet";
-import { SessionComparison } from "../../../../../components/SessionComparison";
-import { SetAdjuster } from "../../../../../components/SetAdjuster";
-import { TimedConfirmDeleteButton } from "../../../../../components/TimedConfirmDeleteButton";
-import { useBottomPadding } from "../../../../../hooks/useBottomPadding";
-import { useHeaderPadding } from "../../../../../hooks/useHeaderPadding";
 
 interface SetActionModalProps {
   visible: boolean;

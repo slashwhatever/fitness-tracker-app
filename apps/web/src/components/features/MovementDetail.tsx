@@ -1,18 +1,5 @@
 "use client";
 
-import ContextualNavigation from "@/components/common/ContextualNavigation";
-import GroupedSetHistory from "@/components/common/GroupedSetHistory";
-import QuickSetEntry from "@/components/common/QuickSetEntry";
-import ResponsiveButton from "@/components/common/ResponsiveButton";
-import { Typography } from "@/components/common/Typography";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { MovementDetailSkeleton } from "@/components/ui/skeleton-patterns";
 import { useTimer } from "@/contexts/TimerContext";
 import { useUserMovement, useWorkoutMovements } from "@/hooks/useMovements";
 import { useCreateSet, useSetsByMovement } from "@/hooks/useSets";
@@ -21,6 +8,19 @@ import { useUserProfile } from "@/hooks/useUserProfile";
 import { useWorkout } from "@/hooks/useWorkouts";
 import { getTrackingTypeIcon } from "@/lib/utils/typeHelpers";
 import { Set, UserMovement, getEffectiveRestTimer } from "@/models/types";
+import ContextualNavigation from "@components/common/ContextualNavigation";
+import GroupedSetHistory from "@components/common/GroupedSetHistory";
+import QuickSetEntry from "@components/common/QuickSetEntry";
+import ResponsiveButton from "@components/common/ResponsiveButton";
+import { Typography } from "@components/common/Typography";
+import { Button } from "@components/ui/button";
+import { Card, CardContent } from "@components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@components/ui/collapsible";
+import { MovementDetailSkeleton } from "@components/ui/skeleton-patterns";
 import { Calendar, ChevronsUpDown, Settings } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

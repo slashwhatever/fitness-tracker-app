@@ -1,8 +1,8 @@
 "use client";
 
-import { Typography } from "@/components/common/Typography";
-import WorkoutList, { WorkoutListRef } from "@/components/common/WorkoutList";
-import { Button } from "@/components/ui/button";
+import { Typography } from "@components/common/Typography";
+import WorkoutList, { WorkoutListRef } from "@components/common/WorkoutList";
+import { Button } from "@components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

@@ -1,7 +1,7 @@
+import { GlassHeader } from "@components/GlassHeader";
 import { Tabs } from "expo-router";
 import { BarChart, Dumbbell, Home, Settings } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import { GlassHeader } from "../../components/GlassHeader";
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();

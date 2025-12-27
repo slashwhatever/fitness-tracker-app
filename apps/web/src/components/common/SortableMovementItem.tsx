@@ -1,7 +1,7 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
 import type { UserMovement, WorkoutMovement } from "@/models/types";
+import { Separator } from "@components/ui/separator";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Dumbbell, Edit3, GripVertical, Trash2 } from "lucide-react";

@@ -1,8 +1,8 @@
 "use client";
 
-import ResponsiveButton from "@/components/common/ResponsiveButton";
-import { Typography } from "@/components/common/Typography";
-import { DashboardSkeleton } from "@/components/ui/skeleton-patterns";
+import ResponsiveButton from "@components/common/ResponsiveButton";
+import { Typography } from "@components/common/Typography";
+import { DashboardSkeleton } from "@components/ui/skeleton-patterns";
 import { useQueryClient } from "@tanstack/react-query";
 import { BarChart3, Dumbbell, Library, Settings } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { Suspense, lazy, useCallback } from "react";
 
 // Lazy load the heavy WorkoutManagement component
 const WorkoutManagement = lazy(
-  () => import("@/components/features/WorkoutManagement")
+  () => import("@components/features/WorkoutManagement")
 );
 
 export default function DashboardContent() {

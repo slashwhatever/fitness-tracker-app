@@ -1,16 +1,24 @@
 "use client";
 
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { RefreshCw, AlertTriangle, Home } from "lucide-react";
+import { ErrorBoundary } from "@components/ErrorBoundary";
+import { Button } from "@components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
 import { useQueryClient } from "@tanstack/react-query";
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 
 interface LibraryErrorBoundaryProps {
   children: React.ReactNode;
 }
 
-export default function LibraryErrorBoundary({ children }: LibraryErrorBoundaryProps) {
+export default function LibraryErrorBoundary({
+  children,
+}: LibraryErrorBoundaryProps) {
   const queryClient = useQueryClient();
 
   const handleRetry = () => {
@@ -19,7 +27,7 @@ export default function LibraryErrorBoundary({ children }: LibraryErrorBoundaryP
     queryClient.invalidateQueries({ queryKey: ["movements", "user"] });
     queryClient.invalidateQueries({ queryKey: ["muscle_groups"] });
     queryClient.invalidateQueries({ queryKey: ["tracking_types"] });
-    
+
     // Refresh the page as fallback
     window.location.reload();
   };
@@ -39,7 +47,8 @@ export default function LibraryErrorBoundary({ children }: LibraryErrorBoundaryP
               </div>
               <CardTitle className="text-xl">Library Error</CardTitle>
               <CardDescription>
-                Unable to load the movement library. This might be due to a connectivity issue or temporary service interruption.
+                Unable to load the movement library. This might be due to a
+                connectivity issue or temporary service interruption.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -48,7 +57,11 @@ export default function LibraryErrorBoundary({ children }: LibraryErrorBoundaryP
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Reload Library
                 </Button>
-                <Button variant="outline" onClick={handleGoHome} className="w-full">
+                <Button
+                  variant="outline"
+                  onClick={handleGoHome}
+                  className="w-full"
+                >
                   <Home className="mr-2 h-4 w-4" />
                   Back to Dashboard
                 </Button>

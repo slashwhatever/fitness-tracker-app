@@ -1,3 +1,4 @@
+import { WorkoutActionSheet } from "@components/WorkoutActionSheet";
 import {
   useArchiveWorkout,
   useDeleteWorkout,
@@ -6,6 +7,8 @@ import {
   useWorkouts,
   type Workout,
 } from "@fitness/shared";
+import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
@@ -18,9 +21,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { WorkoutActionSheet } from "../../components/WorkoutActionSheet";
-import { useBottomPadding } from "../../hooks/useBottomPadding";
-import { useHeaderPadding } from "../../hooks/useHeaderPadding";
 
 export default function WorkoutsScreen() {
   const { workouts, loading, refetch } = useWorkouts();

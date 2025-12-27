@@ -124,9 +124,9 @@ useUserProfile(); // Called on every page
 
 ```typescript
 // Current: All loaded upfront
-import MovementSelectionModal from "@/components/common/MovementSelectionModal";
-import WorkoutSettingsModal from "@/components/common/WorkoutSettingsModal";
-import AnalyticsDashboard from "@/components/features/AnalyticsDashboard";
+import MovementSelectionModal from "@components/common/MovementSelectionModal";
+import WorkoutSettingsModal from "@components/common/WorkoutSettingsModal";
+import AnalyticsDashboard from "@components/features/AnalyticsDashboard";
 ```
 
 **Solutions**:

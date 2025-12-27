@@ -1,17 +1,17 @@
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import ContextualNavigation from "@/components/common/ContextualNavigation";
-import LibraryErrorBoundary from "@/components/common/LibraryErrorBoundary";
-import { Typography } from "@/components/common/Typography";
-import { LibrarySkeleton } from "@/components/ui/skeleton-patterns";
 import { getMovementTemplates } from "@/lib/data/movement-templates";
+import { ProtectedRoute } from "@components/auth/ProtectedRoute";
+import ContextualNavigation from "@components/common/ContextualNavigation";
+import LibraryErrorBoundary from "@components/common/LibraryErrorBoundary";
+import { Typography } from "@components/common/Typography";
+import { LibrarySkeleton } from "@components/ui/skeleton-patterns";
 import { Suspense, lazy } from "react";
 
 // Lazy load heavy library components
 const LibraryContentServer = lazy(
-  () => import("@/components/features/LibraryContentServer")
+  () => import("@components/features/LibraryContentServer")
 );
 const LibrarySearchWrapper = lazy(
-  () => import("@/components/features/LibrarySearchWrapper")
+  () => import("@components/features/LibrarySearchWrapper")
 );
 
 interface MovementLibraryPageProps {

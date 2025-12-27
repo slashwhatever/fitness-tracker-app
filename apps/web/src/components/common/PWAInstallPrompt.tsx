@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@components/ui/card";
 import { Monitor, Smartphone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -27,7 +27,8 @@ export default function PWAInstallPrompt() {
     const checkStandalone = () => {
       const isStandaloneMode =
         window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as typeof window.navigator & { standalone?: boolean }).standalone ||
+        (window.navigator as typeof window.navigator & { standalone?: boolean })
+          .standalone ||
         document.referrer.includes("android-app://");
       setIsStandalone(isStandaloneMode);
     };
@@ -38,18 +39,21 @@ export default function PWAInstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
+
       // Show prompt after user has used the app for a bit
       // Check if they've dismissed it before
       const hasSeenPrompt = localStorage.getItem("pwa-prompt-dismissed");
       const installCount = localStorage.getItem("pwa-prompt-shown") || "0";
-      
+
       if (!hasSeenPrompt && parseInt(installCount) < 3) {
         // Show after 30 seconds of usage
         setTimeout(() => {
           if (!isStandalone) {
             setShowPrompt(true);
-            localStorage.setItem("pwa-prompt-shown", String(parseInt(installCount) + 1));
+            localStorage.setItem(
+              "pwa-prompt-shown",
+              String(parseInt(installCount) + 1)
+            );
           }
         }, 30000);
       }
@@ -58,7 +62,10 @@ export default function PWAInstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
     };
   }, [isStandalone]);
 
@@ -68,13 +75,13 @@ export default function PWAInstallPrompt() {
     try {
       await deferredPrompt.prompt();
       const choiceResult = await deferredPrompt.userChoice;
-      
+
       if (choiceResult.outcome === "accepted") {
         localStorage.setItem("pwa-installed", "true");
       } else {
         localStorage.setItem("pwa-prompt-dismissed", "true");
       }
-      
+
       setDeferredPrompt(null);
       setShowPrompt(false);
     } catch (error) {
@@ -137,7 +144,7 @@ export default function PWAInstallPrompt() {
                 <span>Faster loading & offline support</span>
               </div>
             </div>
-            
+
             <div className="flex gap-2">
               <Button onClick={handleInstallClick} className="flex-1">
                 Install App

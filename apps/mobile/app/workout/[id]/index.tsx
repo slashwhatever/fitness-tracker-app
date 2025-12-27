@@ -1,3 +1,6 @@
+import { GlassHeader } from "@components/GlassHeader";
+import { MovementActionSheet } from "@components/MovementActionSheet";
+import { WorkoutActionSheet } from "@components/WorkoutActionSheet";
 import {
   formatLastSetDate,
   useArchiveWorkout,
@@ -8,6 +11,8 @@ import {
   useWorkout,
   useWorkoutMovements,
 } from "@fitness/shared";
+import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
@@ -21,11 +26,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GlassHeader } from "../../../components/GlassHeader";
-import { MovementActionSheet } from "../../../components/MovementActionSheet";
-import { WorkoutActionSheet } from "../../../components/WorkoutActionSheet";
-import { useBottomPadding } from "../../../hooks/useBottomPadding";
-import { useHeaderPadding } from "../../../hooks/useHeaderPadding";
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

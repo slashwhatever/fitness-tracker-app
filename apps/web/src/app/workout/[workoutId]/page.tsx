@@ -1,26 +1,26 @@
 "use client";
 
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import ContextualNavigation from "@/components/common/ContextualNavigation";
-import WorkoutErrorBoundary from "@/components/common/WorkoutErrorBoundary";
-import { Button } from "@/components/ui/button";
+import { useWorkoutMovements } from "@/hooks/useMovements";
+import { useWorkout } from "@/hooks/useWorkouts";
+import { ProtectedRoute } from "@components/auth/ProtectedRoute";
+import ContextualNavigation from "@components/common/ContextualNavigation";
+import WorkoutErrorBoundary from "@components/common/WorkoutErrorBoundary";
+import { Button } from "@components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
-} from "@/components/ui/card";
+} from "@components/ui/card";
 import {
   MovementListSkeleton,
   WorkoutPageSkeleton,
-} from "@/components/ui/skeleton-patterns";
-import { useWorkoutMovements } from "@/hooks/useMovements";
-import { useWorkout } from "@/hooks/useWorkouts";
+} from "@components/ui/skeleton-patterns";
 import Link from "next/link";
 import { Suspense, lazy, use } from "react";
 
-const MovementList = lazy(() => import("@/components/common/MovementList"));
-const WorkoutHeader = lazy(() => import("@/components/common/WorkoutHeader"));
+const MovementList = lazy(() => import("@components/common/MovementList"));
+const WorkoutHeader = lazy(() => import("@components/common/WorkoutHeader"));
 
 interface WorkoutDetailPageProps {
   params: Promise<{ workoutId: string }>;

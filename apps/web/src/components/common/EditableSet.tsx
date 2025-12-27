@@ -1,6 +1,9 @@
 "use client";
 
-import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { useDeleteSet, useUpdateSet } from "@/hooks/useSets";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import type { Set, UserMovement } from "@/models/types";
+import { ConfirmationModal } from "@components/ui/confirmation-modal";
 import {
   Drawer,
   DrawerContent,
@@ -8,10 +11,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer";
-import { useDeleteSet, useUpdateSet } from "@/hooks/useSets";
-import { useUserProfile } from "@/hooks/useUserProfile";
-import type { Set, UserMovement } from "@/models/types";
+} from "@components/ui/drawer";
 import { Copy, Edit, Trash2 } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import ResponsiveButton from "./ResponsiveButton";

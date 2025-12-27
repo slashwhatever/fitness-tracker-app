@@ -4,17 +4,17 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Typography } from "@/components/common/Typography";
-import { Button } from "@/components/ui/button";
+import { Typography } from "@components/common/Typography";
+import { Button } from "@components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@components/ui/card";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
 import { signUpWithEmail } from "@fitness/shared";
 import { Check, Dumbbell, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
