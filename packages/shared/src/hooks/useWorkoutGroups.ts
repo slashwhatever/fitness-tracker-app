@@ -15,7 +15,7 @@ type WorkoutGroup = Tables<"workout_groups">;
 type WorkoutGroupInsert = TablesInsert<"workout_groups">;
 type WorkoutGroupUpdate = TablesUpdate<"workout_groups">;
 
-const groupKeys = {
+export const groupKeys = {
   all: ["workout-groups"] as const,
   lists: () => [...groupKeys.all, "list"] as const,
   list: (userId: string) => [...groupKeys.lists(), userId] as const,
@@ -45,7 +45,12 @@ export function useWorkoutGroups(): {
 
       const dbQuery = supabase
         .from("workout_groups")
-        .select("*")
+        .select(
+          `
+          *,
+          workouts:workouts(count)
+        `
+        )
         .eq("user_id", user.id)
         .order("sort_order", { ascending: true });
 
@@ -53,7 +58,14 @@ export function useWorkoutGroups(): {
 
       const { data, error } = await dbQuery;
       if (error) throw error;
-      return data as QueryResult;
+
+      // Transform data to include workout_count
+      return (
+        (data as QueryResult)?.map((group) => ({
+          ...group,
+          workout_count: group.workouts?.[0]?.count ?? 0,
+        })) ?? []
+      );
     },
     enabled: !!user?.id,
     staleTime: 5 * 60 * 1000,

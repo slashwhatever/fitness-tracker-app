@@ -12,6 +12,7 @@ import { useAuth } from "../lib/auth/AuthProvider";
 import { createClient } from "../lib/supabase/client";
 import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
 import { isSafeForQueries } from "../lib/utils/validation";
+import { groupKeys } from "./useWorkoutGroups";
 
 type Workout = Tables<"workouts">;
 type WorkoutInsert = TablesInsert<"workouts">;
@@ -217,7 +218,7 @@ export function useUpdateWorkout(): UseMutationResult<
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       if (user?.id) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),
@@ -227,6 +228,13 @@ export function useUpdateWorkout(): UseMutationResult<
           }
         );
         queryClient.setQueryData(workoutKeys.detail(data.id), data);
+
+        // Invalidate groups query if group_id was updated
+        if (variables.updates.group_id !== undefined) {
+          queryClient.invalidateQueries({
+            queryKey: groupKeys.list(user.id),
+          });
+        }
       }
     },
   });
