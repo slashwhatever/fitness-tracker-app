@@ -16,6 +16,7 @@ export const Colors = {
     icon: colors.slate[500],
     iconActive: customColors.primary[500],
     danger: colors.red[500],
+    "muted-foreground": colors.slate[500],
   },
   dark: {
     tint: customColors.primary[500],
@@ -27,6 +28,7 @@ export const Colors = {
     icon: colors.slate[400],
     iconActive: customColors.primary[500],
     danger: colors.red[500],
+    "muted-foreground": colors.slate[400],
   },
 };
 

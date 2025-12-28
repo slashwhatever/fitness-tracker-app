@@ -47,7 +47,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const themeVars = isDark ? darkTheme : lightTheme;
 
   return (
-    <View style={themeVars} className="flex-1">
+    <View style={[themeVars, { flex: 1 }]} collapsable={false}>
       {children}
     </View>
   );

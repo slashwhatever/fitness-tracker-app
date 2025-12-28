@@ -1,3 +1,4 @@
+import { EmptyState } from "@components/EmptyState";
 import { GlassHeader } from "@components/GlassHeader";
 import { GroupActionSheet } from "@components/GroupActionSheet";
 import { useWorkoutGroups } from "@fitness/shared";
@@ -6,7 +7,7 @@ import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
-import { Folder, MoreVertical, Plus } from "lucide-react-native";
+import { MoreVertical, Plus } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -133,19 +134,6 @@ export default function ManageGroupsScreen() {
     );
   };
 
-  const renderEmptyState = () => (
-    <View className="flex-1 items-center justify-center py-20">
-      <Folder size={64} color={colors["muted-foreground"]} />
-      <Text className="text-foreground font-semibold text-xl mt-4">
-        No Groups Yet
-      </Text>
-      <Text className="text-muted-foreground text-center mt-2 px-8">
-        Create groups to organize your workouts by muscle group, training style,
-        or any way you prefer.
-      </Text>
-    </View>
-  );
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["bottom"]}>
       <GlassHeader title="Manage Groups" showBack />
@@ -165,7 +153,10 @@ export default function ManageGroupsScreen() {
             </Text>
 
             {groups.length === 0 ? (
-              renderEmptyState()
+              <EmptyState
+                title="No Groups Yet"
+                description="Create groups to organize your workouts by muscle group, training style, or any way you prefer."
+              />
             ) : (
               <FlatList
                 data={groups}
