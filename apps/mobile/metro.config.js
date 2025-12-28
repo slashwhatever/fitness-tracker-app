@@ -11,7 +11,8 @@ const config = getDefaultConfig(projectRoot);
 config.resolver.sourceExts.push("mjs");
 
 // 1. Watch all files in the monorepo
-config.watchFolders = [workspaceRoot];
+// Merge with Expo's defaults instead of overriding
+config.watchFolders = [...(config.watchFolders || []), workspaceRoot];
 
 // 2. Let Metro know where to resolve packages, starting with the project, then the workspace root
 config.resolver.nodeModulesPaths = [
