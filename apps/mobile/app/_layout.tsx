@@ -61,7 +61,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AuthProvider>
           <ThemeProvider>
-            <View className="flex-1 bg-white dark:bg-slate-900">
+            <View className="flex-1 bg-background">
               <StatusBar style="auto" />
               <AuthenticatedApp />
             </View>

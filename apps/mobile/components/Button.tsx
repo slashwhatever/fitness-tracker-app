@@ -44,17 +44,17 @@ export function Button({
       break;
     case "outline":
       containerStyles +=
-        " bg-transparent border border-slate-200 dark:border-dark-border active:bg-slate-50 dark:active:bg-dark-bg/50";
-      textStyles += " text-slate-900 dark:text-white";
+        " bg-transparent border border-border active:bg-slate-50 dark:active:bg-dark-bg/50";
+      textStyles += " text-foreground";
       break;
     case "ghost":
       containerStyles +=
         " bg-transparent active:bg-slate-100 dark:active:bg-dark-bg/50";
-      textStyles += " text-slate-900 dark:text-white";
+      textStyles += " text-foreground";
       break;
     case "secondary":
-      containerStyles += " bg-slate-100 dark:bg-dark-card active:opacity-80";
-      textStyles += " text-slate-900 dark:text-white";
+      containerStyles += " bg-slate-100 dark:bg-card active:opacity-80";
+      textStyles += " text-foreground";
       break;
   }
 

@@ -74,7 +74,7 @@ export function SessionComparison({
 
               <View>
                 <View className="flex-row items-center gap-1">
-                  <Text className="text-slate-900 dark:text-white font-medium text-md">
+                  <Text className="text-foreground font-medium text-md">
                     {formatValue(metric.current, metric.label, weightUnit)}
                   </Text>
                   <Text className="text-slate-500 dark:text-gray-400 text-sm">

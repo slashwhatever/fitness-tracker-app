@@ -1,7 +1,12 @@
 import { GlassHeader } from "@components/GlassHeader";
-import { useUpdateWorkout, useWorkout } from "@fitness/shared";
+import {
+  useUpdateWorkout,
+  useWorkout,
+  useWorkoutGroups,
+} from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -62,9 +67,9 @@ function RestTimerSelectModal({
       onRequestClose={onClose}
     >
       <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <View className="bg-white dark:bg-dark-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-slate-200 dark:border-dark-border">
-          <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center">
-            <Text className="text-lg font-semibold text-slate-900 dark:text-white">
+        <View className="bg-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-border">
+          <View className="p-4 border-b border-border flex-row justify-between items-center">
+            <Text className="text-lg font-semibold text-foreground">
               Default Rest Timer
             </Text>
             <TouchableOpacity onPress={onClose} className="p-2 -mr-2">
@@ -78,7 +83,7 @@ function RestTimerSelectModal({
                 className={`p-4 rounded-xl mb-2 flex-row justify-between items-center ${
                   currentValue === option.value
                     ? "bg-primary-500/20 border border-primary-500"
-                    : "bg-slate-50 dark:bg-dark-bg/50 border border-transparent"
+                    : "bg-background/50 border border-transparent"
                 }`}
                 onPress={() => {
                   onSelect(option.value);
@@ -113,10 +118,13 @@ export default function WorkoutSettingsScreen() {
   const bottomPadding = useBottomPadding();
   const router = useRouter();
   const { data: workout, isLoading } = useWorkout(id);
+  const { groups } = useWorkoutGroups();
   const updateMutation = useUpdateWorkout();
+  const colors = useThemeColors();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [groupId, setGroupId] = useState<string | null>(null);
   const [defaultRestTimer, setDefaultRestTimer] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showRestTimerModal, setShowRestTimerModal] = useState(false);
@@ -125,6 +133,7 @@ export default function WorkoutSettingsScreen() {
     if (workout) {
       setName(workout.name);
       setDescription(workout.description || "");
+      setGroupId(workout.group_id || null);
       setDefaultRestTimer(workout.default_rest_timer || null);
     }
   }, [workout]);
@@ -139,6 +148,7 @@ export default function WorkoutSettingsScreen() {
         updates: {
           name: name.trim(),
           description: description.trim() || null,
+          group_id: groupId,
           default_rest_timer: defaultRestTimer,
         },
       });
@@ -152,14 +162,14 @@ export default function WorkoutSettingsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
+      <View className="flex-1 bg-background items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+    <View className="flex-1 bg-background">
       <Stack.Screen
         options={{
           headerShown: true,
@@ -188,12 +198,63 @@ export default function WorkoutSettingsScreen() {
                 Workout Name
               </Text>
               <TextInput
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 value={name}
                 onChangeText={setName}
                 placeholder="e.g. Upper Body Power"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={colors.textSecondary}
               />
+            </View>
+
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Group
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="flex-row"
+              >
+                <TouchableOpacity
+                  onPress={() => setGroupId(null)}
+                  className={`mr-3 px-4 py-2 rounded-full border ${
+                    groupId === null
+                      ? "bg-primary-500 border-primary-500"
+                      : "bg-transparent border-slate-300 dark:border-gray-600"
+                  }`}
+                >
+                  <Text
+                    className={
+                      groupId === null
+                        ? "text-white"
+                        : "text-slate-500 dark:text-gray-400"
+                    }
+                  >
+                    None
+                  </Text>
+                </TouchableOpacity>
+                {groups.map((group) => (
+                  <TouchableOpacity
+                    key={group.id}
+                    onPress={() => setGroupId(group.id)}
+                    className={`mr-3 px-4 py-2 rounded-full border ${
+                      groupId === group.id
+                        ? "bg-primary-500 border-primary-500"
+                        : "bg-transparent border-slate-300 dark:border-gray-600"
+                    }`}
+                  >
+                    <Text
+                      className={
+                        groupId === group.id
+                          ? "text-white"
+                          : "text-slate-500 dark:text-gray-400"
+                      }
+                    >
+                      {group.name}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
 
             <View>
@@ -201,11 +262,11 @@ export default function WorkoutSettingsScreen() {
                 Description (Optional)
               </Text>
               <TextInput
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
                 value={description}
                 onChangeText={setDescription}
                 placeholder="Add notes about this workout..."
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={colors.textSecondary}
                 multiline
                 textAlignVertical="top"
               />
@@ -216,22 +277,16 @@ export default function WorkoutSettingsScreen() {
                 Default Rest Timer
               </Text>
               <TouchableOpacity
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 flex-row items-center justify-between"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 flex-row items-center justify-between"
                 onPress={() => setShowRestTimerModal(true)}
               >
                 <View className="flex-row items-center gap-2">
-                  <Clock
-                    size={20}
-                    className="text-slate-400 dark:text-slate-500"
-                  />
-                  <Text className="text-slate-900 dark:text-white text-base">
+                  <Clock size={20} color={colors.textSecondary} />
+                  <Text className="text-foreground text-base">
                     {formatDuration(defaultRestTimer)}
                   </Text>
                 </View>
-                <ChevronRight
-                  size={20}
-                  className="text-slate-400 dark:text-slate-500"
-                />
+                <ChevronRight size={20} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 

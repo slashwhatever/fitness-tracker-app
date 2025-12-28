@@ -1,5 +1,6 @@
 import { signInWithEmail } from "@fitness/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Link, useRouter } from "expo-router";
 import { Dumbbell, Eye, EyeOff } from "lucide-react-native";
 import { useState } from "react";
@@ -35,6 +36,7 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const colors = useThemeColors();
 
   const {
     control,
@@ -74,7 +76,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-dark-bg">
+    <SafeAreaView className="flex-1 bg-white dark:bg-background">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -93,7 +95,7 @@ export default function LoginScreen() {
                   color="#6366f1"
                 />
               </View>
-              <Text className="text-3xl font-bold text-center text-slate-900 dark:text-white">
+              <Text className="text-3xl font-bold text-center text-foreground">
                 Welcome to Logset
               </Text>
               <Text className="text-slate-500 dark:text-gray-400 text-center text-base">
@@ -111,9 +113,9 @@ export default function LoginScreen() {
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="w-full bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className="w-full bg-slate-50 dark:bg-card border border-border rounded-lg px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     placeholder="Enter your email"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={colors.textSecondary}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
@@ -139,9 +141,9 @@ export default function LoginScreen() {
                   name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="w-full bg-slate-50 dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white pr-12 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                      className="w-full bg-slate-50 dark:bg-card border border-border rounded-lg px-4 py-3 text-base text-foreground pr-12 placeholder:text-gray-400 dark:placeholder:text-gray-600"
                       placeholder="Enter your password"
-                      placeholderTextColor="#94a3b8"
+                      placeholderTextColor={colors.textSecondary}
                       onBlur={onBlur}
                       onChangeText={onChange}
                       value={value}
@@ -155,12 +157,9 @@ export default function LoginScreen() {
                   className="absolute right-0 top-0 h-full px-3 justify-center"
                 >
                   {showPassword ? (
-                    <EyeOff size={20} color="#94a3b8" />
+                    <EyeOff size={20} color={colors.icon} />
                   ) : (
-                    <Eye
-                      size={20}
-                      className="text-slate-400 dark:text-slate-400"
-                    />
+                    <Eye size={20} color={colors.icon} />
                   )}
                 </Pressable>
               </View>

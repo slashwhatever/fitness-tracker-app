@@ -11,9 +11,9 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
 import { ChevronDown, LogOut, Save, Undo2 } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -58,9 +58,9 @@ function SelectModal({
       onRequestClose={onClose}
     >
       <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <View className="bg-white dark:bg-dark-card rounded-t-3xl overflow-hidden pb-8 border-t border-slate-200 dark:border-dark-border">
-          <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center">
-            <Text className="text-lg font-semibold text-slate-900 dark:text-white">
+        <View className="bg-card rounded-t-3xl overflow-hidden pb-8 border-t border-border">
+          <View className="p-4 border-b border-border flex-row justify-between items-center">
+            <Text className="text-lg font-semibold text-foreground">
               {title}
             </Text>
             <TouchableOpacity onPress={onClose}>
@@ -71,8 +71,8 @@ function SelectModal({
             {options.map((option) => (
               <TouchableOpacity
                 key={option.value}
-                className={`p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center ${
-                  value === option.value ? "bg-slate-50 dark:bg-dark-bg/50" : ""
+                className={`p-4 border-b border-border flex-row justify-between items-center ${
+                  value === option.value ? "bg-background/50" : ""
                 }`}
                 onPress={() => {
                   onSelect(option.value);
@@ -111,7 +111,7 @@ const settingsSchema = z.object({
 type SettingsFormData = z.infer<typeof settingsSchema>;
 
 export default function SettingsScreen() {
-  const { colorScheme } = useColorScheme();
+  const colors = useThemeColors();
   const { signOut } = useAuth();
   const router = useRouter();
   const headerPadding = useHeaderPadding();
@@ -213,14 +213,14 @@ export default function SettingsScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-slate-50 dark:bg-dark-bg">
+      <View className="flex-1 justify-center items-center bg-background">
         <ActivityIndicator size="large" className="text-primary" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+    <View className="flex-1 bg-background">
       <ScrollView className="flex-1">
         <View
           className="flex-1 p-4 pb-0 gap-4"
@@ -231,10 +231,10 @@ export default function SettingsScreen() {
         >
           {/* Profile Section */}
           <View className="gap-4">
-            <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">
+            <Text className="text-lg font-semibold text-foreground ml-1">
               Profile
             </Text>
-            <View className="bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border">
+            <View className="bg-card p-4 rounded-xl border border-border">
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Display Name
               </Text>
@@ -243,12 +243,12 @@ export default function SettingsScreen() {
                 name="display_name"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="w-full bg-slate-50 dark:bg-dark-bg border border-slate-200 dark:border-dark-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className="w-full bg-background border border-border rounded-lg px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     placeholder="Enter your display name"
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={colors.textSecondary}
                   />
                 )}
               />
@@ -260,7 +260,7 @@ export default function SettingsScreen() {
 
           {/* Appearance Section */}
           <View className="gap-4">
-            <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">
+            <Text className="text-lg font-semibold text-foreground ml-1">
               Appearance
             </Text>
             <ThemeSelector />
@@ -268,40 +268,37 @@ export default function SettingsScreen() {
 
           {/* Workout Preferences */}
           <View className="gap-4">
-            <Text className="text-lg font-semibold text-slate-900 dark:text-white ml-1">
+            <Text className="text-lg font-semibold text-foreground ml-1">
               Workout preferences
             </Text>
-            <View className="bg-white dark:bg-dark-card rounded-xl border border-slate-200 dark:border-dark-border overflow-hidden">
+            <View className="bg-card rounded-xl border border-border overflow-hidden">
               {/* Default Rest Timer */}
               <Controller
                 control={control}
                 name="default_rest_timer"
                 render={({ field: { value } }) => (
                   <TouchableOpacity
-                    className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card active:bg-slate-50 dark:active:bg-dark-bg/50"
+                    className="p-4 border-b border-border flex-row justify-between items-center bg-card active:bg-slate-50 dark:active:bg-dark-bg/50"
                     onPress={() => setActiveModal("restTimer")}
                   >
                     <View className="flex-1">
                       <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
                         Default Rest Timer
                       </Text>
-                      <Text className="text-base font-medium text-slate-900 dark:text-white">
+                      <Text className="text-base font-medium text-foreground">
                         {timerOptions.find((o) => o.value === value)?.label ||
                           "Select timer"}
                       </Text>
                     </View>
-                    <ChevronDown
-                      size={20}
-                      color={colorScheme === "dark" ? "#94a3b8" : "#64748b"}
-                    />
+                    <ChevronDown size={20} color={colors.icon} />
                   </TouchableOpacity>
                 )}
               />
 
               {/* Pin Timer */}
-              <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center bg-white dark:bg-dark-card">
+              <View className="p-4 border-b border-border flex-row justify-between items-center bg-card">
                 <View className="flex-1 pr-4">
-                  <Text className="text-sm font-medium text-slate-900 dark:text-white">
+                  <Text className="text-sm font-medium text-foreground">
                     Pin Timer
                   </Text>
                   <Text className="text-xs text-slate-500 dark:text-gray-500 mt-1">
@@ -330,20 +327,17 @@ export default function SettingsScreen() {
                   name="weight_unit"
                   render={({ field: { value } }) => (
                     <TouchableOpacity
-                      className="flex-1 p-4 border-r border-slate-200 dark:border-dark-border border-b-0 active:bg-slate-50 dark:active:bg-dark-bg/50"
+                      className="flex-1 p-4 border-r border-border border-b-0 active:bg-slate-50 dark:active:bg-dark-bg/50"
                       onPress={() => setActiveModal("weight")}
                     >
                       <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
                         Weight Unit
                       </Text>
                       <View className="flex-row items-center justify-between">
-                        <Text className="text-base font-medium text-slate-900 dark:text-white">
+                        <Text className="text-base font-medium text-foreground">
                           {value === "lbs" ? "Pounds (lbs)" : "Kilograms (kg)"}
                         </Text>
-                        <ChevronDown
-                          size={16}
-                          color={colorScheme === "dark" ? "#94a3b8" : "#64748b"}
-                        />
+                        <ChevronDown size={16} color={colors.textSecondary} />
                       </View>
                     </TouchableOpacity>
                   )}
@@ -361,13 +355,10 @@ export default function SettingsScreen() {
                         Distance Unit
                       </Text>
                       <View className="flex-row items-center justify-between">
-                        <Text className="text-base font-medium text-slate-900 dark:text-white">
+                        <Text className="text-base font-medium text-foreground">
                           {value === "miles" ? "Miles" : "Kilometers"}
                         </Text>
-                        <ChevronDown
-                          size={16}
-                          color={colorScheme === "dark" ? "#94a3b8" : "#64748b"}
-                        />
+                        <ChevronDown size={16} color={colors.textSecondary} />
                       </View>
                     </TouchableOpacity>
                   )}
@@ -382,13 +373,8 @@ export default function SettingsScreen() {
               <Button
                 variant="outline"
                 onPress={handleReset}
-                className="flex-1 bg-white dark:bg-dark-card"
-                icon={
-                  <Undo2
-                    size={20}
-                    color={colorScheme === "dark" ? "#ffffff" : "#0f172a"}
-                  />
-                }
+                className="flex-1 bg-card"
+                icon={<Undo2 size={20} color={colors.text} />}
               >
                 Reset
               </Button>

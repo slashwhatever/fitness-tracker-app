@@ -10,7 +10,7 @@ export default function HomeScreen() {
   const bottomPadding = useBottomPadding();
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+    <View className="flex-1 bg-background">
       <ScrollView
         contentContainerStyle={{
           padding: 16,
@@ -23,7 +23,7 @@ export default function HomeScreen() {
             <Text className="text-slate-500 dark:text-gray-400 text-sm font-medium">
               Welcome back,
             </Text>
-            <Text className="text-2xl font-bold text-slate-900 dark:text-white">
+            <Text className="text-2xl font-bold text-foreground">
               {user?.email?.split("@")[0] || "Athlete"}
             </Text>
           </View>
@@ -55,14 +55,14 @@ export default function HomeScreen() {
           </View>
         </LinearGradient>
 
-        <Text className="text-lg font-bold text-slate-900 dark:text-white mb-4">
+        <Text className="text-lg font-bold text-foreground mb-4">
           Recent Activity
         </Text>
 
         {/* Placeholder for recent workouts */}
-        <View className="bg-white dark:bg-dark-card p-4 rounded-2xl border border-slate-200 dark:border-dark-border mb-4">
+        <View className="bg-card p-4 rounded-2xl border border-border mb-4">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-slate-900 dark:text-white font-semibold text-lg">
+            <Text className="text-foreground font-semibold text-lg">
               Upper Body Power
             </Text>
             <Text className="text-slate-500 dark:text-gray-400 text-sm">
@@ -74,9 +74,9 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        <View className="bg-white dark:bg-dark-card p-4 rounded-2xl border border-slate-200 dark:border-dark-border">
+        <View className="bg-card p-4 rounded-2xl border border-border">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-slate-900 dark:text-white font-semibold text-lg">
+            <Text className="text-foreground font-semibold text-lg">
               Leg Day
             </Text>
             <Text className="text-slate-500 dark:text-gray-400 text-sm">

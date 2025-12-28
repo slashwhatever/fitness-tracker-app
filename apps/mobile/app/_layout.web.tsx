@@ -1,10 +1,10 @@
 import { ThemeProvider } from "@components/ThemeProvider";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { AuthProvider, useAuth } from "@fitness/shared";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "nativewind";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
@@ -23,8 +23,7 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   const { session, loading } = useAuth();
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const colors = useThemeColors();
 
   if (loading) {
     return null;
@@ -39,9 +38,9 @@ function AppContent() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: isDark ? "#000" : "#fff",
+          backgroundColor: colors.background,
         },
-        tabBarActiveTintColor: isDark ? "#fff" : "#000",
+        tabBarActiveTintColor: colors.tint,
       }}
     >
       <Tabs.Screen

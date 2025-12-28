@@ -502,6 +502,7 @@ export function useDuplicateWorkout(): UseMutationResult<
           name: `${originalWorkout.name} (Copy)`,
           description: originalWorkout.description,
           default_rest_timer: originalWorkout.default_rest_timer,
+          group_id: originalWorkout.group_id,
           user_id: user.id,
           order_index: maxOrderIndex + 1,
           archived: false,

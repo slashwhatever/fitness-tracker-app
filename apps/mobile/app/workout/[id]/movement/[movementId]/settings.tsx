@@ -7,6 +7,7 @@ import {
 } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";
@@ -67,9 +68,9 @@ function RestTimerSelectModal({
       onRequestClose={onClose}
     >
       <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
-        <View className="bg-white dark:bg-dark-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-slate-200 dark:border-dark-border">
-          <View className="p-4 border-b border-slate-200 dark:border-dark-border flex-row justify-between items-center">
-            <Text className="text-lg font-semibold text-slate-900 dark:text-white">
+        <View className="bg-card rounded-t-3xl overflow-hidden max-h-[70%] border-t border-border">
+          <View className="p-4 border-b border-border flex-row justify-between items-center">
+            <Text className="text-lg font-semibold text-foreground">
               Default Rest Timer
             </Text>
             <TouchableOpacity onPress={onClose} className="p-2 -mr-2">
@@ -83,7 +84,7 @@ function RestTimerSelectModal({
                 className={`p-4 rounded-xl mb-2 flex-row justify-between items-center ${
                   currentValue === option.value
                     ? "bg-primary-500/20 border border-primary-500"
-                    : "bg-slate-50 dark:bg-dark-bg/50 border border-transparent"
+                    : "bg-background/50 border border-transparent"
                 }`}
                 onPress={() => {
                   onSelect(option.value);
@@ -94,7 +95,7 @@ function RestTimerSelectModal({
                   className={`font-medium text-lg ${
                     currentValue === option.value
                       ? "text-primary-500 font-bold"
-                      : "text-slate-900 dark:text-white"
+                      : "text-foreground"
                   }`}
                 >
                   {option.label}
@@ -120,6 +121,7 @@ export default function MovementSettingsScreen() {
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
   const router = useRouter();
+  const colors = useThemeColors();
 
   const { data: movement, isLoading: movementLoading } =
     useUserMovement(movementId);
@@ -188,14 +190,14 @@ export default function MovementSettingsScreen() {
 
   if (movementLoading) {
     return (
-      <View className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
+      <View className="flex-1 bg-background items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+    <View className="flex-1 bg-background">
       <Stack.Screen
         options={{
           headerShown: true,
@@ -227,11 +229,11 @@ export default function MovementSettingsScreen() {
                 Movement Name
               </Text>
               <TextInput
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600"
                 value={name}
                 onChangeText={setName}
                 placeholder="e.g. Back Squat"
-                placeholderTextColor="#64748b"
+                placeholderTextColor={colors.textSecondary}
               />
             </View>
 
@@ -240,22 +242,16 @@ export default function MovementSettingsScreen() {
                 Custom Rest Timer
               </Text>
               <TouchableOpacity
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 flex-row items-center justify-between"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 flex-row items-center justify-between"
                 onPress={() => setShowRestTimerModal(true)}
               >
                 <View className="flex-row items-center gap-2">
-                  <Clock
-                    size={20}
-                    className="text-slate-400 dark:text-slate-500"
-                  />
-                  <Text className="text-slate-900 dark:text-white text-base">
+                  <Clock size={20} color={colors.textSecondary} />
+                  <Text className="text-foreground text-base">
                     {formatDuration(restTimer)}
                   </Text>
                 </View>
-                <ChevronRight
-                  size={20}
-                  className="text-slate-400 dark:text-slate-500"
-                />
+                <ChevronRight size={20} color={colors.textSecondary} />
               </TouchableOpacity>
               <Text className="text-xs text-gray-500 mt-1">
                 Overrides workout default for this movement
@@ -267,11 +263,11 @@ export default function MovementSettingsScreen() {
                 Personal Notes
               </Text>
               <TextInput
-                className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
                 value={personalNotes}
                 onChangeText={setPersonalNotes}
                 placeholder="Technique cues, setup details, etc."
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={colors.textSecondary}
                 multiline
                 textAlignVertical="top"
               />
@@ -283,11 +279,11 @@ export default function MovementSettingsScreen() {
                   Workout Notes
                 </Text>
                 <TextInput
-                  className="w-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border rounded-xl px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                  className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
                   value={workoutNotes}
                   onChangeText={setWorkoutNotes}
                   placeholder="Notes specific to this workout..."
-                  placeholderTextColor="#64748b"
+                  placeholderTextColor={colors.textSecondary}
                   multiline
                   textAlignVertical="top"
                 />

@@ -13,9 +13,9 @@ import {
 } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -32,10 +32,7 @@ export default function WorkoutDetailScreen() {
   const router = useRouter();
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const iconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
-  const headerIconColor = isDark ? "#ffffff" : "#0f172a"; // white : slate-900
+  const colors = useThemeColors();
 
   const { data: workout, isLoading: workoutLoading } = useWorkout(id);
   const { data: movements, isLoading: movementsLoading } =
@@ -146,7 +143,7 @@ export default function WorkoutDetailScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
+      <SafeAreaView className="flex-1 bg-background items-center justify-center">
         <ActivityIndicator size="large" color="#6366f1" />
       </SafeAreaView>
     );
@@ -154,8 +151,8 @@ export default function WorkoutDetailScreen() {
 
   if (!workout) {
     return (
-      <SafeAreaView className="flex-1 bg-slate-50 dark:bg-dark-bg items-center justify-center">
-        <Text className="text-slate-900 dark:text-white text-lg">
+      <SafeAreaView className="flex-1 bg-background items-center justify-center">
+        <Text className="text-foreground text-lg">
           Workout not found
         </Text>
         <TouchableOpacity
@@ -182,7 +179,7 @@ export default function WorkoutDetailScreen() {
 
   const renderMovement = ({ item }: { item: any }) => (
     <TouchableOpacity
-      className="bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border mb-3"
+      className="bg-card p-4 rounded-xl border border-border mb-3"
       onPress={() =>
         router.push(`/workout/${id}/movement/${item.user_movement.id}`)
       }
@@ -193,7 +190,7 @@ export default function WorkoutDetailScreen() {
             <Dumbbell size={20} color="#ec4899" />
           </View>
           <View className="flex-1">
-            <Text className="text-slate-900 dark:text-white font-bold text-base">
+            <Text className="text-foreground font-bold text-base">
               {item.user_movement?.name}
             </Text>
             <Text className="text-slate-500 dark:text-gray-400 text-sm">
@@ -208,14 +205,14 @@ export default function WorkoutDetailScreen() {
           }}
           className="p-2"
         >
-          <MoreVertical size={20} color={iconColor} />
+          <MoreVertical size={20} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+    <View className="flex-1 bg-background">
       <Stack.Screen
         options={{
           headerShown: true,
@@ -231,7 +228,7 @@ export default function WorkoutDetailScreen() {
                   className="p-2 -mr-2"
                   onPress={() => setWorkoutActionSheetVisible(true)}
                 >
-                  <MoreVertical size={24} color={headerIconColor} />
+                  <MoreVertical size={24} color={colors.text} />
                 </TouchableOpacity>
               }
             />
@@ -254,7 +251,7 @@ export default function WorkoutDetailScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <View className="mb-6">
-              <Text className="text-3xl font-bold text-slate-900 dark:text-white mb-1">
+              <Text className="text-3xl font-bold text-foreground mb-1">
                 {workout.name}
               </Text>
               {workout.description && (
@@ -265,7 +262,7 @@ export default function WorkoutDetailScreen() {
             </View>
           }
           ListEmptyComponent={
-            <View className="items-center justify-center py-20 bg-white dark:bg-dark-card rounded-2xl border border-dashed border-slate-300 dark:border-gray-700">
+            <View className="items-center justify-center py-20 bg-card rounded-2xl border border-dashed border-slate-300 dark:border-gray-700">
               <Text className="text-slate-500 dark:text-gray-500 text-lg mb-2">
                 No exercises added
               </Text>

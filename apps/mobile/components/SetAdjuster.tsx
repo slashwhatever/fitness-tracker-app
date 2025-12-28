@@ -1,5 +1,5 @@
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Minus, Plus } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 interface SetAdjusterProps {
@@ -27,14 +27,15 @@ export function SetAdjuster({
     onAdjust(-step);
   };
 
-  const { colorScheme } = useColorScheme();
-  const iconColor = colorScheme === "dark" ? "#ffffff" : "#94a3b8"; // white : slate-400
+  /* Removed manual offset logic */
+
+  const colors = useThemeColors();
 
   return (
     <View className="items-center gap-4">
       <View>
         <TextInput
-          className="text-slate-900 dark:text-white text-7xl font-light text-center p-0"
+          className="text-foreground text-7xl font-light text-center p-0"
           value={value}
           onChangeText={onChangeText}
           keyboardType="decimal-pad"
@@ -42,7 +43,7 @@ export function SetAdjuster({
           returnKeyType="done"
           textAlign="center"
           placeholder="0"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textSecondary}
         />
         <Text className="text-slate-500 dark:text-gray-500 text-center text-lg">
           {label}
@@ -57,17 +58,17 @@ export function SetAdjuster({
           // Primary Variant: Large Buttons, Single Step
           <View className="flex-row items-center gap-6">
             <TouchableOpacity
-              className="w-16 h-16 rounded-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+              className="w-16 h-16 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
               onPress={() => handleDecrement(steps[0] || 1)}
             >
-              <Minus size={32} color={iconColor} />
+              <Minus size={32} color={colors.icon} />
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="w-16 h-16 rounded-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+              className="w-16 h-16 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
               onPress={() => handleIncrement(steps[0] || 1)}
             >
-              <Plus size={32} color={iconColor} />
+              <Plus size={32} color={colors.icon} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -75,21 +76,21 @@ export function SetAdjuster({
           steps.map((step) => (
             <View key={step} className="flex-row items-center gap-4">
               <TouchableOpacity
-                className="w-10 h-10 rounded-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+                className="w-10 h-10 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
                 onPress={() => handleDecrement(step)}
               >
-                <Minus size={20} color={iconColor} />
+                <Minus size={20} color={colors.icon} />
               </TouchableOpacity>
 
-              <Text className="text-slate-900 dark:text-white text-lg font-medium w-8 text-center">
+              <Text className="text-foreground text-lg font-medium w-8 text-center">
                 {step}
               </Text>
 
               <TouchableOpacity
-                className="w-10 h-10 rounded-full bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+                className="w-10 h-10 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
                 onPress={() => handleIncrement(step)}
               >
-                <Plus size={20} color={iconColor} />
+                <Plus size={20} color={colors.icon} />
               </TouchableOpacity>
             </View>
           ))

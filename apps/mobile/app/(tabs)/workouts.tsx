@@ -9,9 +9,14 @@ import {
 } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
-import { Dumbbell, MoreVertical } from "lucide-react-native";
-import { useColorScheme } from "nativewind";
+import {
+  ChevronDown,
+  ChevronRight,
+  Dumbbell,
+  MoreVertical,
+} from "lucide-react-native";
 import { useMemo, useState } from "react";
 import {
   Alert,
@@ -26,9 +31,7 @@ export default function WorkoutsScreen() {
   const { workouts, loading, refetch } = useWorkouts();
   const { groups } = useWorkoutGroups();
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const moreIconColor = isDark ? "#ffffff" : "#94a3b8"; // white : slate-400
+  const colors = useThemeColors();
 
   const archiveMutation = useArchiveWorkout();
   const duplicateMutation = useDuplicateWorkout();
@@ -36,6 +39,16 @@ export default function WorkoutsScreen() {
 
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<
+    Record<string, boolean>
+  >({ archived: true });
+
+  const toggleSection = (id: string) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const sections = useMemo(() => {
     if (!workouts) return [];
@@ -43,10 +56,13 @@ export default function WorkoutsScreen() {
     const activeWorkouts = workouts.filter((w) => !w.archived);
     const archivedWorkouts = workouts.filter((w) => w.archived);
 
-    const grouped = new Map<string, { title: string; data: Workout[] }>();
+    const grouped = new Map<
+      string,
+      { id: string; title: string; data: Workout[] }
+    >();
     // Initialize with known groups to preserve order
     groups.forEach((g) => {
-      grouped.set(g.id, { title: g.name, data: [] });
+      grouped.set(g.id, { id: g.id, title: g.name, data: [] });
     });
 
     const ungrouped: Workout[] = [];
@@ -64,15 +80,26 @@ export default function WorkoutsScreen() {
     );
 
     if (ungrouped.length > 0) {
-      result.push({ title: "Other Workouts", data: ungrouped });
+      result.push({ id: "other", title: "Other Workouts", data: ungrouped });
     }
 
     if (archivedWorkouts.length > 0) {
-      result.push({ title: "Archived", data: archivedWorkouts });
+      result.push({
+        id: "archived",
+        title: "Archived",
+        data: archivedWorkouts,
+      });
     }
 
     return result;
   }, [workouts, groups]);
+
+  const displaySections = useMemo(() => {
+    return sections.map((section) => ({
+      ...section,
+      data: collapsedSections[section.id] ? [] : section.data,
+    }));
+  }, [sections, collapsedSections]);
 
   const handleAction = async (
     action: "duplicate" | "archive" | "delete" | "edit"
@@ -112,8 +139,8 @@ export default function WorkoutsScreen() {
     <TouchableOpacity
       className={`p-4 rounded-2xl border mb-3 flex-row items-center ${
         item.archived
-          ? "bg-slate-100 dark:bg-dark-bg border-slate-200 dark:border-dark-border opacity-60"
-          : "bg-white dark:bg-dark-card border-slate-200 dark:border-dark-border"
+          ? "bg-slate-100 dark:bg-background border-border opacity-60"
+          : "bg-card border-border"
       }`}
       onPress={() => router.push(`/workout/${item.id}`)}
     >
@@ -125,12 +152,12 @@ export default function WorkoutsScreen() {
         <Dumbbell size={24} color={item.archived ? "#94a3b8" : "#6366f1"} />
       </View>
       <View className="flex-1">
-        <Text className="text-slate-900 dark:text-white font-bold text-base">
-          {item.name}
-        </Text>
-        <Text className="text-slate-500 dark:text-gray-400 text-sm">
-          {item.description}
-        </Text>
+        <Text className="text-foreground font-bold text-base">{item.name}</Text>
+        {item.description && (
+          <Text className="text-slate-500 dark:text-gray-400 text-sm">
+            {item.description}
+          </Text>
+        )}
       </View>
 
       <TouchableOpacity
@@ -142,30 +169,41 @@ export default function WorkoutsScreen() {
         }}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <MoreVertical size={20} color={moreIconColor} />
+        <MoreVertical size={20} color={colors.textSecondary} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
 
   const renderSectionHeader = ({
-    section: { title },
+    section: { id, title },
   }: {
-    section: { title: string };
-  }) => (
-    <View className="bg-slate-50 dark:bg-dark-bg py-2 mb-2">
-      <Text className="text-gray-400 font-semibold uppercase text-xs tracking-wider">
-        {title}
-      </Text>
-    </View>
-  );
+    section: { id: string; title: string };
+  }) => {
+    const isCollapsed = collapsedSections[id];
+    return (
+      <TouchableOpacity
+        onPress={() => toggleSection(id)}
+        className="bg-background py-2 mb-2 flex-row items-center justify-between"
+      >
+        <Text className="text-gray-400 font-semibold uppercase text-xs tracking-wider">
+          {title}
+        </Text>
+        {isCollapsed ? (
+          <ChevronRight size={16} color={colors.icon} />
+        ) : (
+          <ChevronDown size={16} color={colors.icon} />
+        )}
+      </TouchableOpacity>
+    );
+  };
 
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
+    <View className="flex-1 bg-background">
       <SectionList
-        sections={sections}
+        sections={displaySections}
         renderItem={renderItem}
         renderSectionHeader={renderSectionHeader}
         keyExtractor={(item) => item.id}
@@ -180,12 +218,10 @@ export default function WorkoutsScreen() {
         ListHeaderComponent={
           <View className="flex-row items-center justify-end gap-4">
             <TouchableOpacity
-              className="bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border px-4 py-2 rounded-full"
+              className="bg-card border border-border px-4 py-2 rounded-full"
               onPress={() => router.push("/groups/modal")}
             >
-              <Text className="text-slate-900 dark:text-white font-semibold">
-                Groups
-              </Text>
+              <Text className="text-foreground font-semibold">Groups</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-primary-500 px-4 py-2 rounded-full"

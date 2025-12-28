@@ -47,7 +47,7 @@ export function ThemeSelector() {
             <Text
               className={`font-medium ${
                 isActive
-                  ? "text-slate-900 dark:text-white"
+                  ? "text-foreground"
                   : "text-slate-500 dark:text-slate-400"
               }`}
             >

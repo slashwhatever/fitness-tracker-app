@@ -1,5 +1,6 @@
 import { useCreateWorkout, useWorkoutGroups } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
@@ -17,6 +18,7 @@ export default function NewWorkoutScreen() {
   const router = useRouter();
   const createWorkout = useCreateWorkout();
   const { groups } = useWorkoutGroups();
+  const colors = useThemeColors();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -45,7 +47,7 @@ export default function NewWorkoutScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-slate-50 dark:bg-dark-bg p-4"
+      className="flex-1 bg-background p-4"
       edges={["top", "left", "right"]}
     >
       <View className="flex-row items-center justify-between mb-6">
@@ -53,12 +55,12 @@ export default function NewWorkoutScreen() {
           onPress={() => router.back()}
           className="flex-row items-center p-2"
         >
-          <ChevronLeft size={24} className="text-slate-900 dark:text-white" />
-          <Text className="text-slate-900 dark:text-white text-lg font-semibold ml-1">
+          <ChevronLeft size={24} color={colors.text} />
+          <Text className="text-foreground text-lg font-semibold ml-1">
             Cancel
           </Text>
         </TouchableOpacity>
-        <Text className="text-slate-900 dark:text-white text-lg font-bold">
+        <Text className="text-foreground text-lg font-bold">
           New Workout
         </Text>
         <TouchableOpacity
@@ -79,9 +81,9 @@ export default function NewWorkoutScreen() {
             Name
           </Text>
           <TextInput
-            className="bg-white dark:bg-dark-card text-slate-900 dark:text-white p-4 rounded-xl border border-slate-200 dark:border-dark-border"
+            className="bg-card text-foreground p-4 rounded-xl border border-border"
             placeholder="e.g., Upper Body Power"
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textSecondary}
             value={name}
             onChangeText={setName}
             autoFocus
@@ -144,9 +146,9 @@ export default function NewWorkoutScreen() {
             Description (Optional)
           </Text>
           <TextInput
-            className="bg-white dark:bg-dark-card text-slate-900 dark:text-white p-4 rounded-xl border border-slate-200 dark:border-dark-border min-h-[100]"
+            className="bg-card text-foreground p-4 rounded-xl border border-border min-h-[100]"
             placeholder="Notes regarding this workout..."
-            placeholderTextColor="#94a3b8"
+            placeholderTextColor={colors.textSecondary}
             value={description}
             onChangeText={setDescription}
             multiline

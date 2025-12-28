@@ -38,16 +38,47 @@ module.exports = {
           800: "#9d174d",
           900: "#831843",
         },
-        dark: {
-          bg: "#0f172a", // Slate 900
-          card: "#1e293b", // Slate 800
-          border: "#334155", // Slate 700
-        },
+        // Semantic CSS variable-based colors
+        background: "rgb(var(--color-background) / <alpha-value>)",
+        foreground: "rgb(var(--color-foreground) / <alpha-value>)",
+        card: "rgb(var(--color-card) / <alpha-value>)",
+        "card-foreground": "rgb(var(--color-card-foreground) / <alpha-value>)",
+        border: "rgb(var(--color-border) / <alpha-value>)",
+        input: "rgb(var(--color-input) / <alpha-value>)",
+        muted: "rgb(var(--color-muted) / <alpha-value>)",
+        "muted-foreground":
+          "rgb(var(--color-muted-foreground) / <alpha-value>)",
       },
       fontFamily: {
-        sans: ["System"], // Use system font for now, can add custom fonts later
+        sans: ["System"],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    ({ addBase }) =>
+      addBase({
+        ":root": {
+          // Light mode
+          "--color-background": "255 255 255", // white
+          "--color-foreground": "15 23 42", // slate-900
+          "--color-card": "255 255 255", // white
+          "--color-card-foreground": "15 23 42", // slate-900
+          "--color-border": "226 232 240", // slate-200
+          "--color-input": "248 250 252", // slate-50
+          "--color-muted": "248 250 252", // slate-50
+          "--color-muted-foreground": "100 116 139", // slate-500
+        },
+        ".dark": {
+          // Dark mode
+          "--color-background": "15 23 42", // slate-900
+          "--color-foreground": "255 255 255", // white
+          "--color-card": "30 41 59", // slate-800
+          "--color-card-foreground": "255 255 255", // white
+          "--color-border": "51 65 85", // slate-700
+          "--color-input": "15 23 42", // slate-900
+          "--color-muted": "30 41 59", // slate-800
+          "--color-muted-foreground": "148 163 184", // slate-400
+        },
+      }),
+  ],
 };

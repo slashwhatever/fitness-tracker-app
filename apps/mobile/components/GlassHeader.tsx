@@ -1,3 +1,4 @@
+import { useThemeColors } from "@hooks/useThemeColors";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
@@ -32,6 +33,7 @@ export function GlassHeader({
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  const colors = useThemeColors();
 
   const handleBack = () => {
     if (onBack) {
@@ -77,10 +79,10 @@ export function GlassHeader({
               className="flex-row items-center p-2 -ml-2 mr-2"
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <ChevronLeft size={24} color={isDark ? "#fff" : "#0f172a"} />
+              <ChevronLeft size={24} color={colors.text} />
               {typeof title === "string" && (
                 <Text
-                  className="text-slate-900 dark:text-white text-lg font-semibold ml-1"
+                  className="text-foreground text-lg font-semibold ml-1"
                   numberOfLines={1}
                 >
                   {typeof title === "string" ? title : "Back"}
@@ -90,7 +92,7 @@ export function GlassHeader({
           )}
           {!showBack && typeof title === "string" && (
             <View>
-              <Text className="text-slate-900 dark:text-white font-bold text-xl">
+              <Text className="text-foreground font-bold text-3xl">
                 {title}
               </Text>
               {subtitle && (

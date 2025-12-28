@@ -1,4 +1,5 @@
 import { useWorkoutGroups } from "@fitness/shared";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
 import { GripVertical, Plus, Trash2 } from "lucide-react-native";
 import { useState } from "react";
@@ -17,6 +18,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ManageGroupsScreen() {
   const { groups, createGroup, deleteGroup, loading } = useWorkoutGroups();
   const router = useRouter();
+  const colors = useThemeColors();
   const [newGroupName, setNewGroupName] = useState("");
 
   const handleCreate = async () => {
@@ -45,9 +47,9 @@ export default function ManageGroupsScreen() {
   };
 
   const renderItem = ({ item }: { item: any }) => (
-    <View className="flex-row items-center bg-white dark:bg-dark-card p-4 rounded-xl border border-slate-200 dark:border-dark-border mb-3">
+    <View className="flex-row items-center bg-card p-4 rounded-xl border border-border mb-3">
       <GripVertical size={20} className="text-slate-400 mr-3" />
-      <Text className="flex-1 text-slate-900 dark:text-white font-medium text-lg">
+      <Text className="flex-1 text-foreground font-medium text-lg">
         {item.name}
       </Text>
       <TouchableOpacity
@@ -61,7 +63,7 @@ export default function ManageGroupsScreen() {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-slate-50 dark:bg-dark-bg p-4"
+      className="flex-1 bg-background p-4"
       edges={["bottom", "left", "right"]}
     >
       {/* Header handled by Stack usually, but we want custom control or if it's a modal */}
@@ -89,9 +91,9 @@ export default function ManageGroupsScreen() {
         >
           <View className="flex-row items-center space-x-2">
             <TextInput
-              className="flex-1 bg-white dark:bg-dark-card text-slate-900 dark:text-white p-4 rounded-xl border border-slate-200 dark:border-dark-border"
+              className="flex-1 bg-card text-foreground p-4 rounded-xl border border-border"
               placeholder="New Group Name"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={colors.textSecondary}
               value={newGroupName}
               onChangeText={setNewGroupName}
             />
