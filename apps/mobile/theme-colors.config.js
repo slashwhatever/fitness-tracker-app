@@ -1,6 +1,6 @@
 // This file extracts colors from tailwind.config.js for use in React Native
 // It's a separate file to avoid bundling the entire Tailwind config
-const tailwindConfig = require("../tailwind.config.js");
+const tailwindConfig = require("tailwind.config.js");
 
 const twColors = tailwindConfig.theme.extend.colors;
 

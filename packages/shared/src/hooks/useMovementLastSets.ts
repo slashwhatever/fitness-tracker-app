@@ -1,13 +1,15 @@
-"use client";
-
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
-import type { Tables } from "../lib/supabase/types";
+import type { Tables } from "../types/database.types";
+import type { HookDependencies } from "./types";
 
-// Hook to get last set dates for multiple movements efficiently
+/**
+ * Efficiently fetches the last set dates for multiple movements in a single query.
+ * @param movementIds - Array of movement IDs to fetch last set dates for
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
 export function useMovementLastSets(
-  movementIds: string[]
+  movementIds: string[],
+  deps: HookDependencies
 ): UseQueryResult<
   Pick<
     Tables<"movement_last_sets">,
@@ -15,8 +17,7 @@ export function useMovementLastSets(
   >[],
   Error
 > {
-  const { user } = useAuth();
-  const supabase = createClient();
+  const { supabase, user } = deps;
 
   return useQuery({
     queryKey: ["movement-last-sets", user?.id, movementIds.sort()],
@@ -39,15 +40,19 @@ export function useMovementLastSets(
   });
 }
 
-// Hook to get last set date for a single movement
+/**
+ * Fetches the last set date for a single movement.
+ * @param movementId - Movement ID to fetch last set date for
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
 export function useMovementLastSet(
-  movementId: string
+  movementId: string,
+  deps: HookDependencies
 ): UseQueryResult<
   Pick<Tables<"movement_last_sets">, "last_set_date" | "total_sets"> | null,
   Error
 > {
-  const { user } = useAuth();
-  const supabase = createClient();
+  const { supabase, user } = deps;
 
   return useQuery({
     queryKey: ["movement-last-set", user?.id, movementId],

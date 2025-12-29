@@ -1,15 +1,15 @@
-import { WorkoutActionSheet } from "@components/WorkoutActionSheet";
+import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
+import type { Workout } from "@fitness/shared";
+import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useThemeColors } from "@hooks/useThemeColors";
+import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
 import {
   useArchiveWorkout,
   useDeleteWorkout,
   useDuplicateWorkout,
-  useWorkoutGroups,
   useWorkouts,
-  type Workout,
-} from "@fitness/shared";
-import { useBottomPadding } from "@hooks/useBottomPadding";
-import { useHeaderPadding } from "@hooks/useHeaderPadding";
-import { useThemeColors } from "@hooks/useThemeColors";
+} from "@hooks/useWorkouts";
 import { useRouter } from "expo-router";
 import {
   ChevronDown,
@@ -28,7 +28,7 @@ import {
 } from "react-native";
 
 export default function WorkoutsScreen() {
-  const { workouts, loading, refetch } = useWorkouts();
+  const { workouts, isLoading, error, refetch, isRefetching } = useWorkouts();
   const { groups } = useWorkoutGroups();
   const router = useRouter();
   const colors = useThemeColors();
@@ -233,14 +233,14 @@ export default function WorkoutsScreen() {
         }
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={isLoading}
             onRefresh={refetch}
             tintColor="#6366f1"
             progressViewOffset={headerPadding}
           />
         }
         ListEmptyComponent={
-          !loading ? (
+          !isLoading ? (
             <View className="items-center justify-center py-20">
               <Text className="text-gray-500 text-lg">No workouts found</Text>
             </View>

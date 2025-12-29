@@ -1,11 +1,8 @@
-"use client";
-
 import type { QueryData } from "@supabase/supabase-js";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
-import type { Tables } from "../lib/supabase/types";
 import type { UserMovement } from "../models/types";
+import type { Tables } from "../types/database.types";
+import type { HookDependencies } from "./types";
 
 // Query keys
 const personalRecordKeys = {
@@ -16,15 +13,19 @@ const personalRecordKeys = {
     [...personalRecordKeys.lists(), userId, "movement", movementId] as const,
 };
 
-// Get personal records for a specific movement
+/**
+ * Get personal records for a specific movement
+ * @param movementId - Movement ID to fetch records for
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
 export function usePersonalRecordsByMovement(
-  movementId: string
+  movementId: string,
+  deps: HookDependencies
 ): UseQueryResult<
   (Tables<"personal_records"> & { user_movement: UserMovement | null })[],
   Error
 > {
-  const { user } = useAuth();
-  const supabase = createClient();
+  const { user, supabase } = deps;
 
   return useQuery({
     queryKey: personalRecordKeys.byMovement(user?.id || "", movementId),

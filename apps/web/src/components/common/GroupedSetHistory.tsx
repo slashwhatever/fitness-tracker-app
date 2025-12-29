@@ -1,8 +1,8 @@
 "use client";
 
+import { Separator } from "@/components/ui/separator";
 import { formatDateHeader } from "@/lib/utils/dateHelpers";
-import { Set, UserMovement } from "@/models/types";
-import { Separator } from "@components/ui/separator";
+import { Set, UserMovement } from "@fitness/shared";
 import { useMemo } from "react";
 import EditableSet from "./EditableSet";
 import SessionComparison from "./SessionComparison";

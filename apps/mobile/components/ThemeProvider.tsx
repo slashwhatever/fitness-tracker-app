@@ -1,4 +1,4 @@
-import { useUserProfile } from "@fitness/shared";
+import { useUserProfile } from "@hooks/useUserProfile";
 import { useColorScheme as useNativeWindColorScheme, vars } from "nativewind";
 import { useEffect } from "react";
 import { View, useColorScheme as useSystemColorScheme } from "react-native";

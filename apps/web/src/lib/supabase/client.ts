@@ -1,7 +1,5 @@
+import type { Database } from "@fitness/shared";
 import { createBrowserClient } from "@supabase/ssr";
-import type { Database } from "./types";
-
-export type { Database } from "./types";
 
 export function createClient() {
   return createBrowserClient<Database>(

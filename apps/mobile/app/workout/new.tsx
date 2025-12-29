@@ -1,6 +1,7 @@
-import { useCreateWorkout, useWorkoutGroups } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
+import { useCreateWorkout } from "@hooks/useWorkouts";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
@@ -60,9 +61,7 @@ export default function NewWorkoutScreen() {
             Cancel
           </Text>
         </TouchableOpacity>
-        <Text className="text-foreground text-lg font-bold">
-          New Workout
-        </Text>
+        <Text className="text-foreground text-lg font-bold">New Workout</Text>
         <TouchableOpacity
           onPress={handleCreate}
           disabled={createWorkout.isPending}

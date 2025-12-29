@@ -66,16 +66,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
-
-      // Clear any local storage data
-      if (typeof window !== "undefined") {
-        const keys = Object.keys(localStorage);
-        keys.forEach((key) => {
-          if (key.startsWith("fitness_app_")) {
-            localStorage.removeItem(key);
-          }
-        });
-      }
     } catch (error) {
       console.error("Sign out error:", error);
     }

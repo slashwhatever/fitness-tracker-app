@@ -1,4 +1,3 @@
-import { ExperienceLevel, TrackingTypeName } from "@/models/types";
 import {
   BarChart3,
   BicepsFlexed,
@@ -7,6 +6,7 @@ import {
   Timer,
   Weight,
 } from "lucide-react";
+import { ExperienceLevel, TrackingTypeName } from "../../models/types";
 
 /**
  * Get the appropriate icon for a tracking type

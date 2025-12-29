@@ -1,10 +1,10 @@
-import { EmptyState } from "@components/EmptyState";
-import { GlassHeader } from "@components/GlassHeader";
-import { GroupActionSheet } from "@components/GroupActionSheet";
-import { useWorkoutGroups } from "@fitness/shared";
+import { EmptyState } from "@/components/EmptyState";
+import { GlassHeader } from "@/components/GlassHeader";
+import { GroupActionSheet } from "@/components/GroupActionSheet";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { MoreVertical, Plus } from "lucide-react-native";

@@ -1,12 +1,12 @@
-import { GlassHeader } from "@components/GlassHeader";
+import { GlassHeader } from "@/components/GlassHeader";
+import { useBottomPadding } from "@hooks/useBottomPadding";
+import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import {
   useUpdateUserMovement,
   useUpdateWorkoutMovementNotes,
   useUserMovement,
   useWorkoutMovements,
-} from "@fitness/shared";
-import { useBottomPadding } from "@hooks/useBottomPadding";
-import { useHeaderPadding } from "@hooks/useHeaderPadding";
+} from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";

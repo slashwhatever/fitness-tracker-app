@@ -4,26 +4,26 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { useCreateUserMovement } from "@/hooks/useMovements";
-import { useMuscleGroups } from "@/hooks/useMuscleGroups";
-import { useTrackingTypes } from "@/hooks/useTrackingTypes";
-import { ProtectedRoute } from "@components/auth/ProtectedRoute";
-import ContextualNavigation from "@components/common/ContextualNavigation";
-import { Typography } from "@components/common/Typography";
-import { Button } from "@components/ui/button";
-import { Card, CardContent } from "@components/ui/card";
-import { FancyMultiSelect } from "@components/ui/fancy-multi-select";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FancyMultiSelect } from "@/components/ui/fancy-multi-select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components/ui/select";
-import { Skeleton } from "@components/ui/skeleton";
-import { Textarea } from "@components/ui/textarea";
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { useCreateUserMovement } from "@/hooks/useMovements";
+import { useMuscleGroups } from "@/hooks/useMuscleGroups";
+import { useTrackingTypes } from "@/hooks/useTrackingTypes";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 

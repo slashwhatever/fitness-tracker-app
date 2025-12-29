@@ -1,9 +1,9 @@
+import { Badge } from "@/components/ui/badge";
 import {
   getExperienceLevelVariant,
   getTrackingTypeIcon,
 } from "@/lib/utils/typeHelpers";
-import type { MovementTemplate, UserMovement } from "@/models/types";
-import { Badge } from "@components/ui/badge";
+import type { MovementTemplate, UserMovement } from "@fitness/shared";
 import { Check } from "lucide-react";
 import { Typography } from "./Typography";
 

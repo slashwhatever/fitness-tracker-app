@@ -1,9 +1,9 @@
 "use client";
 
-import type { UserMovement, WorkoutMovement } from "@/models/types";
-import { Separator } from "@components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { UserMovement, WorkoutMovement } from "@fitness/shared";
 import { Dumbbell, Edit3, GripVertical, Trash2 } from "lucide-react";
 import Link from "next/link";
 import ResponsiveButton from "./ResponsiveButton";

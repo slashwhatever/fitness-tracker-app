@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@components/ui/card";
+} from "@/components/ui/card";
 import { Monitor, Smartphone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 

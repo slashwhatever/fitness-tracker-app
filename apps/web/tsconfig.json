@@ -15,6 +15,7 @@
     "jsx": "react-jsx",
     "incremental": true,
     "strictNullChecks": true,
+    "composite": true,
     "plugins": [
       {
         "name": "next"

@@ -1,20 +1,20 @@
 "use client";
 
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
+import MovementListItem from "@/components/common/MovementListItem";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   useCreateUserMovement,
   useMovementTemplates,
   useUserMovements,
 } from "@/hooks/useMovements";
 import { useTrackingTypes } from "@/hooks/useTrackingTypes";
-import type { MovementTemplate, UserMovement } from "@/models/types";
-import { ProtectedRoute } from "@components/auth/ProtectedRoute";
-import ContextualNavigation from "@components/common/ContextualNavigation";
-import MovementListItem from "@components/common/MovementListItem";
-import { Typography } from "@components/common/Typography";
-import { Button } from "@components/ui/button";
-import { Card, CardContent } from "@components/ui/card";
-import { Input } from "@components/ui/input";
-import { Skeleton } from "@components/ui/skeleton";
+import type { MovementTemplate, UserMovement } from "@fitness/shared";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

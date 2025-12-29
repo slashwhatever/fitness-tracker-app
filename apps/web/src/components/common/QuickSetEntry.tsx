@@ -1,6 +1,6 @@
 "use client";
 
-import type { Set, UserMovement } from "@/models/types";
+import type { Set, UserMovement } from "@fitness/shared";
 import { useState } from "react";
 import SetEntryForm from "./SetEntryForm";
 

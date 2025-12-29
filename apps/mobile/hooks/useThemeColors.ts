@@ -3,7 +3,7 @@ import colors from "tailwindcss/colors";
 
 // Import custom colors from config
 // @ts-ignore - config is JS
-import customColors from "./theme-colors.config.js";
+import customColors from "../theme-colors.config.js";
 
 export const Colors = {
   light: {

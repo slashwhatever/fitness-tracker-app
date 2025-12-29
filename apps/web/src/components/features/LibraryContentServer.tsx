@@ -1,10 +1,10 @@
 "use client";
 
+import MovementCard from "@/components/common/MovementCard";
+import { Typography } from "@/components/common/Typography";
 import { useCreateUserMovement, useUserMovements } from "@/hooks/useMovements";
 import { useTrackingTypes } from "@/hooks/useTrackingTypes";
-import { MovementTemplate } from "@/models/types";
-import MovementCard from "@components/common/MovementCard";
-import { Typography } from "@components/common/Typography";
+import { MovementTemplate } from "@fitness/shared";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 

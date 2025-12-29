@@ -1,12 +1,9 @@
-import { GlassHeader } from "@components/GlassHeader";
-import {
-  useUpdateWorkout,
-  useWorkout,
-  useWorkoutGroups,
-} from "@fitness/shared";
+import { GlassHeader } from "@/components/GlassHeader";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
+import { useUpdateWorkout, useWorkout } from "@hooks/useWorkouts";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronRight, Clock, Save, X } from "lucide-react-native";
 import { useEffect, useState } from "react";

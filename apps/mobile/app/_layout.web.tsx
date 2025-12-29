@@ -1,9 +1,8 @@
-import { ThemeProvider } from "@components/ThemeProvider";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { AuthProvider, useAuth } from "@fitness/shared";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Tabs } from "expo-router";
+import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -33,57 +32,7 @@ function AppContent() {
     return <LoginScreen />;
   }
 
-  return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-        },
-        tabBarActiveTintColor: colors.tint,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home" size={24} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="workouts"
-        options={{
-          title: "Workouts",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="fitness-center" size={24} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="analytics"
-        options={{
-          title: "Analytics",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="bar-chart" size={24} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="settings" size={24} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
+  return <Slot />;
 }
 
 export default function RootLayout() {

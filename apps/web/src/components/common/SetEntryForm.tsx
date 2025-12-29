@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import type { Set, UserMovement } from "@/models/types";
-import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
+import type { Set, UserMovement } from "@fitness/shared";
 import { Check, Minus, Plus } from "lucide-react";
 import { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";

@@ -1,17 +1,12 @@
-import { Button } from "@components/Button";
-import { ThemeSelector } from "@components/ThemeSelector";
-import {
-  DistanceUnit,
-  TIMER_PRESETS,
-  WeightUnit,
-  useAuth,
-  useUpdateUserProfile,
-  useUserProfile,
-} from "@fitness/shared";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { Button } from "@/components/Button";
+import { ThemeSelector } from "@/components/ThemeSelector";
+import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@fitness/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useUpdateUserProfile, useUserProfile } from "@hooks/useUserProfile";
 import { useRouter } from "expo-router";
 import { ChevronDown, LogOut, Save, Undo2 } from "lucide-react-native";
 import { useEffect, useState } from "react";

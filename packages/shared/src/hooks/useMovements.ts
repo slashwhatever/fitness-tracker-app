@@ -1,5 +1,3 @@
-"use client";
-
 import type { QueryData, SupabaseClient } from "@supabase/supabase-js";
 import {
   useMutation,
@@ -8,16 +6,19 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
-import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
 import { isSafeForQueries } from "../lib/utils/validation";
 import type {
   MovementTemplate,
   TrackingTypeName,
   UserMovement,
 } from "../models/types";
-import type { Database } from "../types/database.types";
+import type {
+  Database,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "../types/database.types";
+import type { HookDependencies } from "./types";
 
 type UserMovementInsert = TablesInsert<"user_movements">;
 type UserMovementUpdate = TablesUpdate<"user_movements">;
@@ -41,12 +42,16 @@ const movementKeys = {
     [...movementKeys.workoutMovements(), workoutId] as const,
 };
 
-// Get all movement templates from database using QueryData for automatic type inference
-
+/**
+ * Get all movement templates from database
+ * @param initialData - Optional initial data
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
 export function useMovementTemplates(
-  initialData?: MovementTemplate[]
+  initialData: MovementTemplate[] | undefined,
+  deps: HookDependencies
 ): UseQueryResult<MovementTemplate[], Error> {
-  const supabase = createClient();
+  const { supabase } = deps;
 
   return useQuery({
     queryKey: movementKeys.templates(),
@@ -95,9 +100,10 @@ export function useMovementTemplates(
 }
 
 // Get all user movements
-export function useUserMovements(): UseQueryResult<UserMovement[], Error> {
-  const { user } = useAuth();
-  const supabase = createClient();
+export function useUserMovements(
+  deps: HookDependencies
+): UseQueryResult<UserMovement[], Error> {
+  const { user, supabase } = deps;
 
   return useQuery({
     queryKey: movementKeys.userMovementsList(user?.id || ""),
@@ -159,9 +165,10 @@ export function useUserMovements(): UseQueryResult<UserMovement[], Error> {
 
 // Get a single user movement
 export function useUserMovement(
-  movementId: string
+  movementId: string,
+  deps: HookDependencies
 ): UseQueryResult<UserMovement, Error> {
-  const supabase = createClient();
+  const { supabase } = deps;
 
   return useQuery({
     queryKey: movementKeys.userMovement(movementId),
@@ -219,9 +226,10 @@ export function useUserMovement(
 
 // Get workout movements
 export function useWorkoutMovements(
-  workoutId: string
+  workoutId: string,
+  deps: HookDependencies
 ): UseQueryResult<WorkoutMovementWithDetails[], Error> {
-  const supabase = createClient();
+  const { supabase } = deps;
 
   return useQuery({
     queryKey: movementKeys.workoutMovementsList(workoutId),
@@ -343,14 +351,15 @@ async function updateMuscleGroupRelationships(
 }
 
 // Create a new user movement
-export function useCreateUserMovement(): UseMutationResult<
+export function useCreateUserMovement(
+  deps: HookDependencies
+): UseMutationResult<
   UserMovement,
   Error,
   Omit<UserMovementInsert, "user_id"> & { muscle_groups: string[] }
 > {
-  const { user } = useAuth();
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async (
@@ -442,17 +451,18 @@ export function useCreateUserMovement(): UseMutationResult<
 }
 
 // Update a user movement
-export function useUpdateUserMovement(): UseMutationResult<
+export function useUpdateUserMovement(
+  deps: HookDependencies
+): UseMutationResult<
   UserMovement,
   Error,
   {
     id: string;
-    updates: UserMovementUpdate & { muscle_groups?: string[] };
+    updates: Partial<UserMovementUpdate> & { muscle_groups?: string[] };
   }
 > {
-  const { user } = useAuth();
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -627,13 +637,11 @@ export function useUpdateUserMovement(): UseMutationResult<
 }
 
 // Add movement to workout
-export function useAddMovementToWorkout(): UseMutationResult<
-  WorkoutMovement,
-  Error,
-  WorkoutMovementInsert
-> {
+export function useAddMovementToWorkout(
+  deps: HookDependencies
+): UseMutationResult<WorkoutMovement, Error, WorkoutMovementInsert> {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async (workoutMovement: WorkoutMovementInsert) => {
@@ -755,7 +763,9 @@ export function useAddMovementToWorkout(): UseMutationResult<
 }
 
 // Add multiple movements to workout (batch operation)
-export function useAddMovementsToWorkout(): UseMutationResult<
+export function useAddMovementsToWorkout(
+  deps: HookDependencies
+): UseMutationResult<
   WorkoutMovement[],
   Error,
   {
@@ -763,8 +773,8 @@ export function useAddMovementsToWorkout(): UseMutationResult<
     userMovementsForOptimistic?: UserMovement[];
   }
 > {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -889,9 +899,9 @@ export function useAddMovementsToWorkout(): UseMutationResult<
 }
 
 // Reorder movements in workout
-export function useReorderWorkoutMovements() {
+export function useReorderWorkoutMovements(deps: HookDependencies) {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -956,9 +966,9 @@ export function useReorderWorkoutMovements() {
 }
 
 // Remove movement from workout
-export function useRemoveMovementFromWorkout() {
+export function useRemoveMovementFromWorkout(deps: HookDependencies) {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -1015,9 +1025,9 @@ export function useRemoveMovementFromWorkout() {
 }
 
 // Remove multiple movements from workout (batch operation)
-export function useRemoveMovementsFromWorkout() {
+export function useRemoveMovementsFromWorkout(deps: HookDependencies) {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -1079,9 +1089,9 @@ export function useRemoveMovementsFromWorkout() {
 }
 
 // Update workout-movement notes
-export function useUpdateWorkoutMovementNotes() {
+export function useUpdateWorkoutMovementNotes(deps: HookDependencies) {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -1200,9 +1210,9 @@ export function useUpdateWorkoutMovementNotes() {
 }
 
 // Delete a movement from a workout
-export function useDeleteWorkoutMovement() {
+export function useDeleteWorkoutMovement(deps: HookDependencies) {
+  const { supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({

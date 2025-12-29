@@ -1,7 +1,7 @@
-import { ProtectedRoute } from "@components/auth/ProtectedRoute";
-import ContextualNavigation from "@components/common/ContextualNavigation";
-import { Typography } from "@components/common/Typography";
-import SettingsContent from "@components/features/SettingsContent";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
+import { Typography } from "@/components/common/Typography";
+import SettingsContent from "@/components/features/SettingsContent";
 
 export default function SettingsPage() {
   return (

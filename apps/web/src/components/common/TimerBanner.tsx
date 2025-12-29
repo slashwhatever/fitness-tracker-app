@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { useTimer } from "@/contexts/TimerContext";
 import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
-import { Button } from "@components/ui/button";
 import { Pause, Pin, PinOff, Play, RotateCcw, SkipForward } from "lucide-react";
 import { useEffect, useState } from "react";
 

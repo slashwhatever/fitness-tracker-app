@@ -2,8 +2,10 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": ".",
+    "composite": true,
     "paths": {
-      "@components/*": ["./components/*"],
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
       "@hooks/*": ["./hooks/*"]
     }
   }

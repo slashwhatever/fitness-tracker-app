@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { MovementTemplate, TrackingTypeName } from "@/models/types";
+import { MovementTemplate, TrackingTypeName } from "@fitness/shared";
 
 export async function getMovementTemplates(): Promise<MovementTemplate[]> {
   const supabase = await createClient();

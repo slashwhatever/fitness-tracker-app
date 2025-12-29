@@ -1,16 +1,16 @@
 "use client";
 
-import { Typography } from "@components/common/Typography";
-import { Button } from "@components/ui/button";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@components/ui/card";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { resetPassword } from "@fitness/shared";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Dumbbell, Loader2 } from "lucide-react";

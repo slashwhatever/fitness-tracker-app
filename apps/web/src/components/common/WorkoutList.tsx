@@ -1,5 +1,13 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useWorkoutMovementCounts } from "@/hooks/useWorkoutMovementCounts";
 import {
   useArchiveWorkout,
@@ -8,14 +16,6 @@ import {
   useReorderWorkouts,
   useWorkouts,
 } from "@/hooks/useWorkouts";
-import { Button } from "@components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@components/ui/collapsible";
-import { ConfirmationModal } from "@components/ui/confirmation-modal";
-import { Skeleton } from "@components/ui/skeleton";
 import {
   DndContext,
   DragEndEvent,
@@ -53,7 +53,7 @@ const WorkoutList = forwardRef<WorkoutListRef>((_props, ref) => {
   const [isArchivedOpen, setIsArchivedOpen] = useState(false);
 
   // Use our new React Query hooks
-  const { data: workouts = [], isLoading, refetch } = useWorkouts();
+  const { workouts = [], isLoading, refetch } = useWorkouts();
   const deleteWorkoutMutation = useDeleteWorkout();
   const reorderMutation = useReorderWorkouts();
   const archiveWorkoutMutation = useArchiveWorkout();

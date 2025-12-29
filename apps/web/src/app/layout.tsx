@@ -1,11 +1,11 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ReactQueryClientProvider } from "@/components/ReactQueryClientProvider";
+import BackgroundSyncProvider from "@/components/common/BackgroundSyncProvider";
+import MobileViewportOptimizer from "@/components/common/MobileViewportOptimizer";
+import PWAInstallPrompt from "@/components/common/PWAInstallPrompt";
+import TimerBanner from "@/components/common/TimerBanner";
 import { TimerProvider } from "@/contexts/TimerContext";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
-import { ErrorBoundary } from "@components/ErrorBoundary";
-import { ReactQueryClientProvider } from "@components/ReactQueryClientProvider";
-import BackgroundSyncProvider from "@components/common/BackgroundSyncProvider";
-import MobileViewportOptimizer from "@components/common/MobileViewportOptimizer";
-import PWAInstallPrompt from "@components/common/PWAInstallPrompt";
-import TimerBanner from "@components/common/TimerBanner";
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";

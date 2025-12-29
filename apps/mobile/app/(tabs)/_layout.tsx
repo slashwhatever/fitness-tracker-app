@@ -1,4 +1,4 @@
-import { GlassHeader } from "@components/GlassHeader";
+import { GlassHeader } from "@/components/GlassHeader";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Tabs } from "expo-router";
 import { BarChart, Dumbbell, Home, Settings } from "lucide-react-native";

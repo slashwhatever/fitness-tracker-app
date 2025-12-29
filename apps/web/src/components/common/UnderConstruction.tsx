@@ -1,4 +1,4 @@
-import { Button } from "@components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Construction, Hammer, Home } from "lucide-react";
 import Link from "next/link";
 import { Typography } from "./Typography";

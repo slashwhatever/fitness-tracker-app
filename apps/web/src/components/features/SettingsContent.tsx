@@ -1,22 +1,26 @@
 "use client";
 
-import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
-import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@/models/types";
-import { Typography } from "@components/common/Typography";
-import { Button } from "@components/ui/button";
-import { Card, CardContent } from "@components/ui/card";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components/ui/select";
-import { Skeleton } from "@components/ui/skeleton";
-import { Switch } from "@components/ui/switch";
-import { signOut } from "@fitness/shared";
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
+import {
+  DistanceUnit,
+  TIMER_PRESETS,
+  WeightUnit,
+  signOut,
+} from "@fitness/shared";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

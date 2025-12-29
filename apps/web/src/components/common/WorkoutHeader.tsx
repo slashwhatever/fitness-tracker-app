@@ -1,7 +1,7 @@
-import type { Workout } from "@/models/types";
-import ResponsiveButton from "@components/common/ResponsiveButton";
-import { Typography } from "@components/common/Typography";
-import { Skeleton } from "@components/ui/skeleton";
+import ResponsiveButton from "@/components/common/ResponsiveButton";
+import { Typography } from "@/components/common/Typography";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Workout } from "@fitness/shared";
 import { Plus, Settings } from "lucide-react";
 import Link from "next/link";
 

@@ -1,10 +1,10 @@
-import type { TablesInsert } from '@/lib/supabase/types';
+import type { TablesInsert } from "../../types/database.types";
 
-type WorkoutMovementInsert = TablesInsert<'workout_movements'>;
+type WorkoutMovementInsert = TablesInsert<"workout_movements">;
 
 /**
  * Prepares multiple movements to be added to a workout with sequential order indexes
- * @param workoutId - The workout to add movements to  
+ * @param workoutId - The workout to add movements to
  * @param userMovementIds - Array of user movement IDs to add
  * @param startingOrderIndex - Starting order index (defaults to 0)
  * @returns Array of workout movement inserts ready for batch operation
@@ -26,9 +26,13 @@ export function prepareWorkoutMovements(
  * @param existingMovements - Current workout movements
  * @returns Next available order index
  */
-export function getNextOrderIndex(existingMovements: { order_index: number }[]): number {
+export function getNextOrderIndex(
+  existingMovements: { order_index: number }[]
+): number {
   if (!existingMovements.length) return 0;
-  
-  const maxIndex = Math.max(...existingMovements.map(m => m.order_index || 0));
+
+  const maxIndex = Math.max(
+    ...existingMovements.map((m) => m.order_index || 0)
+  );
   return maxIndex + 1;
 }

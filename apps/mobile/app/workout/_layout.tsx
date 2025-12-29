@@ -1,4 +1,4 @@
-import { GlassHeader } from "@components/GlassHeader";
+import { GlassHeader } from "@/components/GlassHeader";
 import { Stack } from "expo-router";
 
 export default function WorkoutsLayout() {

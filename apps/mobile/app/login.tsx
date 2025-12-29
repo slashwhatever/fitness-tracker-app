@@ -1,3 +1,4 @@
+import { createClient } from "@/lib/supabase/client";
 import { signInWithEmail } from "@fitness/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -55,7 +56,9 @@ export default function LoginScreen() {
     setError("");
 
     try {
+      const supabase = createClient();
       const { user, error: signInError } = await signInWithEmail(
+        supabase,
         values.email,
         values.password
       );
@@ -68,7 +71,8 @@ export default function LoginScreen() {
       if (user) {
         router.replace("/");
       }
-    } catch {
+    } catch (error) {
+      console.error("Login error:", error);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
@@ -95,7 +99,7 @@ export default function LoginScreen() {
                   color="#6366f1"
                 />
               </View>
-              <Text className="text-3xl font-bold text-center text-foreground">
+              <Text className="text-3xl font-bold text-center text-slate-900 dark:text-white">
                 Welcome to Logset
               </Text>
               <Text className="text-slate-500 dark:text-gray-400 text-center text-base">
@@ -113,7 +117,7 @@ export default function LoginScreen() {
                 name="email"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    className="w-full bg-slate-50 dark:bg-card border border-border rounded-lg px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                    className="w-full bg-slate-50 dark:bg-card border border-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     placeholder="Enter your email"
                     placeholderTextColor={colors.textSecondary}
                     onBlur={onBlur}
@@ -141,7 +145,7 @@ export default function LoginScreen() {
                   name="password"
                   render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput
-                      className="w-full bg-slate-50 dark:bg-card border border-border rounded-lg px-4 py-3 text-base text-foreground pr-12 placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                      className="w-full bg-slate-50 dark:bg-card border border-border rounded-lg px-4 py-3 text-base text-slate-900 dark:text-white pr-12 placeholder:text-gray-400 dark:placeholder:text-gray-600"
                       placeholder="Enter your password"
                       placeholderTextColor={colors.textSecondary}
                       onBlur={onBlur}

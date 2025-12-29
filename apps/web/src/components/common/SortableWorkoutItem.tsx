@@ -1,17 +1,17 @@
 "use client";
 
-import type { Workout } from "@/models/types";
-import { Button } from "@components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@components/ui/dropdown-menu";
-import { Separator } from "@components/ui/separator";
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { Workout } from "@fitness/shared";
 import {
   Archive,
   ArchiveRestore,

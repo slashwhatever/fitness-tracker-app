@@ -1,4 +1,4 @@
-import { useAuth } from "@fitness/shared";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { LinearGradient } from "expo-linear-gradient";

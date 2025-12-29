@@ -1,7 +1,7 @@
-import { ProtectedRoute } from "@components/auth/ProtectedRoute";
-import ContextualNavigation from "@components/common/ContextualNavigation";
-import { Typography } from "@components/common/Typography";
-import { Button } from "@components/ui/button";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import Link from "next/link";
 

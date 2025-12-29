@@ -1,19 +1,21 @@
-import { GlassHeader } from "@components/GlassHeader";
-import { MovementActionSheet } from "@components/MovementActionSheet";
-import { WorkoutActionSheet } from "@components/WorkoutActionSheet";
-import {
-  formatLastSetDate,
-  useArchiveWorkout,
-  useDeleteWorkout,
-  useDeleteWorkoutMovement,
-  useDuplicateWorkout,
-  useMovementLastSets,
-  useWorkout,
-  useWorkoutMovements,
-} from "@fitness/shared";
+import { GlassHeader } from "@/components/GlassHeader";
+import { MovementActionSheet } from "@/components/MovementActionSheet";
+import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
+import { formatLastSetDate } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import { useMovementLastSets } from "@hooks/useMovementLastSets";
+import {
+  useDeleteWorkoutMovement,
+  useWorkoutMovements,
+} from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
+import {
+  useArchiveWorkout,
+  useDeleteWorkout,
+  useDuplicateWorkout,
+  useWorkout,
+} from "@hooks/useWorkouts";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
 import { useState } from "react";
@@ -152,9 +154,7 @@ export default function WorkoutDetailScreen() {
   if (!workout) {
     return (
       <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <Text className="text-foreground text-lg">
-          Workout not found
-        </Text>
+        <Text className="text-foreground text-lg">Workout not found</Text>
         <TouchableOpacity
           onPress={() => router.replace("/workouts")}
           className="mt-4 bg-primary-500 px-4 py-2 rounded-full"

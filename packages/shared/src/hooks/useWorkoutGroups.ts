@@ -1,5 +1,3 @@
-"use client";
-
 import type { QueryData } from "@supabase/supabase-js";
 import {
   useMutation,
@@ -7,9 +5,12 @@ import {
   useQueryClient,
   type UseMutationResult,
 } from "@tanstack/react-query";
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
-import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
+import type {
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "../types/database.types";
+import type { HookDependencies } from "./types";
 
 type WorkoutGroup = Tables<"workout_groups">;
 type WorkoutGroupInsert = TablesInsert<"workout_groups">;
@@ -21,7 +22,11 @@ export const groupKeys = {
   list: (userId: string) => [...groupKeys.lists(), userId] as const,
 };
 
-export function useWorkoutGroups(): {
+/**
+ * Hook for managing workout groups
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useWorkoutGroups(deps: HookDependencies): {
   groups: WorkoutGroup[];
   loading: boolean;
   error: Error | null;
@@ -33,8 +38,7 @@ export function useWorkoutGroups(): {
   >;
   deleteGroup: UseMutationResult<void, Error, string>;
 } {
-  const { user } = useAuth();
-  const supabase = createClient();
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
 
   // Query for fetching groups
@@ -86,13 +90,15 @@ export function useWorkoutGroups(): {
 
       const maxOrder = existing?.[0]?.sort_order ?? -1;
 
+      const newGroup: WorkoutGroupInsert = {
+        user_id: user.id,
+        name,
+        sort_order: maxOrder + 1,
+      };
+
       const { data, error } = await supabase
         .from("workout_groups")
-        .insert({
-          user_id: user.id,
-          name,
-          sort_order: maxOrder + 1,
-        })
+        .insert(newGroup)
         .select()
         .single();
 

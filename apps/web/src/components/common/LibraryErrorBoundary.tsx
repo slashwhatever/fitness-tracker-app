@@ -1,14 +1,14 @@
 "use client";
 
-import { ErrorBoundary } from "@components/ErrorBoundary";
-import { Button } from "@components/ui/button";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@components/ui/card";
+} from "@/components/ui/card";
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 

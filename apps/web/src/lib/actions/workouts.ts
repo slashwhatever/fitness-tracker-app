@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { Workout } from "@/models/types";
+import { Workout } from "@fitness/shared";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 

@@ -1,5 +1,6 @@
-import { ThemeProvider } from "@components/ThemeProvider";
-import { AuthProvider, useAuth } from "@fitness/shared";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";

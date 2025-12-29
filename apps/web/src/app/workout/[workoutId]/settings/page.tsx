@@ -4,34 +4,34 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  useDeleteWorkout,
-  useUpdateWorkout,
-  useWorkout,
-} from "@/hooks/useWorkouts";
-import { TIMER_PRESETS } from "@/models/types";
-import { ProtectedRoute } from "@components/auth/ProtectedRoute";
-import ContextualNavigation from "@components/common/ContextualNavigation";
-import { Typography } from "@components/common/Typography";
-import { Button } from "@components/ui/button";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ContextualNavigation from "@/components/common/ContextualNavigation";
+import { Typography } from "@/components/common/Typography";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
-} from "@components/ui/card";
-import { ConfirmationModal } from "@components/ui/confirmation-modal";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
+} from "@/components/ui/card";
+import { ConfirmationModal } from "@/components/ui/confirmation-modal";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components/ui/select";
-import { Skeleton } from "@components/ui/skeleton";
-import { Textarea } from "@components/ui/textarea";
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  useDeleteWorkout,
+  useUpdateWorkout,
+  useWorkout,
+} from "@/hooks/useWorkouts";
+import { TIMER_PRESETS } from "@fitness/shared";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

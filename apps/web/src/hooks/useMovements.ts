@@ -2,14 +2,18 @@
 
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import type { Database } from "@/lib/supabase/database.types";
-import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/types";
 import { isSafeForQueries } from "@/lib/utils/validation";
 import type {
   MovementTemplate,
   TrackingTypeName,
   UserMovement,
-} from "@/models/types";
+} from "@fitness/shared";
+import type {
+  Database,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "@fitness/shared";
 import type { QueryData, SupabaseClient } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 

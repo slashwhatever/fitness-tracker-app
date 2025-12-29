@@ -1,24 +1,20 @@
-"use client";
-
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
+import type { HookDependencies } from "./types";
 
 /**
  * Hook for background synchronization of critical data
  * Runs when the app becomes visible or network reconnects
+ * @param deps - Platform-specific dependencies (Supabase client, user)
  */
-export function useBackgroundSync() {
+export function useBackgroundSync(deps: HookDependencies) {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { user, supabase } = deps;
 
   const syncCriticalData = useCallback(async () => {
     if (!user?.id) return;
 
     try {
-      const supabase = createClient();
-
       // Background sync for user profile (critical for app functionality)
       await queryClient.prefetchQuery({
         queryKey: ["user_profiles", user.id],
@@ -76,7 +72,7 @@ export function useBackgroundSync() {
         console.debug("Background sync failed:", error);
       }
     }
-  }, [queryClient, user?.id]);
+  }, [queryClient, user?.id, supabase]);
 
   useEffect(() => {
     // Sync when app becomes visible

@@ -1,4 +1,4 @@
-import { Workout } from "@/models/types";
+import { Workout } from "@fitness/shared";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import WorkoutHeader from "./WorkoutHeader";
 
@@ -21,6 +21,9 @@ const mockWorkout: Workout = {
   updated_at: new Date().toISOString(),
   user_id: "user-1",
   default_rest_timer: null,
+  archived: false,
+  group_id: null,
+  order_index: 0,
 };
 
 export const Loading: Story = {

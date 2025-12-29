@@ -1,22 +1,20 @@
-import { EditSetSheet } from "@components/EditSetSheet";
-import { GlassHeader } from "@components/GlassHeader";
-import { MovementActionSheet } from "@components/MovementActionSheet";
-import { SessionComparison } from "@components/SessionComparison";
-import { SetAdjuster } from "@components/SetAdjuster";
-import { TimedConfirmDeleteButton } from "@components/TimedConfirmDeleteButton";
-import {
-  useCreateSet,
-  useDeleteSet,
-  useDeleteWorkoutMovement,
-  useSetsByMovement,
-  useUserMovement,
-  useUserProfile,
-  useWorkout,
-  useWorkoutMovements,
-} from "@fitness/shared";
+import { EditSetSheet } from "@/components/EditSetSheet";
+import { GlassHeader } from "@/components/GlassHeader";
+import { MovementActionSheet } from "@/components/MovementActionSheet";
+import { SessionComparison } from "@/components/SessionComparison";
+import { SetAdjuster } from "@/components/SetAdjuster";
+import { TimedConfirmDeleteButton } from "@/components/TimedConfirmDeleteButton";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
+import {
+  useDeleteWorkoutMovement,
+  useUserMovement,
+  useWorkoutMovements,
+} from "@hooks/useMovements";
+import { useCreateSet, useDeleteSet, useSetsByMovement } from "@hooks/useSets";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useUserProfile } from "@hooks/useUserProfile";
+import { useWorkout } from "@hooks/useWorkouts";
 import { format } from "date-fns";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -76,9 +74,7 @@ function SetActionModal({
               }}
             >
               <Pencil size={20} color="green" />
-              <Text className="text-foreground font-medium text-lg">
-                Edit
-              </Text>
+              <Text className="text-foreground font-medium text-lg">Edit</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -236,9 +232,7 @@ export default function MovementDetailScreen() {
   if (!movement) {
     return (
       <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <Text className="text-foreground text-lg">
-          Movement not found
-        </Text>
+        <Text className="text-foreground text-lg">Movement not found</Text>
         <TouchableOpacity
           onPress={() => router.back()}
           className="mt-4 bg-primary-500 px-4 py-2 rounded-full"

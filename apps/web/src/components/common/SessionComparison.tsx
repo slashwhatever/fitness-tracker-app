@@ -1,6 +1,6 @@
 "use client";
 
-import { Set, UserMovement } from "@/models/types";
+import { Set, UserMovement } from "@fitness/shared";
 import { CircleEqual, Play } from "lucide-react";
 import { Typography } from "./Typography";
 

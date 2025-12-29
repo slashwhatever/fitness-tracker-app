@@ -1,14 +1,14 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
-import { Button } from "@components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@components/ui/card";
+} from "@/components/ui/card";
 import { AlertTriangle, RefreshCw, Settings } from "lucide-react";
 import React from "react";
 

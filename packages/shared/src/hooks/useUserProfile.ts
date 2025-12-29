@@ -1,16 +1,13 @@
-"use client";
-
 import type { QueryData } from "@supabase/supabase-js";
 import {
-  useMutation,
   UseMutationResult,
+  useMutation,
   useQuery,
   useQueryClient,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
-import type { Tables, TablesUpdate } from "../lib/supabase/types";
+import type { Tables, TablesUpdate } from "../types/database.types";
+import type { HookDependencies } from "./types";
 
 type UserProfileUpdate = TablesUpdate<"user_profiles">;
 
@@ -20,13 +17,14 @@ const profileKeys = {
   profile: (userId: string) => [...profileKeys.all, userId] as const,
 };
 
-// Get user profile
-export function useUserProfile(): UseQueryResult<
-  Tables<"user_profiles"> | null,
-  Error
-> {
-  const { user } = useAuth();
-  const supabase = createClient();
+/**
+ * Get user profile
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useUserProfile(
+  deps: HookDependencies
+): UseQueryResult<Tables<"user_profiles"> | null, Error> {
+  const { user, supabase } = deps;
 
   return useQuery({
     queryKey: profileKeys.profile(user?.id || ""),
@@ -61,15 +59,15 @@ export function useUserProfile(): UseQueryResult<
   });
 }
 
-// Update user profile
-export function useUpdateUserProfile(): UseMutationResult<
-  Tables<"user_profiles">,
-  Error,
-  UserProfileUpdate
-> {
-  const { user } = useAuth();
+/**
+ * Update user profile
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useUpdateUserProfile(
+  deps: HookDependencies
+): UseMutationResult<Tables<"user_profiles">, Error, UserProfileUpdate> {
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async (updates: UserProfileUpdate) => {

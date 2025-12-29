@@ -1,4 +1,4 @@
-import { Typography } from "@components/common/Typography";
+import { Typography } from "@/components/common/Typography";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,18 +6,18 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@components/ui/breadcrumb";
-import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components/ui/select";
-import { Switch } from "@components/ui/switch";
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LogOut, Save } from "lucide-react";

@@ -1,4 +1,4 @@
-import { ExperienceLevel, TrackingTypeName } from "@/models/types";
+import { ExperienceLevel, TrackingTypeName } from "@fitness/shared";
 import {
   BarChart3,
   BicepsFlexed,

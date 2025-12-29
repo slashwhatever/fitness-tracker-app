@@ -1,5 +1,3 @@
-"use client";
-
 import type { QueryData } from "@supabase/supabase-js";
 import {
   useMutation,
@@ -8,10 +6,13 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { useAuth } from "../lib/auth/AuthProvider";
-import { createClient } from "../lib/supabase/client";
-import type { Tables, TablesInsert, TablesUpdate } from "../lib/supabase/types";
 import { isSafeForQueries } from "../lib/utils/validation";
+import type {
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "../types/database.types";
+import type { HookDependencies } from "./types";
 import { groupKeys } from "./useWorkoutGroups";
 
 type Workout = Tables<"workouts">;
@@ -23,7 +24,7 @@ type WorkoutWithGroup = Workout & {
 };
 
 // Query keys
-const workoutKeys = {
+export const workoutKeys = {
   all: ["workouts"] as const,
   lists: () => [...workoutKeys.all, "list"] as const,
   list: (userId: string) => [...workoutKeys.lists(), userId] as const,
@@ -31,16 +32,18 @@ const workoutKeys = {
   detail: (id: string) => [...workoutKeys.details(), id] as const,
 };
 
-// Get all workouts for a user
-export function useWorkouts(): {
+/**
+ * Get all workouts for a user
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useWorkouts(deps: HookDependencies): {
   workouts: WorkoutWithGroup[] | undefined;
-  loading: boolean;
+  isLoading: boolean;
   error: Error | null;
   refetch: () => void;
   isRefetching: boolean;
 } {
-  const { user } = useAuth();
-  const supabase = createClient();
+  const { user, supabase } = deps;
 
   const query = useQuery({
     queryKey: workoutKeys.list(user?.id || ""),
@@ -67,18 +70,23 @@ export function useWorkouts(): {
 
   return {
     workouts: query.data,
-    loading: query.isLoading, // Map isLoading to loading for existing consumers
+    isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,
     isRefetching: query.isRefetching,
   };
 }
 
-// Get a single workout
+/**
+ * Get a single workout
+ * @param workoutId - Workout ID to fetch
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
 export function useWorkout(
-  workoutId: string
+  workoutId: string,
+  deps: HookDependencies
 ): UseQueryResult<Workout | null, Error> {
-  const supabase = createClient();
+  const { supabase } = deps;
 
   return useQuery({
     queryKey: workoutKeys.detail(workoutId),
@@ -101,15 +109,19 @@ export function useWorkout(
   });
 }
 
-// Create a new workout
-export function useCreateWorkout(): UseMutationResult<
+/**
+ * Create a new workout
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useCreateWorkout(
+  deps: HookDependencies
+): UseMutationResult<
   Workout,
   Error,
   Omit<WorkoutInsert, "user_id" | "order_index">
 > {
-  const { user } = useAuth();
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async (
@@ -190,15 +202,15 @@ export function useCreateWorkout(): UseMutationResult<
   });
 }
 
-// Update a workout
-export function useUpdateWorkout(): UseMutationResult<
-  Workout,
-  Error,
-  { id: string; updates: WorkoutUpdate }
-> {
-  const { user } = useAuth();
+/**
+ * Update a workout
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useUpdateWorkout(
+  deps: HookDependencies
+): UseMutationResult<Workout, Error, { id: string; updates: WorkoutUpdate }> {
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -240,11 +252,15 @@ export function useUpdateWorkout(): UseMutationResult<
   });
 }
 
-// Delete a workout
-export function useDeleteWorkout(): UseMutationResult<string, Error, string> {
-  const { user } = useAuth();
+/**
+ * Delete a workout
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useDeleteWorkout(
+  deps: HookDependencies
+): UseMutationResult<string, Error, string> {
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async (workoutId: string) => {
@@ -296,15 +312,19 @@ export function useDeleteWorkout(): UseMutationResult<string, Error, string> {
   });
 }
 
-// Reorder workouts
-export function useReorderWorkouts(): UseMutationResult<
+/**
+ * Reorder workouts
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useReorderWorkouts(
+  deps: HookDependencies
+): UseMutationResult<
   { id: string; order_index: number }[],
   Error,
   { workouts: { id: string; order_index: number }[] }
 > {
-  const { user } = useAuth();
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -386,15 +406,15 @@ export function useReorderWorkouts(): UseMutationResult<
   });
 }
 
-// Archive/Unarchive a workout
-export function useArchiveWorkout(): UseMutationResult<
-  Workout,
-  Error,
-  { workoutId: string; archived: boolean }
-> {
-  const { user } = useAuth();
+/**
+ * Archive/Unarchive a workout
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useArchiveWorkout(
+  deps: HookDependencies
+): UseMutationResult<Workout, Error, { workoutId: string; archived: boolean }> {
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async ({
@@ -465,15 +485,15 @@ export function useArchiveWorkout(): UseMutationResult<
   });
 }
 
-// Duplicate a workout (including all movements)
-export function useDuplicateWorkout(): UseMutationResult<
-  Workout,
-  Error,
-  string
-> {
-  const { user } = useAuth();
+/**
+ * Duplicate a workout (including all movements)
+ * @param deps - Platform-specific dependencies (Supabase client, user)
+ */
+export function useDuplicateWorkout(
+  deps: HookDependencies
+): UseMutationResult<Workout, Error, string> {
+  const { user, supabase } = deps;
   const queryClient = useQueryClient();
-  const supabase = createClient();
 
   return useMutation({
     mutationFn: async (workoutId: string) => {

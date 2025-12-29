@@ -1,10 +1,10 @@
 "use client";
 
+import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
+import UpdatePasswordForm from "@/components/auth/UpdatePasswordForm";
+import { PageSkeleton } from "@/components/ui/skeleton-patterns";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import ResetPasswordForm from "@components/auth/ResetPasswordForm";
-import UpdatePasswordForm from "@components/auth/UpdatePasswordForm";
-import { PageSkeleton } from "@components/ui/skeleton-patterns";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";

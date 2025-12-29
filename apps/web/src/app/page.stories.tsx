@@ -1,7 +1,7 @@
+import ResponsiveButton from "@/components/common/ResponsiveButton";
+import { Typography } from "@/components/common/Typography";
+import WorkoutManagement from "@/components/features/WorkoutManagement";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
-import ResponsiveButton from "@components/common/ResponsiveButton";
-import { Typography } from "@components/common/Typography";
-import WorkoutManagement from "@components/features/WorkoutManagement";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BarChart3, Dumbbell, Library, Settings } from "lucide-react";
