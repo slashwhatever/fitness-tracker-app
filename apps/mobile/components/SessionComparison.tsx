@@ -3,8 +3,8 @@ import {
   calculateMetrics,
   formatDiff,
   formatValue,
-  useUserProfile,
 } from "@fitness/shared";
+import { useUserProfile } from "@hooks/useUserProfile";
 import { CircleEqual, Play } from "lucide-react-native";
 import { useMemo } from "react";
 import { Text, View } from "react-native";
