@@ -265,12 +265,10 @@ export default function WorkoutDetailScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center py-20 bg-card rounded-2xl border border-dashed border-slate-300 dark:border-gray-700">
               <Text className="text-slate-500 dark:text-gray-500 text-lg mb-2">
-                No exercises added
+                No movements added
               </Text>
               <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-full mt-2">
-                <Text className="text-white font-semibold">
-                  + Add Exercise (Coming Soon)
-                </Text>
+                <Text className="text-white font-semibold">+ Add Movement</Text>
               </TouchableOpacity>
             </View>
           }
