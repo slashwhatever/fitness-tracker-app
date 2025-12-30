@@ -1,10 +1,19 @@
 import type { Database } from "@fitness/shared";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import {
+  createClient as createSupabaseClient,
+  SupabaseClient,
+} from "@supabase/supabase-js";
 
 export type { Database } from "@fitness/shared";
 
+let client: SupabaseClient<Database> | undefined;
+
 export function createClient() {
+  if (client) {
+    return client;
+  }
+
   const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -14,7 +23,7 @@ export function createClient() {
     );
   }
 
-  return createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
+  client = createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
       storage: AsyncStorage,
       autoRefreshToken: true,
@@ -22,4 +31,6 @@ export function createClient() {
       detectSessionInUrl: false,
     },
   });
+
+  return client;
 }

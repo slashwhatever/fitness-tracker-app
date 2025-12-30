@@ -51,10 +51,13 @@ export function ThemeSelector() {
               backgroundColor: isActive ? activeBg : "transparent",
               borderWidth: isActive ? 1 : 0,
               borderColor: isActive ? colors.border : "transparent",
-              shadowOpacity: isActive && !isDark ? 0.1 : 0,
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 1 },
-              elevation: isActive && !isDark ? 2 : 0,
+              // Use boxShadow for web, elevation for native
+              ...(isActive && !isDark
+                ? {
+                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+                    elevation: 2,
+                  }
+                : {}),
             }}
           >
             <Text

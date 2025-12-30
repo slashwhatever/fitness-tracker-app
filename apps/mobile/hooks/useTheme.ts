@@ -21,30 +21,40 @@ export function useTheme() {
         if (theme) {
           const parsedTheme = theme as Theme;
           setStoredTheme(parsedTheme);
-          setColorScheme(parsedTheme);
+          // Apply the appropriate color scheme
+          if (parsedTheme === "system") {
+            setColorScheme(systemColorScheme ?? "light");
+          } else {
+            setColorScheme(parsedTheme);
+          }
         } else {
           // Default to system if no stored preference
           setStoredTheme("system");
-          setColorScheme("system");
+          setColorScheme(systemColorScheme ?? "light");
         }
       } catch (error) {
         console.error("Failed to load theme from storage:", error);
         setStoredTheme("system");
-        setColorScheme("system");
+        setColorScheme(systemColorScheme ?? "light");
       } finally {
         setIsLoading(false);
       }
     };
 
     loadTheme();
-  }, [setColorScheme]);
+  }, [setColorScheme, systemColorScheme]);
 
   // Save theme to AsyncStorage
   const saveTheme = async (theme: Theme) => {
     try {
       await AsyncStorage.setItem(THEME_STORAGE_KEY, theme);
       setStoredTheme(theme);
-      setColorScheme(theme);
+      // Apply the appropriate color scheme
+      if (theme === "system") {
+        setColorScheme(systemColorScheme ?? "light");
+      } else {
+        setColorScheme(theme);
+      }
     } catch (error) {
       console.error("Failed to save theme to storage:", error);
     }

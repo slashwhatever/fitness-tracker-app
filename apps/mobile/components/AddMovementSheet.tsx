@@ -171,9 +171,16 @@ export function AddMovementSheet({
           isDisabled
             ? "bg-background/30 opacity-50"
             : isSelected
-              ? "bg-primary-500/20 border border-primary-500"
+              ? "bg-primary-500/20"
               : "bg-background/50"
         }`}
+        style={
+          !isDisabled && isSelected
+            ? {
+                boxShadow: `${colors.tint} 0px 0px 1px 1px`,
+              }
+            : undefined
+        }
         onPress={() => handleToggleMovement(item.id, item.isExisting)}
         disabled={isDisabled}
       >
@@ -299,7 +306,7 @@ export function AddMovementSheet({
               keyExtractor={(item, index) =>
                 item.type === "header" ? item.key : `${item.data.id}-${index}`
               }
-              contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
+              contentContainerStyle={{ padding: 16 }}
               ListEmptyComponent={
                 <View className="items-center justify-center py-12">
                   <Text className="text-slate-500 dark:text-gray-400 text-base">
