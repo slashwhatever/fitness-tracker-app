@@ -179,7 +179,7 @@ export default function WorkoutDetailScreen() {
 
   const renderMovement = ({ item }: { item: any }) => (
     <TouchableOpacity
-      className="bg-card p-4 rounded-xl border border-border mb-3"
+      className="bg-card p-4 rounded-2xl border border-border mb-3"
       onPress={() =>
         router.push(`/workout/${id}/movement/${item.user_movement.id}`)
       }
@@ -247,6 +247,7 @@ export default function WorkoutDetailScreen() {
             paddingBottom: bottomPadding,
             paddingTop: headerPadding + 16,
             paddingHorizontal: 16,
+            gap: 4,
           }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={

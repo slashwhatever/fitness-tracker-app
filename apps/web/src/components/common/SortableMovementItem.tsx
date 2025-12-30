@@ -57,7 +57,7 @@ export default function SortableMovementItem({
         style={style}
         className={`${isDragging ? "z-[9999] relative" : ""}`}
       >
-        <div className="flex items-center p-3 sm:p-4 hover:bg-muted/50 transition-all bg-card select-none gap-2 sm:gap-3">
+        <div className="flex items-center justify-between p-3 sm:p-4 hover:bg-muted/50 transition-all cursor-pointer bg-card select-none gap-2 sm:gap-3">
           {/* Drag Handle - Larger touch target for mobile */}
           <div
             {...attributes}
