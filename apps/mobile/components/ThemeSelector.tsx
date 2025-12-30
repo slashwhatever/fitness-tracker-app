@@ -1,13 +1,15 @@
+import { useTheme } from "@hooks/useTheme";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { useUpdateUserProfile, useUserProfile } from "@hooks/useUserProfile";
-import { useColorScheme } from "nativewind";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export function ThemeSelector() {
   const { data: userProfile } = useUserProfile();
   const { mutate: updateProfile } = useUpdateUserProfile();
-  const { colorScheme } = useColorScheme();
+  const { theme, setTheme, colorScheme } = useTheme();
+  const colors = useThemeColors();
 
-  const currentTheme = userProfile?.theme ?? "system";
+  const currentTheme = theme ?? userProfile?.theme ?? "system";
 
   const options = [
     { label: "Light", value: "light" },
@@ -16,6 +18,9 @@ export function ThemeSelector() {
   ] as const;
 
   const handleSelect = (value: "light" | "dark" | "system") => {
+    // Save to AsyncStorage immediately for instant persistence
+    setTheme(value);
+    // Also update user profile
     updateProfile({ theme: value });
   };
 
@@ -25,12 +30,13 @@ export function ThemeSelector() {
     <View
       className="flex-row rounded-lg p-1"
       style={{
-        backgroundColor: isDark ? "#1e293b" : "#f1f5f9", // slate-800 : slate-100
+        backgroundColor: colors.muted,
       }}
     >
       {options.map((option) => {
         const isActive = currentTheme === option.value;
-        const activeBg = isDark ? "#475569" : "#ffffff"; // slate-600 : white
+        // Use background color for active state to ensure visibility in dark mode
+        const activeBg = colors.background;
 
         return (
           <TouchableOpacity
@@ -43,6 +49,8 @@ export function ThemeSelector() {
               borderRadius: 6,
               paddingVertical: 8,
               backgroundColor: isActive ? activeBg : "transparent",
+              borderWidth: isActive ? 1 : 0,
+              borderColor: isActive ? colors.border : "transparent",
               shadowOpacity: isActive && !isDark ? 0.1 : 0,
               shadowRadius: 2,
               shadowOffset: { width: 0, height: 1 },

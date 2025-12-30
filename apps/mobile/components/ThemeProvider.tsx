@@ -1,7 +1,6 @@
-import { useUserProfile } from "@hooks/useUserProfile";
-import { useColorScheme as useNativeWindColorScheme, vars } from "nativewind";
-import { useEffect } from "react";
-import { View, useColorScheme as useSystemColorScheme } from "react-native";
+import { useTheme } from "@hooks/useTheme";
+import { vars } from "nativewind";
+import { View } from "react-native";
 
 // Define theme CSS variables
 const lightTheme = vars({
@@ -27,20 +26,7 @@ const darkTheme = vars({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const { data: userProfile } = useUserProfile();
-  const systemColorScheme = useSystemColorScheme();
-  const { setColorScheme, colorScheme } = useNativeWindColorScheme();
-
-  useEffect(() => {
-    if (!userProfile?.theme) return;
-
-    const theme = userProfile.theme;
-    if (theme === "system") {
-      setColorScheme("system");
-    } else {
-      setColorScheme(theme as "light" | "dark" | "system");
-    }
-  }, [userProfile?.theme, systemColorScheme, setColorScheme]);
+  const { colorScheme } = useTheme();
 
   // Apply theme variables based on current color scheme
   const isDark = colorScheme === "dark";
