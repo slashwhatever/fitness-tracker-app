@@ -2,6 +2,7 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useHomeStats } from "@hooks/useHomeStats";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { formatDistanceToNow } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -19,6 +20,7 @@ export default function HomeScreen() {
   const bottomPadding = useBottomPadding();
   const router = useRouter();
   const { data: stats, isLoading, refetch } = useHomeStats();
+  const { primary } = useThemeColors();
 
   const formatVolume = (vol: number) => {
     return Math.round(vol).toLocaleString();
@@ -36,7 +38,7 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={isLoading}
             onRefresh={refetch}
-            tintColor="#6366f1"
+            tintColor={primary[500]}
             progressViewOffset={headerPadding}
           />
         }
@@ -62,7 +64,7 @@ export default function HomeScreen() {
           className="mb-6 rounded-xl bg-primary-500"
           style={{
             elevation: 8,
-            shadowColor: "#4f46e5",
+            shadowColor: primary[600],
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 8,
@@ -74,7 +76,7 @@ export default function HomeScreen() {
             className="rounded-xl"
           >
             <LinearGradient
-              colors={["#6366f1", "#4f46e5", "#4338ca"]}
+              colors={[primary[500], primary[600], primary[700]]}
               className="p-6"
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}

@@ -39,6 +39,7 @@ export function useThemeColors() {
   const isDark = colorScheme === "dark";
   return {
     ...Colors[isDark ? "dark" : "light"],
+    primary: customColors.primary,
     isDark,
     colorScheme,
   };
