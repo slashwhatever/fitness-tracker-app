@@ -45,7 +45,7 @@ const eslintConfig = [
         "error",
         {
           selector:
-            "ImportDeclaration[source.value='@fitness/shared'] > ImportSpecifier[imported.name=/^use/]",
+            "ImportDeclaration[source.value=/^@fitness\\/shared/] > ImportSpecifier[imported.name=/^use/]",
           message:
             "Direct import of hooks from @fitness/shared is not allowed. Please use the local wrapper hook from src/hooks/ instead to ensure dependencies are injected.",
         },

@@ -163,6 +163,58 @@ export function useUserMovements(
   });
 }
 
+// Helper to fetch and transform a single user movement
+async function fetchUserMovement(
+  supabase: SupabaseClient<Database>,
+  movementId: string
+): Promise<UserMovement> {
+  const query = supabase
+    .from("user_movements")
+    .select(
+      `
+      id,
+      name,
+      personal_notes,
+      tags,
+      experience_level,
+      tracking_type_id,
+      custom_rest_timer,
+      last_used_at,
+      manual_1rm,
+      migrated_from_template,
+      migration_date,
+      original_template_id,
+      template_id,
+      user_id,
+      created_at,
+      updated_at,
+      tracking_types!inner(name),
+      user_movement_muscle_groups(
+        muscle_groups(name, display_name)
+      )
+    `
+    )
+    .eq("id", movementId)
+    .single();
+
+  type QueryResult = QueryData<typeof query>;
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  // Transform the data to include muscle_groups array and tracking_type
+  const transformedData = data as QueryResult;
+  return {
+    ...transformedData,
+    tracking_type:
+      transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
+    muscle_groups:
+      transformedData.user_movement_muscle_groups
+        ?.map((ummg) => ummg.muscle_groups?.display_name)
+        .filter((name): name is string => Boolean(name)) || [],
+  } as UserMovement;
+}
+
 // Get a single user movement
 export function useUserMovement(
   movementId: string,
@@ -172,54 +224,7 @@ export function useUserMovement(
 
   return useQuery({
     queryKey: movementKeys.userMovement(movementId),
-    queryFn: async () => {
-      const query = supabase
-        .from("user_movements")
-        .select(
-          `
-          id,
-          name,
-          personal_notes,
-          tags,
-          experience_level,
-          tracking_type_id,
-          custom_rest_timer,
-          last_used_at,
-          manual_1rm,
-          migrated_from_template,
-          migration_date,
-          original_template_id,
-          template_id,
-          user_id,
-          created_at,
-          updated_at,
-          tracking_types!inner(name),
-          user_movement_muscle_groups(
-            muscle_groups(name, display_name)
-          )
-        `
-        )
-        .eq("id", movementId)
-        .single();
-
-      type QueryResult = QueryData<typeof query>;
-
-      const { data, error } = await query;
-      if (error) throw error;
-
-      // Transform the data to include muscle_groups array and tracking_type
-      const transformedData = data as QueryResult;
-      return {
-        ...transformedData,
-        tracking_type:
-          transformedData.tracking_types?.name ||
-          ("weight" as TrackingTypeName),
-        muscle_groups:
-          transformedData.user_movement_muscle_groups
-            ?.map((ummg) => ummg.muscle_groups?.display_name)
-            .filter((name): name is string => Boolean(name)) || [],
-      } as UserMovement;
-    },
+    queryFn: () => fetchUserMovement(supabase, movementId),
     enabled: isSafeForQueries(movementId),
   });
 }
@@ -372,13 +377,14 @@ export function useCreateUserMovement(
       const { muscle_groups, ...movementData } = movement;
 
       // Don't send tracking_type to database, it only has tracking_type_id
+      // Don't send tracking_type to database, it only has tracking_type_id
       const { data, error } = await supabase
         .from("user_movements")
         .insert({
           ...movementData,
           user_id: user.id,
         })
-        .select()
+        .select("id")
         .single();
 
       if (error) throw error;
@@ -386,8 +392,8 @@ export function useCreateUserMovement(
       // Create muscle group relationships
       await createMuscleGroupRelationships(supabase, data.id, muscle_groups);
 
-      // Return the raw data first, then the queryClient will refetch with proper joins
-      return data;
+      // Return the full UserMovement object
+      return fetchUserMovement(supabase, data.id);
     },
     onMutate: async (newMovement) => {
       if (!user?.id) return;
@@ -477,11 +483,12 @@ export function useUpdateUserMovement(
       const { muscle_groups, ...movementUpdates } = updates;
 
       // Don't send tracking_type to database, it only has tracking_type_id
+      // Don't send tracking_type to database, it only has tracking_type_id
       const { data, error } = await supabase
         .from("user_movements")
         .update(movementUpdates)
         .eq("id", id)
-        .select()
+        .select("id")
         .single();
 
       if (error) throw error;
@@ -491,8 +498,8 @@ export function useUpdateUserMovement(
         await updateMuscleGroupRelationships(supabase, id, muscle_groups);
       }
 
-      // Return the raw data first, then the queryClient will refetch with proper joins
-      return data;
+      // Return the full UserMovement object
+      return fetchUserMovement(supabase, data.id);
     },
     onMutate: async ({ id, updates }) => {
       if (!user?.id) return;
@@ -1140,6 +1147,8 @@ export function useUpdateWorkoutMovementNotes(deps: HookDependencies) {
         .single();
 
       if (error) throw error;
+      // Return the raw data first, then the queryClient will refetch with proper joins
+      // We need to fetch the full object to match the UserMovement type
       return data;
     },
     onMutate: async ({ workoutMovementId, workout_notes }) => {
@@ -1244,7 +1253,7 @@ export function useDeleteWorkoutMovement(deps: HookDependencies) {
       // Optimistically remove the item
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(workoutId),
-        (old: any[]) => {
+        (old: WorkoutMovement[] | undefined) => {
           if (!old) return [];
           return old.filter((movement) => movement.id !== workoutMovementId);
         }

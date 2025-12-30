@@ -1,6 +1,5 @@
 import type { QueryData } from "@supabase/supabase-js";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
-import type { UserMovement } from "../models/types";
 import type { Tables } from "../types/database.types";
 import type { HookDependencies } from "./types";
 
@@ -22,7 +21,9 @@ export function usePersonalRecordsByMovement(
   movementId: string,
   deps: HookDependencies
 ): UseQueryResult<
-  (Tables<"personal_records"> & { user_movement: UserMovement | null })[],
+  (Tables<"personal_records"> & {
+    user_movement: Tables<"user_movements"> | null;
+  })[],
   Error
 > {
   const { user, supabase } = deps;

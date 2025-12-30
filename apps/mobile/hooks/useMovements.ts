@@ -4,15 +4,13 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { isSafeForQueries } from "@/lib/utils/validation";
 import type {
-  MovementTemplate,
-  TrackingTypeName,
-  UserMovement,
-} from "@fitness/shared";
-import type {
   Database,
+  MovementTemplate,
   Tables,
   TablesInsert,
   TablesUpdate,
+  TrackingTypeName,
+  UserMovement,
 } from "@fitness/shared";
 import type { QueryData, SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -348,7 +346,7 @@ async function updateMuscleGroupRelationships(
 
 // Create a new user movement
 export function useCreateUserMovement(): UseMutationResult<
-  UserMovement,
+  Tables<"user_movements">,
   Error,
   Omit<UserMovementInsert, "user_id"> & { muscle_groups: string[] }
 > {
@@ -432,14 +430,19 @@ export function useCreateUserMovement(): UseMutationResult<
         queryClient.setQueryData(
           movementKeys.userMovementsList(user.id),
           (old: UserMovement[] | undefined) => {
-            if (!old) return [data];
+            if (!old) return [data as unknown as UserMovement];
             return old.map((m) =>
-              m.id.toString().startsWith("temp-") ? data : m
+              m.id.toString().startsWith("temp-")
+                ? (data as unknown as UserMovement)
+                : m
             );
           }
         );
         // Set individual movement cache
-        queryClient.setQueryData(movementKeys.userMovement(data.id), data);
+        queryClient.setQueryData(
+          movementKeys.userMovement(data.id),
+          data as unknown as UserMovement
+        );
       }
     },
   });
@@ -447,7 +450,7 @@ export function useCreateUserMovement(): UseMutationResult<
 
 // Update a user movement
 export function useUpdateUserMovement(): UseMutationResult<
-  UserMovement,
+  Tables<"user_movements">,
   Error,
   {
     id: string;
@@ -613,12 +616,17 @@ export function useUpdateUserMovement(): UseMutationResult<
         queryClient.setQueryData(
           movementKeys.userMovementsList(user.id),
           (old: UserMovement[] | undefined) => {
-            if (!old) return [data];
-            return old.map((m) => (m.id === id ? data : m));
+            if (!old) return [data as unknown as UserMovement];
+            return old.map((m) =>
+              m.id === id ? (data as unknown as UserMovement) : m
+            );
           }
         );
         // Update the individual movement cache
-        queryClient.setQueryData(movementKeys.userMovement(id), data);
+        queryClient.setQueryData(
+          movementKeys.userMovement(id),
+          data as unknown as UserMovement
+        );
 
         // Only invalidate workout movements that use this user movement
         // This is necessary because workout movements include joined user movement data

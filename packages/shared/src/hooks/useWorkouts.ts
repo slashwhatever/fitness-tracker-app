@@ -153,11 +153,11 @@ export function useCreateWorkout(
       return data;
     },
     onMutate: async (newWorkout) => {
-      if (!user?.id) return;
+      if (!user?.id) return { previousWorkouts: undefined };
 
       await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
 
-      const previousWorkouts = queryClient.getQueryData(
+      const previousWorkouts = queryClient.getQueryData<WorkoutWithGroup[]>(
         workoutKeys.list(user.id)
       );
 
@@ -167,16 +167,24 @@ export function useCreateWorkout(
         user_id: user.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-      };
+        workout_groups: null,
+      } as WorkoutWithGroup;
 
-      queryClient.setQueryData(workoutKeys.list(user.id), (old: any[]) => [
-        optimisticWorkout,
-        ...(old || []),
-      ]);
+      queryClient.setQueryData(
+        workoutKeys.list(user.id),
+        (old: WorkoutWithGroup[] | undefined) => [
+          optimisticWorkout,
+          ...(old || []),
+        ]
+      );
 
       return { previousWorkouts };
     },
-    onError: (err, newWorkout, context: any) => {
+    onError: (
+      err,
+      newWorkout,
+      context: { previousWorkouts: WorkoutWithGroup[] | undefined } | undefined
+    ) => {
       if (user?.id) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),
@@ -273,27 +281,27 @@ export function useDeleteWorkout(
       return workoutId;
     },
     onMutate: async (workoutId) => {
-      if (!user?.id) return;
+      if (!user?.id) return { previousWorkouts: undefined };
 
       await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
 
-      const previousWorkouts = queryClient.getQueryData(
+      const previousWorkouts = queryClient.getQueryData<WorkoutWithGroup[]>(
         workoutKeys.list(user.id)
       );
 
-      queryClient.setQueryData(workoutKeys.list(user.id), (old: any[]) =>
-        (old || []).filter(
-          (workout: any) =>
-            typeof workout === "object" &&
-            workout !== null &&
-            "id" in workout &&
-            (workout as { id: string }).id !== workoutId
-        )
+      queryClient.setQueryData(
+        workoutKeys.list(user.id),
+        (old: WorkoutWithGroup[] | undefined) =>
+          (old || []).filter((workout) => workout.id !== workoutId)
       );
 
       return { previousWorkouts };
     },
-    onError: (err, workoutId, context: any) => {
+    onError: (
+      err,
+      workoutId,
+      context: { previousWorkouts: WorkoutWithGroup[] | undefined } | undefined
+    ) => {
       if (user?.id) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),
@@ -343,15 +351,15 @@ export function useReorderWorkouts(
       return workouts;
     },
     onMutate: async ({ workouts: reorderedWorkouts }) => {
-      if (!user?.id) return;
+      if (!user?.id) return { previousWorkouts: undefined };
 
       await queryClient.cancelQueries({
         queryKey: workoutKeys.list(user.id),
       });
 
-      const previousWorkouts = queryClient.getQueryData(
+      const previousWorkouts = queryClient.getQueryData<WorkoutWithGroup[]>(
         workoutKeys.list(user.id)
-      ) as unknown[] | undefined;
+      );
 
       if (previousWorkouts) {
         const orderMap = new Map(
@@ -394,7 +402,11 @@ export function useReorderWorkouts(
 
       return { previousWorkouts };
     },
-    onError: (err, variables, context: any) => {
+    onError: (
+      err,
+      variables,
+      context: { previousWorkouts: WorkoutWithGroup[] | undefined } | undefined
+    ) => {
       if (user?.id && context?.previousWorkouts) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),
@@ -435,13 +447,13 @@ export function useArchiveWorkout(
       return data;
     },
     onMutate: async ({ workoutId, archived }) => {
-      if (!user?.id) return;
+      if (!user?.id) return { previousWorkouts: undefined };
 
       await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
 
-      const previousWorkouts = queryClient.getQueryData(
+      const previousWorkouts = queryClient.getQueryData<WorkoutWithGroup[]>(
         workoutKeys.list(user.id)
-      ) as unknown[] | undefined;
+      );
 
       if (previousWorkouts) {
         const updatedWorkouts = previousWorkouts.map((workout) => {
@@ -461,7 +473,11 @@ export function useArchiveWorkout(
 
       return { previousWorkouts };
     },
-    onError: (err, variables, context: any) => {
+    onError: (
+      err,
+      variables,
+      context: { previousWorkouts: WorkoutWithGroup[] | undefined } | undefined
+    ) => {
       if (user?.id && context?.previousWorkouts) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),

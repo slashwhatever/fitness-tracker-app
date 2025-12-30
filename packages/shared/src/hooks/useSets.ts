@@ -6,7 +6,7 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import type { UserMovement } from "../models/types";
+
 import type {
   Tables,
   TablesInsert,
@@ -14,12 +14,12 @@ import type {
 } from "../types/database.types";
 import type { HookDependencies } from "./types";
 
-export type Set = Tables<"sets">;
+type Set = Tables<"sets">;
 export type SetInsert = TablesInsert<"sets">;
 export type SetUpdate = TablesUpdate<"sets">;
 
-export type SetWithMovement = Set & {
-  user_movement: UserMovement | null;
+export type SetWithMovement = Tables<"sets"> & {
+  user_movement: Tables<"user_movements"> | null;
 };
 
 // Query keys

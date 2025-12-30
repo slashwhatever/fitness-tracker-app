@@ -1,7 +1,7 @@
-import { useAuth } from "@/lib/auth/AuthProvider";
-import { createClient } from "@/lib/supabase/client";
 import type { QueryData } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../../lib/auth/AuthProvider";
+import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type WorkoutWithGroup } from "./types";
 
 /**

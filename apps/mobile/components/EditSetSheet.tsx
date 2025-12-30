@@ -1,5 +1,5 @@
 import { Tables } from "@fitness/shared";
-import { useUpdateSet } from "@fitness/shared/src/hooks/useSets";
+import { useUpdateSet } from "@hooks/useSets";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Check } from "lucide-react-native";
 import { useEffect, useState } from "react";

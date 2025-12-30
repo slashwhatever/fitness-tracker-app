@@ -1,6 +1,5 @@
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import type { UserMovement } from "@fitness/shared";
 import {
   usePersonalRecordsByMovement as usePersonalRecordsByMovementShared,
   type Tables,
@@ -14,7 +13,9 @@ import type { UseQueryResult } from "@tanstack/react-query";
 export function usePersonalRecordsByMovement(
   movementId: string
 ): UseQueryResult<
-  (Tables<"personal_records"> & { user_movement: UserMovement | null })[],
+  (Tables<"personal_records"> & {
+    user_movement: Tables<"user_movements"> | null;
+  })[],
   Error
 > {
   const { user } = useAuth();

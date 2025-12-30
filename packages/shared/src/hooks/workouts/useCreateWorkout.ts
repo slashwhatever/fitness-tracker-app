@@ -1,10 +1,10 @@
-import { useAuth } from "@/lib/auth/AuthProvider";
-import { createClient } from "@/lib/supabase/client";
 import {
   useMutation,
   useQueryClient,
   type UseMutationResult,
 } from "@tanstack/react-query";
+import { useAuth } from "../../lib/auth/AuthProvider";
+import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type Workout, type WorkoutInsert } from "./types";
 
 /**
@@ -48,12 +48,12 @@ export function useCreateWorkout(): UseMutationResult<
       if (error) throw error;
       return data;
     },
-    onMutate: async (newWorkout) => {
-      if (!user?.id) return;
+    onMutate: async (newWorkout): Promise<{ previousWorkouts?: Workout[] }> => {
+      if (!user?.id) return { previousWorkouts: undefined };
 
       await queryClient.cancelQueries({ queryKey: workoutKeys.list(user.id) });
 
-      const previousWorkouts = queryClient.getQueryData(
+      const previousWorkouts = queryClient.getQueryData<Workout[]>(
         workoutKeys.list(user.id)
       );
 
@@ -65,14 +65,18 @@ export function useCreateWorkout(): UseMutationResult<
         updated_at: new Date().toISOString(),
       };
 
-      queryClient.setQueryData(workoutKeys.list(user.id), (old: any[]) => [
-        optimisticWorkout,
-        ...(old || []),
-      ]);
+      queryClient.setQueryData(
+        workoutKeys.list(user.id),
+        (old: Workout[] | undefined) => [optimisticWorkout, ...(old || [])]
+      );
 
       return { previousWorkouts };
     },
-    onError: (err, newWorkout, context: any) => {
+    onError: (
+      err,
+      newWorkout,
+      context: { previousWorkouts?: Workout[] } | undefined
+    ) => {
       if (user?.id) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),

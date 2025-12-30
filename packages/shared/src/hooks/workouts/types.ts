@@ -2,7 +2,7 @@ import type {
   Tables,
   TablesInsert,
   TablesUpdate,
-} from "../types/database.types";
+} from "../../types/database.types";
 
 export type Workout = Tables<"workouts">;
 export type WorkoutInsert = TablesInsert<"workouts">;

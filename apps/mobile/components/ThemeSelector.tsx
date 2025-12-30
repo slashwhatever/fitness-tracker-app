@@ -1,4 +1,4 @@
-import { useUpdateUserProfile, useUserProfile } from "@fitness/shared";
+import { useUpdateUserProfile, useUserProfile } from "@hooks/useUserProfile";
 import { useColorScheme } from "nativewind";
 import { Text, TouchableOpacity, View } from "react-native";
 

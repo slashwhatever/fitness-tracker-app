@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/client";
-import { isSafeForQueries } from "@/lib/utils/validation";
 import type { QueryData } from "@supabase/supabase-js";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
+import { createClient } from "../../lib/supabase/client";
+import { isSafeForQueries } from "../../lib/utils/validation";
 import { workoutKeys, type Workout } from "./types";
 
 /**

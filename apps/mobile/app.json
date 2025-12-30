@@ -37,7 +37,9 @@
       "router": {},
       "eas": {
         "projectId": "382dd99c-ca03-49cd-aef9-70c1b2debae8"
-      }
+      },
+      "EXPO_PUBLIC_SUPABASE_URL": "https://pvfimysvoikizuemevez.supabase.co",
+      "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_ZL_csPkP2zJ1A7I1SNzs2w_2YdXrJcx"
     }
   }
 }
