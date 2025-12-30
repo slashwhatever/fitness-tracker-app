@@ -1,11 +1,15 @@
+import { AddMovementSheet } from "@/components/AddMovementSheet";
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
 import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
+import { createClient } from "@/lib/supabase/client";
 import { formatLastSetDate } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useMovementLastSets } from "@hooks/useMovementLastSets";
 import {
+  useAddMovementsToWorkout,
+  useCreateUserMovement,
   useDeleteWorkoutMovement,
   useWorkoutMovements,
 } from "@hooks/useMovements";
@@ -17,7 +21,7 @@ import {
   useWorkout,
 } from "@hooks/useWorkouts";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Dumbbell, MoreVertical } from "lucide-react-native";
+import { Dumbbell, MoreVertical, Plus } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -52,6 +56,10 @@ export default function WorkoutDetailScreen() {
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [workoutActionSheetVisible, setWorkoutActionSheetVisible] =
     useState(false);
+  const [addMovementSheetVisible, setAddMovementSheetVisible] = useState(false);
+
+  const createUserMovementMutation = useCreateUserMovement();
+  const addMovementsBatch = useAddMovementsToWorkout();
 
   const loading = workoutLoading || movementsLoading;
 
@@ -99,33 +107,17 @@ export default function WorkoutDetailScreen() {
   const handleDeleteMovement = () => {
     if (!selectedMovement) return;
 
-    Alert.alert(
-      "Remove Exercise",
-      "Are you sure you want to remove this exercise from the workout?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    deleteMovementMutation.mutate(
+      {
+        workoutMovementId: selectedMovement.id,
+        workoutId: id,
+      },
+      {
+        onSuccess: () => {
+          setActionSheetVisible(false);
+          setSelectedMovement(null);
         },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: () => {
-            deleteMovementMutation.mutate(
-              {
-                workoutMovementId: selectedMovement.id,
-                workoutId: id,
-              },
-              {
-                onSuccess: () => {
-                  setActionSheetVisible(false);
-                  setSelectedMovement(null);
-                },
-              }
-            );
-          },
-        },
-      ]
+      }
     );
   };
 
@@ -140,6 +132,111 @@ export default function WorkoutDetailScreen() {
       router.push(
         `/workout/${id}/movement/${selectedMovement.user_movement.id}/settings`
       );
+    }
+  };
+
+  const handleAddMovements = async (movementIds: string[]) => {
+    try {
+      // Collect data for optimistic updates
+      const userMovementIds: string[] = [];
+      const userMovementsForOptimistic: any[] = [];
+      const { data: templates } = await createClient()
+        .from("movement_templates")
+        .select(
+          `
+          id,
+          name,
+          instructions,
+          tracking_type_id,
+          experience_level,
+          movement_template_muscle_groups(
+            muscle_groups(display_name)
+          ),
+          tracking_types!inner(name)
+        `
+        )
+        .in("id", movementIds);
+
+      for (const movementId of movementIds) {
+        // Check if this is already a user movement
+        const existingUserMovement = movements?.find(
+          (m) => m.user_movement_id === movementId
+        );
+
+        if (existingUserMovement) {
+          userMovementIds.push(movementId);
+          // Add existing user movement data for optimistic update
+          if (existingUserMovement.user_movement) {
+            userMovementsForOptimistic.push(existingUserMovement.user_movement);
+          }
+        } else {
+          // It's a template - find the template data
+          const template = templates?.find((t) => t.id === movementId);
+
+          if (template) {
+            // Create user movement with template data (copy-on-first-use)
+            const muscleGroups =
+              template.movement_template_muscle_groups
+                ?.map((mtmg: any) => mtmg.muscle_groups?.display_name)
+                .filter(Boolean) || [];
+
+            const newUserMovement =
+              await createUserMovementMutation.mutateAsync({
+                template_id: null, // Copy-on-first-use: break template link
+                original_template_id: template.id, // Track provenance
+                name: template.name,
+                tracking_type_id: template.tracking_type_id,
+                experience_level: template.experience_level,
+                personal_notes: template.instructions,
+                muscle_groups: muscleGroups,
+              });
+            userMovementIds.push(newUserMovement.id);
+
+            // Build optimistic user movement data from template
+            userMovementsForOptimistic.push({
+              id: newUserMovement.id,
+              name: template.name,
+              personal_notes: template.instructions,
+              tracking_type: template.tracking_types?.name || "weight",
+              tracking_type_id: template.tracking_type_id,
+              experience_level: template.experience_level,
+              muscle_groups: muscleGroups,
+              user_id: newUserMovement.user_id,
+              created_at: newUserMovement.created_at,
+              updated_at: newUserMovement.updated_at,
+              template_id: null,
+              original_template_id: template.id,
+              custom_rest_timer: null,
+              last_used_at: null,
+              manual_1rm: null,
+              migrated_from_template: false,
+              migration_date: null,
+              tags: null,
+            });
+          } else {
+            // It's a user movement not in the workout yet
+            userMovementIds.push(movementId);
+          }
+        }
+      }
+
+      // Add all movements to workout
+      if (userMovementIds.length > 0) {
+        const startingOrderIndex = movements?.length || 0;
+        const workoutMovements = userMovementIds.map((umId, index) => ({
+          workout_id: id,
+          user_movement_id: umId,
+          order_index: startingOrderIndex + index,
+        }));
+
+        await addMovementsBatch.mutateAsync({
+          workoutMovements,
+          userMovementsForOptimistic,
+        });
+      }
+    } catch (error) {
+      console.error("Error adding movements:", error);
+      Alert.alert("Error", "Failed to add movements to workout");
     }
   };
 
@@ -180,9 +277,11 @@ export default function WorkoutDetailScreen() {
   const renderMovement = ({ item }: { item: any }) => (
     <TouchableOpacity
       className="bg-card p-4 rounded-2xl border border-border mb-3"
-      onPress={() =>
-        router.push(`/workout/${id}/movement/${item.user_movement.id}`)
-      }
+      onPress={() => {
+        if (item.user_movement?.id) {
+          router.push(`/workout/${id}/movement/${item.user_movement.id}`);
+        }
+      }}
     >
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center flex-1">
@@ -194,14 +293,18 @@ export default function WorkoutDetailScreen() {
               {item.user_movement?.name}
             </Text>
             <Text className="text-slate-500 dark:text-gray-400 text-sm">
-              {getLastSetDate(item.user_movement.id)}
+              {item.user_movement?.id
+                ? getLastSetDate(item.user_movement.id)
+                : "No sets"}
             </Text>
           </View>
         </View>
         <TouchableOpacity
           onPress={(e) => {
             e.stopPropagation();
-            handleOpenActionSheet(item);
+            if (item.user_movement) {
+              handleOpenActionSheet(item);
+            }
           }}
           className="p-2"
         >
@@ -263,14 +366,36 @@ export default function WorkoutDetailScreen() {
             </View>
           }
           ListEmptyComponent={
-            <View className="items-center justify-center py-20 bg-card rounded-2xl border border-dashed border-slate-300 dark:border-gray-700">
-              <Text className="text-slate-500 dark:text-gray-500 text-lg mb-2">
-                No movements added
-              </Text>
-              <TouchableOpacity className="bg-primary-500 px-4 py-2 rounded-full mt-2">
-                <Text className="text-white font-semibold">+ Add Movement</Text>
+            <TouchableOpacity
+              className="bg-transparent p-8 rounded-2xl border-2 border-dashed border-slate-300 dark:border-gray-600"
+              onPress={() => setAddMovementSheetVisible(true)}
+            >
+              <View className="items-center">
+                <View className="h-16 w-16 rounded-full bg-primary-500/10 items-center justify-center mb-4">
+                  <Plus size={32} color="#6366f1" />
+                </View>
+                <Text className="text-slate-500 dark:text-gray-400 font-medium text-lg">
+                  Add your first movement
+                </Text>
+              </View>
+            </TouchableOpacity>
+          }
+          ListFooterComponent={
+            movements && movements.length > 0 ? (
+              <TouchableOpacity
+                className="bg-transparent p-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-gray-600 mb-3"
+                onPress={() => setAddMovementSheetVisible(true)}
+              >
+                <View className="flex-row items-center">
+                  <View className="h-10 w-10 rounded-full bg-primary-500/10 items-center justify-center mr-3">
+                    <Plus size={20} color="#6366f1" />
+                  </View>
+                  <Text className="text-slate-500 dark:text-gray-400 font-medium text-base">
+                    Add a movement
+                  </Text>
+                </View>
               </TouchableOpacity>
-            </View>
+            ) : null
           }
         />
       </View>
@@ -289,6 +414,14 @@ export default function WorkoutDetailScreen() {
         onSelect={handleWorkoutAction}
         workoutName={workout?.name || ""}
         isArchived={workout?.archived || false}
+      />
+
+      <AddMovementSheet
+        visible={addMovementSheetVisible}
+        onClose={() => setAddMovementSheetVisible(false)}
+        onAddMovements={handleAddMovements}
+        workoutId={id}
+        existingMovementIds={movements?.map((m) => m.user_movement_id) || []}
       />
     </View>
   );

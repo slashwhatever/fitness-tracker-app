@@ -1,5 +1,6 @@
-import { Pencil, Trash2 } from "lucide-react-native";
+import { Pencil } from "lucide-react-native";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
 
 interface MovementActionSheetProps {
   visible: boolean;
@@ -42,18 +43,15 @@ export function MovementActionSheet({
             className="flex-row items-center p-4 bg-background/50 rounded-xl gap-4"
           >
             <Pencil size={20} color="green" />
-            <Text className="text-foreground text-lg font-medium">
-              Edit
-            </Text>
+            <Text className="text-foreground text-lg font-medium">Edit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={onDelete}
-            className="flex-row items-center p-4 bg-red-500/10 rounded-xl gap-4"
-          >
-            <Trash2 size={20} color="#ef4444" />
-            <Text className="text-red-500 text-lg font-medium">Delete</Text>
-          </TouchableOpacity>
+          <TimedConfirmDeleteButton
+            onConfirm={() => {
+              onDelete();
+              onClose();
+            }}
+          />
         </View>
 
         {/* Cancel */}
@@ -61,9 +59,7 @@ export function MovementActionSheet({
           onPress={onClose}
           className="mx-4 p-4 bg-background rounded-xl items-center"
         >
-          <Text className="text-foreground font-semibold text-lg">
-            Cancel
-          </Text>
+          <Text className="text-foreground font-semibold text-lg">Cancel</Text>
         </TouchableOpacity>
       </View>
     </Modal>
