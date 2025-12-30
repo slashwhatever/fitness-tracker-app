@@ -59,39 +59,45 @@ export default function HomeScreen() {
 
         {/* Quick Stats Card */}
         <View
-          className="mb-6 rounded-3xl bg-primary-500 mx-1"
+          className="mb-6 rounded-xl bg-primary-500"
           style={{
             elevation: 8,
             shadowColor: "#4f46e5",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
-            shadowRadius: 4.65,
+            shadowRadius: 8,
+            borderRadius: 12,
           }}
         >
-          <LinearGradient
-            colors={["#6366f1", "#4f46e5", "#4338ca"]}
-            className="rounded-3xl p-6"
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <View
+            style={{ borderRadius: 12, overflow: "hidden" }}
+            className="rounded-xl"
           >
-            <Text className="text-indigo-100 font-medium mb-1">
-              Weekly Volume
-            </Text>
-            <Text className="text-4xl font-bold text-white mb-4">
-              {stats ? `${formatVolume(stats.weekly_volume)} kg` : "0 kg"}
-            </Text>
-            <View className="flex-row space-x-2">
-              <View className="bg-white/20 px-3 py-1 rounded-full">
-                <Text className="text-white text-xs font-medium">
-                  {stats?.weekly_volume_change !== undefined
-                    ? `${stats.weekly_volume_change >= 0 ? "↑" : "↓"} ${Math.abs(
-                        stats.weekly_volume_change
-                      )}% vs last week`
-                    : "-"}
-                </Text>
+            <LinearGradient
+              colors={["#6366f1", "#4f46e5", "#4338ca"]}
+              className="p-6"
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text className="text-indigo-100 font-medium mb-1">
+                Weekly Volume
+              </Text>
+              <Text className="text-4xl font-bold text-white mb-4">
+                {stats ? `${formatVolume(stats.weekly_volume)} kg` : "0 kg"}
+              </Text>
+              <View className="flex-row space-x-2">
+                <View className="bg-white/20 px-3 py-1 rounded-full">
+                  <Text className="text-white text-xs font-medium">
+                    {stats?.weekly_volume_change !== undefined
+                      ? `${stats.weekly_volume_change >= 0 ? "↑" : "↓"} ${Math.abs(
+                          stats.weekly_volume_change
+                        )}% vs last week`
+                      : "-"}
+                  </Text>
+                </View>
               </View>
-            </View>
-          </LinearGradient>
+            </LinearGradient>
+          </View>
         </View>
 
         <Text className="text-lg font-bold text-foreground mb-4">

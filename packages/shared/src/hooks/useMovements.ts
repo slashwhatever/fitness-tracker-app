@@ -125,6 +125,7 @@ export function useUserMovements(
           custom_rest_timer,
           last_used_at,
           manual_1rm,
+          customized_at,
           migrated_from_template,
           migration_date,
           original_template_id,
@@ -167,6 +168,7 @@ export function useUserMovements(
             movement.personal_notes || template?.instructions || null,
           experience_level:
             movement.experience_level || template?.experience_level || null,
+          customized_at: movement.customized_at, // Include new field
           tracking_type:
             movement.tracking_types?.name || ("weight" as TrackingTypeName),
           muscle_groups:
@@ -206,6 +208,7 @@ async function fetchUserMovement(
       custom_rest_timer,
       last_used_at,
       manual_1rm,
+      customized_at,
       migrated_from_template,
       migration_date,
       original_template_id,
@@ -248,6 +251,7 @@ async function fetchUserMovement(
       transformedData.personal_notes || template?.instructions || null,
     experience_level:
       transformedData.experience_level || template?.experience_level || null,
+    customized_at: transformedData.customized_at, // Use database value
     tracking_type:
       transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
     muscle_groups:
@@ -306,6 +310,7 @@ export function useWorkoutMovements(
             custom_rest_timer,
             last_used_at,
             manual_1rm,
+            customized_at,
             migrated_from_template,
             migration_date,
             original_template_id,
@@ -353,6 +358,7 @@ export function useWorkoutMovements(
                   um.personal_notes || template?.instructions || null,
                 experience_level:
                   um.experience_level || template?.experience_level || null,
+                customized_at: um.customized_at, // Include new field
                 tracking_type:
                   um.tracking_types?.name || ("weight" as TrackingTypeName),
                 muscle_groups:
