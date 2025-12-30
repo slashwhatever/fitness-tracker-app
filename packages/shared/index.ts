@@ -1,6 +1,7 @@
 // Export refactored hooks with dependency injection
 export type { HookDependencies } from "./src/hooks/types";
 export * from "./src/hooks/useBackgroundSync";
+export * from "./src/hooks/useHomeStats";
 export * from "./src/hooks/useMovementLastSets";
 export * from "./src/hooks/usePersonalRecords";
 export * from "./src/hooks/useSets";

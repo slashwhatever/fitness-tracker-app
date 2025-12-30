@@ -174,7 +174,7 @@ export default function WorkoutDetailScreen() {
           const template = templates?.find((t) => t.id === movementId);
 
           if (template) {
-            // Create user movement with template data (copy-on-first-use)
+            // Create user movement with template link (Hybrid approach)
             const muscleGroups =
               template.movement_template_muscle_groups
                 ?.map((mtmg: any) => mtmg.muscle_groups?.display_name)
@@ -182,12 +182,10 @@ export default function WorkoutDetailScreen() {
 
             const newUserMovement =
               await createUserMovementMutation.mutateAsync({
-                template_id: null, // Copy-on-first-use: break template link
+                template_id: template.id, // HYBRID: Keep template link!
                 original_template_id: template.id, // Track provenance
-                name: template.name,
+                name: template.name, // Required field - will be overridden by template data in queries
                 tracking_type_id: template.tracking_type_id,
-                experience_level: template.experience_level,
-                personal_notes: template.instructions,
                 muscle_groups: muscleGroups,
               });
             userMovementIds.push(newUserMovement.id);
@@ -195,8 +193,8 @@ export default function WorkoutDetailScreen() {
             // Build optimistic user movement data from template
             userMovementsForOptimistic.push({
               id: newUserMovement.id,
-              name: template.name,
-              personal_notes: template.instructions,
+              name: template.name, // Name is still needed for optimistic UI
+              personal_notes: template.instructions, // Notes are still needed for optimistic UI
               tracking_type: template.tracking_types?.name || "weight",
               tracking_type_id: template.tracking_type_id,
               experience_level: template.experience_level,
@@ -204,7 +202,7 @@ export default function WorkoutDetailScreen() {
               user_id: newUserMovement.user_id,
               created_at: newUserMovement.created_at,
               updated_at: newUserMovement.updated_at,
-              template_id: null,
+              template_id: template.id, // Keep link
               original_template_id: template.id,
               custom_rest_timer: null,
               last_used_at: null,

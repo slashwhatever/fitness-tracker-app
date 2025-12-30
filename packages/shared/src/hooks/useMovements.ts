@@ -99,7 +99,7 @@ export function useMovementTemplates(
   });
 }
 
-// Get all user movements
+// Get all user movements (with COALESCE for Hybrid approach)
 export function useUserMovements(
   deps: HookDependencies
 ): UseQueryResult<UserMovement[], Error> {
@@ -110,7 +110,8 @@ export function useUserMovements(
     queryFn: async () => {
       if (!user?.id) return [];
 
-      // Optimized query: use simpler joins for better performance
+      // HYBRID APPROACH: LEFT JOIN with movement_templates to fetch template data
+      // Use COALESCE to fall back to template values when user hasn't customized
       const query = supabase
         .from("user_movements")
         .select(
@@ -134,6 +135,15 @@ export function useUserMovements(
           tracking_types!inner(name),
           user_movement_muscle_groups(
             muscle_groups(name, display_name)
+          ),
+          movement_templates(
+            id,
+            name,
+            instructions,
+            experience_level,
+            movement_template_muscle_groups(
+              muscle_groups(name, display_name)
+            )
           )
         `
         )
@@ -145,16 +155,31 @@ export function useUserMovements(
       const { data, error } = await query;
       if (error) throw error;
 
-      // Transform the data to include muscle_groups array and tracking_type
-      return (data as QueryResult).map((movement) => ({
-        ...movement,
-        tracking_type:
-          movement.tracking_types?.name || ("weight" as TrackingTypeName),
-        muscle_groups:
-          movement.user_movement_muscle_groups
-            ?.map((ummg) => ummg.muscle_groups?.display_name)
-            .filter((name): name is string => Boolean(name)) || [],
-      })) as UserMovement[];
+      // Transform the data with COALESCE logic
+      return (data as QueryResult).map((movement) => {
+        const template = movement.movement_templates;
+
+        return {
+          ...movement,
+          // COALESCE: Use user value if set, otherwise fall back to template
+          name: movement.name || template?.name || "",
+          personal_notes:
+            movement.personal_notes || template?.instructions || null,
+          experience_level:
+            movement.experience_level || template?.experience_level || null,
+          tracking_type:
+            movement.tracking_types?.name || ("weight" as TrackingTypeName),
+          muscle_groups:
+            movement.user_movement_muscle_groups &&
+            movement.user_movement_muscle_groups.length > 0
+              ? movement.user_movement_muscle_groups
+                  ?.map((ummg) => ummg.muscle_groups?.display_name)
+                  .filter((name): name is string => Boolean(name)) || []
+              : template?.movement_template_muscle_groups
+                  ?.map((mtmg) => mtmg.muscle_groups?.display_name)
+                  .filter((name): name is string => Boolean(name)) || [],
+        };
+      }) as UserMovement[];
     },
     enabled: !!user?.id,
     // User movements change occasionally - moderate caching
@@ -163,7 +188,7 @@ export function useUserMovements(
   });
 }
 
-// Helper to fetch and transform a single user movement
+// Helper to fetch and transform a single user movement (with COALESCE for Hybrid approach)
 async function fetchUserMovement(
   supabase: SupabaseClient<Database>,
   movementId: string
@@ -191,6 +216,15 @@ async function fetchUserMovement(
       tracking_types!inner(name),
       user_movement_muscle_groups(
         muscle_groups(name, display_name)
+      ),
+      movement_templates(
+        id,
+        name,
+        instructions,
+        experience_level,
+        movement_template_muscle_groups(
+          muscle_groups(name, display_name)
+        )
       )
     `
     )
@@ -202,16 +236,29 @@ async function fetchUserMovement(
   const { data, error } = await query;
   if (error) throw error;
 
-  // Transform the data to include muscle_groups array and tracking_type
+  // Transform the data with COALESCE logic
   const transformedData = data as QueryResult;
+  const template = transformedData.movement_templates;
+
   return {
     ...transformedData,
+    // COALESCE: Use user value if set, otherwise fall back to template
+    name: transformedData.name || template?.name || "",
+    personal_notes:
+      transformedData.personal_notes || template?.instructions || null,
+    experience_level:
+      transformedData.experience_level || template?.experience_level || null,
     tracking_type:
       transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
     muscle_groups:
-      transformedData.user_movement_muscle_groups
-        ?.map((ummg) => ummg.muscle_groups?.display_name)
-        .filter((name): name is string => Boolean(name)) || [],
+      transformedData.user_movement_muscle_groups &&
+      transformedData.user_movement_muscle_groups.length > 0
+        ? transformedData.user_movement_muscle_groups
+            ?.map((ummg) => ummg.muscle_groups?.display_name)
+            .filter((name): name is string => Boolean(name)) || []
+        : template?.movement_template_muscle_groups
+            ?.map((mtmg) => mtmg.muscle_groups?.display_name)
+            .filter((name): name is string => Boolean(name)) || [],
   } as UserMovement;
 }
 
@@ -229,7 +276,7 @@ export function useUserMovement(
   });
 }
 
-// Get workout movements
+// Get workout movements (with COALESCE for Hybrid approach)
 export function useWorkoutMovements(
   workoutId: string,
   deps: HookDependencies
@@ -269,6 +316,15 @@ export function useWorkoutMovements(
             tracking_types!inner(name),
             user_movement_muscle_groups(
               muscle_groups(name, display_name)
+            ),
+            movement_templates(
+              id,
+              name,
+              instructions,
+              experience_level,
+              movement_template_muscle_groups(
+                muscle_groups(name, display_name)
+              )
             )
           )
         `
@@ -281,22 +337,37 @@ export function useWorkoutMovements(
       const { data, error } = await query;
       if (error) throw error;
 
-      // Transform the data to include muscle_groups and tracking_type for user_movements
-      return (data as QueryResult).map((workoutMovement) => ({
-        ...workoutMovement,
-        user_movement: workoutMovement.user_movements
-          ? ({
-              ...workoutMovement.user_movements,
-              tracking_type:
-                workoutMovement.user_movements.tracking_types?.name ||
-                ("weight" as TrackingTypeName),
-              muscle_groups:
-                workoutMovement.user_movements.user_movement_muscle_groups
-                  ?.map((ummg) => ummg.muscle_groups?.display_name)
-                  .filter((name): name is string => Boolean(name)) || [],
-            } as UserMovement)
-          : null,
-      }));
+      // Transform the data with COALESCE logic for user_movements
+      return (data as QueryResult).map((workoutMovement) => {
+        const um = workoutMovement.user_movements;
+        const template = um?.movement_templates;
+
+        return {
+          ...workoutMovement,
+          user_movement: um
+            ? ({
+                ...um,
+                // COALESCE: Use user value if set, otherwise fall back to template
+                name: um.name || template?.name || "",
+                personal_notes:
+                  um.personal_notes || template?.instructions || null,
+                experience_level:
+                  um.experience_level || template?.experience_level || null,
+                tracking_type:
+                  um.tracking_types?.name || ("weight" as TrackingTypeName),
+                muscle_groups:
+                  um.user_movement_muscle_groups &&
+                  um.user_movement_muscle_groups.length > 0
+                    ? um.user_movement_muscle_groups
+                        ?.map((ummg) => ummg.muscle_groups?.display_name)
+                        .filter((name): name is string => Boolean(name)) || []
+                    : template?.movement_template_muscle_groups
+                        ?.map((mtmg) => mtmg.muscle_groups?.display_name)
+                        .filter((name): name is string => Boolean(name)) || [],
+              } as UserMovement)
+            : null,
+        };
+      });
     },
     enabled: isSafeForQueries(workoutId),
   });
@@ -480,7 +551,88 @@ export function useUpdateUserMovement(
     }) => {
       if (!user?.id) throw new Error("User not authenticated");
 
-      const { muscle_groups, ...movementUpdates } = updates;
+      // HYBRID APPROACH: Field-level breaking logic
+      // Define which fields are "identity" (breaking) vs "metadata" (non-breaking)
+      const IDENTITY_FIELDS = [
+        "name",
+        "tracking_type_id",
+        "experience_level",
+        "muscle_groups", // Custom field, but affects identity
+      ];
+
+      // Check if user is editing an identity field
+      const editingIdentityField = Object.keys(updates).some((key) =>
+        IDENTITY_FIELDS.includes(key)
+      );
+
+      // Fetch current movement to check if it has a template link
+      const currentMovement = await fetchUserMovement(supabase, id);
+
+      let finalUpdates = updates;
+
+      // If editing identity field AND movement has template link, break the link
+      if (editingIdentityField && currentMovement.template_id) {
+        console.log(
+          `Breaking template link for movement ${id} - editing identity field`
+        );
+
+        // Fetch template data to copy before breaking link
+        const { data: template } = await supabase
+          .from("movement_templates")
+          .select(
+            `
+            id,
+            name,
+            instructions,
+            experience_level,
+            movement_template_muscle_groups(
+              muscle_groups(display_name)
+            )
+          `
+          )
+          .eq("id", currentMovement.template_id)
+          .single();
+
+        if (template) {
+          // Copy all template data before breaking link
+          const templateMuscleGroups =
+            template.movement_template_muscle_groups
+              ?.map(
+                (mtmg: { muscle_groups?: { display_name?: string } }) =>
+                  mtmg.muscle_groups?.display_name
+              )
+              .filter((name): name is string => Boolean(name)) || [];
+
+          finalUpdates = {
+            // Copy current template values
+            name: currentMovement.name || template.name,
+            experience_level:
+              currentMovement.experience_level || template.experience_level,
+            personal_notes:
+              currentMovement.personal_notes || template.instructions,
+            // Keep existing user metadata
+            custom_rest_timer: currentMovement.custom_rest_timer,
+            manual_1rm: currentMovement.manual_1rm,
+            tags: currentMovement.tags,
+            // Break the template link
+            template_id: null,
+            // Apply user's edits on top
+            ...updates,
+          };
+
+          // Handle muscle groups separately if they're being edited
+          if (updates.muscle_groups === undefined) {
+            // Not editing muscle groups, so copy from template if user hasn't customized
+            finalUpdates.muscle_groups =
+              currentMovement.muscle_groups &&
+              currentMovement.muscle_groups.length > 0
+                ? currentMovement.muscle_groups
+                : templateMuscleGroups;
+          }
+        }
+      }
+
+      const { muscle_groups, ...movementUpdates } = finalUpdates;
 
       // Don't send tracking_type to database, it only has tracking_type_id
       // Don't send tracking_type to database, it only has tracking_type_id
