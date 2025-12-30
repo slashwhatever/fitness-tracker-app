@@ -22,7 +22,12 @@ export function ThemeSelector() {
   const isDark = colorScheme === "dark";
 
   return (
-    <View className="flex-row rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+    <View
+      className="flex-row rounded-lg p-1"
+      style={{
+        backgroundColor: isDark ? "#1e293b" : "#f1f5f9", // slate-800 : slate-100
+      }}
+    >
       {options.map((option) => {
         const isActive = currentTheme === option.value;
         const activeBg = isDark ? "#475569" : "#ffffff"; // slate-600 : white
