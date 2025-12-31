@@ -1,5 +1,7 @@
+import { RestTimer } from "@/components/RestTimer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
+import { RestTimerProvider } from "@fitness/shared";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Slot } from "expo-router";
@@ -41,10 +43,13 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AuthProvider>
           <ThemeProvider>
-            <View className="flex-1 bg-white dark:bg-slate-900">
-              <StatusBar style="auto" />
-              <AppContent />
-            </View>
+            <RestTimerProvider>
+              <View className="flex-1 bg-white dark:bg-slate-900">
+                <StatusBar style="auto" />
+                <AppContent />
+                <RestTimer />
+              </View>
+            </RestTimerProvider>
           </ThemeProvider>
         </AuthProvider>
       </SafeAreaProvider>

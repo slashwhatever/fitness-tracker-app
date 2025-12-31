@@ -18,7 +18,9 @@
   "submit": {
     "production": {
       "android": {
-        "track": "internal"
+        "track": "internal",
+        "serviceAccountKeyPath": "/Users/james/Downloads/logset-482701-88dc4af37cdc.json",
+        "releaseStatus": "draft"
       }
     }
   }

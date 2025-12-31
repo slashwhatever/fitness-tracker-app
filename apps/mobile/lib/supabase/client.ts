@@ -4,6 +4,7 @@ import {
   createClient as createSupabaseClient,
   SupabaseClient,
 } from "@supabase/supabase-js";
+import { Platform } from "react-native";
 
 export type { Database } from "@fitness/shared";
 
@@ -14,7 +15,11 @@ export function createClient() {
     return client;
   }
 
-  const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const originUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+  const supabaseUrl =
+    Platform.OS === "android" && originUrl?.includes("localhost")
+      ? originUrl.replace("localhost", "10.0.2.2")
+      : originUrl;
   const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {

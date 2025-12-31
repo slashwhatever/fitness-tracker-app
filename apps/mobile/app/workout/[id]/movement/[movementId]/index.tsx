@@ -183,19 +183,24 @@ export default function MovementDetailScreen() {
     if (!workoutId || !movementId) return;
 
     try {
+      const weightVal = parseFloat(weight);
+      const repsVal = parseInt(reps);
+      const distanceVal = parseFloat(distance);
+      const durationVal = parseInt(duration);
+
       await createSetMutation.mutateAsync({
         workout_id: workoutId,
         user_movement_id: movementId,
-        weight: parseFloat(weight) || 0,
-        reps: parseInt(reps) || 0,
-        distance: parseFloat(distance) || 0,
-        duration: parseInt(duration) || 0,
+        weight: isNaN(weightVal) || weightVal === 0 ? null : weightVal,
+        reps: isNaN(repsVal) || repsVal === 0 ? null : repsVal,
+        distance: isNaN(distanceVal) || distanceVal === 0 ? null : distanceVal,
+        duration: isNaN(durationVal) || durationVal === 0 ? null : durationVal,
         rpe: rpe,
         notes: notes.trim() || undefined,
       });
       // Optional: Give feedback or clear inputs
-    } catch (error) {
-      Alert.alert("Error", "Failed to log set");
+    } catch (error: any) {
+      Alert.alert("Error", `Failed to log set: ${error.message}`);
     }
   };
 

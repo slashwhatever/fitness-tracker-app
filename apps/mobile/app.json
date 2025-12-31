@@ -26,7 +26,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.slashwhatever.logset"
+      "package": "com.slashwhatever.logset",
+      "versionCode": 12
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -40,6 +41,7 @@
       },
       "EXPO_PUBLIC_SUPABASE_URL": "https://pvfimysvoikizuemevez.supabase.co",
       "EXPO_PUBLIC_SUPABASE_ANON_KEY": "sb_publishable_ZL_csPkP2zJ1A7I1SNzs2w_2YdXrJcx"
-    }
+    },
+    "owner": "slashwhatever"
   }
 }

@@ -196,6 +196,7 @@ export function useCreateSet(
       const { data, error } = await supabase
         .from("sets")
         .insert({
+          set_type: "working",
           ...set,
           user_id: user.id,
         })
