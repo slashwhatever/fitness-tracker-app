@@ -149,7 +149,8 @@ export default function WorkoutSettingsScreen() {
           default_rest_timer: defaultRestTimer,
         },
       });
-      router.back();
+      // Explicitly navigate to the workout list as per request
+      router.navigate("/workouts");
     } catch (error) {
       Alert.alert("Error", "Failed to update workout");
     } finally {

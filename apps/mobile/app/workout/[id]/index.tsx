@@ -324,14 +324,6 @@ export default function WorkoutDetailScreen() {
               onBack={() => {
                 router.replace("/workouts");
               }}
-              rightAction={
-                <TouchableOpacity
-                  className="p-2 -mr-2"
-                  onPress={() => setWorkoutActionSheetVisible(true)}
-                >
-                  <MoreVertical size={24} color={colors.text} />
-                </TouchableOpacity>
-              }
             />
           ),
         }}

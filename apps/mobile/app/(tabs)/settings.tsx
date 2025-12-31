@@ -1,6 +1,6 @@
-import { useAuth } from "@/lib/auth/AuthProvider";
 import { Button } from "@/components/Button";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@fitness/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBottomPadding } from "@hooks/useBottomPadding";
@@ -14,10 +14,8 @@ import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
-  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -289,31 +287,6 @@ export default function SettingsScreen() {
                   </TouchableOpacity>
                 )}
               />
-
-              {/* Pin Timer */}
-              <View className="p-4 border-b border-border flex-row justify-between items-center bg-card">
-                <View className="flex-1 pr-4">
-                  <Text className="text-sm font-medium text-foreground">
-                    Pin Timer
-                  </Text>
-                  <Text className="text-xs text-slate-500 dark:text-gray-500 mt-1">
-                    Keep the timer visible at the top of the screen when
-                    scrolling
-                  </Text>
-                </View>
-                <Controller
-                  control={control}
-                  name="timer_pin_enabled"
-                  render={({ field: { value, onChange } }) => (
-                    <Switch
-                      value={value}
-                      onValueChange={onChange}
-                      trackColor={{ false: "#cbd5e1", true: "#6366f1" }}
-                      thumbColor={Platform.OS === "ios" ? "#fff" : "#fff"}
-                    />
-                  )}
-                />
-              </View>
 
               {/* Units */}
               <View className="flex-row">

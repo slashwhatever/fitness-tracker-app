@@ -411,50 +411,66 @@ export function useUpdateSet(
  * Delete a set
  * @param deps - Platform-specific dependencies (Supabase client, user)
  */
-export function useDeleteSet(deps: HookDependencies): UseMutationResult<
-  {
-    setId: string;
-    setData: { user_movement_id: string; workout_id: string | null } | null;
-  },
-  Error,
-  string
-> {
+export function useDeleteSet(deps: HookDependencies) {
   const { user, supabase } = deps;
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (setId: string) => {
-      // Atomic delete and select return
-      const { data, error } = await supabase
+    mutationFn: async (
+      vars: string | { id: string; user_movement_id?: string }
+    ) => {
+      const setId = typeof vars === "string" ? vars : vars.id;
+
+      // 1. Fetch data for invalidation (use maybeSingle to avoid 406 on empty)
+      const { data: setData } = await supabase
         .from("sets")
-        .delete()
-        .eq("id", setId)
         .select("user_movement_id, workout_id")
+        .eq("id", setId)
         .maybeSingle();
 
+      // 2. Delete
+      const { error } = await supabase.from("sets").delete().eq("id", setId);
+
       if (error) throw error;
-      return { setId, setData: data };
+      return {
+        setId,
+        setData,
+        contextMovementId:
+          typeof vars !== "string" ? vars.user_movement_id : undefined,
+      };
     },
-    onMutate: async (setId) => {
+    onMutate: async (vars) => {
       if (!user?.id) return;
+      const setId = typeof vars === "string" ? vars : vars.id;
+      const contextMovementId =
+        typeof vars !== "string" ? vars.user_movement_id : undefined;
 
-      // Find the set in cache to get movement_id for rollback
-      const allSets = queryClient.getQueryData<Set[]>(setKeys.list(user.id));
-      const setToDelete = allSets?.find((s) => s.id === setId);
+      // Try to find the set in cache to get movement_id if not provided
+      let movementIdResult = contextMovementId;
 
-      if (!setToDelete) return;
+      if (!movementIdResult) {
+        const allSets = queryClient.getQueryData<Set[]>(setKeys.list(user.id));
+        const setToDelete = allSets?.find((s) => s.id === setId);
+        if (setToDelete) movementIdResult = setToDelete.user_movement_id;
+      }
 
-      // Cancel any outgoing refetches
+      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: setKeys.list(user.id) });
-      await queryClient.cancelQueries({
-        queryKey: setKeys.byMovement(user.id, setToDelete.user_movement_id),
-      });
+      if (movementIdResult) {
+        await queryClient.cancelQueries({
+          queryKey: setKeys.byMovement(user.id, movementIdResult),
+        });
+      }
 
       // Snapshot the previous values
-      const previousSets = allSets;
-      const previousMovementSets = queryClient.getQueryData<Set[]>(
-        setKeys.byMovement(user.id, setToDelete.user_movement_id)
+      const previousSets = queryClient.getQueryData<Set[]>(
+        setKeys.list(user.id)
       );
+      const previousMovementSets = movementIdResult
+        ? queryClient.getQueryData<Set[]>(
+            setKeys.byMovement(user.id, movementIdResult)
+          )
+        : undefined;
 
       // Optimistically remove the set from main list
       queryClient.setQueryData(
@@ -463,18 +479,20 @@ export function useDeleteSet(deps: HookDependencies): UseMutationResult<
       );
 
       // Optimistically remove from movement-specific list
-      queryClient.setQueryData(
-        setKeys.byMovement(user.id, setToDelete.user_movement_id),
-        (old: Set[] | undefined) => (old || []).filter((s) => s.id !== setId)
-      );
+      if (movementIdResult) {
+        queryClient.setQueryData(
+          setKeys.byMovement(user.id, movementIdResult),
+          (old: Set[] | undefined) => (old || []).filter((s) => s.id !== setId)
+        );
+      }
 
       return {
         previousSets,
         previousMovementSets,
-        movementId: setToDelete.user_movement_id,
+        movementId: movementIdResult,
       };
     },
-    onError: (err, setId, context) => {
+    onError: (err, vars, context) => {
       // Roll back on error
       if (user?.id && context) {
         if (context.previousSets) {
@@ -489,14 +507,29 @@ export function useDeleteSet(deps: HookDependencies): UseMutationResult<
       }
       console.error("Error deleting set:", err);
     },
-    onSuccess: ({ setId, setData }) => {
-      if (user?.id && setData) {
-        // Invalidate movement last sets queries (separate queries that need refetching)
+    onSuccess: ({ setId, setData, contextMovementId }) => {
+      if (user?.id) {
+        const movementId = setData?.user_movement_id || contextMovementId;
+
+        if (movementId) {
+          // Invalidate specific movement list
+          queryClient.invalidateQueries({
+            queryKey: setKeys.byMovement(user.id, movementId),
+          });
+
+          // Invalidate movement last sets queries
+          queryClient.invalidateQueries({
+            queryKey: ["movement-last-set", user.id, movementId],
+          });
+        }
+
+        // Invalidate main list
+        queryClient.invalidateQueries({
+          queryKey: setKeys.list(user.id),
+        });
+
         queryClient.invalidateQueries({
           queryKey: ["movement-last-sets", user.id],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["movement-last-set", user.id, setData.user_movement_id],
         });
 
         // Remove the specific set detail cache

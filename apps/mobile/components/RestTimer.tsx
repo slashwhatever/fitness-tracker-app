@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRestTimer } from "@fitness/shared";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
+import * as Notifications from "expo-notifications";
 import { useColorScheme } from "nativewind";
 import React, { useEffect, useMemo } from "react";
 import {
@@ -18,13 +19,15 @@ import { useThemeColors } from "../hooks/useThemeColors";
 export const REST_TIMER_HEIGHT = 60;
 
 // Configure notifications
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: false,
-//   }),
-// });
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 // Helper helper to format time
 const formatTime = (seconds: number) => {
@@ -56,15 +59,27 @@ export const RestTimer = () => {
     typeof Platform !== "undefined" && Platform.OS === "android";
 
   useEffect(() => {
+    async function requestPermissions() {
+      if (typeof Platform !== "undefined" && Platform.OS !== "web") {
+        await Notifications.requestPermissionsAsync();
+      }
+    }
+    requestPermissions();
+  }, []);
+
+  useEffect(() => {
     if (isCompleted) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      // Notifications.scheduleNotificationAsync({
-      //   content: {
-      //     title: "Rest Finished",
-      //     body: "Get back to work!",
-      //   },
-      //   trigger: null, // Immediate
-      // });
+
+      if (typeof Platform !== "undefined" && Platform.OS !== "web") {
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Rest Finished",
+            body: "Get back to work!",
+          },
+          trigger: null, // Immediate
+        });
+      }
     }
   }, [isCompleted]);
 

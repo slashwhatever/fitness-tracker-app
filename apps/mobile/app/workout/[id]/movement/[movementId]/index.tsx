@@ -210,7 +210,10 @@ export default function MovementDetailScreen() {
     try {
       switch (action) {
         case "delete":
-          await deleteSetMutation.mutateAsync(selectedSet.id);
+          await deleteSetMutation.mutateAsync({
+            id: selectedSet.id,
+            user_movement_id: selectedSet.user_movement_id,
+          });
           break;
         case "duplicate":
           await createSetMutation.mutateAsync({

@@ -640,11 +640,24 @@ export function useUpdateUserMovement(
 
       const { muscle_groups, ...movementUpdates } = finalUpdates;
 
-      // Don't send tracking_type to database, it only has tracking_type_id
+      // Sanitize movementUpdates to ensure no non-column fields are sent
+      // Specifically remove joined fields or computed properties that might have leaked from currentMovement
+      const {
+        tracking_type: _tracking_type, // Exclude joined name string
+        tracking_types: _tracking_types, // Exclude joined relation object
+        movement_templates: _movement_templates, // Exclude joined relation object
+        user_movement_muscle_groups: _user_movement_muscle_groups, // Exclude joined relation object
+        user_id: _user_id, // Don't update user_id
+        created_at: _created_at, // Don't update created_at
+        updated_at: _updated_at, // Don't update updated_at
+        id: _id, // Don't update id
+        ...safeUpdates
+      } = movementUpdates as any;
+
       // Don't send tracking_type to database, it only has tracking_type_id
       const { data, error } = await supabase
         .from("user_movements")
-        .update(movementUpdates)
+        .update(safeUpdates)
         .eq("id", id)
         .select("id")
         .single();
