@@ -1,0 +1,485 @@
+--------- beginning of main
+12-31 15:32:26.045  1757  1757 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+12-31 15:32:26.053  1757  1757 I AndroidRuntime: Using default boot image
+12-31 15:32:26.053  1757  1757 I AndroidRuntime: Leaving lock profiling enabled
+12-31 15:32:26.059  1757  1757 I app_process: Using CollectorTypeCMC GC.
+12-31 15:32:26.133  4525  5304 I NnfpMusicRecognizer: (REDACTED) Finished recognition for region %s and DB version %s with result: %s
+12-31 15:32:26.135  4525  5784 I RecognitionStateHandler: (REDACTED) Dsp model overrides: reloadDetectionModel = [%b] : new squelch = [%s]
+12-31 15:32:26.135  4525  5784 I RecognitionStateHandler: Reconfiguration [%s] Latest:[%s]
+12-31 15:32:26.139  4525  5784 I MusicRecognitionHandler: (REDACTED) Music not recognized. Nearest match (%s): %s.
+12-31 15:32:26.151  4525  5784 I AmbientMusicDetector: (REDACTED) Pipeline run finished, restarting model: %s
+12-31 15:32:26.151  4525  5553 I OnDemandManagerImpl: (REDACTED) Local recognition unsuccessful, should show cloud search? %b, eager prompt? %b, fingerprinter confirmation? %b
+12-31 15:32:26.151  4525  5553 I OnDemandManagerImpl: Showing ondemand prompt.
+12-31 15:32:26.153  4525  5304 I MusicAodManager: (REDACTED) Showing onDemand prompt. Will remember 'music' state for %dms
+12-31 15:32:26.154  4525  5784 I AmbientMusicServiceMana: (REDACTED) Trying to load model %s from %s
+12-31 15:32:26.154  4525  5784 I AmbientMusicServiceMana: (REDACTED) Applying config override: %s
+12-31 15:32:26.156  4525  5784 I SmoothedLatchingClassif: Reconfiguring tflite model.
+12-31 15:32:26.157  4525  5784 I SoundTriggerManagerComp: (REDACTED) Loading model %s
+12-31 15:32:26.166   921 27735 I StHal::Client: ChangeStateTo: client 1 transits from Buffering to ModelUnloaded
+12-31 15:32:26.166   921 27735 I StHal::SoundTriggerHal: UnloadSoundModel: Unload model with handle 1
+12-31 15:32:26.166  1757  1757 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+12-31 15:32:26.167   921  1893 I StHal::SoundTriggerHal: ControlThreadLoop: get update command
+--------- beginning of system
+12-31 15:32:26.168  1697  5191 I SoundTriggerMiddlewareLogging: UNLOAD_MODEL (1)
+12-31 15:32:26.170  1287  1287 D AOC     : F1:MSG: controller.cc, 275: AudioInCtrl: cmd ID: 0x0101, tag: 0x21 [cntr = 4341]
+12-31 15:32:26.170  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x6e (110)
+12-31 15:32:26.170  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x6e (110)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x6d (109)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x6d (109)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x70 (112)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x70 (112)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:MSG: controller.cc, 933: AudioInCtrl: ipc: sound_trigger, cmd ID: 0x0101, tag: 0x21, rc: 0
+12-31 15:32:26.171  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CPM_IPC_HOST: ipc: C-F1-AC, cmd ID: 0x00cb, tag: 0xea, rc: 0
+12-31 15:32:26.171  1287  1287 D AOC     : F1:MSG: controller.cc, 275: AudioInCtrl: cmd ID: 0x0109, tag: 0x22 [cntr = 4342]
+12-31 15:32:26.171  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x72 (114)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x72 (114)
+12-31 15:32:26.171  1287  1287 D AOC     : F1:MSG: controller.cc, 933: AudioInCtrl: ipc: sound_trigger, cmd ID: 0x0109, tag: 0x22, rc: 0
+12-31 15:32:26.171  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CPM_IPC_HOST: ipc: C-F1-AC, cmd ID: 0x00cb, tag: 0xeb, rc: 0
+12-31 15:32:26.176  1757  1757 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+12-31 15:32:26.176  1757  1757 D app_process: u_setTimeZoneFilesDirectory("/apex/com.android.tzdata/etc/tz/versioned/9/icu") succeeded. 
+12-31 15:32:26.176  1757  1757 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt76l.dat
+12-31 15:32:26.177  1757  1757 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+12-31 15:32:26.178  1757  1757 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+12-31 15:32:26.178  1697  3617 W SoundTriggerHelper: Unload error: Attempting unload invalid generic model with id:9f6ad62a-1f0b-11e7-87c5-40a8f03d3f15
+12-31 15:32:26.179  4525  5784 I AmbientMusicServiceMana: Re-starting music detector model.
+12-31 15:32:26.179  1757  1757 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+12-31 15:32:26.185  2832  3074 D TemperatureStateSource: sequence=9856 actualDelay=10748
+12-31 15:32:26.189   921 27735 I StHal::Client: Create: with handle: 1
+12-31 15:32:26.189   921 27735 I StHal::Client: Initialize: model size: 22936
+12-31 15:32:26.192  1287  1287 D AOC     : F1:MSG: controller.cc, 275: AudioInCtrl: cmd ID: 0x0107, tag: 0x23 [cntr = 4343]
+12-31 15:32:26.193  2832  3074 D TemperatureStateSource: Reading temperature: sequence=9857
+12-31 15:32:26.196  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x94 (148)
+12-31 15:32:26.196  1287  1287 D AOC     : F1:MSG: hotword_input_processor.cc, 831: Update size of ambient model as 16384
+12-31 15:32:26.201  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x94 (148)
+12-31 15:32:26.201  1287  1287 D AOC     : F1:MSG: controller.cc, 933: AudioInCtrl: ipc: sound_trigger, cmd ID: 0x0107, tag: 0x23, rc: 0
+12-31 15:32:26.201  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CPM_IPC_HOST: ipc: C-F1-AC, cmd ID: 0x00cb, tag: 0xec, rc: 0
+12-31 15:32:26.201  1287  1287 D AOC     : F1:MSG: controller.cc, 275: AudioInCtrl: cmd ID: 0x0107, tag: 0x24 [cntr = 4344]
+12-31 15:32:26.201  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x94 (148)
+12-31 15:32:26.201  1287  1287 D AOC     : F1:MSG: hotword_input_processor.cc, 831: Update size of ambient model as 22936
+12-31 15:32:26.201  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x94 (148)
+12-31 15:32:26.202  1287  1287 D AOC     : F1:MSG: controller.cc, 933: AudioInCtrl: ipc: sound_trigger, cmd ID: 0x0107, tag: 0x24, rc: 0
+12-31 15:32:26.202  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CPM_IPC_HOST: ipc: C-F1-AC, cmd ID: 0x00cb, tag: 0xed, rc: 0
+12-31 15:32:26.202  1287  1287 D AOC     : F1:MSG: controller.cc, 275: AudioInCtrl: cmd ID: 0x0108, tag: 0x25 [cntr = 4345]
+12-31 15:32:26.202  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x71 (113)
+12-31 15:32:26.202  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 916: Enter InternalLoadMusdetModel
+12-31 15:32:26.202  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 922: Musdet: CRC
+12-31 15:32:26.202  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 933: Musdet: identifier
+12-31 15:32:26.202  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 940: Musdet: model
+12-31 15:32:26.203  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 949: Musdet: interpreter
+12-31 15:32:26.203  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 959: Musdet: tensors
+12-31 15:32:26.206   921 27735 I StHal::Client: ChangeStateTo: client 1 transits from ModelUnloaded to ModelLoaded
+12-31 15:32:26.206   921 27735 I StHal::SoundTriggerHal: LoadModel: Loaded model with handle 1
+12-31 15:32:26.210  1697  3617 I SoundTriggerMiddlewareLogging: LOAD_MODEL ("9f6ad62a-1f0b-11e7-87c5-40a8f03d3f15") -> 1
+12-31 15:32:26.213  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 996: Exit success InternalLoadMusdetModel
+12-31 15:32:26.213  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x71 (113)
+12-31 15:32:26.213  1287  1287 D AOC     : F1:MSG: controller.cc, 933: AudioInCtrl: ipc: sound_trigger, cmd ID: 0x0108, tag: 0x25, rc: 0
+12-31 15:32:26.214  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CPM_IPC_HOST: ipc: C-F1-AC, cmd ID: 0x00cb, tag: 0xee, rc: 0
+12-31 15:32:26.220  1757  1757 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+12-31 15:32:26.221  1757  1757 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+12-31 15:32:26.222  1757  1757 D nativeloader: Load /system/lib64/libmonkey_jni.so using ns default for caller /system/framework/monkey.jar in same partition (is_bridged=0): ok
+12-31 15:32:26.223  1757  1757 W Monkey  : args: [-p, com.slashwhatever.logset, -c, android.intent.category.LAUNCHER, 1]
+12-31 15:32:26.226   921 27735 I StHal::Client: ChangeStateTo: client 1 transits from ModelLoaded to StartDetecting
+12-31 15:32:26.226   921 27735 I StHal::SoundTriggerHal: StartRecognition: Started recognition of client 1 with io_handle 5806
+12-31 15:32:26.227   921  1893 I StHal::SoundTriggerHal: ControlThreadLoop: get update command
+12-31 15:32:26.227  1757  1757 I AconfigPackage: com.android.art.flags is mapped to com.android.art
+12-31 15:32:26.227  1757  1757 I AconfigPackage: com.android.art.rw.flags is mapped to com.android.art
+12-31 15:32:26.227  1757  1757 I AconfigPackage: com.android.libcore is mapped to com.android.art
+12-31 15:32:26.227  1697  3617 I SoundTriggerMiddlewareLogging: START_RECOGNITION (1, RecognitionConfig{captureRequested: true, phraseRecognitionExtras: [], audioCapabilities: 0, data: []}) -> android.os.Binder@fe05c78
+12-31 15:32:26.227  1697  3617 I SoundTriggerHelper: startRecognition successful.
+12-31 15:32:26.228  1757  1757 I AconfigPackage: android.graphics.pdf.flags is mapped to com.android.mediaprovider
+12-31 15:32:26.228  1757  1757 I AconfigPackage: com.android.providers.media.flags is mapped to com.android.mediaprovider
+12-31 15:32:26.228  1757  1757 I AconfigPackage: android.graphics.pdf.flags.readonly is mapped to com.android.mediaprovider
+12-31 15:32:26.228  1697  3617 W SoundTriggerService: error onStart(): Model 9f6ad62a-1f0b-11e7-87c5-40a8f03d3f15 already started
+12-31 15:32:26.228  1757  1757 I AconfigPackage: com.android.wifi.flags is mapped to com.android.wifi
+12-31 15:32:26.228  1757  1757 I AconfigPackage: com.android.permission.flags is mapped to com.android.permission
+12-31 15:32:26.228  1757  1757 I AconfigPackage: com.android.permissioncontroller.flags is mapped to com.android.permission
+12-31 15:32:26.229  1757  1757 I AconfigPackage: android.provider.flags is mapped to com.android.configinfrastructure
+12-31 15:32:26.229  1757  1757 I AconfigPackage: com.android.server.deviceconfig is mapped to com.android.configinfrastructure
+12-31 15:32:26.229  1757  1757 I AconfigPackage: com.android.adservices.ondevicepersonalization.flags is mapped to com.android.ondevicepersonalization
+12-31 15:32:26.229  1757  1757 I AconfigPackage: com.android.os.statsd.flags is mapped to com.android.os.statsd
+12-31 15:32:26.229  1757  1757 I AconfigPackage: com.android.ipsec.flags is mapped to com.android.ipsec
+12-31 15:32:26.230  1757  1757 I AconfigPackage: com.android.nfc.module.flags is mapped to com.android.nfcservices
+12-31 15:32:26.230  1757  1757 I AconfigPackage: android.uprobestats.mainline.flags is mapped to com.android.uprobestats
+12-31 15:32:26.231  1757  1757 I AconfigPackage: com.android.org.conscrypt.flags is mapped to com.android.conscrypt
+12-31 15:32:26.231  1757  1757 I AconfigPackage: com.android.org.conscrypt.net.flags is mapped to com.android.conscrypt
+12-31 15:32:26.231  1287  1287 D AOC     : F1:MSG: controller.cc, 275: AudioInCtrl: cmd ID: 0x0100, tag: 0x26 [cntr = 4346]
+12-31 15:32:26.231  1757  1757 I AconfigPackage: android.media.swcodec.flags is mapped to com.android.media.swcodec
+12-31 15:32:26.231  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1014: Receive cmd: 0x6f (111)
+12-31 15:32:26.231  1287  1287 D AOC     : F1:TRC: hotword_input_processor.cc, 1510: Finished cmd: 0x6f (111)
+12-31 15:32:26.231  1757  1757 I AconfigPackage: com.android.uwb.flags is mapped to com.android.uwb
+12-31 15:32:26.231  1757  1757 I AconfigPackage: com.android.ranging.flags is mapped to com.android.uwb
+12-31 15:32:26.231  1287  1287 D AOC     : F1:MSG: controller.cc, 933: AudioInCtrl: ipc: sound_trigger, cmd ID: 0x0100, tag: 0x26, rc: 0
+12-31 15:32:26.231  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CPM_IPC_HOST: ipc: C-F1-AC, cmd ID: 0x00cb, tag: 0xef, rc: 0
+12-31 15:32:26.231  1757  1757 I AconfigPackage: com.android.appsearch.flags is mapped to com.android.appsearch
+12-31 15:32:26.232  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3474 raw data: VIRTUAL-SKIN:24347.4 VIRTUAL-SKIN-EQ:24347.4 VIRTUAL-SKIN-LEGACY:24137.5 VIRTUAL-SKIN-LEGACY-MODEL-DIFF:-178.773 VIRTUAL-SKIN-LEGACY-SHUTDOWN:0 VIRTUAL-SKIN-MODEL:24316.3 VIRTUAL-SKIN-MODEL-CLAMPED:24316.3 VIRTUAL-SKIN-MODEL-LEGACY-DIFF:178.773 VIRTUAL-SKIN-MODEL-UPDATED:24347.4 VIRTUAL-SKIN-MODEL-UPPER-CLAMPED:24316.3 VIRTUAL-SKIN-SUB-0:23972.6 VIRTUAL-SKIN-SUB-1:24137.5 VIRTUAL-SKIN-SUB-2:23988.1 VIRTUAL-SKIN-SUB-3:24086.5 VIRTUAL-SKIN-SUB-4:24099.2 VT_LEGACY_WEIGHT:0 VT_MODEL_WEIGHT:1 charging_therm:24609 disp0_therm:23000 flash_therm:23773 north_therm:24460 quiet_therm:24343 rfpa_therm:24345 soc_therm:24775 usb_pwr_therm:23175 
+12-31 15:32:26.232  1757  1757 I AconfigPackage: com.android.media.extractor.flags is mapped to com.android.media
+12-31 15:32:26.232  1757  1757 I AconfigPackage: com.android.media.mainline.flags is mapped to com.android.media
+12-31 15:32:26.232  1757  1757 I AconfigPackage: com.android.system.virtualmachine.flags is mapped to com.android.virt
+12-31 15:32:26.232  1757  1757 I AconfigPackage: com.android.adservices.flags is mapped to com.android.adservices
+12-31 15:32:26.232  1757  1757 I AconfigPackage: com.android.sdksandbox.flags is mapped to com.android.adservices
+12-31 15:32:26.233  2832  3074 D TemperatureStateSource: getDeviceTemperatures: sequence=9857 deviceTemperatureType=3 temperatureSource=0 temperatures=[24.347357]
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.tethering.mainline.beta is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: android.net.http is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.tethering.readonly.flags is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: android.net.vcn is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.net.flags is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.tethering.beta.test is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.nearby.flags is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.net.ct.flags is mapped to com.android.tethering
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.net.thread.flags is mapped to com.android.tethering
+12-31 15:32:26.233  2832  3074 D BusinessScope: Enqueuing the block
+12-31 15:32:26.233  1757  1757 I AconfigPackage: android.os.profiling is mapped to com.android.profiling
+12-31 15:32:26.233  1757  1757 I AconfigPackage: android.os.profiling.anomaly.flags is mapped to com.android.profiling
+12-31 15:32:26.233  1757  1757 I AconfigPackage: com.android.cellbroadcastreceiver.flags is mapped to com.android.cellbroadcast
+12-31 15:32:26.234  1757  1757 I AconfigPackage: com.android.icu is mapped to com.android.i18n
+12-31 15:32:26.234  1757  1757 I AconfigPackage: com.android.healthfitness.flags is mapped to com.android.healthfitness
+12-31 15:32:26.235  2832  3140 D BusinessScope: Start running the #20223 block
+12-31 15:32:26.235  2832  3140 D BusinessScope: Enqueuing the block
+12-31 15:32:26.235  4525  5784 I AmbientMusicServiceMana: (REDACTED) Trying to unloading model %s
+12-31 15:32:26.236  2832  3140 D ImpulseStateSource: Notify clients: 10110
+12-31 15:32:26.236  4525  5784 I SoundTriggerManagerComp: (REDACTED) Unloading model %s
+12-31 15:32:26.236  2832  3140 D BusinessScope: Finish running the #20223 block
+12-31 15:32:26.236  2832  3140 D BusinessScope: Start running the #20224 block
+12-31 15:32:26.236  2832  3140 D BusinessScope: Finish running the #20224 block
+12-31 15:32:26.237  2832  3074 D TemperatureStateSource: sequence=9857 waitTime=10000
+12-31 15:32:26.240  1697  6123 W SoundTriggerHelper: Unload error: Attempting unload invalid generic model with id:12caddb1-acdb-4dce-8cb0-2e95a2313aee
+12-31 15:32:26.240  1697  6123 I SoundTriggerService: error onStop(): Model 12caddb1-acdb-4dce-8cb0-2e95a2313aee has no stats available
+12-31 15:32:26.252  1757  1757 I AconfigPackage: com.android.devicelock.flags is mapped to com.android.devicelock
+12-31 15:32:26.253  1757  1757 I AconfigPackage: com.android.bluetooth.flags is mapped to com.android.bt
+12-31 15:32:26.253  1757  1757 I AconfigPackage: com.android.rkpd.flags is mapped to com.android.rkpd
+12-31 15:32:26.254  1757  1757 I AconfigPackage: com.android.adbd.flags is mapped to com.android.adbd
+12-31 15:32:26.254  1757  1757 I AconfigPackage: com.android.crashrecovery.flags is mapped to com.android.crashrecovery
+12-31 15:32:26.254  1757  1757 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+12-31 15:32:26.260  1757  1757 W libc    : Access denied finding property "qemu.sf.lcd_density"
+12-31 15:32:26.260  1757  1757 W libc    : Access denied finding property "qemu.sf.lcd_density"
+12-31 15:32:26.255  1757  1757 W commands.monkey: type=1400 audit(0.0:22634): avc:  denied  { read } for  name="u:object_r:qemu_sf_lcd_density_prop:s0" dev="tmpfs" ino=336 scontext=u:r:shell:s0 tcontext=u:object_r:qemu_sf_lcd_density_prop:s0 tclass=file permissive=0
+12-31 15:32:26.255  1757  1757 W commands.monkey: type=1400 audit(0.0:22635): avc:  denied  { read } for  name="u:object_r:qemu_sf_lcd_density_prop:s0" dev="tmpfs" ino=336 scontext=u:r:shell:s0 tcontext=u:object_r:qemu_sf_lcd_density_prop:s0 tclass=file permissive=0
+12-31 15:32:26.266  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:26.272  4525  5784 I AmbientMusicServiceMana: (REDACTED) Update config: %s Success: %b
+12-31 15:32:26.272  1757  1757 W Monkey  :  arg: "-p"
+12-31 15:32:26.272  1757  1757 W Monkey  :  arg: "com.slashwhatever.logset"
+12-31 15:32:26.272  1757  1757 W Monkey  :  arg: "-c"
+12-31 15:32:26.272  1757  1757 W Monkey  :  arg: "android.intent.category.LAUNCHER"
+12-31 15:32:26.272  1757  1757 W Monkey  :  arg: "1"
+12-31 15:32:26.272  1757  1757 W Monkey  : data="com.slashwhatever.logset"
+12-31 15:32:26.273  1757  1757 W Monkey  : data="android.intent.category.LAUNCHER"
+12-31 15:32:26.273  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:26.276  1697  2512 D EventHub: No input device configuration file found for device 'Monkey touch'.
+12-31 15:32:26.279  1697  2512 I EventHub: usingClockIoctl=true
+12-31 15:32:26.279  1697  2512 I EventHub: New device: id=6, fd=690, path='/dev/input/event3', name='Monkey touch', classes=TOUCH | TOUCH_MT, configuration='', keyLayout='', keyCharacterMap='', builtinKeyboard=false, 
+12-31 15:32:26.280  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:26.281  1697  2512 I InputReader: Disabling Monkey touch (device 6) because the associated viewport is not active
+12-31 15:32:26.281  1697  2512 I InputReader: Device reconfigured: id=6, name='Monkey touch', size 1080x2424, orientation Rotation0, mode DISABLED, display id 0
+12-31 15:32:26.281  1697  2512 I InputReader: Disabling Monkey touch (device 6) because the associated viewport is not active
+12-31 15:32:26.281  1697  2512 I InputReader: Device added: id=6, eventHubId=6, name='Monkey touch', descriptor='e1fe28b90f915c7d1febbd52c1ef84b3c4cbed9f',sources=TOUCHSCREEN
+12-31 15:32:26.291  1697  2512 D WindowManager: Direct invocation of sendNewConfiguration: Display{#0 state=OFF size=1080x2424 ROTATION_0}
+12-31 15:32:26.292  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.293  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.293  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.293  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.294  4490  4490 I PkDeviceHelper: PkDeviceHelper.refreshDevices():87 refreshing devices
+12-31 15:32:26.297  1697  5191 W ActivityManager: registerReceiverWithFeature: no app for null
+12-31 15:32:26.317  1697  6123 W ActivityTaskManager: callingPackage for (uid=2000, pid=1757) has no WPC
+12-31 15:32:26.318  1697  6123 V WindowManager: DesktopModeLaunchParamsModifier: phase= 0 task=null activity=null display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 task null, skipping
+12-31 15:32:26.318  1697  6123 V WindowManager: TaskLaunchParamsModifier:phase=0 task=null activity=null display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449
+12-31 15:32:26.319  1697  6123 V GrammaticalInflectionUtils: AttributionSource: android.content.AttributionSource@e11e9c1 does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+12-31 15:32:26.319  1697  6123 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES
+12-31 15:32:26.320  1697  6123 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE
+12-31 15:32:26.321  1697  6123 V WindowManager: DesktopModeLaunchParamsModifier: phase= 0 task=null activity=ActivityRecord{217761828 u0 com.slashwhatever.logset/.MainActivity display-area-from-current-params=null display-area-for-record=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 task null, skipping
+12-31 15:32:26.321  1697  6123 V WindowManager: TaskLaunchParamsModifier:phase=0 task=null activity=ActivityRecord{217761828 u0 com.slashwhatever.logset/.MainActivity t-1} display-area-from-current-params=null display-area-for-record=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449
+12-31 15:32:26.321  1697  6123 V WindowManager: DesktopModeLaunchParamsModifier: phase= 3 task=Task{c16b22f #7209 type=standard A=10397:com.slashwhatever.logset} activity=ActivityRecord{217761828 u0 com.slashwhatever.logset/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 not entering desktop mode, skipping
+12-31 15:32:26.321  1697  6123 V WindowManager: TaskLaunchParamsModifier:phase=3 task=Task{c16b22f #7209 type=standard A=10397:com.slashwhatever.logset} activity=ActivityRecord{217761828 u0 com.slashwhatever.logset/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 inherit-from-task=fullscreen non-freeform-task-display-area display-area=DefaultTaskDisplayArea@139286449 activity-requested-portrait freeform-size-mismatch=Rect(270, 711 - 811, 1791)
+12-31 15:32:26.322  1697  6123 V WindowManager: DesktopModeLaunchParamsModifier: phase= 3 task=Task{c16b22f #7209 type=standard A=10397:com.slashwhatever.logset} activity=ActivityRecord{217761828 u0 com.slashwhatever.logset/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 not entering desktop mode, skipping
+12-31 15:32:26.322  1697  6123 V WindowManager: TaskLaunchParamsModifier:phase=3 task=Task{c16b22f #7209 type=standard A=10397:com.slashwhatever.logset} activity=ActivityRecord{217761828 u0 com.slashwhatever.logset/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 inherit-from-task=fullscreen non-freeform-task-display-area display-area=DefaultTaskDisplayArea@139286449 activity-requested-portrait freeform-size-mismatch=Rect(270, 711 - 811, 1791)
+12-31 15:32:26.328  1697  6123 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.slashwhatever.logset/.MainActivity} with LAUNCH_SINGLE_TASK from uid 2000 (com.android.shell) (BAL_ALLOW_PERMISSION) result code=3
+12-31 15:32:26.329  1757  1757 I Monkey  : Events injected: 1
+12-31 15:32:26.332  2660  3314 D KeyguardService: setOccluded(false)
+12-31 15:32:26.332  2660  3314 D KeyguardViewMediator: setOccluded(false)
+12-31 15:32:26.332  2660  2660 D KeyguardViewMediator: handleSetOccluded(false)
+12-31 15:32:26.332  2660  2660 D KeyguardViewMediator: KeyguardViewMediator queue processing message: SET_OCCLUDED
+12-31 15:32:26.334  1757  1757 I Monkey  : ## Network stats: elapsed time=18ms (0ms mobile, 0ms wifi, 18ms not connected)
+12-31 15:32:26.335  1757  1757 I app_process: System.exit called, status: 0
+12-31 15:32:26.335  1757  1757 I AndroidRuntime: VM exiting with result code 0.
+12-31 15:32:26.343  2660  2686 D WindowManagerShell: onActivityRestartAttempt: topActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity}, wasVisible=false
+12-31 15:32:26.343  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.344  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.344  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.344  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.344  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.345  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.345  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.345  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.345  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.345  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.345  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.346  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.346  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.346  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.346  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.346  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.348  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:32:26.348  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.348  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.348  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:32:26.350  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.350  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.350  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.350  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.351  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.352  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.353  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.353  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.353  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.353  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.357  1659  1659 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+12-31 15:32:26.357  1659  1659 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+12-31 15:32:26.358  1659  1659 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+12-31 15:32:26.358  1659  1659 W unknown:BridgelessReact: ReactContext.onHostResume()
+12-31 15:32:26.360  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.360  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.361  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.363  1697  2497 D ActivityManager: freezing 9081 com.google.android.apps.turbo
+12-31 15:32:26.372  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+12-31 15:32:26.373  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+12-31 15:32:26.373  1697  2557 D InetDiagMessage: Destroyed live tcp sockets for uids={10121} in 3ms
+12-31 15:32:26.387  1659  1659 W unknown:BridgelessReact: ReactHost{0}.onUserLeaveHint(activity)
+12-31 15:32:26.387  1697  2512 I EventHub: Removing device Monkey touch due to epoll hang-up event.
+12-31 15:32:26.388  1697  2512 I EventHub: Removed device: path=/dev/input/event3 name=Monkey touch id=6 fd=690 classes=TOUCH | TOUCH_MT
+12-31 15:32:26.388  1659  1659 W unknown:BridgelessReact: ReactHost{0}.onHostPause(activity)
+12-31 15:32:26.388  1659  1659 W unknown:BridgelessReact: ReactContext.onHostPause()
+12-31 15:32:26.390  1697  2512 I InputReader: Device removed: id=6, eventHubId=6, name='Monkey touch', descriptor='e1fe28b90f915c7d1febbd52c1ef84b3c4cbed9f', sources=TOUCHSCREEN
+12-31 15:32:26.393  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:26.396  1697  2512 D WindowManager: Direct invocation of sendNewConfiguration: Display{#0 state=OFF size=1080x2424 ROTATION_0}
+12-31 15:32:26.397  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:26.397  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.397  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.397  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.397  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.397  1697  2512 I EventHub: Removing device '/dev/input/event3' due to inotify event
+12-31 15:32:26.397  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:26.398  3017  3017 D TouchInteractionService: disposeEventHandlers: Reason: Initializing input monitor due to: onTrackpadConnected() instance=136613480
+12-31 15:32:26.398  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:32:26.399  3017  3017 D InputMonitorCompat: Input event receiver for monitor (swipe-up-disp0) disposed
+12-31 15:32:26.399  1697  2511 W InputDispatcher: channel '[Gesture Monitor] swipe-up' ~ Consumer closed input channel or an error occurred.  events=0x9
+12-31 15:32:26.399  1697  2511 E InputDispatcher: channel '[Gesture Monitor] swipe-up' ~ Channel is unrecoverably broken and will be disposed!
+12-31 15:32:26.399  3017  3017 D InputMonitorCompat: Input monitor (swipe-up-disp0) disposed
+12-31 15:32:26.403  3017  3017 D InputMonitorCompat: Input monitor (swipe-up-disp0) created
+12-31 15:32:26.403  3017  3017 D InputMonitorCompat: Input event receiver for monitor (swipe-up-disp0) created
+12-31 15:32:26.403  4490  4490 I PkDeviceHelper: PkDeviceHelper.refreshDevices():87 refreshing devices
+12-31 15:32:26.405  1659  1670 W whatever.logset: userfaultfd: MOVE ioctl seems unsupported: Connection timed out
+12-31 15:32:26.406  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:32:26.409  4525  5548 W AiAiAutofill: (REDACTED) On activity pause for %s completing %d sessions with %d remaining.
+12-31 15:32:26.409  1697  6123 W AutofillManagerServiceImpl: getFillEventHistory() called by UID 10157, but service UID is 10314
+12-31 15:32:26.413  2660  2660 D NavigationModeController: getCurrentUserContext: contextUser=0 currentUser=0
+12-31 15:32:26.431   632  2738 E powerhal-libperfmgr: Error: shouldn't report duration during pause state.
+12-31 15:32:26.484  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:32:26.973   939  1392 E libpixelusb-MonitorFfs: epoll wait returned without Fd being ready. nrEvents:-1 err:4 Interrupted system call
+12-31 15:32:26.973   938   969 E libPixelUsbOverheat: nrEvents negative skipping
+12-31 15:32:26.975  1508  1526 I pixel-thermal: VIRTUAL-SKIN-PREDICTION-MODEL: model_input: [24460.00 23773.00 24775.00 24345.00 24609.00 23000.00 23175.00 24343.00 ]
+12-31 15:32:26.975  1508  1526 I native  : I0000 00:00:1767195146.975321    1526 thermal_tflite_wrapper.cc:261] ThermalTfliteInvoke
+12-31 15:32:26.976  1508  1526 I pixel-thermal: VIRTUAL-SKIN-PREDICTION-MODEL: model_output: [35378.8 35365.1 35383.6 35400.5 35434.2 35463.2 35479.1 35494.1 35501.2 35524.4 ]
+12-31 15:32:26.976  1508  1526 I pixel-thermal: VIRTUAL-SKIN-PREDICTION-MODEL: predicted_value: [35378.8 35365.1 35383.6 35400.5 35434.2 35463.2 35479.1 35494.1 35501.2 35524.4 ]
+12-31 15:32:26.976  1508  1526 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:26.976  1508  1526 I pixel-thermal: VT-FORECAST-ERROR-60SEC data is under collecting
+12-31 15:32:26.976  1508  1526 I pixel-thermal: STATS-UPDATOR data is under collecting
+12-31 15:32:26.976  1508  1526 I pixel-thermal: Thermal sensor STATS-UPDATOR is under collecting
+12-31 15:32:26.976  1508  1526 I pixel-thermal: thermalWatcherCallbackFunc: data under collecting for sensor: STATS-UPDATOR
+12-31 15:32:26.976  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-30SEC-BACK no valid prediction samples found
+12-31 15:32:26.976  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-30SEC-BACK is under collecting
+12-31 15:32:26.976  1508  1508 I pixel-thermal: VIRTUAL-USB-THROTTLING:0 raw data: USB-MINUS-CHARGING:-1434 VIRTUAL-USB-THROTTLING:0 charging_therm:24609 usb_pwr_therm:23175 
+12-31 15:32:26.976  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-PERSIST:24.8474 raw data: VIRTUAL-SKIN-CHARGE:24847.4 VIRTUAL-SKIN-CHARGE-PERSIST:24847.4 VIRTUAL-SKIN-EQ:24347.4 
+12-31 15:32:26.976  1697  3616 I AidlSensorManager: aidl_ssvc_poll: spurious wake up, back to work
+12-31 15:32:26.977  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-WIRED:24.8474 raw data: NO_WLC:1 VIRTUAL-SKIN-CHARGE:24847.4 VIRTUAL-SKIN-CHARGE-WIRED:24847.4 WLC_CHECK:1 thb_hda:0 
+12-31 15:32:26.977  1697  2582 E UsbDeviceManagerJNI: usb epoll_wait failed; errno=4
+12-31 15:32:26.983  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xdc, rc: 0
+12-31 15:32:26.983  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x00d5, tag: 0xd8 [cntr = 51764]
+12-31 15:32:26.983  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xdd, rc: 0
+12-31 15:32:26.983  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x00d5, tag: 0xd8, rc: 0
+12-31 15:32:26.983  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xde, rc: 0
+12-31 15:32:26.985  1508  1508 I pixel-thermal: rfpa_therm:24.345 raw data: rfpa_therm:24345 
+12-31 15:32:26.985  1508  1508 I pixel-thermal: flash_therm:23.773 raw data: flash_therm:23773 
+12-31 15:32:26.985  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER-MODEL: model_input: [24609.00 23000.00 23773.00 24460.00 24343.00 24345.00 24775.00 23175.00 ]
+12-31 15:32:26.985  1508  1508 I native  : I0000 00:00:1767195146.985622    1508 thermal_tflite_wrapper.cc:261] ThermalTfliteInvoke
+12-31 15:32:26.985  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER-MODEL: model_output: [24448.1 ]
+12-31 15:32:26.985  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER-MODEL: predicted_value: [24448.1 ]
+12-31 15:32:26.985  1508  1508 I pixel-thermal: usb_pwr_therm:23.175 raw data: usb_pwr_therm:23175 
+12-31 15:32:26.985  1508  1508 I pixel-thermal: charging_therm:24.609 raw data: charging_therm:24609 
+12-31 15:32:26.985  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3474 raw data: VIRTUAL-SKIN:24347.4 
+12-31 15:32:26.986  1508  1508 I pixel-thermal: north_therm:24.46 raw data: north_therm:24460 
+12-31 15:32:26.986  1508  1508 I pixel-thermal: cellular-emergency:24.3474 raw data: VIRTUAL-SKIN:24347.4 cellular-emergency:24347.4 
+12-31 15:32:26.986  1508  1508 I pixel-thermal: disp0_therm:23 raw data: disp0_therm:23000 
+12-31 15:32:26.986  1508  1508 I pixel-thermal: VIRTUAL-USB-UI:0 raw data: USB-MINUS-CHARGING:-1434 VIRTUAL-USB-UI:0 usb_pwr_therm:23175 
+12-31 15:32:26.986  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER:24.4997 raw data: VIRTUAL-SKIN-SPEAKER:24499.7 VIRTUAL-SKIN-SPEAKER-LEGACY:23869.9 VIRTUAL-SKIN-SPEAKER-LEGACY-MODEL-DIFF:-578.271 VIRTUAL-SKIN-SPEAKER-MODEL:24448.1 VIRTUAL-SKIN-SPEAKER-MODEL-CLAMPED:24448.1 VIRTUAL-SKIN-SPEAKER-MODEL-LEGACY-DIFF:578.271 VIRTUAL-SKIN-SPEAKER-MODEL-UPPER-CLAMPED:24448.1 VT_SPEAKER_LEGACY_WEIGHT:0 VT_SPEAKER_MODEL_WEIGHT:1 
+12-31 15:32:26.986  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:26.986  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-60SEC-BACK is under collecting
+12-31 15:32:26.987  1508  1508 I pixel-thermal: soc_therm:24.775 raw data: soc_therm:24775 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-30SEC-BACK no valid prediction samples found
+12-31 15:32:26.987  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-30SEC-BACK is under collecting
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-USB-THROTTLING:0 raw data: VIRTUAL-USB-THROTTLING:0 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-PERSIST:24.8474 raw data: VIRTUAL-SKIN-CHARGE-PERSIST:24847.4 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-WIRED:24.8474 raw data: VIRTUAL-SKIN-CHARGE-WIRED:24847.4 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: rfpa_therm:24.345 raw data: rfpa_therm:24345 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: flash_therm:23.773 raw data: flash_therm:23773 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: usb_pwr_therm:23.175 raw data: usb_pwr_therm:23175 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: charging_therm:24.609 raw data: charging_therm:24609 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3474 raw data: VIRTUAL-SKIN:24347.4 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: north_therm:24.46 raw data: north_therm:24460 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: cellular-emergency:24.3474 raw data: cellular-emergency:24347.4 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: disp0_therm:23 raw data: disp0_therm:23000 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-USB-UI:0 raw data: VIRTUAL-USB-UI:0 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER:24.4997 raw data: VIRTUAL-SKIN-SPEAKER:24499.7 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:26.987  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-60SEC-BACK is under collecting
+12-31 15:32:26.987  1508  1508 I pixel-thermal: soc_therm:24.775 raw data: soc_therm:24775 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-30SEC-BACK no valid prediction samples found
+12-31 15:32:26.987  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-30SEC-BACK is under collecting
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-USB-THROTTLING:0 raw data: VIRTUAL-USB-THROTTLING:0 
+12-31 15:32:26.987  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-PERSIST:24.8474 raw data: VIRTUAL-SKIN-CHARGE-PERSIST:24847.4 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-WIRED:24.8474 raw data: VIRTUAL-SKIN-CHARGE-WIRED:24847.4 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: rfpa_therm:24.345 raw data: rfpa_therm:24345 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: flash_therm:23.773 raw data: flash_therm:23773 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: usb_pwr_therm:23.175 raw data: usb_pwr_therm:23175 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: charging_therm:24.609 raw data: charging_therm:24609 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3474 raw data: VIRTUAL-SKIN:24347.4 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: north_therm:24.46 raw data: north_therm:24460 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: cellular-emergency:24.3474 raw data: cellular-emergency:24347.4 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: disp0_therm:23 raw data: disp0_therm:23000 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: VIRTUAL-USB-UI:0 raw data: VIRTUAL-USB-UI:0 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER:24.4997 raw data: VIRTUAL-SKIN-SPEAKER:24499.7 
+12-31 15:32:26.988  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:26.988  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-60SEC-BACK is under collecting
+12-31 15:32:26.988  1508  1508 I pixel-thermal: soc_therm:24.775 raw data: soc_therm:24775 
+12-31 15:32:26.988   938   969 W libPixelUsbOverheat: usb_pwr_therm:23.175001 
+12-31 15:32:26.992  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xdf, rc: 0
+12-31 15:32:26.993  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x00d5, tag: 0xd9 [cntr = 51765]
+12-31 15:32:26.993  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe0, rc: 0
+12-31 15:32:26.993  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x00d5, tag: 0xd9, rc: 0
+12-31 15:32:26.993  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe1, rc: 0
+12-31 15:32:26.994  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:27.008   532  4331 W libc    : Access denied finding property "suspend.debug.wakestats_log.enabled"
+12-31 15:32:27.972  1697  6123 E BatteryStatsService: Invalid uid for waking network packet: -1
+12-31 15:32:28.234  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:28.239  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:29.123   939  1392 E libpixelusb-MonitorFfs: epoll wait returned without Fd being ready. nrEvents:-1 err:4 Interrupted system call
+12-31 15:32:29.125   938   969 E libPixelUsbOverheat: nrEvents negative skipping
+12-31 15:32:29.125  1508  1526 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:29.125  1508  1526 I pixel-thermal: VT-FORECAST-ERROR-60SEC data is under collecting
+12-31 15:32:29.125  1508  1526 I pixel-thermal: STATS-UPDATOR data is under collecting
+12-31 15:32:29.125  1508  1526 I pixel-thermal: Thermal sensor STATS-UPDATOR is under collecting
+12-31 15:32:29.125  1508  1526 I pixel-thermal: thermalWatcherCallbackFunc: data under collecting for sensor: STATS-UPDATOR
+12-31 15:32:29.126  1697  3616 I AidlSensorManager: aidl_ssvc_poll: spurious wake up, back to work
+12-31 15:32:29.131  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe2, rc: 0
+12-31 15:32:29.131  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x00d5, tag: 0xda [cntr = 51766]
+12-31 15:32:29.131  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe3, rc: 0
+12-31 15:32:29.131  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x00d5, tag: 0xda, rc: 0
+12-31 15:32:29.131  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe4, rc: 0
+12-31 15:32:29.132  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe5, rc: 0
+12-31 15:32:29.132  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xe6, rc: 0
+12-31 15:32:29.132  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x00d5, tag: 0xdb [cntr = 51767]
+12-31 15:32:29.132  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x00d5, tag: 0xdb, rc: 0
+12-31 15:32:29.132  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-30SEC-BACK no valid prediction samples found
+12-31 15:32:29.132  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-30SEC-BACK is under collecting
+12-31 15:32:29.135  1697  2582 E UsbDeviceManagerJNI: usb epoll_wait failed; errno=4
+12-31 15:32:29.137  1508  1508 I pixel-thermal: VIRTUAL-USB-THROTTLING:0 raw data: USB-MINUS-CHARGING:-1470 VIRTUAL-USB-THROTTLING:0 charging_therm:24643 usb_pwr_therm:23173 
+12-31 15:32:29.142  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+12-31 15:32:29.143  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-PERSIST:24.8349 raw data: VIRTUAL-SKIN-CHARGE:24834.9 VIRTUAL-SKIN-CHARGE-PERSIST:24834.9 VIRTUAL-SKIN-EQ:24334.9 VIRTUAL-SKIN-LEGACY:24152.3 VIRTUAL-SKIN-LEGACY-MODEL-DIFF:-163.934 VIRTUAL-SKIN-LEGACY-SHUTDOWN:0 VIRTUAL-SKIN-MODEL:24316.3 VIRTUAL-SKIN-MODEL-CLAMPED:24316.3 VIRTUAL-SKIN-MODEL-LEGACY-DIFF:163.934 VIRTUAL-SKIN-MODEL-UPDATED:24334.9 VIRTUAL-SKIN-MODEL-UPPER-CLAMPED:24316.3 VIRTUAL-SKIN-SUB-0:23983.9 VIRTUAL-SKIN-SUB-1:24152.3 VIRTUAL-SKIN-SUB-2:23997.5 VIRTUAL-SKIN-SUB-3:24097.7 VIRTUAL-SKIN-SUB-4:24108.8 VT_LEGACY_WEIGHT:0 VT_MODEL_WEIGHT:1 charging_therm:24643 disp0_therm:23002 flash_therm:23773 north_therm:24482 quiet_therm:24348 rfpa_therm:24353 soc_therm:24855 usb_pwr_therm:23173 
+12-31 15:32:29.143  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-WIRED:24.8349 raw data: NO_WLC:1 VIRTUAL-SKIN-CHARGE:24834.9 VIRTUAL-SKIN-CHARGE-WIRED:24834.9 WLC_CHECK:1 thb_hda:0 
+12-31 15:32:29.143  1508  1508 I pixel-thermal: rfpa_therm:24.353 raw data: rfpa_therm:24353 
+12-31 15:32:29.143  1508  1508 I pixel-thermal: flash_therm:23.773 raw data: flash_therm:23773 
+12-31 15:32:29.143  1508  1508 I pixel-thermal: usb_pwr_therm:23.173 raw data: usb_pwr_therm:23173 
+12-31 15:32:29.143  1508  1508 I pixel-thermal: charging_therm:24.643 raw data: charging_therm:24643 
+12-31 15:32:29.144  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3349 raw data: VIRTUAL-SKIN:24334.9 VIRTUAL-SKIN-EQ:24334.9 
+12-31 15:32:29.144  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+12-31 15:32:29.144  1697  2557 D InetDiagMessage: Destroyed live tcp sockets for uids={10321} in 5ms
+12-31 15:32:29.145  1508  1508 I pixel-thermal: north_therm:24.482 raw data: north_therm:24482 
+12-31 15:32:29.145  1508  1508 I pixel-thermal: cellular-emergency:24.3349 raw data: VIRTUAL-SKIN:24334.9 cellular-emergency:24334.9 
+12-31 15:32:29.145  1508  1508 I pixel-thermal: disp0_therm:23.002 raw data: disp0_therm:23002 
+12-31 15:32:29.145  1508  1508 I pixel-thermal: VIRTUAL-USB-UI:0 raw data: USB-MINUS-CHARGING:-1470 VIRTUAL-USB-UI:0 usb_pwr_therm:23173 
+12-31 15:32:29.145  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER:24.4791 raw data: VIRTUAL-SKIN-SPEAKER:24479.1 VIRTUAL-SKIN-SPEAKER-LEGACY:23875.7 VIRTUAL-SKIN-SPEAKER-LEGACY-MODEL-DIFF:-572.482 VIRTUAL-SKIN-SPEAKER-MODEL:24448.1 VIRTUAL-SKIN-SPEAKER-MODEL-CLAMPED:24448.1 VIRTUAL-SKIN-SPEAKER-MODEL-LEGACY-DIFF:572.482 VIRTUAL-SKIN-SPEAKER-MODEL-UPPER-CLAMPED:24448.1 VT_SPEAKER_LEGACY_WEIGHT:0 VT_SPEAKER_MODEL_WEIGHT:1 
+12-31 15:32:29.145  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:29.145  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-60SEC-BACK is under collecting
+12-31 15:32:29.145  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+12-31 15:32:29.145  1508  1508 I pixel-thermal: soc_therm:24.855 raw data: soc_therm:24855 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-30SEC-BACK no valid prediction samples found
+12-31 15:32:29.146  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-30SEC-BACK is under collecting
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-USB-THROTTLING:0 raw data: VIRTUAL-USB-THROTTLING:0 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-PERSIST:24.8349 raw data: VIRTUAL-SKIN-CHARGE-PERSIST:24834.9 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-WIRED:24.8349 raw data: VIRTUAL-SKIN-CHARGE-WIRED:24834.9 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: rfpa_therm:24.353 raw data: rfpa_therm:24353 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: flash_therm:23.773 raw data: flash_therm:23773 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: usb_pwr_therm:23.173 raw data: usb_pwr_therm:23173 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: charging_therm:24.643 raw data: charging_therm:24643 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3349 raw data: VIRTUAL-SKIN:24334.9 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: north_therm:24.482 raw data: north_therm:24482 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: cellular-emergency:24.3349 raw data: cellular-emergency:24334.9 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: disp0_therm:23.002 raw data: disp0_therm:23002 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-USB-UI:0 raw data: VIRTUAL-USB-UI:0 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER:24.4791 raw data: VIRTUAL-SKIN-SPEAKER:24479.1 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:29.146  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-60SEC-BACK is under collecting
+12-31 15:32:29.146  1508  1508 I pixel-thermal: soc_therm:24.855 raw data: soc_therm:24855 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-30SEC-BACK no valid prediction samples found
+12-31 15:32:29.146  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-30SEC-BACK is under collecting
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-USB-THROTTLING:0 raw data: VIRTUAL-USB-THROTTLING:0 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-PERSIST:24.8349 raw data: VIRTUAL-SKIN-CHARGE-PERSIST:24834.9 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN-CHARGE-WIRED:24.8349 raw data: VIRTUAL-SKIN-CHARGE-WIRED:24834.9 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: rfpa_therm:24.353 raw data: rfpa_therm:24353 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: flash_therm:23.773 raw data: flash_therm:23773 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: usb_pwr_therm:23.173 raw data: usb_pwr_therm:23173 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: charging_therm:24.643 raw data: charging_therm:24643 
+12-31 15:32:29.146  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.3349 raw data: VIRTUAL-SKIN:24334.9 
+12-31 15:32:29.147  1508  1508 I pixel-thermal: north_therm:24.482 raw data: north_therm:24482 
+12-31 15:32:29.147  1508  1508 I pixel-thermal: cellular-emergency:24.3349 raw data: cellular-emergency:24334.9 
+12-31 15:32:29.147  1508  1508 I pixel-thermal: disp0_therm:23.002 raw data: disp0_therm:23002 
+12-31 15:32:29.147  1508  1508 I pixel-thermal: VIRTUAL-USB-UI:0 raw data: VIRTUAL-USB-UI:0 
+12-31 15:32:29.147  1508  1508 I pixel-thermal: VIRTUAL-SKIN-SPEAKER:24.4791 raw data: VIRTUAL-SKIN-SPEAKER:24479.1 
+12-31 15:32:29.147  1508  1508 I pixel-thermal: sensor_name: VT-FORECAST-60SEC-BACK no valid prediction samples found
+12-31 15:32:29.147  1508  1508 I pixel-thermal: Thermal sensor VT-FORECAST-60SEC-BACK is under collecting
+12-31 15:32:29.147  1508  1508 I pixel-thermal: soc_therm:24.855 raw data: soc_therm:24855 
+12-31 15:32:29.147   938   969 W libPixelUsbOverheat: usb_pwr_therm:23.173000 
+12-31 15:32:29.147  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+12-31 15:32:29.148  1697  2557 D InetDiagMessage: Destroyed live tcp sockets for uids={20321} in 3ms
+12-31 15:32:29.499   943   943 W TracingMuxer: type=1400 audit(0.0:22636): avc:  denied  { write } for  name="traced_producer" dev="tmpfs" ino=1336 scontext=u:r:mediacodec_google:s0 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0
+12-31 15:32:30.148  1697  6123 E BatteryStatsService: Invalid uid for waking network packet: -1
+12-31 15:32:30.390  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:32:30.394  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default

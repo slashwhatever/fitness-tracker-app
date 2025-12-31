@@ -96,9 +96,10 @@ export function useDeleteSet(): UseMutationResult<
   {
     setId: string;
     setData: { user_movement_id: string; workout_id: string | null } | null;
+    contextMovementId?: string;
   },
   Error,
-  string
+  string | { id: string; user_movement_id?: string }
 > {
   const { user } = useAuth();
   const supabase = createClient();

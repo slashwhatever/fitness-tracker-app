@@ -642,22 +642,22 @@ export function useUpdateUserMovement(
 
       // Sanitize movementUpdates to ensure no non-column fields are sent
       // Specifically remove joined fields or computed properties that might have leaked from currentMovement
-      const {
-        tracking_type: _tracking_type, // Exclude joined name string
-        tracking_types: _tracking_types, // Exclude joined relation object
-        movement_templates: _movement_templates, // Exclude joined relation object
-        user_movement_muscle_groups: _user_movement_muscle_groups, // Exclude joined relation object
-        user_id: _user_id, // Don't update user_id
-        created_at: _created_at, // Don't update created_at
-        updated_at: _updated_at, // Don't update updated_at
-        id: _id, // Don't update id
-        ...safeUpdates
-      } = movementUpdates as any;
+      const safeUpdates = { ...movementUpdates } as Record<string, any>;
+
+      // Exclude joined fields or computed properties
+      delete safeUpdates.tracking_type; // Exclude joined name string
+      delete safeUpdates.tracking_types; // Exclude joined relation object
+      delete safeUpdates.movement_templates; // Exclude joined relation object
+      delete safeUpdates.user_movement_muscle_groups; // Exclude joined relation object
+      delete safeUpdates.user_id; // Don't update user_id
+      delete safeUpdates.created_at; // Don't update created_at
+      delete safeUpdates.updated_at; // Don't update updated_at
+      delete safeUpdates.id; // Don't update id
 
       // Don't send tracking_type to database, it only has tracking_type_id
       const { data, error } = await supabase
         .from("user_movements")
-        .update(safeUpdates)
+        .update(safeUpdates as UserMovementUpdate)
         .eq("id", id)
         .select("id")
         .single();

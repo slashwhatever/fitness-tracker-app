@@ -1,3 +1,4 @@
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Archive, Copy, Pencil, Undo2 } from "lucide-react-native";
 import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
@@ -17,6 +18,7 @@ export function WorkoutActionSheet({
   workoutName,
   isArchived,
 }: WorkoutActionSheetProps) {
+  const colors = useThemeColors();
   return (
     <Modal
       visible={visible}
@@ -53,7 +55,7 @@ export function WorkoutActionSheet({
                 onClose();
               }}
             >
-              <Copy size={20} color="#6366f1" />
+              <Copy size={20} color={colors.tint} />
               <Text className="text-foreground font-medium text-lg">
                 Duplicate
               </Text>
@@ -67,9 +69,9 @@ export function WorkoutActionSheet({
               }}
             >
               {isArchived ? (
-                <Undo2 size={20} color="#eab308" />
+                <Undo2 size={20} color={colors.warning} />
               ) : (
-                <Archive size={20} color="#eab308" />
+                <Archive size={20} color={colors.warning} />
               )}
               <Text className="text-foreground font-medium text-lg">
                 {isArchived ? "Unarchive" : "Archive"}

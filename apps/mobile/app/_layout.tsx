@@ -1,7 +1,7 @@
 import { RestTimer } from "@/components/RestTimer";
+import { RestTimerProvider } from "@/components/RestTimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
-import { RestTimerProvider } from "@fitness/shared";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";

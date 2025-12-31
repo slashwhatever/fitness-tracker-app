@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signUpWithEmail } from "@fitness/shared";
+import { createClient } from "@/lib/supabase/client";
 import { Check, Dumbbell, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -69,6 +69,9 @@ export function RegisterForm({}: RegisterFormProps) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
+  // Initialize Supabase client
+  const [supabase] = useState(() => createClient());
+
   // Initialize form with React Hook Form and Zod validation
   const {
     register,
@@ -101,18 +104,20 @@ export function RegisterForm({}: RegisterFormProps) {
     setError("");
 
     try {
-      const { user, error: signUpError } = await signUpWithEmail(
-        values.email,
-        values.password,
-        {
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
           data: {
             display_name: values.displayName,
           },
-        }
-      );
+        },
+      });
+
+      const user = data.user;
 
       if (signUpError) {
-        setError(signUpError);
+        setError(signUpError.message);
         return;
       }
 

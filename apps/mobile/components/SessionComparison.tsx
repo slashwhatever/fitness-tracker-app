@@ -4,6 +4,7 @@ import {
   formatDiff,
   formatValue,
 } from "@fitness/shared";
+import { useThemeColors } from "@hooks/useThemeColors";
 import { useUserProfile } from "@hooks/useUserProfile";
 import { CircleEqual, Play } from "lucide-react-native";
 import { useMemo } from "react";
@@ -21,6 +22,7 @@ export function SessionComparison({
   movement,
 }: SessionComparisonProps) {
   const { data: userProfile } = useUserProfile();
+  const colors = useThemeColors();
   const weightUnit = userProfile?.weight_unit || "kg";
 
   const metrics = useMemo(() => {
@@ -85,14 +87,22 @@ export function SessionComparison({
                 <View className="flex-row items-center gap-1">
                   {isImprovement ? (
                     <View style={{ transform: [{ rotate: "-90deg" }] }}>
-                      <Play size={16} color="#22c55e" fill="#22c55e" />
+                      <Play
+                        size={16}
+                        color={colors.success}
+                        fill={colors.success}
+                      />
                     </View>
                   ) : isDecline ? (
                     <View style={{ transform: [{ rotate: "90deg" }] }}>
-                      <Play size={16} color="#ef4444" fill="#ef4444" />
+                      <Play
+                        size={16}
+                        color={colors.danger}
+                        fill={colors.danger}
+                      />
                     </View>
                   ) : (
-                    <CircleEqual size={16} color="#3b82f6" />
+                    <CircleEqual size={16} color={colors.info} />
                   )}
 
                   <Text

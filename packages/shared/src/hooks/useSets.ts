@@ -6,7 +6,7 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
-import { useRestTimer } from "../lib/rest-timer/RestTimerProvider";
+import { useRestTimer } from "../lib/rest-timer/RestTimerContext";
 import { useUserProfile } from "./useUserProfile";
 
 import type {

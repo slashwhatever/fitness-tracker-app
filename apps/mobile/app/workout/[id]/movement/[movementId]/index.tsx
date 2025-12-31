@@ -1,6 +1,7 @@
 import { EditSetSheet } from "@/components/EditSetSheet";
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
+import { MovementIcon } from "@/components/MovementIcon";
 import { SessionComparison } from "@/components/SessionComparison";
 import { SetAdjuster } from "@/components/SetAdjuster";
 import { TimedConfirmDeleteButton } from "@/components/TimedConfirmDeleteButton";
@@ -51,6 +52,7 @@ function SetActionModal({
   onSelect,
   setDetails,
 }: SetActionModalProps) {
+  const colors = useThemeColors();
   return (
     <Modal
       visible={visible}
@@ -84,7 +86,7 @@ function SetActionModal({
                 onClose();
               }}
             >
-              <Copy size={20} color="#6366f1" />
+              <Copy size={20} color={colors.tint} />
               <Text className="text-foreground font-medium text-lg">
                 Duplicate
               </Text>
@@ -240,7 +242,7 @@ export default function MovementDetailScreen() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={colors.tint} />
       </SafeAreaView>
     );
   }
@@ -299,8 +301,11 @@ export default function MovementDetailScreen() {
           paddingBottom: bottomPadding,
         }}
       >
-        <View className="px-4 mb-6">
-          <Text className="text-3xl font-bold text-foreground text-left">
+        <View className="px-4 mb-6 flex-row items-center gap-3">
+          <View className="h-12 w-12 rounded-full bg-primary-500/20 items-center justify-center">
+            <MovementIcon trackingType={movement.tracking_type} size={24} />
+          </View>
+          <Text className="text-3xl font-bold text-foreground text-left flex-1">
             {movement.name}
           </Text>
         </View>

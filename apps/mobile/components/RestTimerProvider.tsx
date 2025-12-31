@@ -1,40 +1,6 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { RestTimerContext, RestTimerState } from "@fitness/shared";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
-
-interface RestTimerState {
-  isActive: boolean;
-  isPaused: boolean;
-  isCompleted: boolean;
-  startTime: number | null; // Timestamp when timer started
-  duration: number; // Total duration in seconds
-  remainingTime: number; // Current remaining time in seconds
-  pausedAt: number | null; // Timestamp when paused
-  movementId: string | null;
-  workoutId: string | null;
-}
-
-export interface RestTimerContextType extends RestTimerState {
-  startTimer: (
-    duration: number,
-    metadata?: { movementId?: string; workoutId?: string }
-  ) => void;
-  pauseTimer: () => void;
-  resumeTimer: () => void;
-  resetTimer: () => void; // Resets to initial duration
-  cancelTimer: () => void; // Stops and clears
-  addTime: (seconds: number) => void;
-}
-
-const RestTimerContext = createContext<RestTimerContextType | undefined>(
-  undefined
-);
 
 export function RestTimerProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<RestTimerState>({
@@ -211,7 +177,12 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
           intervalRef.current = setInterval(tick, 1000);
         }
       } else if (nextAppState.match(/inactive|background/)) {
-        // App went to background
+        // App went to background (interval naturally pauses/stops or might keep running depending on OS, but we re-sync on foreground)
+        // Ideally we should clear interval here to save resources and rely on timestamp diff on resume
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
       }
 
       appState.current = nextAppState;
@@ -221,7 +192,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
       subscription.remove();
       clearIntervalSafe();
     };
-  }, []); // Empty dependency ensures cleanup only runs on unmount
+  }, [tick]);
 
   return (
     <RestTimerContext.Provider
@@ -238,12 +209,4 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
       {children}
     </RestTimerContext.Provider>
   );
-}
-
-export function useRestTimer() {
-  const context = useContext(RestTimerContext);
-  if (context === undefined) {
-    throw new Error("useRestTimer must be used within a RestTimerProvider");
-  }
-  return context;
 }

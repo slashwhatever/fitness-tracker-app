@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { resetPassword } from "@fitness/shared";
+import { createClient } from "@/lib/supabase/client";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Dumbbell, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -46,11 +46,18 @@ const ResetPasswordForm = () => {
     setLoading(true);
     setError(null);
 
+    const supabase = createClient();
+
     try {
-      const { error: resetError } = await resetPassword(values.email);
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        values.email,
+        {
+          redirectTo: `${location.origin}/auth/callback?next=/auth/reset-password`,
+        }
+      );
 
       if (resetError) {
-        setError(resetError);
+        setError(resetError.message);
         return;
       }
 

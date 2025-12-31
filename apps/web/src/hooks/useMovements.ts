@@ -4,15 +4,13 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import { isSafeForQueries } from "@/lib/utils/validation";
 import type {
-  MovementTemplate,
-  TrackingTypeName,
-  UserMovement,
-} from "@fitness/shared";
-import type {
   Database,
+  MovementTemplate,
   Tables,
   TablesInsert,
   TablesUpdate,
+  TrackingTypeName,
+  UserMovement,
 } from "@fitness/shared";
 import type { QueryData, SupabaseClient } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -115,6 +113,7 @@ export function useUserMovements() {
           original_template_id,
           template_id,
           user_id,
+          customized_at,
           created_at,
           updated_at,
           tracking_types!inner(name),
@@ -174,6 +173,7 @@ export function useUserMovement(movementId: string) {
           original_template_id,
           template_id,
           user_id,
+          customized_at,
           created_at,
           updated_at,
           tracking_types!inner(name),
@@ -239,6 +239,7 @@ export function useWorkoutMovements(workoutId: string) {
             original_template_id,
             template_id,
             user_id,
+            customized_at,
             created_at,
             updated_at,
             tracking_types!inner(name),
@@ -636,6 +637,7 @@ export function useAddMovementToWorkout() {
             original_template_id,
             template_id,
             user_id,
+            customized_at,
             created_at,
             updated_at,
             tracking_types!inner(name),
@@ -768,6 +770,7 @@ export function useAddMovementsToWorkout() {
             original_template_id,
             template_id,
             user_id,
+            customized_at,
             created_at,
             updated_at,
             tracking_types!inner(name),

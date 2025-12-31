@@ -191,7 +191,7 @@ export default function MovementSettingsScreen() {
   if (movementLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={colors.tint} />
       </View>
     );
   }

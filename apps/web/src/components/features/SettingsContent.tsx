@@ -15,12 +15,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateUserProfile, useUserProfile } from "@/hooks/useUserProfile";
-import {
-  DistanceUnit,
-  TIMER_PRESETS,
-  WeightUnit,
-  signOut,
-} from "@fitness/shared";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@fitness/shared";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -136,14 +132,12 @@ export default function SettingsContent() {
     }
   };
 
+  const { signOut } = useAuth();
+
   const handleSignOut = async () => {
     try {
-      const { error } = await signOut();
-      if (error) {
-        console.error("Failed to sign out:", error);
-      } else {
-        router.push("/auth");
-      }
+      await signOut();
+      router.push("/auth");
     } catch (error) {
       console.error("Unexpected error during sign out:", error);
     }

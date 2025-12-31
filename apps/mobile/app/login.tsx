@@ -96,7 +96,7 @@ export default function LoginScreen() {
                 <Dumbbell
                   className="text-primary w-12 h-12"
                   size={48}
-                  color="#6366f1"
+                  color={colors.tint}
                 />
               </View>
               <Text className="text-3xl font-bold text-center text-slate-900 dark:text-white">
@@ -186,12 +186,12 @@ export default function LoginScreen() {
               <Pressable
                 onPress={handleSubmit(onSubmit)}
                 disabled={loading}
-                className={`w-full bg-primary rounded-lg py-4 flex-row justify-center items-center ${
+                className={`w-full bg-primary rounded-lg py-4 flex-row justify-center items-center h-[60px] ${
                   loading ? "opacity-70" : "active:opacity-90"
                 }`}
               >
                 {loading ? (
-                  <ActivityIndicator color="white" className="mr-2" />
+                  <ActivityIndicator color="white" className="mr-2 h-[24px]" />
                 ) : (
                   <Text className="text-white font-semibold text-base py-1">
                     Sign in

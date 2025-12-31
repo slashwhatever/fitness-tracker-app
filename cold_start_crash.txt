@@ -1,0 +1,575 @@
+--------- beginning of main
+12-31 15:33:43.883  7863  7863 I EuiccGoogle: [2] NetworkCache.getFirstActiveEuiccSlotId: isRemovableEsimDefault: false
+12-31 15:33:43.888  7863  7863 I EuiccGoogle: [2] EuiccServiceImpl.onCreate: onCreate DSDS mode: simCardState is 11
+12-31 15:33:43.898  7863  7863 I EuiccGoogle: [2] Partner.getResourceEntry$ar$ds$ar$class_merging$ar$class_merging$ar$class_merging: Partner app=com.google.android.euiccoverlay, Resource name=esim_supported_countries, type=string, partnerResId = 0
+12-31 15:33:43.904  7863  7863 I EuiccGoogle: [2] Partner.getResourceEntry$ar$ds$ar$class_merging$ar$class_merging$ar$class_merging: Partner app=com.google.android.euiccoverlay, Resource name=esim_unsupported_countries, type=string, partnerResId = 2131689525
+12-31 15:33:43.910  7863  7863 I EuiccGoogle: [2] ViewCompat$Api29Impl.getCarrierInfos: All carrier info overrides: []
+12-31 15:33:43.916  7863  7863 I EuiccGoogle: [2] PhenotypeUpdatedReceiver.setPsimConversionSupportedCarriers: setPsimConversionSupportedCarriers:[1, 2, 3, 14, 16, 19, 22, 25, 27, 32, 576, 580, 850, 959, 1187, 1344, 1365, 1403, 1404, 1413, 1452, 1480, 1581, 1670, 1690, 1779, 1895, 1962, 2018, 2020, 2021, 2083, 2102, 2110, 2119, 2122, 2419, 2536]
+12-31 15:33:43.919  2972  3210 D EuiccConnector: handleMessage: E msg.what=4
+12-31 15:33:43.919  2972  3210 D EuiccConnector: processMsg: DisconnectedState
+12-31 15:33:43.919  2972  3210 D EuiccConnector: transitionTo: destState=ConnectedState
+12-31 15:33:43.919  2972  3210 D EuiccConnector: handleMessage: new destination call exit/enter
+12-31 15:33:43.919  2972  3210 D EuiccConnector: setupTempStateStackWithStatesToEnter: X mTempStateStackCount=1,curStateInfo: state=DisconnectedState,active=true,parent=null
+12-31 15:33:43.919  2972  3210 D EuiccConnector: moveTempStackToStateStack: i=0,j=1
+12-31 15:33:43.919  2972  3210 D EuiccConnector: moveTempStackToStateStack: X mStateStackTop=1,startingIndex=1,Top=ConnectedState
+12-31 15:33:43.919  2972  3210 D EuiccConnector: invokeEnterMethods: ConnectedState
+12-31 15:33:43.919  2972  3210 D EuiccConnector: moveDeferredMessageAtFrontOfQueue; what=103
+12-31 15:33:43.919  2972  3210 D EuiccConnector: handleMessage: X
+12-31 15:33:43.919  2972  3210 D EuiccConnector: handleMessage: E msg.what=103
+12-31 15:33:43.919  2972  3210 D EuiccConnector: processMsg: ConnectedState
+12-31 15:33:43.924  2972  3210 D EuiccConnector: handleMessage: X
+12-31 15:33:43.927  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: slotId = 0
+12-31 15:33:43.937  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: slotId = 0, isRemovable = false
+12-31 15:33:43.937  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: isRemovable = false.
+12-31 15:33:43.937  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: getSimCardState for slotId: 0
+12-31 15:33:43.947  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: GetEuiccProfileInfoListResult: simCardState :11and simCardStateAtTelephony:11 for slot:0
+12-31 15:33:43.948  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.getProfileInfoList: getProfileInfoList: slotId = 0, includeTestProfiles = false
+12-31 15:33:43.948  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.getProfileInfoList: getProfileInfoList: slotId = 0, includeTestProfiles = false.
+12-31 15:33:43.949  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.getEidFromSlotId: getEidFromSlotId: slotId = 0.
+12-31 15:33:43.949  7863  1838 I EuiccGoogle: [368] NetworkCache.getEidForSlot: getEidForSlot: 0
+12-31 15:33:43.958  7863  1838 I EuiccGoogle: [368] BlockingEuiccCardManager.requestAllProfiles: requestAllProfiles: cardId = [imta7AgrUuJ4Jh9R-W2aeNg_CgA]
+12-31 15:33:44.053  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.134  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: Profile nickname = Skylo.
+12-31 15:33:44.135  7863  1838 I EuiccGoogle: [368] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: Profile info = EuiccProfileInfo (nickname=Skylo, serviceProviderName=Skylo, profileName=Skylo, profileClass=2, state=0, CarrierIdentifier=CarrierIdentifier{mcc=901,mnc=98,spn=null,imsi=null,gid1=null,gid2=null,carrierid=-1,specificCarrierId=-1}, policyRules=0, accessRules=null, iccid=899019803[****]).
+12-31 15:33:44.164  2972  3210 D EuiccConnector: handleMessage: E msg.what=6
+12-31 15:33:44.164  2972  3210 D EuiccConnector: processMsg: ConnectedState
+12-31 15:33:44.164  2972  3210 D EuiccConnector: handleMessage: X
+12-31 15:33:44.177  1839  1839 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+12-31 15:33:44.185  1839  1839 I AndroidRuntime: Using default boot image
+12-31 15:33:44.185  1839  1839 I AndroidRuntime: Leaving lock profiling enabled
+12-31 15:33:44.192  1839  1839 I app_process: Using CollectorTypeCMC GC.
+12-31 15:33:44.216 27997  1749 I NearbySharing: Got package event: PackageReplaced(packageName=com.slashwhatever.logset)
+12-31 15:33:44.304  1839  1839 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+12-31 15:33:44.314  1839  1839 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+12-31 15:33:44.315  1839  1839 D app_process: u_setTimeZoneFilesDirectory("/apex/com.android.tzdata/etc/tz/versioned/9/icu") succeeded. 
+12-31 15:33:44.315  1839  1839 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt76l.dat
+12-31 15:33:44.315  1839  1839 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+12-31 15:33:44.316  1839  1839 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+12-31 15:33:44.317  1839  1839 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+12-31 15:33:44.371  1839  1839 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+12-31 15:33:44.372  1839  1839 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+12-31 15:33:44.374  1839  1839 D nativeloader: Load /system/lib64/libmonkey_jni.so using ns default for caller /system/framework/monkey.jar in same partition (is_bridged=0): ok
+12-31 15:33:44.374  1839  1839 W Monkey  : args: [-p, com.slashwhatever.logset, -c, android.intent.category.LAUNCHER, 1]
+12-31 15:33:44.377  2830 10821 W AlarmManager: Unrecognized alarm listener com.android.networkstack.android.net.ip.IpClientLinkObserver$Dhcp6PdPreferredPrefixAlarmListener@feaa9f4
+12-31 15:33:44.377  2830 10821 D ApfFilter: (wlan0): Adding RA fe80::ca7f:54ff:fe5e:7440 -> ff02::1 600s 2a00:23c6:bb59:4800::/64 600s/600s DNS 600s 2a00:23c6:bb51:400:2ae1:848e:c5b8:b83a 
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: failed to read /sys/class/net/wlan0/mtu
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: java.nio.file.AccessDeniedException: /sys/class/net/wlan0/mtu
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:220)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at java.nio.file.Files.newByteChannel(Files.java:371)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at java.nio.file.Files.newByteChannel(Files.java:422)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at java.nio.file.spi.FileSystemProvider.newInputStream(FileSystemProvider.java:420)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at java.nio.file.Files.newInputStream(Files.java:156)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at java.nio.file.Files.newBufferedReader(Files.java:2844)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.com.android.net.module.util.ProcfsParsingUtils.readFile(ProcfsParsingUtils.java:75)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.com.android.net.module.util.ProcfsParsingUtils.getInterfaceMtu(ProcfsParsingUtils.java:350)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.android.net.apf.ApfFilter$Dependencies.getInterfaceMtu(ApfFilter.java:823)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.android.net.apf.ApfFilter.installNewProgram(ApfFilter.java:4004)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.android.net.apf.ApfFilter.processRa(ApfFilter.java:4215)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.android.net.apf.ApfFilter$RaPacketReader.handlePacket(ApfFilter.java:374)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.android.net.apf.ApfFilter$RaPacketReader.handlePacket(ApfFilter.java:358)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.handleInput(FdEventsReader.java:277)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.lambda$createAndRegisterFd$0(FdEventsReader.java:233)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader.$r8$lambda$jjSC4hVD2AlVH3T-DbWnF2T3fK8(FdEventsReader.java:0)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at com.android.networkstack.com.android.net.module.util.FdEventsReader$$ExternalSyntheticLambda0.onFileDescriptorEvents(R8$$SyntheticClass:0)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.MessageQueue.dispatchEvents(MessageQueue.java:647)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.MessageQueue.nativePollOnce(Native Method)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.MessageQueue.nextConcurrent(MessageQueue.java:923)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.MessageQueue.next(MessageQueue.java:1110)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.Looper.loopOnce(Looper.java:197)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.Looper.loop(Looper.java:349)
+12-31 15:33:44.378  2830 10821 E ProcfsParsingUtils: 	at android.os.HandlerThread.run(HandlerThread.java:100)
+12-31 15:33:44.379  1190  1206 I WPKTRT  : process_address_event: 2a00:23c6:bb59:4800:c832:67ff:fe63:2de added to wlan0
+12-31 15:33:44.379  1190  1206 I WPKTRT  : process_address_event: 2a00:23c6:bb59:4800:ea5b:793:7495:f3fd added to wlan0
+12-31 15:33:44.371  2830  2830 W IpClient.wlan0: type=1400 audit(0.0:22649): avc:  denied  { search } for  name="net" dev="sysfs" ino=52063 scontext=u:r:network_stack:s0 tcontext=u:object_r:sysfs_net:s0 tclass=dir permissive=0
+12-31 15:33:44.385   995   995 E WifiHAL : Setting APF program, halHandle = 0xb400007c45210e10
+12-31 15:33:44.385   995   995 E WifiHAL : Set apf filter for iface = wlan0
+12-31 15:33:44.385   995   995 I WifiHAL : createRequest: APF set program request
+12-31 15:33:44.385   995   995 I WifiHAL : mProgramLen : 1764
+12-31 15:33:44.386  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.393  1839  1839 I AconfigPackage: com.android.art.flags is mapped to com.android.art
+12-31 15:33:44.393  1839  1839 I AconfigPackage: com.android.art.rw.flags is mapped to com.android.art
+12-31 15:33:44.393  1839  1839 I AconfigPackage: com.android.libcore is mapped to com.android.art
+12-31 15:33:44.393  1839  1839 I AconfigPackage: android.graphics.pdf.flags is mapped to com.android.mediaprovider
+12-31 15:33:44.393  1839  1839 I AconfigPackage: com.android.providers.media.flags is mapped to com.android.mediaprovider
+12-31 15:33:44.393  1839  1839 I AconfigPackage: android.graphics.pdf.flags.readonly is mapped to com.android.mediaprovider
+12-31 15:33:44.394  1839  1839 I AconfigPackage: com.android.wifi.flags is mapped to com.android.wifi
+12-31 15:33:44.395  1839  1839 I AconfigPackage: com.android.permission.flags is mapped to com.android.permission
+12-31 15:33:44.395  1839  1839 I AconfigPackage: com.android.permissioncontroller.flags is mapped to com.android.permission
+12-31 15:33:44.395  1839  1839 I AconfigPackage: android.provider.flags is mapped to com.android.configinfrastructure
+12-31 15:33:44.395  1839  1839 I AconfigPackage: com.android.server.deviceconfig is mapped to com.android.configinfrastructure
+12-31 15:33:44.395  1839  1839 I AconfigPackage: com.android.adservices.ondevicepersonalization.flags is mapped to com.android.ondevicepersonalization
+12-31 15:33:44.396  1839  1839 I AconfigPackage: com.android.os.statsd.flags is mapped to com.android.os.statsd
+12-31 15:33:44.396  1839  1839 I AconfigPackage: com.android.ipsec.flags is mapped to com.android.ipsec
+12-31 15:33:44.396  1839  1839 I AconfigPackage: com.android.nfc.module.flags is mapped to com.android.nfcservices
+12-31 15:33:44.397  1839  1839 I AconfigPackage: android.uprobestats.mainline.flags is mapped to com.android.uprobestats
+12-31 15:33:44.397  1839  1839 I AconfigPackage: com.android.org.conscrypt.flags is mapped to com.android.conscrypt
+12-31 15:33:44.397  1839  1839 I AconfigPackage: com.android.org.conscrypt.net.flags is mapped to com.android.conscrypt
+12-31 15:33:44.397  1839  1839 I AconfigPackage: android.media.swcodec.flags is mapped to com.android.media.swcodec
+12-31 15:33:44.397  1839  1839 I AconfigPackage: com.android.uwb.flags is mapped to com.android.uwb
+12-31 15:33:44.397  1839  1839 I AconfigPackage: com.android.ranging.flags is mapped to com.android.uwb
+12-31 15:33:44.398  1839  1839 I AconfigPackage: com.android.appsearch.flags is mapped to com.android.appsearch
+12-31 15:33:44.398  1839  1839 I AconfigPackage: com.android.media.extractor.flags is mapped to com.android.media
+12-31 15:33:44.398  1839  1839 I AconfigPackage: com.android.media.mainline.flags is mapped to com.android.media
+12-31 15:33:44.399  1839  1839 I AconfigPackage: com.android.system.virtualmachine.flags is mapped to com.android.virt
+12-31 15:33:44.399  1839  1839 I AconfigPackage: com.android.adservices.flags is mapped to com.android.adservices
+12-31 15:33:44.399  1839  1839 I AconfigPackage: com.android.sdksandbox.flags is mapped to com.android.adservices
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.tethering.mainline.beta is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: android.net.http is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.tethering.readonly.flags is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: android.net.vcn is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.net.flags is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.tethering.beta.test is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.nearby.flags is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.net.ct.flags is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.net.thread.flags is mapped to com.android.tethering
+12-31 15:33:44.400  1839  1839 I AconfigPackage: android.os.profiling is mapped to com.android.profiling
+12-31 15:33:44.400  1839  1839 I AconfigPackage: android.os.profiling.anomaly.flags is mapped to com.android.profiling
+12-31 15:33:44.400  1839  1839 I AconfigPackage: com.android.cellbroadcastreceiver.flags is mapped to com.android.cellbroadcast
+12-31 15:33:44.401  1839  1839 I AconfigPackage: com.android.icu is mapped to com.android.i18n
+12-31 15:33:44.401  1839  1839 I AconfigPackage: com.android.healthfitness.flags is mapped to com.android.healthfitness
+12-31 15:33:44.401  1839  1839 I AconfigPackage: com.android.devicelock.flags is mapped to com.android.devicelock
+12-31 15:33:44.402  1839  1839 I AconfigPackage: com.android.bluetooth.flags is mapped to com.android.bt
+12-31 15:33:44.402  1839  1839 I AconfigPackage: com.android.rkpd.flags is mapped to com.android.rkpd
+12-31 15:33:44.402  1839  1839 I AconfigPackage: com.android.adbd.flags is mapped to com.android.adbd
+12-31 15:33:44.403  1839  1839 I AconfigPackage: com.android.crashrecovery.flags is mapped to com.android.crashrecovery
+12-31 15:33:44.403  1839  1839 E FeatureFlagsImplExport: android.os.flagging.AconfigStorageReadException: ERROR_PACKAGE_NOT_FOUND: package android.xr cannot be found on the device
+12-31 15:33:44.406  1839  1839 W libc    : Access denied finding property "qemu.sf.lcd_density"
+12-31 15:33:44.406  1839  1839 W libc    : Access denied finding property "qemu.sf.lcd_density"
+12-31 15:33:44.399  1839  1839 W commands.monkey: type=1400 audit(0.0:22650): avc:  denied  { read } for  name="u:object_r:qemu_sf_lcd_density_prop:s0" dev="tmpfs" ino=336 scontext=u:r:shell:s0 tcontext=u:object_r:qemu_sf_lcd_density_prop:s0 tclass=file permissive=0
+12-31 15:33:44.399  1839  1839 W commands.monkey: type=1400 audit(0.0:22651): avc:  denied  { read } for  name="u:object_r:qemu_sf_lcd_density_prop:s0" dev="tmpfs" ino=336 scontext=u:r:shell:s0 tcontext=u:object_r:qemu_sf_lcd_density_prop:s0 tclass=file permissive=0
+12-31 15:33:44.412  1839  1839 W Monkey  :  arg: "-p"
+12-31 15:33:44.412  1839  1839 W Monkey  :  arg: "com.slashwhatever.logset"
+12-31 15:33:44.413  1839  1839 W Monkey  :  arg: "-c"
+12-31 15:33:44.413  1839  1839 W Monkey  :  arg: "android.intent.category.LAUNCHER"
+12-31 15:33:44.413  1839  1839 W Monkey  :  arg: "1"
+12-31 15:33:44.413  1839  1839 W Monkey  : data="com.slashwhatever.logset"
+12-31 15:33:44.413  1839  1839 W Monkey  : data="android.intent.category.LAUNCHER"
+12-31 15:33:44.414  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.420  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.423  1697  2512 D EventHub: No input device configuration file found for device 'Monkey touch'.
+12-31 15:33:44.424  1697  2512 I EventHub: usingClockIoctl=true
+12-31 15:33:44.424  1697  2512 I EventHub: New device: id=7, fd=455, path='/dev/input/event3', name='Monkey touch', classes=TOUCH | TOUCH_MT, configuration='', keyLayout='', keyCharacterMap='', builtinKeyboard=false, 
+12-31 15:33:44.426  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.426  1697  2512 I InputReader: Disabling Monkey touch (device 7) because the associated viewport is not active
+12-31 15:33:44.426  1697  2512 I InputReader: Device reconfigured: id=7, name='Monkey touch', size 1080x2424, orientation Rotation0, mode DISABLED, display id 0
+12-31 15:33:44.426  1697  2512 I InputReader: Disabling Monkey touch (device 7) because the associated viewport is not active
+12-31 15:33:44.426  1697  2512 I InputReader: Device added: id=7, eventHubId=7, name='Monkey touch', descriptor='e1fe28b90f915c7d1febbd52c1ef84b3c4cbed9f',sources=TOUCHSCREEN
+--------- beginning of system
+12-31 15:33:44.432  1697  2512 D WindowManager: Direct invocation of sendNewConfiguration: Display{#0 state=OFF size=1080x2424 ROTATION_0}
+12-31 15:33:44.433  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.433  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.433  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.433  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.435  4490  4490 I PkDeviceHelper: PkDeviceHelper.refreshDevices():87 refreshing devices
+12-31 15:33:44.457  1697  1771 W ActivityManager: registerReceiverWithFeature: no app for null
+12-31 15:33:44.483  1697  4928 W ActivityTaskManager: callingPackage for (uid=2000, pid=1839) has no WPC
+12-31 15:33:44.484  1697  4928 V WindowManager: DesktopModeLaunchParamsModifier: phase= 0 task=null activity=null display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 task null, skipping
+12-31 15:33:44.485  1697  4928 V WindowManager: TaskLaunchParamsModifier:phase=0 task=null activity=null display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449
+12-31 15:33:44.486  1697  4928 V GrammaticalInflectionUtils: AttributionSource: android.content.AttributionSource@e11e9c1 does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+12-31 15:33:44.486  1697  4928 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_RESIZEABLE_ACTIVITY_OVERRIDES
+12-31 15:33:44.487  1697  4928 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_MIN_ASPECT_RATIO_OVERRIDE
+12-31 15:33:44.488  1697  4928 V WindowManager: DesktopModeLaunchParamsModifier: phase= 0 task=null activity=ActivityRecord{110651866 u0 com.slashwhatever.logset/.MainActivity display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 task null, skipping
+12-31 15:33:44.488  1697  4928 V WindowManager: TaskLaunchParamsModifier:phase=0 task=null activity=ActivityRecord{110651866 u0 com.slashwhatever.logset/.MainActivity t-1} display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449
+12-31 15:33:44.488  1697  4928 V WindowManager: DesktopModeLaunchParamsModifier: phase= 3 task=null activity=ActivityRecord{110651866 u0 com.slashwhatever.logset/.MainActivity t-1} display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 task null, skipping
+12-31 15:33:44.488  1697  4928 V WindowManager: TaskLaunchParamsModifier:phase=3 task=null activity=ActivityRecord{110651866 u0 com.slashwhatever.logset/.MainActivity t-1} display-area-from-current-params=null display-area-from-default-fallback=DefaultTaskDisplayArea@139286449 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 non-freeform-task-display-area display-area=DefaultTaskDisplayArea@139286449 activity-requested-portrait freeform-size-mismatch=Rect(270, 711 - 811, 1791)
+12-31 15:33:44.489  1697  4928 D ActivityTaskManager: Temporarily retain top process state for launching app
+12-31 15:33:44.492  1697  4928 V WindowManager: DesktopModeLaunchParamsModifier: phase= 3 task=Task{7c1ae0b #7210 type=standard A=10397:com.slashwhatever.logset} activity=ActivityRecord{110651866 u0 com.slashwhatever.logset/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 not entering desktop mode, skipping
+12-31 15:33:44.493  1697  4928 V WindowManager: TaskLaunchParamsModifier:phase=3 task=Task{7c1ae0b #7210 type=standard A=10397:com.slashwhatever.logset} activity=ActivityRecord{110651866 u0 com.slashwhatever.logset/.MainActivity t-1} display-from-task=0 display-id=0 task-display-area-windowing-mode=1 suggested-display-area=DefaultTaskDisplayArea@139286449 inherit-from-task=fullscreen non-freeform-task-display-area display-area=DefaultTaskDisplayArea@139286449 activity-requested-portrait freeform-size-mismatch=Rect(270, 711 - 811, 1791)
+12-31 15:33:44.493  1697  4928 W OptProp : Cannot read opt property android.window.PROPERTY_COMPAT_ALLOW_ORIENTATION_OVERRIDE
+12-31 15:33:44.496  1697  4928 I AppsFilter: interaction: PackageSetting{65c2f3a com.google.android.microdroid.empty_payload/10296} -> PackageSetting{df51701 com.slashwhatever.logset/10397} BLOCKED
+12-31 15:33:44.497  1697  4928 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.slashwhatever.logset/.MainActivity} with LAUNCH_SINGLE_TASK from uid 2000 (com.android.shell) (BAL_ALLOW_PERMISSION) result code=0
+12-31 15:33:44.498  1839  1839 I Monkey  : Events injected: 1
+12-31 15:33:44.498  2660  2686 V WindowManagerShell: Transition requested (#1323): android.os.BinderProxy@7cab3ae TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=7210 effectiveUid=10397 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.slashwhatever.logset/.MainActivity } baseActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity} topActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity} origActivity=null realActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity} numActivities=1 lastActiveTime=224256030 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{android.os.BinderProxy@aa1b54f} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 173 - 0, 0) topActivityInfo=ActivityInfo{63274dc com.slashwhatever.logset.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isTopActivityNoDisplay=false isSleeping=true locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=Rect(270, 711 - 811, 1791) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2424) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=inactiveundefined} topNonResizableActivityAspectRatio=-1.0} topActivityMainWindowFrame=null isAppBubble=false}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 1323 }
+12-31 15:33:44.498  1697  1808 V GrammaticalInflectionUtils: AttributionSource: android.content.AttributionSource@e11e9c1 does not have READ_SYSTEM_GRAMMATICAL_GENDER permission.
+12-31 15:33:44.498  2660  2686 D ShellSplitScreen: logExit: no-op, mLoggerSessionId is null
+12-31 15:33:44.495   924   924 W TracingMuxer: type=1400 audit(0.0:22652): avc:  denied  { write } for  name="traced_producer" dev="tmpfs" ino=1336 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0
+12-31 15:33:44.500  1839  1839 I Monkey  : ## Network stats: elapsed time=19ms (0ms mobile, 0ms wifi, 19ms not connected)
+12-31 15:33:44.500  1839  1839 I app_process: System.exit called, status: 0
+12-31 15:33:44.500  1839  1839 I AndroidRuntime: VM exiting with result code 0.
+12-31 15:33:44.510   901   901 D Zygote  : Forked child process 1884
+12-31 15:33:44.510  1697  1827 I ActivityManager: Start proc 1884:com.slashwhatever.logset/u0a397 for top-activity {com.slashwhatever.logset/com.slashwhatever.logset.MainActivity}
+12-31 15:33:44.514  1884  1884 W zygote64: Activation of cgroup controller +memory failed in path /sys/fs/cgroup/apps/uid_10397: Invalid argument
+12-31 15:33:44.517  1884  1884 I libc    : SetHeapTaggingLevel: tag level set to 0
+12-31 15:33:44.518  1697  2512 I EventHub: Removing device Monkey touch due to epoll hang-up event.
+12-31 15:33:44.518  1697  2512 I EventHub: Removed device: path=/dev/input/event3 name=Monkey touch id=7 fd=455 classes=TOUCH | TOUCH_MT
+12-31 15:33:44.522  1884  1884 I Zygote  : Process 1884 crated for com.slashwhatever.logset
+12-31 15:33:44.522  1884  1884 I whatever.logset: Using CollectorTypeCMC GC.
+12-31 15:33:44.526  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.527  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.528  1884  1884 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+12-31 15:33:44.529  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:44.529  1697  2512 I InputReader: Device removed: id=7, eventHubId=7, name='Monkey touch', descriptor='e1fe28b90f915c7d1febbd52c1ef84b3c4cbed9f', sources=TOUCHSCREEN
+12-31 15:33:44.532  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.532  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.532  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.532  1697  1808 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.532  3017  3017 D TouchInteractionService: disposeEventHandlers: Reason: Initializing input monitor due to: onTrackpadConnected() instance=136613480
+12-31 15:33:44.532  1697  2512 I EventHub: Removing device '/dev/input/event3' due to inotify event
+12-31 15:33:44.532  3017  3017 D InputMonitorCompat: Input event receiver for monitor (swipe-up-disp0) disposed
+12-31 15:33:44.532  1697  2511 W InputDispatcher: channel '[Gesture Monitor] swipe-up' ~ Consumer closed input channel or an error occurred.  events=0x9
+12-31 15:33:44.532  1697  2511 E InputDispatcher: channel '[Gesture Monitor] swipe-up' ~ Channel is unrecoverably broken and will be disposed!
+12-31 15:33:44.532  3017  3017 D InputMonitorCompat: Input monitor (swipe-up-disp0) disposed
+12-31 15:33:44.533  4490  4490 I PkDeviceHelper: PkDeviceHelper.refreshDevices():87 refreshing devices
+12-31 15:33:44.534  2660  2660 D NavigationModeController: getCurrentUserContext: contextUser=0 currentUser=0
+12-31 15:33:44.534  3017  3017 D InputMonitorCompat: Input monitor (swipe-up-disp0) created
+12-31 15:33:44.534  3017  3017 D InputMonitorCompat: Input event receiver for monitor (swipe-up-disp0) created
+12-31 15:33:44.545  1884  1884 D nativeloader: Configuring clns-9 for other apk /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/lib/arm64:/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.slashwhatever.logset
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment: Currently set values for:
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[com.android.angle, com.google.android.apps.tachyon]
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment:   angle_gl_driver_selection_values=[angle, native]
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment: com.slashwhatever.logset is not listed in per-application setting
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment: ANGLE allowlist from config: com.dreamgames.royalmatch com.dts.freefiremax com.dxx.firenow com.gramgames.mergedragons com.ludo.king com.mojang.minecraftpe com.my.defense com.nintendo.zaka com.os.airforce com.playrix.fishdomdd.gplay io.teslatech.callbreak jp.konami.prospia net.peakgames.toonblast com.yottagames.gameofmafia com.Sunborn.SnqxExilium.Glo com.haoplay.game.and.exilium com.rockstargames.gtasa com.h73.jhqyna com.sega.CrazyTaxiplayhaven en.haoplay.and.rm
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment: com.slashwhatever.logset is not listed in ANGLE allowlist or settings, returning default
+12-31 15:33:44.551  1884  1884 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+12-31 15:33:44.564  1884  1884 W SoLoader: Initializing SoLoader: 0
+12-31 15:33:44.564  1884  1884 W SoLoader: Recording new base apk path: /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk
+12-31 15:33:44.564  1884  1884 W SoLoader: Previously recorded 0 base apk paths.
+12-31 15:33:44.564  1884  1884 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+12-31 15:33:44.564  1884  1884 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+12-31 15:33:44.564  1884  1884 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a]]
+12-31 15:33:44.567  1884  1884 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/lib/arm64 flags = 0]]
+12-31 15:33:44.567  1884  1884 I SoLoader: init finish: 4 SO sources prepared
+12-31 15:33:44.567  1884  1884 W SoLoader: SoLoader initialized: 8
+12-31 15:33:44.573  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libc++_shared.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.575  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libjsi.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.578  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libfbjni.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.581  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libreactnative.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Entering merged library JNI_OnLoad.
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing 12 pre-merged libs (including stub)
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x6e8cec2edc
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x6e8cf93f40
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x6e8cfa69f8
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x6e8cfcbe30
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x6e8d05e5b0
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x6e8d078b24
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x6e8d07f458
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x6e8d09b070
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x6e8d1331a4
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x6e8d13a7e0
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x6e8d141da4
+12-31 15:33:44.581  1884  1884 D jni_lib_merge: About to register 11 actual methods.
+12-31 15:33:44.586  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libreact_codegen_rnscreens.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Entering merged library JNI_OnLoad.
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing 12 pre-merged libs (including stub)
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x6e8cec2edc
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x6e8cf93f40
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x6e8cfa69f8
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x6e8cfcbe30
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x6e8d05e5b0
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x6e8d078b24
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x6e8d07f458
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x6e8d09b070
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x6e8d1331a4
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x6e8d13a7e0
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x6e8d141da4
+12-31 15:33:44.586  1884  1884 D jni_lib_merge: About to register 11 actual methods.
+12-31 15:33:44.588  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libreact_codegen_rnsvg.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Entering merged library JNI_OnLoad.
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing 12 pre-merged libs (including stub)
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libfabricjni_so.  onload_func: 0x6e8cec2edc
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libreact_devsupportjni_so.  onload_func: 0x6e8cf93f40
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libreact_featureflagsjni_so.  onload_func: 0x6e8cfa69f8
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libreact_newarchdefaults_so.  onload_func: 0x6e8cfcbe30
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libreactnativeblob_so.  onload_func: 0x6e8d05e5b0
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libreactnativejni_so.  onload_func: 0x6e8d078b24
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libreactnativejni_common_so.  onload_func: 0x6e8d07f458
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register librninstance_so.  onload_func: 0x6e8d09b070
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libturbomodulejsijni_so.  onload_func: 0x6e8d1331a4
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libuimanagerjni_so.  onload_func: 0x6e8d13a7e0
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: Preparing to register libyoga_so.  onload_func: 0x6e8d141da4
+12-31 15:33:44.589  1884  1884 D jni_lib_merge: About to register 11 actual methods.
+12-31 15:33:44.591  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libreact_codegen_safeareacontext.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.592  1884  1884 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libappmodules.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.596  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:33:44.597  1884  1908 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+12-31 15:33:44.598  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:33:44.598  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:33:44.598  1884  1908 D vulkan  : searching for layers in '/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/lib/arm64'
+12-31 15:33:44.598  1884  1908 D vulkan  : searching for layers in '/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a'
+12-31 15:33:44.601  1884  1884 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+12-31 15:33:44.602  1884  1884 E ashmem  : Pinning is deprecated since Android Q. Please use trim or other methods.
+12-31 15:33:44.611  1884  1884 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Schedule
+12-31 15:33:44.611  1884  1884 W unknown:BridgelessReact: ReactHost{0}.attachSurface(surfaceId = 0)
+12-31 15:33:44.611  1884  1884 D CompatChangeReporter: Compat change id reported: 377864165; UID 10397; state: ENABLED
+12-31 15:33:44.611  1884  1884 D DesktopExperienceFlags: Toggle override initialized to: false
+12-31 15:33:44.611  1884  1884 D DesktopModeFlags: Toggle override initialized to: OVERRIDE_UNSET
+12-31 15:33:44.613  1884  1884 W WindowOnBackDispatcher: OnBackInvokedCallback is not enabled for the application.
+12-31 15:33:44.613  1884  1884 W WindowOnBackDispatcher: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+12-31 15:33:44.613  1884  1884 I ContentCaptureHelper: Setting logging level to OFF
+12-31 15:33:44.614  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask()
+12-31 15:33:44.614  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Start
+12-31 15:33:44.614  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getJSBundleLoader()
+12-31 15:33:44.614  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactContext(): Creating BridgelessReactContext
+12-31 15:33:44.614  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Creating ReactInstance
+12-31 15:33:44.617  1884  1884 W unknown:BridgelessReact: ReactHost{0}.onHostResume(activity)
+12-31 15:33:44.617  1884  1884 W unknown:BridgelessReact: ReactContext.onHostResume()
+12-31 15:33:44.619  1884  1916 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libhermes.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.621  1884  1916 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libhermestooling.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.621  1884  1916 D jni_lib_merge: Entering merged library JNI_OnLoad.
+12-31 15:33:44.621  1884  1916 D jni_lib_merge: Preparing 4 pre-merged libs (including stub)
+12-31 15:33:44.621  1884  1916 D jni_lib_merge: Preparing to register libhermes_executor_so.  onload_func: 0x6f23b184b0
+12-31 15:33:44.621  1884  1916 D jni_lib_merge: Preparing to register libhermesinstancejni_so.  onload_func: 0x6f23b1f900
+12-31 15:33:44.621  1884  1916 D jni_lib_merge: Preparing to register libjsijniprofiler_so.  onload_func: 0x6f23b200ec
+12-31 15:33:44.621  1884  1916 D jni_lib_merge: About to register 3 actual methods.
+12-31 15:33:44.624  1884  1884 W unknown:BridgelessReact: ReactHost{0}.onHostPause(activity)
+12-31 15:33:44.625  1884  1884 W unknown:BridgelessReact: ReactContext.onHostPause()
+12-31 15:33:44.626  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:33:44.626  4525  5548 W AiAiAutofill: (REDACTED) On activity pause for %s completing %d sessions with %d remaining.
+12-31 15:33:44.626  1697  5791 W AutofillManagerServiceImpl: getFillEventHistory() called by UID 10157, but service UID is 10314
+12-31 15:33:44.632  1884  1916 I ExpoModulesCore: ✅ AppContext was initialized
+12-31 15:33:44.639  1884  1884 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.view.ViewRootImpl$$ExternalSyntheticLambda12@90270ec
+12-31 15:33:44.639  1697  5791 D CoreBackPreview: Window{595598c u0 com.slashwhatever.logset/com.slashwhatever.logset.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@ee76d8d, mPriority=0, mIsAnimationCallback=false, mOverrideBehavior=0}
+12-31 15:33:44.641  1697  2596 I MR2ServiceImpl: Updating composite discovery preference | preference: RouteDiscoveryRequest{ preferredFeatures={}, activeScan=false }, active routers: []
+12-31 15:33:44.641  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.641  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.641  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.641  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.641  1697  1804 V WindowManager: Sent Transition (#1323) createdAt=12-31 15:33:44.487 via request=TransitionRequestInfo { type = OPEN, triggerTask = TaskInfo{userId=0 taskId=7210 effectiveUid=10397 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.slashwhatever.logset/.MainActivity } baseActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity} topActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity} origActivity=null realActivity=ComponentInfo{com.slashwhatever.logset/com.slashwhatever.logset.MainActivity} numActivities=1 lastActiveTime=224256030 supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=220 token=WCT{RemoteToken{3f8cb42 Task{7c1ae0b #7210 type=standard A=10397:com.slashwhatever.logset}}} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=-1 lastParentTaskIdBeforePip=-1 displayCutoutSafeInsets=Rect(0, 173 - 0, 0) topActivityInfo=ActivityInfo{5e8d753 com.slashwhatever.logset.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isVisibleRequested=false isTopActivityNoDisplay=false isSleeping=true locusId=null displayAreaFeatureId=1 isTopActivityTransparent=false isActivityStackTransparent=false lastNonFullscreenBounds=Rect(270, 711 - 811, 1791) capturedLink=null capturedLinkTimestamp=0 requestedVisibleTypes=-9 topActivityRequestOpenInBrowserEducationTimestamp=0 appCompatTaskInfo=AppCompatTaskInfo { topActivityInSizeCompat=false eligibleForLetterboxEducation= false isLetterboxEducationEnabled= false isLetterboxDoubleTapEnabled= false eligibleForUserAspectRatioButton= false topActivityBoundsLetterboxed= false isFromLetterboxDoubleTap= false topActivityLetterboxVerticalPosition= -1 topActivityLetterboxHorizontalPosition= -1 topActivityLetterboxWidth=-1 topActivityLetterboxHeight=-1 topActivityAppBounds=Rect(0, 0 - 1080, 2424) isUserFullscreenOverrideEnabled=false isSystemFullscreenOverrideEnabled=false hasMinAspectRatioOverride=false topActivityLetterboxBounds=null cameraCompatTaskInfo=CameraCompatTaskInfo { freeformCameraCompatMode=inactiveundefined} topNonResizableActivityAspectRatio=-1.0} topActivityMainWindowFrame=null isAppBubble=false}, pipChange = null, remoteTransition = null, displayChange = null, flags = 0, debugId = 1323 }
+12-31 15:33:44.641  1697  1804 V WindowManager:     startWCT=WindowContainerTransaction { changes= {} hops= [] errorCallbackToken=null taskFragmentOrganizer=null }
+12-31 15:33:44.641  1697  1804 V WindowManager:     info={id=1323 t=OPEN f=0x40 trk=0 r=[] c=[]}
+12-31 15:33:44.642  2660  3314 V WindowManagerShell: onTransitionReady(transaction=7288559609469)
+12-31 15:33:44.642  2660  2686 V WindowManagerShell: onTransitionReady (#1323) android.os.BinderProxy@7cab3ae: {id=1323 t=OPEN f=0x40 trk=0 r=[] c=[]}
+12-31 15:33:44.642  2660  2686 V WindowManagerShell: No transition roots in (#1323) android.os.BinderProxy@7cab3ae@0 so abort
+12-31 15:33:44.642  2660  2686 V WindowManagerShell: Transition animation finished (aborted=true), notifying core (#1323) android.os.BinderProxy@7cab3ae@0
+12-31 15:33:44.644  1697  1804 V WindowManager: Finish Transition (#1323): created at 12-31 15:33:44.487 collect-started=0.183ms request-sent=9.797ms started=11.192ms ready=108.119ms sent=153.23ms finished=156.318ms
+12-31 15:33:44.644  2660  2686 V WindowManagerShell: Track 0 became idle
+12-31 15:33:44.644  2660  2686 V WindowManagerShell: All active transition animations finished
+12-31 15:33:44.645  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.645  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.645  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.645  1194 16473 W libbinder.IPCThreadState: Sending oneway calls to frozen process.
+12-31 15:33:44.646  1697  2596 I MR2ServiceImpl: Updating composite discovery preference | preference: RouteDiscoveryRequest{ preferredFeatures={}, activeScan=false }, active routers: []
+12-31 15:33:44.646  1697  1804 D HintManagerService: Sent cleanup message for uid 10397
+12-31 15:33:44.647  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Loading JS Bundle
+12-31 15:33:44.647  1884  1916 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Calling DevSupportManagerBase.onNewReactContextCreated(reactContext)
+12-31 15:33:44.647  1884  1916 W unknown:BridgelessReact: ReactHost{0}.startSurface(surfaceId = 0): Execute
+12-31 15:33:44.662   632  2738 E powerhal-libperfmgr: Error: shouldn't report duration during pause state.
+12-31 15:33:44.667  1697  1804 I ActivityTaskManager: Displayed com.slashwhatever.logset/.MainActivity for user 0: +182ms
+12-31 15:33:44.687  1884  1884 W unknown:BridgelessReact: ReactHost{0}.getOrCreateReactInstanceTask(): Executing ReactInstanceEventListeners
+12-31 15:33:44.702  1697  2606 D BackgroundInstallControlService: Package event received: 0
+12-31 15:33:44.738  1884  1918 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/libexpo-modules-core.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:44.772  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaProviderManager
+12-31 15:33:44.777  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.uimanager.LayoutShadowNode
+12-31 15:33:44.780  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.SearchBarManager
+12-31 15:33:44.782  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenFooterManager
+12-31 15:33:44.783  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.TabScreenViewManager
+12-31 15:33:44.784  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContainerViewManager
+12-31 15:33:44.785  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.gamma.tabs.TabsHostViewManager
+12-31 15:33:44.787  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ModalScreenViewManager
+12-31 15:33:44.789  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.GroupViewManagerWrapper
+12-31 15:33:44.792  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderConfigViewManager
+12-31 15:33:44.794  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenContentWrapperManager
+12-31 15:33:44.795  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewManager
+12-31 15:33:44.797  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.th3rdwave.safeareacontext.SafeAreaViewShadowNode
+12-31 15:33:44.798  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenViewManager
+12-31 15:33:44.799  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class expo.modules.kotlin.views.SimpleViewManagerWrapper
+12-31 15:33:44.803  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackHeaderSubviewManager
+12-31 15:33:44.806  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.swmansion.rnscreens.ScreenStackViewManager
+12-31 15:33:44.877  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$DefsViewManager
+12-31 15:33:44.879  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.VirtualViewManager$RenderableShadowNode
+12-31 15:33:44.884  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeMergeManager
+12-31 15:33:44.889  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewManager
+12-31 15:33:44.890  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.safeareaview.ReactSafeAreaViewShadowNode
+12-31 15:33:44.893  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$LinearGradientManager
+12-31 15:33:44.899  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeGaussianBlurManager
+12-31 15:33:44.904  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ReactProgressBarViewManager
+12-31 15:33:44.905  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.progressbar.ProgressBarShadowNode
+12-31 15:33:44.910  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollViewManager
+12-31 15:33:44.916  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextViewManager
+12-31 15:33:44.918  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactTextShadowNode
+12-31 15:33:44.924  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeColorMatrixManager
+12-31 15:33:44.929  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactHorizontalScrollContainerViewManager
+12-31 15:33:44.934  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$ClipPathViewManager
+12-31 15:33:44.941  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$SymbolManager
+12-31 15:33:44.947  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$PatternManager
+12-31 15:33:44.954  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeBlendManager
+12-31 15:33:44.959  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.view.ReactViewManager
+12-31 15:33:44.963  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.SvgViewManager
+12-31 15:33:44.969  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchManager
+12-31 15:33:44.971  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.switchview.ReactSwitchShadowNode
+12-31 15:33:44.974  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$UseViewManager
+12-31 15:33:44.980  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$CircleViewManager
+12-31 15:33:44.986  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$TSpanViewManager
+12-31 15:33:44.993  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FilterManager
+12-31 15:33:44.998  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$MarkerManager
+12-31 15:33:45.005  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.modal.ReactModalHostManager
+12-31 15:33:45.011  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$ForeignObjectManager
+12-31 15:33:45.017  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$EllipseViewManager
+12-31 15:33:45.023  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$LineViewManager
+12-31 15:33:45.029  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageViewManager
+12-31 15:33:45.030  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.frescosupport.FrescoBasedReactTextInlineImageShadowNode
+12-31 15:33:45.034  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeFloodManager
+12-31 15:33:45.039  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$GroupViewManager
+12-31 15:33:45.045  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$TextViewManager
+12-31 15:33:45.052  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$ImageViewManager
+12-31 15:33:45.058  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeCompositeManager
+12-31 15:33:45.064  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.image.ReactImageManager
+12-31 15:33:45.070  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$RadialGradientManager
+12-31 15:33:45.076  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$MaskManager
+12-31 15:33:45.083  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.unimplementedview.ReactUnimplementedViewManager
+12-31 15:33:45.087  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$RectViewManager
+12-31 15:33:45.093  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$TextPathViewManager
+12-31 15:33:45.101  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.scroll.ReactScrollViewManager
+12-31 15:33:45.108  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$FeOffsetManager
+12-31 15:33:45.113  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.horcrux.svg.RenderableViewManager$PathViewManager
+12-31 15:33:45.119  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.drawer.ReactDrawerLayoutManager
+12-31 15:33:45.123  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactVirtualTextViewManager
+12-31 15:33:45.124  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactVirtualTextShadowNode
+12-31 15:33:45.128  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager
+12-31 15:33:45.132  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactRawTextManager
+12-31 15:33:45.133  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.text.ReactRawTextShadowNode
+12-31 15:33:45.134 27997 28009 I FontLog : (REDACTED) Received query %s, URI %s
+12-31 15:33:45.134 27997 28009 I FontLog : (REDACTED) Query [%s] resolved to %s
+12-31 15:33:45.136  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputManager
+12-31 15:33:45.143 27997 28009 I FontLog : (REDACTED) Fetch %s end status %s
+12-31 15:33:45.145  1884  1918 W unknown:ViewManagerPropertyUpdater: Could not find generated setter for class com.facebook.react.views.textinput.ReactTextInputShadowNode
+12-31 15:33:45.149 27997 28009 I FontLog : (REDACTED) Pulling font file for id = %d, cache size = %d
+12-31 15:33:45.152  1884  1936 I HWUI    : Using FreeType backend (prop=Auto)
+12-31 15:33:45.160 27997 28009 I FontLog : (REDACTED) Pulling font file for id = %d, cache size = %d
+12-31 15:33:45.165  1884  1918 W BridgelessReactContext: [WARNING] Bridgeless doesn't support CatalystInstance. Accessing an API that's not part of the new architecture is not encouraged usage.
+12-31 15:33:45.169  1884  1918 I ExpoModulesCore: ✅ JSI interop was installed
+12-31 15:33:45.171  1884  1918 I ExpoModulesCore: ✅ Constants were exported
+12-31 15:33:45.218  1884  1918 D nativeloader: Load /data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!/lib/arm64-v8a/librnscreens.so using class loader ns clns-9 (caller=/data/app/~~DzOl42WWJcwVv5gCj6UOwA==/com.slashwhatever.logset-49tjputA6uLOaFXqBNoTqg==/base.apk!classes3.dex): ok
+12-31 15:33:45.226  1884  1918 I ReactNativeJS: Running "main"
+12-31 15:33:45.226  1884  1918 W ReactNativeJS: SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/th3rdwave/react-native-safe-area-context
+12-31 15:33:45.289  1884  1918 V AsyncStorageExpoMigration: No scoped database found
+12-31 15:33:45.308   923   970 I bthal.activitywatcher: getStateResidency: ActivityStat{0 : totalTimeMs 91262938 totalEntryCount 16810319384 lastEntryMs 4302637}
+12-31 15:33:45.308   923   970 I bthal.activitywatcher: getStateResidency: ActivityStat{1 : totalTimeMs 46756845 totalEntryCount 814524923 lastEntryMs 4302844}
+12-31 15:33:45.308   995   995 I WifiHAL : Creating message to get link statistics; iface = 47
+12-31 15:33:45.308   923   970 I bthal.activitywatcher: getStateResidency: ActivityStat{2 : totalTimeMs 2280706 totalEntryCount 4691126071 lastEntryMs 4304174}
+12-31 15:33:45.308   923   970 I bthal.activitywatcher: getStateResidency: ActivityStat{3 : totalTimeMs 23386283 totalEntryCount 12119192118 lastEntryMs 4304173}
+12-31 15:33:45.320   923   970 I bthal.activitywatcher: send_hci_activities_vsc: Sent VSC <[4]{89, 253, 1, 1}>
+12-31 15:33:45.321   932   932 W android.hardware.power.stats-service.pixel: getStateResidency latency for Bluetooth exceeded time allowed: 12761us
+12-31 15:33:45.322   923  2254 I bthal.activitywatcher: filter_hci_activities_vse: Filtered <[103]{14, 101, 1, 89, 253, 0, 1, 122, 208, 152, 1, 51, 163, 2, 0, 143, 198, 9, 0, 0, 0, 0, 0, 149, 199, 9, 0, 0, 0, 0, 0, 170, 189, 21, 0, 201, 180, 0, 0, 149, 199, 9, 0, 0, 0, 0, 0, 143, 198, 9, 0, 0, 0, 0, 0, 165, 127, 118, 0, 192, 1, 0, 0, 157, 197, 9, 0, 0, 0, 0, 0, 157, 197, 9, 0, 0, 0, 0, 0, 212, 80, 34, 1, 16, 118, 0, 0, 132, 197, 9, 0, 0, 0, 0, 0, 132, 197, 9, 0, 0, 0, 0, 0}>
+12-31 15:33:45.322   923  2254 I bthal.flowcontrol: HciEventPreProcess: HCI Event 0xe Opcode 0xfd59 Length 103 handled by ControllerActivityWatcher
+12-31 15:33:45.323   923  2254 I bthal.bqr: Batt_Per: 37, Avg_Cur_Pwr: 1 mA, BEr_Tx_Plv: 12 dBm, Le_Tx_Plv: 12 dBm, Idle_Tm: 6467 ms, Act_Tm: 46281 ms, BEr_Tx_Tm: 0 ms, BEr_Rx_Tm: 0 ms, Le_Tx_Tm: 448 ms, Le_Rx_Tm: 0 ms, total_Tm 6915 ms, Rx_1Ch_Tm 0 ms, Rx_2Ch_Tm 0 ms, Tx_iPA_1Ch_Tm 448 ms, Tx_iPA_2Ch_Tm 0 ms, Tx_ePA_1Ch_Tm 0 ms, Tx_ePA_2Ch_Tm 0 ms, BEr_Rx_Scan_total_Tm 0, Le_Rx_Scan_total_Tm 0
+12-31 15:33:45.323   923  2254 I bthal.bqr: update_bqr_energy_reportv7: Avg_Cur_Pwr: 1, BEr_Tx_Plv: 12 dBm, Le_Tx_Plv: 12
+12-31 15:33:45.329  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xec, rc: 0
+12-31 15:33:45.329  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x5a [cntr = 51772]
+12-31 15:33:45.330  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x5a, rc: 0
+12-31 15:33:45.330  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xed, rc: 0
+12-31 15:33:45.330  1287  1287 D AOC     : A3:MSG: controller.cc, 933: SysMem: ipc: C-F1-Ar, cmd ID: 0x00c8, tag: 0xee, rc: 0
+12-31 15:33:45.331   923  2254 I bthal.flowcontrol: HciEventPreProcess: HCI Event 0xff Opcode 0 Length 92 unhandled by debug_VendorEvent
+12-31 15:33:45.332  2804  3197 W btm_acl : system/stack/acl/btm_acl.cc:1494 BTM_ReadRemoteVersion: Unable to find active acl
+12-31 15:33:45.332  2804  3197 I bluetooth: system/btif/src/btif_bqr.cc:1019 bqr_delivery_event: len: 89, addr: ff:ff:ff:ff:ff:ff, lmp_ver: 0, manufacturer_id: 0, lmp_subver: 0
+12-31 15:33:45.332  2804  3228 I BluetoothQualityReportJni: android/app/jni/com_android_bluetooth_BluetoothQualityReport.cpp:51 bqr_delivery_callback: 
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface: BQR: {
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:   mAddr: FF:FF:FF:FF:FF:FF, mLmpVer: 0x00, mLmpSubVer: 0x0000, mManufacturerId: 0x0000, mName: , mBluetoothClass: 0,
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:   BqrCommon: {
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:     mQualityReportId: Energy Monitor(0x06), mPacketType: INVALID(0x00), mConnectionHandle: 0x0000, mConnectionRole: 0(0), mTxPowerLevel: 0, mRssi: 0, mSnr: 0, mUnusedAfhChannelCount: 0,
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:     mAfhSelectUnidealChannelCount: 0, mLsto: 0, mPiconetClock: 0x00000000, mRetransmissionCount: 0, mNoRxCount: 0, mNakCount: 0, mLastTxAckTimestamp: 0x00000000, mFlowOffCount: 0,
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:     mLastFlowOnTimestamp: 0x00000000, mOverflowCount: 0, mUnderflowCount: 0, mAddr: null, mCalFailedItemCount: 0,
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:     mTxTotalPackets: 0, mTxUnackPackets: 0, mTxFlushPackets: 0, mTxLastSubeventPackets: 0, mCrcErrorPackets: 0, mRxDupPackets: 0, mRxUnRecvPackets: 0, mCoexInfoMask: 0
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:   }
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:   BqrEnergyMonitor: {
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:     AvgCurrentConsume: 1, mIdleTotalTime: 203075, mIdleStateEnterCount: 551195, mActiveTotalTime: 46281, mActiveStateEnterCount: 1212,
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:     mBredrTxTotalTime: 0, mBredrTxStateEnterCount: 545329, mBredrTxAvgPowerLevel: 12, mBredrRxTotalTime: 0, mBredrRxStateEnterCount: 632, mLeTxTotalTime: 448, mLeTxStateEnterCount: 814, mLeTxAvgPowerLevel: 12, mLeRxTotalTime: 0, mLeRxStateEnterCount: 4419, mReportTotalTime: 203523, mRxActiveOneChainTime: 0, mRxActiveTwoChainTime: 0, mTxiPaActiveOneChainTime: 448, mTxiPaActiveTwoChainTime: 0, mTxePaActiveOneChainTime: 0, mTxePaActiveTwoChainTime: 0
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface:   }
+12-31 15:33:45.333  2804  3228 I BluetoothQualityReportNativeInterface: }
+12-31 15:33:45.335   995   995 I WifiHAL : index: 0 per_rate_size 32, data_rem_len 1152
+12-31 15:33:45.335   995   995 I WifiHAL : index: 1 per_rate_size 32, data_rem_len 1120
+12-31 15:33:45.335   995   995 I WifiHAL : index: 2 per_rate_size 32, data_rem_len 1088
+12-31 15:33:45.335   995   995 I WifiHAL : index: 3 per_rate_size 32, data_rem_len 1056
+12-31 15:33:45.335   995   995 I WifiHAL : index: 4 per_rate_size 32, data_rem_len 1024
+12-31 15:33:45.335   995   995 I WifiHAL : index: 5 per_rate_size 32, data_rem_len 992
+12-31 15:33:45.335   995   995 I WifiHAL : index: 6 per_rate_size 32, data_rem_len 960
+12-31 15:33:45.335   995   995 I WifiHAL : index: 7 per_rate_size 32, data_rem_len 928
+12-31 15:33:45.335   995   995 I WifiHAL : index: 8 per_rate_size 32, data_rem_len 896
+12-31 15:33:45.335   995   995 I WifiHAL : index: 9 per_rate_size 32, data_rem_len 864
+12-31 15:33:45.335   995   995 I WifiHAL : index: 10 per_rate_size 32, data_rem_len 832
+12-31 15:33:45.335   995   995 I WifiHAL : index: 11 per_rate_size 32, data_rem_len 800
+12-31 15:33:45.335   995   995 I WifiHAL : index: 12 per_rate_size 32, data_rem_len 768
+12-31 15:33:45.335   995   995 I WifiHAL : index: 13 per_rate_size 32, data_rem_len 736
+12-31 15:33:45.335   995   995 I WifiHAL : index: 14 per_rate_size 32, data_rem_len 704
+12-31 15:33:45.335   995   995 I WifiHAL : index: 15 per_rate_size 32, data_rem_len 672
+12-31 15:33:45.335   995   995 I WifiHAL : index: 16 per_rate_size 32, data_rem_len 640
+12-31 15:33:45.335   995   995 I WifiHAL : index: 17 per_rate_size 32, data_rem_len 608
+12-31 15:33:45.335   995   995 I WifiHAL : index: 18 per_rate_size 32, data_rem_len 576
+12-31 15:33:45.335   995   995 I WifiHAL : index: 19 per_rate_size 32, data_rem_len 544
+12-31 15:33:45.335   995   995 I WifiHAL : index: 20 per_rate_size 32, data_rem_len 512
+12-31 15:33:45.335   995   995 I WifiHAL : index: 21 per_rate_size 32, data_rem_len 480
+12-31 15:33:45.335   995   995 I WifiHAL : index: 22 per_rate_size 32, data_rem_len 448
+12-31 15:33:45.335   995   995 I WifiHAL : index: 23 per_rate_size 32, data_rem_len 416
+12-31 15:33:45.335   995   995 I WifiHAL : index: 24 per_rate_size 32, data_rem_len 384
+12-31 15:33:45.335   995   995 I WifiHAL : index: 25 per_rate_size 32, data_rem_len 352
+12-31 15:33:45.335   995   995 I WifiHAL : index: 26 per_rate_size 32, data_rem_len 320
+12-31 15:33:45.335   995   995 I WifiHAL : index: 27 per_rate_size 32, data_rem_len 288
+12-31 15:33:45.335   995   995 I WifiHAL : index: 28 per_rate_size 32, data_rem_len 256
+12-31 15:33:45.335   995   995 I WifiHAL : index: 29 per_rate_size 32, data_rem_len 224
+12-31 15:33:45.335   995   995 I WifiHAL : index: 30 per_rate_size 32, data_rem_len 192
+12-31 15:33:45.335   995   995 I WifiHAL : index: 31 per_rate_size 32, data_rem_len 160
+12-31 15:33:45.335   995   995 I WifiHAL : index: 32 per_rate_size 32, data_rem_len 128
+12-31 15:33:45.335   995   995 I WifiHAL : index: 33 per_rate_size 32, data_rem_len 96
+12-31 15:33:45.335   995   995 I WifiHAL : index: 34 per_rate_size 32, data_rem_len 64
+12-31 15:33:45.335   995   995 I WifiHAL : index: 35 per_rate_size 32, data_rem_len 32
+12-31 15:33:45.336   995   995 I WifiHAL : Getting cached scan results, iface handle = 0xb400007c45210e10
+12-31 15:33:45.336   995   995 E WifiHAL : Creating message to get cached scan results
+12-31 15:33:45.337  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x5b [cntr = 51773]
+12-31 15:33:45.338  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x5b, rc: 0
+12-31 15:33:45.339   995   995 I WifiHAL : In GetCachedScanResultsCommand::handleResponse
+12-31 15:33:45.340  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x5c [cntr = 51774]
+12-31 15:33:45.340  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x5c, rc: 0
+12-31 15:33:45.340  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x5d [cntr = 51775]
+12-31 15:33:45.340  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x5d, rc: 0
+12-31 15:33:45.347  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x5e [cntr = 51776]
+12-31 15:33:45.347  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x5e, rc: 0
+12-31 15:33:45.347  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x5f [cntr = 51777]
+12-31 15:33:45.347  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x5f, rc: 0
+12-31 15:33:45.353  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x60 [cntr = 51778]
+12-31 15:33:45.354  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x60, rc: 0
+12-31 15:33:45.354  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x61 [cntr = 51779]
+12-31 15:33:45.356  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x61, rc: 0
+12-31 15:33:45.361  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x62 [cntr = 51780]
+12-31 15:33:45.361  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x62, rc: 0
+12-31 15:33:45.361  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x63 [cntr = 51781]
+12-31 15:33:45.361  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x63, rc: 0
+12-31 15:33:45.363  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x64 [cntr = 51782]
+12-31 15:33:45.363  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x64, rc: 0
+12-31 15:33:45.364  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x65 [cntr = 51783]
+12-31 15:33:45.377  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x65, rc: 0
+12-31 15:33:45.377  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x66 [cntr = 51784]
+12-31 15:33:45.377  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x66, rc: 0
+12-31 15:33:45.377  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x67 [cntr = 51785]
+12-31 15:33:45.377  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x67, rc: 0
+12-31 15:33:45.379  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x68 [cntr = 51786]
+12-31 15:33:45.379  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x68, rc: 0
+12-31 15:33:45.380  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x69 [cntr = 51787]
+12-31 15:33:45.380  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x69, rc: 0
+12-31 15:33:45.380  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x6a [cntr = 51788]
+12-31 15:33:45.380  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x6a, rc: 0
+12-31 15:33:45.380  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x6b [cntr = 51789]
+12-31 15:33:45.380  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x6b, rc: 0
+12-31 15:33:45.381  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x6c [cntr = 51790]
+12-31 15:33:45.381  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x6c, rc: 0
+12-31 15:33:45.381  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x6d [cntr = 51791]
+12-31 15:33:45.381  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x6d, rc: 0
+12-31 15:33:45.381  1287  1287 D AOC     : A3:MSG: controller.cc, 275: CNTRL: cmd ID: 0x000a, tag: 0x6e [cntr = 51792]
+12-31 15:33:45.382  1287  1287 D AOC     : A3:MSG: controller.cc, 933: CNTRL: ipc: control, cmd ID: 0x000a, tag: 0x6e, rc: 0
+12-31 15:33:45.554  1697  1837 D BatteryStatsImpl: Reading cpu stats took 110ms
+12-31 15:33:45.649  1697  2498 D HintManagerService: Starts cleaning for 10397
+12-31 15:33:45.669   923  2254 I bthal.flowcontrol: HciEventPreProcess: HCI Event 0xe Opcode 0xfd59 Length 22 unhandled by ControllerActivityWatcher
+12-31 15:33:45.772  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:45.773  1697  5791 D TelephonyManager: requestModemActivityInfo: Sending result to app: ModemActivityInfo{ mTimestamp=224257305 mSleepTimeMs=185405334 mIdleTimeMs=4377629 mActivityStatsTechSpecificInfo=[{mRat=GERAN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[0, 0, 0, 0, 0],mRxTimeMs=246}, {mRat=UTRAN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[0, 0, 0, 0, 0],mRxTimeMs=32317}, {mRat=EUTRAN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[443983, 186532, 285617, 146030, 372884],mRxTimeMs=27945421}, {mRat=NGRAN,mFrequencyRange=HIGH,mTxTimeMs[]=[34415, 12882, 56170, 77899, 201410],mRxTimeMs=10792250}, {mRat=NGRAN,mFrequencyRange=MMWAVE,mTxTimeMs[]=[0, 0, 0, 0, 0],mRxTimeMs=0}, {mRat=UNKNOWN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[0, 0, 0, 0, 0],mRxTimeMs=0}]}
+12-31 15:33:46.009  3612  3637 W pixelstats-vendor: Thread Pool max thread count is 0. Cannot cache binder as linkToDeath cannot be implemented. serviceName: android.frameworks.stats.IStats/default
+12-31 15:33:46.429  2832  3064 D TemperatureStateSource: sequence=9864 actualDelay=10003
+12-31 15:33:46.430  2832  3064 D TemperatureStateSource: Reading temperature: sequence=9865
+12-31 15:33:46.443  1508  1508 I pixel-thermal: VIRTUAL-SKIN-MODEL: model_input: [24296.00 22930.00 23666.00 24162.00 24080.00 24062.00 24425.00 23118.00 ]
+12-31 15:33:46.444  1508  1508 I native  : I0000 00:00:1767195226.444142    1508 thermal_tflite_wrapper.cc:261] ThermalTfliteInvoke
+12-31 15:33:46.444  1508  1508 I pixel-thermal: VIRTUAL-SKIN-MODEL: model_output: [24117.4 ]
+12-31 15:33:46.444  1508  1508 I pixel-thermal: VIRTUAL-SKIN-MODEL: predicted_value: [24117.4 ]
+12-31 15:33:46.444  1508  1508 I pixel-thermal: VIRTUAL-SKIN:24.1383 raw data: VIRTUAL-SKIN:24138.3 VIRTUAL-SKIN-EQ:24138.3 VIRTUAL-SKIN-LEGACY:23960.3 VIRTUAL-SKIN-LEGACY-MODEL-DIFF:-157.094 VIRTUAL-SKIN-LEGACY-SHUTDOWN:0 VIRTUAL-SKIN-MODEL:24117.4 VIRTUAL-SKIN-MODEL-CLAMPED:24117.4 VIRTUAL-SKIN-MODEL-LEGACY-DIFF:157.094 VIRTUAL-SKIN-MODEL-UPDATED:24138.3 VIRTUAL-SKIN-MODEL-UPPER-CLAMPED:24117.4 VIRTUAL-SKIN-SUB-0:23792.9 VIRTUAL-SKIN-SUB-1:23925 VIRTUAL-SKIN-SUB-2:23819 VIRTUAL-SKIN-SUB-3:23921.2 VIRTUAL-SKIN-SUB-4:23960.3 VT_LEGACY_WEIGHT:0 VT_MODEL_WEIGHT:1 charging_therm:24296 disp0_therm:22930 flash_therm:23666 north_therm:24162 quiet_therm:24080 rfpa_therm:24062 soc_therm:24425 usb_pwr_therm:23118 
+12-31 15:33:46.446  2832  3064 D TemperatureStateSource: getDeviceTemperatures: sequence=9865 deviceTemperatureType=3 temperatureSource=0 temperatures=[24.138296]
+12-31 15:33:46.446  2832  3064 D BusinessScope: Enqueuing the block
+12-31 15:33:46.446  2832  3064 D TemperatureStateSource: sequence=9865 waitTime=10000
+12-31 15:33:46.446  2832  3074 D BusinessScope: Start running the #20239 block
+12-31 15:33:46.447  2832  3074 D BusinessScope: Enqueuing the block
+12-31 15:33:46.448  2832  3074 D ImpulseStateSource: Notify clients: 10118
+12-31 15:33:46.448  2832  3074 D BusinessScope: Finish running the #20239 block
+12-31 15:33:46.448  2832  3074 D BusinessScope: Start running the #20240 block
+12-31 15:33:46.449  2832  3074 D BusinessScope: Finish running the #20240 block
+12-31 15:33:49.657  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+12-31 15:33:49.660  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+12-31 15:33:49.660  1697  2557 D InetDiagMessage: Destroyed live tcp sockets for uids={10397} in 7ms
+12-31 15:33:49.663  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET, states=14
+12-31 15:33:49.667  1697  2557 D InetDiagMessage: Destroyed 0 sockets, proto=IPPROTO_TCP, family=AF_INET6, states=14
+12-31 15:33:49.667  1697  2557 D InetDiagMessage: Destroyed live tcp sockets for uids={20397} in 6ms

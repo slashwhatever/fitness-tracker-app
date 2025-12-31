@@ -1,3 +1,4 @@
+import { useThemeColors } from "@hooks/useThemeColors";
 import {
   ActivityIndicator,
   Text,
@@ -27,6 +28,7 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
+  const colors = useThemeColors();
   // Base styles
   let containerStyles = "flex-row items-center justify-center rounded-xl";
   let textStyles = "font-semibold";
@@ -92,7 +94,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === "default" ? "white" : "#64748b"}
+          color={variant === "default" ? "white" : colors.icon}
           className="mr-2"
         />
       ) : icon ? (

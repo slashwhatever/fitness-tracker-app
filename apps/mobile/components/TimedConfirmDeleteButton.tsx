@@ -1,3 +1,4 @@
+import { useThemeColors } from "@hooks/useThemeColors";
 import { Timer, Trash } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity } from "react-native";
@@ -17,6 +18,7 @@ export function TimedConfirmDeleteButton({
   variant = "default",
   size = 20,
 }: TimedConfirmDeleteButtonProps) {
+  const colors = useThemeColors();
   const [isConfirming, setIsConfirming] = useState(false);
   const [timeLeft, setTimeLeft] = useState(5);
 
@@ -79,7 +81,7 @@ export function TimedConfirmDeleteButton({
   if (variant === "icon") {
     return (
       <TouchableOpacity className="p-2" onPress={handlePress}>
-        <Trash size={size} color="#ef4444" />
+        <Trash size={size} color={colors.danger} />
       </TouchableOpacity>
     );
   }
@@ -89,7 +91,7 @@ export function TimedConfirmDeleteButton({
       className="flex-row items-center p-4 bg-red-500/10 rounded-xl gap-4"
       onPress={handlePress}
     >
-      <Trash size={size} color="#ef4444" />
+      <Trash size={size} color={colors.danger} />
       <Text className="text-red-500 font-medium text-lg flex-1">{title}</Text>
     </TouchableOpacity>
   );

@@ -1,6 +1,6 @@
 import { useMovementTemplates, useUserMovements } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
-import { Dumbbell, Search, X } from "lucide-react-native";
+import { Search, X } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { MovementIcon } from "./MovementIcon";
 
 interface AddMovementSheetProps {
   visible: boolean;
@@ -184,8 +185,8 @@ export function AddMovementSheet({
         onPress={() => handleToggleMovement(item.id, item.isExisting)}
         disabled={isDisabled}
       >
-        <View className="h-10 w-10 rounded-full bg-secondary-500/20 items-center justify-center mr-3">
-          <Dumbbell size={20} color="#ec4899" />
+        <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
+          <MovementIcon trackingType={item.tracking_type} size={20} />
         </View>
         <View className="flex-1">
           <View className="flex-row items-center gap-2">
@@ -282,7 +283,7 @@ export function AddMovementSheet({
           {/* Content */}
           {isLoading ? (
             <View className="flex-1 items-center justify-center p-8">
-              <ActivityIndicator size="large" color="#6366f1" />
+              <ActivityIndicator size="large" color={colors.tint} />
             </View>
           ) : (
             <FlatList

@@ -81,7 +81,7 @@ export default function WorkoutDetailPage({ params }: WorkoutDetailPageProps) {
             <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 mt-2">
               <Suspense fallback={<WorkoutPageSkeleton />}>
                 <WorkoutHeader
-                  workout={workout}
+                  workout={workout ?? undefined}
                   isLoading={workoutLoading}
                   movementCount={workoutMovements.length}
                   workoutId={workoutId}

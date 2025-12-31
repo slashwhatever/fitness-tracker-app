@@ -4,6 +4,7 @@ import BackgroundSyncProvider from "@/components/common/BackgroundSyncProvider";
 import MobileViewportOptimizer from "@/components/common/MobileViewportOptimizer";
 import PWAInstallPrompt from "@/components/common/PWAInstallPrompt";
 import TimerBanner from "@/components/common/TimerBanner";
+import { RestTimerProvider } from "@/components/providers/RestTimerProvider";
 import { TimerProvider } from "@/contexts/TimerContext";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
 import type { Metadata, Viewport } from "next";
@@ -63,10 +64,12 @@ export default function RootLayout({
             <AuthProvider>
               <BackgroundSyncProvider>
                 <TimerProvider>
-                  <MobileViewportOptimizer />
-                  <TimerBanner />
-                  {children}
-                  <PWAInstallPrompt />
+                  <RestTimerProvider>
+                    <MobileViewportOptimizer />
+                    <TimerBanner />
+                    {children}
+                    <PWAInstallPrompt />
+                  </RestTimerProvider>
                 </TimerProvider>
               </BackgroundSyncProvider>
             </AuthProvider>

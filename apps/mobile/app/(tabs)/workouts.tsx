@@ -235,7 +235,7 @@ export default function WorkoutsScreen() {
           <RefreshControl
             refreshing={isLoading}
             onRefresh={refetch}
-            tintColor="#6366f1"
+            tintColor={colors.tint}
             progressViewOffset={headerPadding}
           />
         }

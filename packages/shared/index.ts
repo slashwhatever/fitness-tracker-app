@@ -11,7 +11,7 @@ export * from "./src/hooks/useWorkouts";
 
 // Export utilities and types
 export * from "./src/lib/auth";
-export * from "./src/lib/rest-timer/RestTimerProvider";
+export * from "./src/lib/rest-timer/RestTimerContext";
 export * from "./src/lib/session-metrics";
 export * from "./src/lib/utils/dateHelpers";
 export * from "./src/models/types";

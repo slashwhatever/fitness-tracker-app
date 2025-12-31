@@ -1,6 +1,7 @@
 import { AddMovementSheet } from "@/components/AddMovementSheet";
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
+import { MovementIcon } from "@/components/MovementIcon";
 import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
 import { createClient } from "@/lib/supabase/client";
 import { formatLastSetDate } from "@fitness/shared";
@@ -21,7 +22,7 @@ import {
   useWorkout,
 } from "@hooks/useWorkouts";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { Dumbbell, MoreVertical, Plus } from "lucide-react-native";
+import { MoreVertical, Plus } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -241,7 +242,7 @@ export default function WorkoutDetailScreen() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" color="#6366f1" />
+        <ActivityIndicator size="large" color={colors.tint} />
       </SafeAreaView>
     );
   }
@@ -283,8 +284,11 @@ export default function WorkoutDetailScreen() {
     >
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center flex-1">
-          <View className="h-10 w-10 rounded-full bg-secondary-500/20 items-center justify-center mr-3">
-            <Dumbbell size={20} color="#ec4899" />
+          <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
+            <MovementIcon
+              trackingType={item.user_movement?.tracking_type}
+              size={20}
+            />
           </View>
           <View className="flex-1">
             <Text className="text-foreground font-bold text-base">
@@ -362,7 +366,7 @@ export default function WorkoutDetailScreen() {
             >
               <View className="items-center">
                 <View className="h-16 w-16 rounded-full bg-primary-500/10 items-center justify-center mb-4">
-                  <Plus size={32} color="#6366f1" />
+                  <Plus size={32} color={colors.tint} />
                 </View>
                 <Text className="text-slate-500 dark:text-gray-400 font-medium text-lg">
                   Add your first movement
@@ -378,7 +382,7 @@ export default function WorkoutDetailScreen() {
               >
                 <View className="flex-row items-center">
                   <View className="h-10 w-10 rounded-full bg-primary-500/10 items-center justify-center mr-3">
-                    <Plus size={20} color="#6366f1" />
+                    <Plus size={20} color={colors.tint} />
                   </View>
                   <Text className="text-slate-500 dark:text-gray-400 font-medium text-base">
                     Add a movement

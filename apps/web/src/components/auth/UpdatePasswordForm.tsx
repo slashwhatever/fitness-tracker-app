@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updatePassword } from "@fitness/shared";
+import { createClient } from "@/lib/supabase/client";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Check, Dumbbell, Eye, EyeOff, Loader2, X } from "lucide-react";
 import Link from "next/link";
@@ -84,12 +84,15 @@ const UpdatePasswordForm = () => {
   const onSubmit = handleSubmit(async (values) => {
     setLoading(true);
     setError(null);
+    const supabase = createClient();
 
     try {
-      const { error: updateError } = await updatePassword(values.password);
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: values.password,
+      });
 
       if (updateError) {
-        setError(updateError);
+        setError(updateError.message);
         return;
       }
 
