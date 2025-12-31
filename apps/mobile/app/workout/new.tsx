@@ -1,3 +1,5 @@
+import { REST_TIMER_HEIGHT } from "@/components/RestTimer";
+import { useRestTimer } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
@@ -13,7 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function NewWorkoutScreen() {
   const router = useRouter();
@@ -45,11 +47,14 @@ export default function NewWorkoutScreen() {
   };
 
   const bottomPadding = useBottomPadding();
+  const insets = useSafeAreaInsets();
+  const { isActive, isCompleted } = useRestTimer();
+  const timerHeight = isActive || isCompleted ? REST_TIMER_HEIGHT : 0;
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-background p-4"
-      edges={["top", "left", "right"]}
+    <View
+      className="flex-1 bg-background px-4"
+      style={{ paddingTop: insets.top + timerHeight + 16 }}
     >
       <View className="flex-row items-center justify-between mb-6">
         <TouchableOpacity
@@ -155,6 +160,6 @@ export default function NewWorkoutScreen() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

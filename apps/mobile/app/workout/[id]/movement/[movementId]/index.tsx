@@ -136,6 +136,8 @@ export default function MovementDetailScreen() {
 
   const [weight, setWeight] = useState("0");
   const [reps, setReps] = useState("0");
+  const [distance, setDistance] = useState("0");
+  const [duration, setDuration] = useState("0");
   const [rpe, setRpe] = useState<number | null>(null);
   const [notes, setNotes] = useState("");
 
@@ -152,6 +154,8 @@ export default function MovementDetailScreen() {
       const lastSet = sets[0];
       setWeight(lastSet.weight?.toString() || "0");
       setReps(lastSet.reps?.toString() || "0");
+      setDistance(lastSet.distance?.toString() || "0");
+      setDuration(lastSet.duration?.toString() || "0");
       // Don't auto-fill RPE as that likely changes
     }
   }, [setsLoading]); // Only run once when sets load initially
@@ -184,6 +188,8 @@ export default function MovementDetailScreen() {
         user_movement_id: movementId,
         weight: parseFloat(weight) || 0,
         reps: parseInt(reps) || 0,
+        distance: parseFloat(distance) || 0,
+        duration: parseInt(duration) || 0,
         rpe: rpe,
         notes: notes.trim() || undefined,
       });
@@ -207,6 +213,8 @@ export default function MovementDetailScreen() {
             user_movement_id: movementId,
             weight: selectedSet.weight,
             reps: selectedSet.reps,
+            distance: selectedSet.distance,
+            duration: selectedSet.duration,
             rpe: selectedSet.rpe,
           });
           break;
@@ -291,27 +299,64 @@ export default function MovementDetailScreen() {
         {/* Input Section */}
         <View className="p-4 gap-6">
           <View className="flex-row gap-4 justify-between">
-            <View className="flex-1">
-              <SetAdjuster
-                label="REPS"
-                value={reps}
-                onChangeText={setReps}
-                onAdjust={(delta) => handleAdjust(setReps, reps, delta)}
-                steps={[1]}
-                variant="primary"
-              />
-            </View>
+            {/* Dynamic Controls based on tracking_type */}
+            {(movement.tracking_type === "weight" ||
+              movement.tracking_type === "reps" ||
+              movement.tracking_type === "bodyweight") && (
+              <View className="flex-1">
+                <SetAdjuster
+                  label="REPS"
+                  value={reps}
+                  onChangeText={setReps}
+                  onAdjust={(delta) => handleAdjust(setReps, reps, delta)}
+                  steps={[1]}
+                  variant="primary"
+                />
+              </View>
+            )}
 
-            <View className="flex-1">
-              <SetAdjuster
-                label={profile?.weight_unit?.toUpperCase() || "KG"}
-                value={weight}
-                onChangeText={setWeight}
-                onAdjust={(delta) => handleAdjust(setWeight, weight, delta)}
-                steps={[1, 5]}
-                variant="secondary"
-              />
-            </View>
+            {movement.tracking_type === "weight" && (
+              <View className="flex-1">
+                <SetAdjuster
+                  label={profile?.weight_unit?.toUpperCase() || "KG"}
+                  value={weight}
+                  onChangeText={setWeight}
+                  onAdjust={(delta) => handleAdjust(setWeight, weight, delta)}
+                  steps={[1, 5]}
+                  variant="secondary"
+                />
+              </View>
+            )}
+
+            {movement.tracking_type === "duration" && (
+              <View className="flex-1">
+                <SetAdjuster
+                  label="SECONDS"
+                  value={duration}
+                  onChangeText={setDuration}
+                  onAdjust={(delta) =>
+                    handleAdjust(setDuration, duration, delta)
+                  }
+                  steps={[5, 15]}
+                  variant="primary"
+                />
+              </View>
+            )}
+
+            {movement.tracking_type === "distance" && (
+              <View className="flex-1">
+                <SetAdjuster
+                  label={profile?.distance_unit?.toUpperCase() || "KM"}
+                  value={distance}
+                  onChangeText={setDistance}
+                  onAdjust={(delta) =>
+                    handleAdjust(setDistance, distance, delta)
+                  }
+                  steps={[0.1, 0.5]}
+                  variant="primary"
+                />
+              </View>
+            )}
           </View>
 
           <TouchableOpacity
@@ -401,18 +446,54 @@ export default function MovementDetailScreen() {
                         }`}
                       >
                         <View className="flex-row items-center gap-2">
-                          <Text className="text-foreground font-bold text-xl text-center">
-                            {set.reps}
-                          </Text>
-                          <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                            reps x
-                          </Text>
-                          <Text className="text-foreground font-bold text-xl text-center">
-                            {set.weight}
-                          </Text>
-                          <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                            {profile?.weight_unit || "kg"}
-                          </Text>
+                          {(movement.tracking_type === "weight" ||
+                            movement.tracking_type === "reps" ||
+                            movement.tracking_type === "bodyweight") && (
+                            <>
+                              <Text className="text-foreground font-bold text-xl text-center">
+                                {set.reps}
+                              </Text>
+                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                                reps
+                              </Text>
+                            </>
+                          )}
+
+                          {movement.tracking_type === "weight" && (
+                            <>
+                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                                x
+                              </Text>
+                              <Text className="text-foreground font-bold text-xl text-center">
+                                {set.weight}
+                              </Text>
+                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                                {profile?.weight_unit || "kg"}
+                              </Text>
+                            </>
+                          )}
+
+                          {movement.tracking_type === "duration" && (
+                            <>
+                              <Text className="text-foreground font-bold text-xl text-center">
+                                {set.duration}
+                              </Text>
+                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                                s
+                              </Text>
+                            </>
+                          )}
+
+                          {movement.tracking_type === "distance" && (
+                            <>
+                              <Text className="text-foreground font-bold text-xl text-center">
+                                {set.distance}
+                              </Text>
+                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                                {profile?.distance_unit || "km"}
+                              </Text>
+                            </>
+                          )}
                         </View>
 
                         <TouchableOpacity
@@ -447,9 +528,15 @@ export default function MovementDetailScreen() {
         onSelect={handleSetAction}
         setDetails={
           selectedSet
-            ? `${selectedSet.reps} reps x ${selectedSet.weight} ${
-                profile?.weight_unit || "kg"
-              }`
+            ? movement.tracking_type === "weight"
+              ? `${selectedSet.reps} reps x ${selectedSet.weight} ${
+                  profile?.weight_unit || "kg"
+                }`
+              : movement.tracking_type === "duration"
+                ? `${selectedSet.duration}s`
+                : movement.tracking_type === "distance"
+                  ? `${selectedSet.distance} ${profile?.distance_unit || "km"}`
+                  : `${selectedSet.reps} reps`
             : ""
         }
       />
@@ -457,6 +544,9 @@ export default function MovementDetailScreen() {
         visible={editSheetVisible}
         onClose={() => setEditSheetVisible(false)}
         set={selectedSet}
+        trackingType={movement.tracking_type}
+        weightUnit={profile?.weight_unit || "kg"}
+        distanceUnit={profile?.distance_unit || "km"}
       />
 
       <MovementActionSheet

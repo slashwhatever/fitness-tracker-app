@@ -20,11 +20,23 @@ interface EditSetSheetProps {
   visible: boolean;
   onClose: () => void;
   set: Set | null;
+  trackingType?: string;
+  weightUnit?: string;
+  distanceUnit?: string;
 }
 
-export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
+export function EditSetSheet({
+  visible,
+  onClose,
+  set,
+  trackingType = "weight",
+  weightUnit = "kg",
+  distanceUnit = "km",
+}: EditSetSheetProps) {
   const [reps, setReps] = useState("0");
   const [weight, setWeight] = useState("0");
+  const [distance, setDistance] = useState("0");
+  const [duration, setDuration] = useState("0");
   const [notes, setNotes] = useState("");
   const colors = useThemeColors();
 
@@ -34,6 +46,8 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
     if (set && visible) {
       setReps(set.reps?.toString() || "0");
       setWeight(set.weight?.toString() || "0");
+      setDistance(set.distance?.toString() || "0");
+      setDuration(set.duration?.toString() || "0");
       setNotes(set.notes || "");
     }
   }, [set, visible]);
@@ -47,6 +61,8 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
         updates: {
           reps: parseInt(reps) || 0,
           weight: parseFloat(weight) || 0,
+          distance: parseFloat(distance) || 0,
+          duration: parseInt(duration) || 0,
           notes: notes.trim() || undefined,
         },
       });
@@ -62,7 +78,8 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
     delta: number
   ) => {
     const val = parseFloat(current) || 0;
-    setter(Math.max(0, val + delta).toString());
+    const newVal = Math.max(0, val + delta);
+    setter(newVal % 1 === 0 ? newVal.toString() : newVal.toFixed(1));
   };
 
   if (!set) return null;
@@ -96,22 +113,65 @@ export function EditSetSheet({ visible, onClose, set }: EditSetSheetProps) {
 
               {/* Inputs */}
               <View className="flex-row justify-center gap-12 mb-8">
-                <SetAdjuster
-                  label="reps"
-                  value={reps}
-                  onChangeText={setReps}
-                  onAdjust={(delta) => handleAdjust(setReps, reps, delta)}
-                  steps={[1]}
-                  variant="primary"
-                />
-                <SetAdjuster
-                  label="kg"
-                  value={weight}
-                  onChangeText={setWeight}
-                  onAdjust={(delta) => handleAdjust(setWeight, weight, delta)}
-                  steps={[1, 5]}
-                  variant="secondary"
-                />
+                {(trackingType === "weight" ||
+                  trackingType === "reps" ||
+                  trackingType === "bodyweight") && (
+                  <View>
+                    <SetAdjuster
+                      label="reps"
+                      value={reps}
+                      onChangeText={setReps}
+                      onAdjust={(delta) => handleAdjust(setReps, reps, delta)}
+                      steps={[1]}
+                      variant="primary"
+                    />
+                  </View>
+                )}
+
+                {trackingType === "weight" && (
+                  <View>
+                    <SetAdjuster
+                      label={weightUnit}
+                      value={weight}
+                      onChangeText={setWeight}
+                      onAdjust={(delta) =>
+                        handleAdjust(setWeight, weight, delta)
+                      }
+                      steps={[1, 5]}
+                      variant="secondary"
+                    />
+                  </View>
+                )}
+
+                {trackingType === "duration" && (
+                  <View>
+                    <SetAdjuster
+                      label="seconds"
+                      value={duration}
+                      onChangeText={setDuration}
+                      onAdjust={(delta) =>
+                        handleAdjust(setDuration, duration, delta)
+                      }
+                      steps={[5, 15]}
+                      variant="primary"
+                    />
+                  </View>
+                )}
+
+                {trackingType === "distance" && (
+                  <View>
+                    <SetAdjuster
+                      label={distanceUnit}
+                      value={distance}
+                      onChangeText={setDistance}
+                      onAdjust={(delta) =>
+                        handleAdjust(setDistance, distance, delta)
+                      }
+                      steps={[0.1, 0.5]}
+                      variant="primary"
+                    />
+                  </View>
+                )}
               </View>
 
               {/* Save Button */}

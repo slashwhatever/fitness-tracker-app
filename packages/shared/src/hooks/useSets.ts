@@ -6,6 +6,8 @@ import {
   type UseMutationResult,
   type UseQueryResult,
 } from "@tanstack/react-query";
+import { useRestTimer } from "../lib/rest-timer/RestTimerProvider";
+import { useUserProfile } from "./useUserProfile";
 
 import type {
   Tables,
@@ -184,6 +186,8 @@ export function useCreateSet(
 ): UseMutationResult<SetWithMovement, Error, Omit<SetInsert, "user_id">> {
   const { user, supabase } = deps;
   const queryClient = useQueryClient();
+  const { startTimer } = useRestTimer();
+  const { data: userProfile } = useUserProfile(deps);
 
   return useMutation({
     mutationFn: async (set: Omit<SetInsert, "user_id">) => {
@@ -256,7 +260,25 @@ export function useCreateSet(
         );
       }
     },
+
     onSuccess: (data) => {
+      // Trigger Rest Timer
+      const movementTimer = data.user_movement?.custom_rest_timer;
+      // Hierarchy: Movement > Global > 60s (Default)
+      // TODO: Implement Workout hierarchy layer
+      const globalTimer = userProfile?.default_rest_timer;
+      const duration =
+        movementTimer && movementTimer > 0
+          ? movementTimer
+          : globalTimer && globalTimer > 0
+            ? globalTimer
+            : 60;
+
+      startTimer(duration, {
+        movementId: data.user_movement_id,
+        workoutId: data.workout_id ?? undefined,
+      });
+
       if (user?.id) {
         // Replace optimistic set with real server data in main sets list
         queryClient.setQueryData(

@@ -1,5 +1,7 @@
+import { RestTimer } from "@/components/RestTimer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
+import { RestTimerProvider } from "@fitness/shared";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
@@ -56,16 +58,22 @@ function AuthenticatedApp() {
   );
 }
 
+// Inner layout removed - using simple stacking with Absolute Timer
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <AuthProvider>
           <ThemeProvider>
-            <View className="flex-1 bg-background">
-              <StatusBar style="auto" />
-              <AuthenticatedApp />
-            </View>
+            {/* Import RestTimerProvider dynamically or directly if shared package allows */}
+            {/* Ideally we alias this in package.json or babel config but for now relative/alias imports */}
+            <RestTimerProvider>
+              <View className="flex-1 bg-background">
+                <StatusBar style="auto" />
+                <AuthenticatedApp />
+                <RestTimer />
+              </View>
+            </RestTimerProvider>
           </ThemeProvider>
         </AuthProvider>
       </SafeAreaProvider>

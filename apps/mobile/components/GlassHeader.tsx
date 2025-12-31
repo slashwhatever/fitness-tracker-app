@@ -1,3 +1,5 @@
+import { REST_TIMER_HEIGHT } from "@/components/RestTimer";
+import { useRestTimer } from "@fitness/shared";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
@@ -16,6 +18,7 @@ interface GlassHeaderProps {
   intensity?: number;
   onBack?: () => void;
   style?: any;
+  ignoreTimer?: boolean;
 }
 
 export const HEADER_CONTENT_HEIGHT = 60;
@@ -28,12 +31,17 @@ export function GlassHeader({
   rightAction,
   intensity = 50,
   onBack,
+  ignoreTimer = false,
 }: GlassHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = useThemeColors();
+  const { isActive, isCompleted } = useRestTimer();
+
+  const timerOffset =
+    (isActive || isCompleted) && !ignoreTimer ? REST_TIMER_HEIGHT : 0;
 
   const handleBack = () => {
     if (onBack) {
@@ -67,8 +75,8 @@ export function GlassHeader({
     >
       <View
         style={{
-          paddingTop: insets.top,
-          height: insets.top + HEADER_CONTENT_HEIGHT,
+          paddingTop: insets.top + timerOffset,
+          height: insets.top + HEADER_CONTENT_HEIGHT + timerOffset,
         }}
         className="px-4 flex-row items-center justify-between"
       >
