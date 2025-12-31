@@ -40,8 +40,13 @@ export function GlassHeader({
   const colors = useThemeColors();
   const { isActive, isCompleted } = useRestTimer();
 
-  const timerOffset =
-    (isActive || isCompleted) && !ignoreTimer ? REST_TIMER_HEIGHT : 0;
+  const isTimerActive = (isActive || isCompleted) && !ignoreTimer;
+
+  const containerTop = isTimerActive ? insets.top + REST_TIMER_HEIGHT : 0;
+  const containerHeight = isTimerActive
+    ? HEADER_CONTENT_HEIGHT
+    : insets.top + HEADER_CONTENT_HEIGHT;
+  const contentPaddingTop = isTimerActive ? 0 : insets.top;
 
   const handleBack = () => {
     if (onBack) {
@@ -62,6 +67,7 @@ export function GlassHeader({
       tint={isDark ? "systemThickMaterialDark" : "systemThickMaterialLight"}
       style={[
         {
+          top: containerTop,
           backgroundColor: isDark
             ? "rgba(15,23,42,0.5)"
             : "rgba(255,255,255,0.5)",
@@ -71,12 +77,12 @@ export function GlassHeader({
         // However, if we want to support non-absolute uses, we might want to make this configurable.
         // For now, keeping it absolute but allowing style override is safest.
       ]}
-      className="absolute top-0 left-0 right-0 z-50 border-b border-slate-200/50 dark:border-white/10"
+      className="absolute left-0 right-0 z-50 border-b border-slate-200/50 dark:border-white/10"
     >
       <View
         style={{
-          paddingTop: insets.top + timerOffset,
-          height: insets.top + HEADER_CONTENT_HEIGHT + timerOffset,
+          paddingTop: contentPaddingTop,
+          height: containerHeight,
         }}
         className="px-4 flex-row items-center justify-between"
       >

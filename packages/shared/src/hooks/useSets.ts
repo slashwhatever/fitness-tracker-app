@@ -424,17 +424,16 @@ export function useDeleteSet(deps: HookDependencies): UseMutationResult<
 
   return useMutation({
     mutationFn: async (setId: string) => {
-      // First get the set data to know which queries to invalidate
-      const { data: setData } = await supabase
+      // Atomic delete and select return
+      const { data, error } = await supabase
         .from("sets")
-        .select("user_movement_id, workout_id")
+        .delete()
         .eq("id", setId)
-        .single();
-
-      const { error } = await supabase.from("sets").delete().eq("id", setId);
+        .select("user_movement_id, workout_id")
+        .maybeSingle();
 
       if (error) throw error;
-      return { setId, setData };
+      return { setId, setData: data };
     },
     onMutate: async (setId) => {
       if (!user?.id) return;

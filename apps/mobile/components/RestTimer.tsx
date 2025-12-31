@@ -4,7 +4,13 @@ import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { useColorScheme } from "nativewind";
 import React, { useEffect, useMemo } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import twColors from "tailwindcss/colors";
 import { useThemeColors } from "../hooks/useThemeColors";
@@ -45,6 +51,10 @@ export const RestTimer = () => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
+  // Safe Platform check for web/android specific logic if needed
+  const isAndroid =
+    typeof Platform !== "undefined" && Platform.OS === "android";
+
   useEffect(() => {
     if (isCompleted) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -75,16 +85,19 @@ export const RestTimer = () => {
 
   return (
     <BlurView
-      intensity={95}
+      intensity={50}
       experimentalBlurMethod="dimezisBlurView"
       tint={isDark ? "systemThickMaterialDark" : "systemThickMaterialLight"}
       style={[
         styles.container,
         {
           paddingTop: insets.top,
-          backgroundColor: isDark
-            ? "rgba(15,23,42,0.6)"
-            : "rgba(255,255,255,0.6)",
+          height: insets.top + REST_TIMER_HEIGHT,
+          backgroundColor: isAndroid
+            ? "transparent" // Ensure transparency on Android for blur to work
+            : isDark
+              ? "rgba(15,23,42,0.5)"
+              : "rgba(255,255,255,0.5)",
           borderBottomColor: theme.border,
         },
       ]}
