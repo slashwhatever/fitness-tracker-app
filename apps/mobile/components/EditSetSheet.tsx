@@ -112,11 +112,11 @@ export function EditSetSheet({
               </View>
 
               {/* Inputs */}
-              <View className="flex-row justify-center gap-12 mb-8">
+              <View className="flex-row justify-center gap-4 mb-8">
                 {(trackingType === "weight" ||
                   trackingType === "reps" ||
                   trackingType === "bodyweight") && (
-                  <View>
+                  <View className="flex-1">
                     <SetAdjuster
                       label="reps"
                       value={reps}
@@ -129,7 +129,7 @@ export function EditSetSheet({
                 )}
 
                 {trackingType === "weight" && (
-                  <View>
+                  <View className="flex-1">
                     <SetAdjuster
                       label={weightUnit}
                       value={weight}
@@ -144,7 +144,7 @@ export function EditSetSheet({
                 )}
 
                 {trackingType === "duration" && (
-                  <View>
+                  <View className="flex-1">
                     <SetAdjuster
                       label="seconds"
                       value={duration}
@@ -159,7 +159,7 @@ export function EditSetSheet({
                 )}
 
                 {trackingType === "distance" && (
-                  <View>
+                  <View className="flex-1">
                     <SetAdjuster
                       label={distanceUnit}
                       value={distance}

@@ -35,7 +35,7 @@ export function SetAdjuster({
     <View className="items-center gap-4">
       <View>
         <TextInput
-          className="text-foreground text-7xl font-light text-center p-0"
+          className="text-foreground text-5xl font-light text-center p-0"
           value={value}
           onChangeText={onChangeText}
           keyboardType="decimal-pad"

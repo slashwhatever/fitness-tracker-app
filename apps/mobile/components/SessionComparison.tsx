@@ -57,8 +57,13 @@ export function SessionComparison({
       {/* Metrics Grid */}
       <View className="flex-row flex-wrap gap-y-4">
         {metrics.map((metric, index) => {
-          const isImprovement = metric.diff > 0;
-          const isDecline = metric.diff < 0;
+          // Check if higher is better (default) or lower is better (reverse weight)
+          const isImprovement = metric.invertImprovement
+            ? metric.diff < 0
+            : metric.diff > 0;
+          const isDecline = metric.invertImprovement
+            ? metric.diff > 0
+            : metric.diff < 0;
           const isNeutral = metric.diff === 0;
 
           // Progress percent display

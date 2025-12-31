@@ -123,6 +123,7 @@ export function useUserMovements(
           experience_level,
           tracking_type_id,
           custom_rest_timer,
+          is_reverse_weight,
           last_used_at,
           manual_1rm,
           customized_at,
@@ -169,6 +170,7 @@ export function useUserMovements(
           experience_level:
             movement.experience_level || template?.experience_level || null,
           customized_at: movement.customized_at, // Include new field
+          is_reverse_weight: movement.is_reverse_weight,
           tracking_type:
             movement.tracking_types?.name || ("weight" as TrackingTypeName),
           muscle_groups:
@@ -206,6 +208,7 @@ async function fetchUserMovement(
       experience_level,
       tracking_type_id,
       custom_rest_timer,
+      is_reverse_weight,
       last_used_at,
       manual_1rm,
       customized_at,
@@ -252,6 +255,7 @@ async function fetchUserMovement(
     experience_level:
       transformedData.experience_level || template?.experience_level || null,
     customized_at: transformedData.customized_at, // Use database value
+    is_reverse_weight: transformedData.is_reverse_weight,
     tracking_type:
       transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
     muscle_groups:
@@ -308,6 +312,7 @@ export function useWorkoutMovements(
             experience_level,
             tracking_type_id,
             custom_rest_timer,
+            is_reverse_weight,
             last_used_at,
             manual_1rm,
             customized_at,
@@ -359,6 +364,7 @@ export function useWorkoutMovements(
                 experience_level:
                   um.experience_level || template?.experience_level || null,
                 customized_at: um.customized_at, // Include new field
+                is_reverse_weight: um.is_reverse_weight,
                 tracking_type:
                   um.tracking_types?.name || ("weight" as TrackingTypeName),
                 muscle_groups:

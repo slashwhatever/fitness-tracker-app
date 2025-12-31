@@ -8,12 +8,14 @@ export type MetricData = {
   label: string;
   color: string;
   backgroundColor: string;
+  invertImprovement?: boolean;
 };
 
 type Set = Tables<"sets">;
 type UserMovement = Tables<"user_movements"> & {
   tracking_types?: { name: string } | null;
   tracking_type?: string;
+  is_reverse_weight?: boolean | null;
 };
 
 export const calculateMetrics = (
@@ -62,6 +64,10 @@ export const calculateMetrics = (
         previousReps > 0 ? (repsDiff / previousReps) * 100 : 0;
 
       // Total volume (reps × weight)
+      // For reverse weight (assisted), less weight is harder, so higher volume (reps x weight)
+      // is actually deceptive. If I do 10 reps @ 10kg (assisted) = 100
+      // vs 10 reps @ 20kg (assisted) = 200.
+      // The 100 session is BETTER.
       const currentVolume = currentSets.reduce(
         (sum, set) => sum + (set.reps || 0) * (set.weight || 0),
         0
@@ -109,6 +115,7 @@ export const calculateMetrics = (
           label: "volume",
           color: "bg-blue-500",
           backgroundColor: "bg-blue-900/40",
+          invertImprovement: movement.is_reverse_weight || false,
         },
         {
           current: Math.round(currentWeightPerRep * 10) / 10, // Round to 1 decimal
@@ -118,6 +125,7 @@ export const calculateMetrics = (
           label: "weight/rep",
           color: "bg-orange-500",
           backgroundColor: "bg-orange-900/40",
+          invertImprovement: movement.is_reverse_weight || false,
         }
       );
       break;

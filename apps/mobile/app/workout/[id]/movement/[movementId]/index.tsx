@@ -150,6 +150,9 @@ export default function MovementDetailScreen() {
 
   const deleteMovementMutation = useDeleteWorkoutMovement();
 
+  // Normalize tracking type with fallback
+  const trackingType = movement?.tracking_type || "weight";
+
   // Initialize with values from the most recent set if available
   useEffect(() => {
     if (sets && sets.length > 0) {
@@ -303,7 +306,7 @@ export default function MovementDetailScreen() {
       >
         <View className="px-4 mb-6 flex-row items-center gap-3">
           <View className="h-12 w-12 rounded-full bg-primary-500/20 items-center justify-center">
-            <MovementIcon trackingType={movement.tracking_type} size={24} />
+            <MovementIcon trackingType={trackingType} size={24} />
           </View>
           <Text className="text-3xl font-bold text-foreground text-left flex-1">
             {movement.name}
@@ -313,9 +316,9 @@ export default function MovementDetailScreen() {
         <View className="p-4 gap-6">
           <View className="flex-row gap-4 justify-between">
             {/* Dynamic Controls based on tracking_type */}
-            {(movement.tracking_type === "weight" ||
-              movement.tracking_type === "reps" ||
-              movement.tracking_type === "bodyweight") && (
+            {(trackingType === "weight" ||
+              trackingType === "reps" ||
+              trackingType === "bodyweight") && (
               <View className="flex-1">
                 <SetAdjuster
                   label="REPS"
@@ -328,7 +331,7 @@ export default function MovementDetailScreen() {
               </View>
             )}
 
-            {movement.tracking_type === "weight" && (
+            {trackingType === "weight" && (
               <View className="flex-1">
                 <SetAdjuster
                   label={profile?.weight_unit?.toUpperCase() || "KG"}
@@ -341,7 +344,7 @@ export default function MovementDetailScreen() {
               </View>
             )}
 
-            {movement.tracking_type === "duration" && (
+            {trackingType === "duration" && (
               <View className="flex-1">
                 <SetAdjuster
                   label="SECONDS"
@@ -356,7 +359,7 @@ export default function MovementDetailScreen() {
               </View>
             )}
 
-            {movement.tracking_type === "distance" && (
+            {trackingType === "distance" && (
               <View className="flex-1">
                 <SetAdjuster
                   label={profile?.distance_unit?.toUpperCase() || "KM"}
@@ -459,9 +462,9 @@ export default function MovementDetailScreen() {
                         }`}
                       >
                         <View className="flex-row items-center gap-2">
-                          {(movement.tracking_type === "weight" ||
-                            movement.tracking_type === "reps" ||
-                            movement.tracking_type === "bodyweight") && (
+                          {(trackingType === "weight" ||
+                            trackingType === "reps" ||
+                            trackingType === "bodyweight") && (
                             <>
                               <Text className="text-foreground font-bold text-xl text-center">
                                 {set.reps}
@@ -472,7 +475,7 @@ export default function MovementDetailScreen() {
                             </>
                           )}
 
-                          {movement.tracking_type === "weight" && (
+                          {trackingType === "weight" && (
                             <>
                               <Text className="text-slate-500 dark:text-gray-500 text-sm">
                                 x
@@ -486,7 +489,7 @@ export default function MovementDetailScreen() {
                             </>
                           )}
 
-                          {movement.tracking_type === "duration" && (
+                          {trackingType === "duration" && (
                             <>
                               <Text className="text-foreground font-bold text-xl text-center">
                                 {set.duration}
@@ -497,7 +500,7 @@ export default function MovementDetailScreen() {
                             </>
                           )}
 
-                          {movement.tracking_type === "distance" && (
+                          {trackingType === "distance" && (
                             <>
                               <Text className="text-foreground font-bold text-xl text-center">
                                 {set.distance}
@@ -541,13 +544,13 @@ export default function MovementDetailScreen() {
         onSelect={handleSetAction}
         setDetails={
           selectedSet
-            ? movement.tracking_type === "weight"
+            ? trackingType === "weight"
               ? `${selectedSet.reps} reps x ${selectedSet.weight} ${
                   profile?.weight_unit || "kg"
                 }`
-              : movement.tracking_type === "duration"
+              : trackingType === "duration"
                 ? `${selectedSet.duration}s`
-                : movement.tracking_type === "distance"
+                : trackingType === "distance"
                   ? `${selectedSet.distance} ${profile?.distance_unit || "km"}`
                   : `${selectedSet.reps} reps`
             : ""
@@ -557,7 +560,7 @@ export default function MovementDetailScreen() {
         visible={editSheetVisible}
         onClose={() => setEditSheetVisible(false)}
         set={selectedSet}
-        trackingType={movement.tracking_type}
+        trackingType={trackingType}
         weightUnit={profile?.weight_unit || "kg"}
         distanceUnit={profile?.distance_unit || "km"}
       />

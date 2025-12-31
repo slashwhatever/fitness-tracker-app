@@ -360,6 +360,7 @@ export type Database = {
           customized_at: string | null
           experience_level: Database["public"]["Enums"]["experience_level"]
           id: string
+          is_reverse_weight: boolean
           last_used_at: string | null
           manual_1rm: number | null
           migrated_from_template: boolean | null
@@ -379,6 +380,7 @@ export type Database = {
           customized_at?: string | null
           experience_level?: Database["public"]["Enums"]["experience_level"]
           id?: string
+          is_reverse_weight?: boolean
           last_used_at?: string | null
           manual_1rm?: number | null
           migrated_from_template?: boolean | null
@@ -398,6 +400,7 @@ export type Database = {
           customized_at?: string | null
           experience_level?: Database["public"]["Enums"]["experience_level"]
           id?: string
+          is_reverse_weight?: boolean
           last_used_at?: string | null
           manual_1rm?: number | null
           migrated_from_template?: boolean | null

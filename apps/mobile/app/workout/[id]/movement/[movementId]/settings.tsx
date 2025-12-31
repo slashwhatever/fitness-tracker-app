@@ -19,6 +19,7 @@ import {
   Platform,
   Pressable,
   ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -134,6 +135,7 @@ export default function MovementSettingsScreen() {
   const [personalNotes, setPersonalNotes] = useState("");
   const [workoutNotes, setWorkoutNotes] = useState("");
   const [restTimer, setRestTimer] = useState<number | null>(null);
+  const [isReverseWeight, setIsReverseWeight] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
   const [showRestTimerModal, setShowRestTimerModal] = useState(false);
@@ -148,6 +150,7 @@ export default function MovementSettingsScreen() {
       setName(movement.name);
       setPersonalNotes(movement.personal_notes || "");
       setRestTimer(movement.custom_rest_timer || null);
+      setIsReverseWeight(movement.is_reverse_weight || false);
     }
   }, [movement]);
 
@@ -169,6 +172,7 @@ export default function MovementSettingsScreen() {
           name: name.trim(),
           personal_notes: personalNotes.trim() || null,
           custom_rest_timer: restTimer,
+          is_reverse_weight: isReverseWeight,
         },
       });
 
@@ -256,6 +260,32 @@ export default function MovementSettingsScreen() {
               <Text className="text-xs text-gray-500 mt-1">
                 Overrides workout default for this movement
               </Text>
+            </View>
+
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Reverse Weight Tracking
+              </Text>
+              <View className="w-full bg-card border border-border rounded-xl px-4 py-3 flex-row items-center justify-between">
+                <View className="flex-1 mr-4">
+                  <Text className="text-foreground text-base font-medium">
+                    Less weight is better
+                  </Text>
+                  <Text className="text-slate-500 dark:text-gray-400 text-xs mt-1">
+                    Enable for assisted exercises where reducing weight
+                    indicates progress
+                  </Text>
+                </View>
+                <Switch
+                  value={isReverseWeight}
+                  onValueChange={setIsReverseWeight}
+                  trackColor={{
+                    false: colors.border,
+                    true: colors["muted-foreground"],
+                  }}
+                  thumbColor="white"
+                />
+              </View>
             </View>
 
             <View>
