@@ -6,7 +6,6 @@ import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
 import * as Haptics from "expo-haptics";
-import { useRouter } from "expo-router";
 import { MoreVertical, Plus } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -26,7 +25,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ManageGroupsScreen() {
   const { groups, createGroup, deleteGroup, updateGroup, loading } =
     useWorkoutGroups();
-  const router = useRouter();
   const colors = useThemeColors();
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
