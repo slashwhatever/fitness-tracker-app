@@ -23,6 +23,7 @@ export function useTheme() {
           setStoredTheme(parsedTheme);
           // Apply the appropriate color scheme
           if (parsedTheme === "system") {
+            // Force update to system scheme
             setColorScheme(systemColorScheme ?? "light");
           } else {
             setColorScheme(parsedTheme);
@@ -42,7 +43,7 @@ export function useTheme() {
     };
 
     loadTheme();
-  }, [setColorScheme, systemColorScheme]);
+  }, [setColorScheme, systemColorScheme]); // Re-run if system scheme changes while in system mode
 
   // Save theme to AsyncStorage
   const saveTheme = async (theme: Theme) => {

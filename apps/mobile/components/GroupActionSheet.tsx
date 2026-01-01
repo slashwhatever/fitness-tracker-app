@@ -32,7 +32,7 @@ export function GroupActionSheet({
           </View>
           <View className="p-4 gap-2">
             <TouchableOpacity
-              className="flex-row items-center p-4 bg-background/50 rounded-xl gap-4"
+              className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
               onPress={() => {
                 onSelect("rename");
                 onClose();
@@ -52,7 +52,7 @@ export function GroupActionSheet({
             />
           </View>
           <TouchableOpacity
-            className="mx-4 p-4 bg-background rounded-xl items-center"
+            className="mx-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-xl items-center"
             onPress={onClose}
           >
             <Text className="text-foreground font-semibold text-lg">

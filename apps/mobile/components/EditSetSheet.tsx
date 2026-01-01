@@ -193,7 +193,7 @@ export function EditSetSheet({
               </TouchableOpacity>
 
               {/* Notes */}
-              <View className="bg-background/50 rounded-xl border border-border p-3 flex-row items-center justify-between">
+              <View className="bg-slate-100 dark:bg-slate-800 rounded-xl border border-border p-3 flex-row items-center justify-between">
                 <TextInput
                   placeholder="Add note"
                   placeholderTextColor={colors.textSecondary}

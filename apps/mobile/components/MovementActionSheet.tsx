@@ -40,7 +40,7 @@ export function MovementActionSheet({
         <View className="p-4 gap-2">
           <TouchableOpacity
             onPress={onEdit}
-            className="flex-row items-center p-4 bg-background/50 rounded-xl gap-4"
+            className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
           >
             <Pencil size={20} color="green" />
             <Text className="text-foreground text-lg font-medium">Edit</Text>
@@ -57,7 +57,7 @@ export function MovementActionSheet({
         {/* Cancel */}
         <TouchableOpacity
           onPress={onClose}
-          className="mx-4 p-4 bg-background rounded-xl items-center"
+          className="mx-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-xl items-center"
         >
           <Text className="text-foreground font-semibold text-lg">Cancel</Text>
         </TouchableOpacity>

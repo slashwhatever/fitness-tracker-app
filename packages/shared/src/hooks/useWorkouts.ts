@@ -205,6 +205,11 @@ export function useCreateWorkout(
           queryClient.setQueryData(workoutKeys.list(user.id), updatedWorkouts);
         }
         queryClient.setQueryData(workoutKeys.detail(data.id), data);
+
+        // Invalidate groups list to update workout counts
+        queryClient.invalidateQueries({
+          queryKey: groupKeys.list(user.id),
+        });
       }
     },
   });
@@ -238,7 +243,7 @@ export function useUpdateWorkout(
       if (error) throw error;
       return data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       if (user?.id) {
         queryClient.setQueryData(
           workoutKeys.list(user.id),
@@ -249,12 +254,11 @@ export function useUpdateWorkout(
         );
         queryClient.setQueryData(workoutKeys.detail(data.id), data);
 
-        // Invalidate groups query if group_id was updated
-        if (variables.updates.group_id !== undefined) {
-          queryClient.invalidateQueries({
-            queryKey: groupKeys.list(user.id),
-          });
-        }
+        // Invalidate groups query to update counts
+        // We do this for any update to be safe, but specifically needed for group_id changes
+        queryClient.invalidateQueries({
+          queryKey: groupKeys.list(user.id),
+        });
       }
     },
   });
@@ -314,6 +318,11 @@ export function useDeleteWorkout(
       if (user?.id && workoutId) {
         queryClient.removeQueries({
           queryKey: workoutKeys.detail(workoutId),
+        });
+
+        // Invalidate groups list to update workout counts
+        queryClient.invalidateQueries({
+          queryKey: groupKeys.list(user.id),
         });
       }
     },

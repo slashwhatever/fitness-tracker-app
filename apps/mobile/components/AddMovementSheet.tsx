@@ -342,7 +342,7 @@ export function AddMovementSheet({
             </View>
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className="flex-1 bg-background rounded-xl p-4 items-center"
+                className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 items-center"
                 onPress={handleCancel}
               >
                 <Text className="text-foreground font-semibold text-base">
