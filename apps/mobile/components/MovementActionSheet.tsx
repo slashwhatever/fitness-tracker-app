@@ -1,5 +1,6 @@
+import { Button } from "@/components/Button";
 import { Pencil } from "lucide-react-native";
-import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
 
 interface MovementActionSheetProps {
@@ -38,13 +39,15 @@ export function MovementActionSheet({
 
         {/* Actions */}
         <View className="p-4 gap-2">
-          <TouchableOpacity
+          <Button
+            size="lg"
+            variant="outline"
             onPress={onEdit}
-            className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
+            className="flex-row items-center gap-2 justify-start"
+            icon={<Pencil size={20} color="green" />}
           >
-            <Pencil size={20} color="green" />
-            <Text className="text-foreground text-lg font-medium">Edit</Text>
-          </TouchableOpacity>
+            Edit
+          </Button>
 
           <TimedConfirmDeleteButton
             onConfirm={() => {
@@ -55,12 +58,14 @@ export function MovementActionSheet({
         </View>
 
         {/* Cancel */}
-        <TouchableOpacity
-          onPress={onClose}
+        <Button
+          size="lg"
           className="mx-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-xl items-center"
+          variant="outline"
+          onPress={onClose}
         >
-          <Text className="text-foreground font-semibold text-lg">Cancel</Text>
-        </TouchableOpacity>
+          Cancel
+        </Button>
       </View>
     </Modal>
   );

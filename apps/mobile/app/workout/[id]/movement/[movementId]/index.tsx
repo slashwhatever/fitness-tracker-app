@@ -1,3 +1,4 @@
+import { Button } from "@/components/Button";
 import { EditSetSheet } from "@/components/EditSetSheet";
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
@@ -68,29 +69,31 @@ function SetActionModal({
             </Text>
           </View>
           <View className="p-4 gap-2">
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-background/50 rounded-xl gap-4"
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
               onPress={() => {
                 onSelect("edit");
                 onClose();
               }}
+              icon={<Pencil size={20} color="green" />}
             >
-              <Pencil size={20} color="green" />
-              <Text className="text-foreground font-medium text-lg">Edit</Text>
-            </TouchableOpacity>
+              Edit
+            </Button>
 
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-background/50 rounded-xl gap-4"
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
               onPress={() => {
                 onSelect("duplicate");
                 onClose();
               }}
+              icon={<Copy size={20} color={colors.tint} />}
             >
-              <Copy size={20} color={colors.tint} />
-              <Text className="text-foreground font-medium text-lg">
-                Duplicate
-              </Text>
-            </TouchableOpacity>
+              Duplicate
+            </Button>
 
             <TimedConfirmDeleteButton
               onConfirm={() => {
@@ -99,14 +102,9 @@ function SetActionModal({
               }}
             />
           </View>
-          <TouchableOpacity
-            className="mx-4 p-4 bg-background rounded-xl items-center"
-            onPress={onClose}
-          >
-            <Text className="text-foreground font-semibold text-lg">
-              Cancel
-            </Text>
-          </TouchableOpacity>
+          <Button size="lg" variant="outline" onPress={onClose}>
+            Cancel
+          </Button>
         </View>
       </Pressable>
     </Modal>
@@ -184,6 +182,22 @@ export default function MovementDetailScreen() {
     setter(newVal % 1 === 0 ? newVal.toString() : newVal.toFixed(1));
   };
 
+  // Validation logic
+  const isValidSet = (() => {
+    switch (trackingType) {
+      case "weight":
+      case "bodyweight":
+      case "reps":
+        return (parseInt(reps) || 0) > 0;
+      case "distance":
+        return (parseFloat(distance) || 0) > 0;
+      case "duration":
+        return (parseFloat(duration) || 0) > 0;
+      default:
+        return true;
+    }
+  })();
+
   const handleLogSet = async () => {
     if (!workoutId || !movementId) return;
 
@@ -196,7 +210,7 @@ export default function MovementDetailScreen() {
       await createSetMutation.mutateAsync({
         workout_id: workoutId,
         user_movement_id: movementId,
-        weight: isNaN(weightVal) || weightVal === 0 ? null : weightVal,
+        weight: isNaN(weightVal) ? null : weightVal,
         reps: isNaN(repsVal) || repsVal === 0 ? null : repsVal,
         distance: isNaN(distanceVal) || distanceVal === 0 ? null : distanceVal,
         duration: isNaN(durationVal) || durationVal === 0 ? null : durationVal,
@@ -376,9 +390,11 @@ export default function MovementDetailScreen() {
           </View>
 
           <TouchableOpacity
-            className="bg-green-600 rounded-full py-4 items-center flex-row justify-center gap-2 active:bg-green-700"
+            className={`bg-green-600 rounded-full py-4 items-center flex-row justify-center gap-2 active:bg-green-700 ${
+              !isValidSet ? "opacity-50" : ""
+            }`}
             onPress={handleLogSet}
-            disabled={createSetMutation.isPending}
+            disabled={createSetMutation.isPending || !isValidSet}
           >
             {createSetMutation.isPending ? (
               <ActivityIndicator color="white" />

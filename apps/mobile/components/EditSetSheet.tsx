@@ -52,17 +52,40 @@ export function EditSetSheet({
     }
   }, [set, visible]);
 
+  // Validation logic
+  const isValidSet = (() => {
+    switch (trackingType) {
+      case "weight":
+      case "bodyweight":
+      case "reps":
+        return (parseInt(reps) || 0) > 0;
+      case "distance":
+        return (parseFloat(distance) || 0) > 0;
+      case "duration":
+        return (parseFloat(duration) || 0) > 0;
+      default:
+        return true;
+    }
+  })();
+
   const handleSave = async () => {
     if (!set) return;
 
     try {
+      const repsVal = parseInt(reps);
+      const weightVal = parseFloat(weight);
+      const distanceVal = parseFloat(distance);
+      const durationVal = parseInt(duration);
+
       await updateSetMutation.mutateAsync({
         id: set.id,
         updates: {
-          reps: parseInt(reps) || 0,
-          weight: parseFloat(weight) || 0,
-          distance: parseFloat(distance) || 0,
-          duration: parseInt(duration) || 0,
+          reps: isNaN(repsVal) ? 0 : repsVal,
+          weight: isNaN(weightVal) ? 0 : weightVal,
+          distance:
+            isNaN(distanceVal) || distanceVal === 0 ? null : distanceVal,
+          duration:
+            isNaN(durationVal) || durationVal === 0 ? null : durationVal,
           notes: notes.trim() || undefined,
         },
       });
@@ -176,9 +199,11 @@ export function EditSetSheet({
 
               {/* Save Button */}
               <TouchableOpacity
-                className="bg-green-600 rounded-full py-4 items-center flex-row justify-center gap-2 active:bg-green-700 mb-6"
+                className={`bg-green-600 rounded-full py-4 items-center flex-row justify-center gap-2 active:bg-green-700 mb-6 ${
+                  !isValidSet ? "opacity-50" : ""
+                }`}
                 onPress={handleSave}
-                disabled={updateSetMutation.isPending}
+                disabled={updateSetMutation.isPending || !isValidSet}
               >
                 {updateSetMutation.isPending ? (
                   <ActivityIndicator color="white" />

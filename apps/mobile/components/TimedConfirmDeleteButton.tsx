@@ -1,7 +1,7 @@
+import { Button } from "@/components/Button";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Timer, Trash } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity } from "react-native";
 
 interface TimedConfirmDeleteButtonProps {
   onConfirm: () => void;
@@ -56,43 +56,54 @@ export function TimedConfirmDeleteButton({
   if (isConfirming) {
     if (variant === "icon") {
       return (
-        <TouchableOpacity
-          className="p-2 bg-red-500 rounded-full"
+        <Button
+          variant="destructive"
+          size="lg"
           onPress={handlePress}
+          className="flex-row items-center gap-2 justify-start"
+          icon={<Timer size={size} color={colors.danger} />}
         >
-          <Timer size={size} color="#ffffff" />
-        </TouchableOpacity>
+          {confirmTitle} ({timeLeft})
+        </Button>
       );
     }
 
     return (
-      <TouchableOpacity
-        className="flex-row items-center p-4 bg-red-500 rounded-xl gap-4"
+      <Button
+        variant="destructive"
+        size="lg"
         onPress={handlePress}
+        className="flex-row items-center gap-2 justify-start"
+        icon={<Timer size={size} color={colors.danger} />}
       >
-        <Timer size={size} color="#ffffff" />
-        <Text className="text-white font-medium text-lg flex-1">
-          {confirmTitle} ({timeLeft})
-        </Text>
-      </TouchableOpacity>
+        {confirmTitle} ({timeLeft})
+      </Button>
     );
   }
 
   if (variant === "icon") {
     return (
-      <TouchableOpacity className="p-2" onPress={handlePress}>
-        <Trash size={size} color={colors.danger} />
-      </TouchableOpacity>
+      <Button
+        variant="destructive"
+        size="lg"
+        onPress={handlePress}
+        className="flex-row items-center gap-2 justify-start"
+        icon={<Trash size={size} color={colors.danger} />}
+      >
+        {title}
+      </Button>
     );
   }
 
   return (
-    <TouchableOpacity
-      className="flex-row items-center p-4 bg-red-500/10 rounded-xl gap-4"
+    <Button
+      variant="destructive"
+      size="lg"
       onPress={handlePress}
+      className="flex-row items-center gap-2 justify-start"
+      icon={<Trash size={size} color={colors.danger} />}
     >
-      <Trash size={size} color={colors.danger} />
-      <Text className="text-red-500 font-medium text-lg flex-1">{title}</Text>
-    </TouchableOpacity>
+      {title}
+    </Button>
   );
 }

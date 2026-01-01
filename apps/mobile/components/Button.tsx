@@ -1,11 +1,12 @@
 import { useThemeColors } from "@hooks/useThemeColors";
 import {
   ActivityIndicator,
+  Pressable,
   Text,
-  TouchableOpacity,
   TouchableOpacityProps,
   View,
 } from "react-native";
+import { cn } from "../lib/utils/cn";
 
 interface ButtonProps extends TouchableOpacityProps {
   variant?: "default" | "outline" | "ghost" | "destructive" | "secondary";
@@ -85,8 +86,8 @@ export function Button({
   }
 
   return (
-    <TouchableOpacity
-      className={`${containerStyles} ${className}`}
+    <Pressable
+      className={cn(containerStyles, className)}
       disabled={disabled || loading}
       activeOpacity={0.7}
       {...props}
@@ -102,14 +103,12 @@ export function Button({
       ) : null}
 
       {children && (
-        <Text className={`${textStyles} ${loading ? "ml-1" : ""}`}>
-          {children}
-        </Text>
+        <Text className={cn(textStyles, loading && "ml-1")}>{children}</Text>
       )}
 
       {iconRight && !loading && (
         <View className={children ? "ml-2" : ""}>{iconRight}</View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }

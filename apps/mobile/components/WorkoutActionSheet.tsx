@@ -1,6 +1,7 @@
+import { Button } from "@/components/Button";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Archive, Copy, Pencil, Undo2 } from "lucide-react-native";
-import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
 
 interface WorkoutActionSheetProps {
@@ -35,48 +36,50 @@ export function WorkoutActionSheet({
             </Text>
           </View>
           <View className="p-4 gap-2">
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
               onPress={() => {
                 onSelect("edit");
                 onClose();
               }}
+              icon={<Pencil size={20} color="green" />}
             >
-              <Pencil size={20} color="green" />
-              <Text className="text-foreground font-medium text-lg">
-                Edit Details
-              </Text>
-            </TouchableOpacity>
+              Edit Details
+            </Button>
 
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
               onPress={() => {
                 onSelect("duplicate");
                 onClose();
               }}
+              icon={<Copy size={20} color={colors.tint} />}
             >
-              <Copy size={20} color={colors.tint} />
-              <Text className="text-foreground font-medium text-lg">
-                Duplicate
-              </Text>
-            </TouchableOpacity>
+              Duplicate
+            </Button>
 
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
               onPress={() => {
                 onSelect("archive");
                 onClose();
               }}
+              icon={
+                isArchived ? (
+                  <Undo2 size={20} color={colors.warning} />
+                ) : (
+                  <Archive size={20} color={colors.warning} />
+                )
+              }
             >
-              {isArchived ? (
-                <Undo2 size={20} color={colors.warning} />
-              ) : (
-                <Archive size={20} color={colors.warning} />
-              )}
-              <Text className="text-foreground font-medium text-lg">
-                {isArchived ? "Unarchive" : "Archive"}
-              </Text>
-            </TouchableOpacity>
+              {isArchived ? "Unarchive" : "Archive"}
+            </Button>
 
             <TimedConfirmDeleteButton
               onConfirm={() => {
@@ -85,14 +88,14 @@ export function WorkoutActionSheet({
               }}
             />
           </View>
-          <TouchableOpacity
+          <Button
+            size="lg"
+            variant="outline"
             className="mx-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-xl items-center"
             onPress={onClose}
           >
-            <Text className="text-foreground font-semibold text-lg">
-              Cancel
-            </Text>
-          </TouchableOpacity>
+            Cancel
+          </Button>
         </View>
       </Pressable>
     </Modal>

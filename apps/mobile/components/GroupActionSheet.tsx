@@ -1,5 +1,6 @@
+import { Button } from "@/components/Button";
 import { Pencil } from "lucide-react-native";
-import { Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
 
 interface GroupActionSheetProps {
@@ -31,18 +32,18 @@ export function GroupActionSheet({
             </Text>
           </View>
           <View className="p-4 gap-2">
-            <TouchableOpacity
-              className="flex-row items-center p-4 bg-slate-100 dark:bg-slate-800 rounded-xl gap-4"
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
               onPress={() => {
                 onSelect("rename");
                 onClose();
               }}
+              icon={<Pencil size={20} color="green" />}
             >
-              <Pencil size={20} color="green" />
-              <Text className="text-foreground font-medium text-lg">
-                Rename Group
-              </Text>
-            </TouchableOpacity>
+              Rename Group
+            </Button>
 
             <TimedConfirmDeleteButton
               onConfirm={() => {
@@ -51,14 +52,14 @@ export function GroupActionSheet({
               }}
             />
           </View>
-          <TouchableOpacity
+          <Button
+            size="lg"
+            variant="outline"
             className="mx-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-xl items-center"
             onPress={onClose}
           >
-            <Text className="text-foreground font-semibold text-lg">
-              Cancel
-            </Text>
-          </TouchableOpacity>
+            Cancel
+          </Button>
         </View>
       </Pressable>
     </Modal>
