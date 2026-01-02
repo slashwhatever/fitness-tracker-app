@@ -1,4 +1,6 @@
 import { GlassHeader } from "@/components/GlassHeader";
+import { MovementIcon } from "@/components/MovementIcon";
+import { useMuscleGroups, useTrackingTypes } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import {
@@ -127,6 +129,8 @@ export default function MovementSettingsScreen() {
   const { data: movement, isLoading: movementLoading } =
     useUserMovement(movementId);
   const { data: workoutMovements } = useWorkoutMovements(workoutId);
+  const { data: trackingTypes = [] } = useTrackingTypes();
+  const { data: muscleGroups = [] } = useMuscleGroups();
 
   const updateUserMovementMutation = useUpdateUserMovement();
   const updateWorkoutNotesMutation = useUpdateWorkoutMovementNotes();
@@ -136,9 +140,22 @@ export default function MovementSettingsScreen() {
   const [workoutNotes, setWorkoutNotes] = useState("");
   const [restTimer, setRestTimer] = useState<number | null>(null);
   const [isReverseWeight, setIsReverseWeight] = useState(false);
+  const [trackingTypeId, setTrackingTypeId] = useState<string>("");
+  const [selectedMuscleGroupIds, setSelectedMuscleGroupIds] = useState<
+    string[]
+  >([]);
+  const [experienceLevel, setExperienceLevel] =
+    useState<string>("Intermediate");
 
   const [isSaving, setIsSaving] = useState(false);
   const [showRestTimerModal, setShowRestTimerModal] = useState(false);
+
+  // Database enum values for Experience Level
+  const experienceLevels = [
+    { id: "Beginner", name: "Beginner" },
+    { id: "Intermediate", name: "Intermediate" },
+    { id: "Advanced", name: "Advanced" },
+  ];
 
   // Find workout movement context
   const workoutMovement = workoutMovements?.find(
@@ -151,8 +168,21 @@ export default function MovementSettingsScreen() {
       setPersonalNotes(movement.personal_notes || "");
       setRestTimer(movement.custom_rest_timer || null);
       setIsReverseWeight(movement.is_reverse_weight || false);
+      setTrackingTypeId(movement.tracking_type_id || "");
+      setExperienceLevel(movement.experience_level || "Intermediate");
     }
   }, [movement]);
+
+  // Initialize muscle groups when both movement and muscleGroups are loaded
+  useEffect(() => {
+    if (movement && muscleGroups.length > 0 && movement.muscle_groups) {
+      // Map display names back to IDs
+      const ids = muscleGroups
+        .filter((mg) => movement.muscle_groups.includes(mg.display_name))
+        .map((mg) => mg.id);
+      setSelectedMuscleGroupIds(ids);
+    }
+  }, [movement, muscleGroups]);
 
   useEffect(() => {
     if (workoutMovement) {
@@ -161,10 +191,15 @@ export default function MovementSettingsScreen() {
   }, [workoutMovement]);
 
   const handleSave = async () => {
-    if (!movement || !name.trim()) return;
+    if (!movement || !name.trim() || !trackingTypeId) return;
 
     setIsSaving(true);
     try {
+      // Convert muscle group IDs to display names for saving
+      const muscleGroupNames = muscleGroups
+        .filter((mg) => selectedMuscleGroupIds.includes(mg.id))
+        .map((mg) => mg.display_name);
+
       // Update movement details
       await updateUserMovementMutation.mutateAsync({
         id: movement.id,
@@ -173,6 +208,12 @@ export default function MovementSettingsScreen() {
           personal_notes: personalNotes.trim() || null,
           custom_rest_timer: restTimer,
           is_reverse_weight: isReverseWeight,
+          tracking_type_id: trackingTypeId,
+          muscle_groups: muscleGroupNames,
+          experience_level: experienceLevel as
+            | "Beginner"
+            | "Intermediate"
+            | "Advanced",
         },
       });
 
@@ -228,6 +269,7 @@ export default function MovementSettingsScreen() {
           }}
         >
           <View className="gap-6">
+            {/* Movement Name */}
             <View>
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Movement Name
@@ -241,6 +283,44 @@ export default function MovementSettingsScreen() {
               />
             </View>
 
+            {/* Personal Notes */}
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Personal Notes
+              </Text>
+              <TextInput
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                value={personalNotes}
+                onChangeText={setPersonalNotes}
+                placeholder="Technique cues, setup details, etc."
+                placeholderTextColor={colors.textSecondary}
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+            {/* Workout Notes */}
+            {workoutMovement && (
+              <View>
+                <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                  Workout Notes
+                </Text>
+                <TextInput
+                  className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
+                  value={workoutNotes}
+                  onChangeText={setWorkoutNotes}
+                  placeholder="Notes specific to this workout..."
+                  placeholderTextColor={colors.textSecondary}
+                  multiline
+                  textAlignVertical="top"
+                />
+                <Text className="text-xs text-gray-500 mt-1">
+                  Only applies to this movement within this specific workout
+                </Text>
+              </View>
+            )}
+
+            {/* Custom Rest Timer */}
             <View>
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Custom Rest Timer
@@ -262,6 +342,109 @@ export default function MovementSettingsScreen() {
               </Text>
             </View>
 
+            {/* Experience Level */}
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Experience Level
+              </Text>
+              <View className="flex-row gap-2">
+                {experienceLevels.map((level) => {
+                  const isSelected = experienceLevel === level.id;
+                  return (
+                    <TouchableOpacity
+                      key={level.id}
+                      onPress={() => setExperienceLevel(level.id)}
+                      className={`flex-1 items-center justify-center px-4 py-3 rounded-xl border ${
+                        isSelected
+                          ? "bg-primary-500/10 border-primary-500"
+                          : "bg-card border-border"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          isSelected ? "text-primary-500" : "text-foreground"
+                        }`}
+                      >
+                        {level.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Muscle Groups */}
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Muscle Groups
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {muscleGroups.map((mg) => {
+                  const isSelected = selectedMuscleGroupIds.includes(mg.id);
+                  return (
+                    <TouchableOpacity
+                      key={mg.id}
+                      onPress={() => {
+                        setSelectedMuscleGroupIds((prev) =>
+                          isSelected
+                            ? prev.filter((id) => id !== mg.id)
+                            : [...prev, mg.id]
+                        );
+                      }}
+                      className={`px-4 py-2 rounded-xl border flex-grow items-center justify-center ${
+                        isSelected
+                          ? "bg-primary-500/10 border-primary-500"
+                          : "bg-card border-border"
+                      }`}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          isSelected ? "text-primary-500" : "text-foreground"
+                        }`}
+                      >
+                        {mg.display_name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Tracking Type */}
+            <View>
+              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
+                Tracking Type
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {trackingTypes.map((type) => {
+                  const isSelected = trackingTypeId === type.id;
+                  return (
+                    <TouchableOpacity
+                      key={type.id}
+                      onPress={() => setTrackingTypeId(type.id)}
+                      className={`flex-row items-center p-2 pr-4 rounded-xl border w-[48%] flex-grow ${
+                        isSelected
+                          ? "bg-primary-500/10 border-primary-500"
+                          : "bg-card border-border"
+                      }`}
+                    >
+                      <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
+                        <MovementIcon trackingType={type.name} size={20} />
+                      </View>
+                      <Text
+                        className={`text-sm font-medium ${
+                          isSelected ? "text-primary-500" : "text-foreground"
+                        }`}
+                      >
+                        {type.display_name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Reverse Weight Tracking */}
             <View>
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Reverse Weight Tracking
@@ -288,49 +471,14 @@ export default function MovementSettingsScreen() {
               </View>
             </View>
 
-            <View>
-              <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
-                Personal Notes
-              </Text>
-              <TextInput
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
-                value={personalNotes}
-                onChangeText={setPersonalNotes}
-                placeholder="Technique cues, setup details, etc."
-                placeholderTextColor={colors.textSecondary}
-                multiline
-                textAlignVertical="top"
-              />
-            </View>
-
-            {workoutMovement && (
-              <View>
-                <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
-                  Workout Notes
-                </Text>
-                <TextInput
-                  className="w-full bg-card border border-border rounded-xl px-4 py-3 text-base text-foreground placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[100px]"
-                  value={workoutNotes}
-                  onChangeText={setWorkoutNotes}
-                  placeholder="Notes specific to this workout..."
-                  placeholderTextColor={colors.textSecondary}
-                  multiline
-                  textAlignVertical="top"
-                />
-                <Text className="text-xs text-gray-500 mt-1">
-                  Only applies to this movement within this specific workout
-                </Text>
-              </View>
-            )}
-
             <TouchableOpacity
               className={`w-full p-4 rounded-xl items-center flex-row justify-center gap-2 mt-4 ${
-                !name.trim() || isSaving
+                !name.trim() || !trackingTypeId || isSaving
                   ? "bg-primary-500/50"
                   : "bg-primary-500"
               }`}
               onPress={handleSave}
-              disabled={!name.trim() || isSaving}
+              disabled={!name.trim() || !trackingTypeId || isSaving}
             >
               {isSaving ? (
                 <ActivityIndicator color="white" />

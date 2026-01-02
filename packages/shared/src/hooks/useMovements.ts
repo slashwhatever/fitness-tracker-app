@@ -648,7 +648,7 @@ export function useUpdateUserMovement(
 
       // Sanitize movementUpdates to ensure no non-column fields are sent
       // Specifically remove joined fields or computed properties that might have leaked from currentMovement
-      const safeUpdates = { ...movementUpdates } as Record<string, any>;
+      const safeUpdates = { ...movementUpdates } as Record<string, unknown>;
 
       // Exclude joined fields or computed properties
       delete safeUpdates.tracking_type; // Exclude joined name string

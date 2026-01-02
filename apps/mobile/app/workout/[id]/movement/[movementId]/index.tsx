@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button";
+import { CollapsibleNotes } from "@/components/CollapsibleNotes";
 import { EditSetSheet } from "@/components/EditSetSheet";
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
@@ -326,6 +327,13 @@ export default function MovementDetailScreen() {
             {movement.name}
           </Text>
         </View>
+
+        {/* Collapsible Notes Section */}
+        <CollapsibleNotes
+          personalNotes={movement.personal_notes}
+          workoutNotes={workoutMovement?.workout_notes}
+        />
+
         {/* Input Section */}
         <View className="p-4 gap-6">
           <View className="flex-row gap-4 justify-between">
