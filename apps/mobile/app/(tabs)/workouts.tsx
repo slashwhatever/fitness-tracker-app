@@ -20,6 +20,7 @@ import {
 import { useMemo, useState } from "react";
 import {
   Alert,
+  Pressable,
   RefreshControl,
   SectionList,
   Text,
@@ -217,18 +218,18 @@ export default function WorkoutsScreen() {
         stickySectionHeadersEnabled={false}
         ListHeaderComponent={
           <View className="flex-row items-center justify-end gap-4">
-            <TouchableOpacity
+            <Pressable
               className="bg-card border border-border px-4 py-2 rounded-full"
               onPress={() => router.push("/groups/modal")}
             >
               <Text className="text-foreground font-semibold">Groups</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               className="bg-primary-500 px-4 py-2 rounded-full"
               onPress={() => router.push("/workout/new")}
             >
               <Text className="text-white font-semibold">+ New</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         }
         refreshControl={
