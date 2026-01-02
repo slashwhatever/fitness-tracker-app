@@ -681,6 +681,8 @@ export function useUpdateUserMovement(
     onMutate: async ({ id, updates }) => {
       if (!user?.id) return;
 
+      console.log("[onMutate] received updates:", updates);
+
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
         queryKey: movementKeys.userMovementsList(user.id),
@@ -761,13 +763,18 @@ export function useUpdateUserMovement(
                   }
                 ) => {
                   if (workoutMovement.user_movement?.id === id) {
+                    const newMovement = {
+                      ...workoutMovement.user_movement,
+                      ...updates,
+                      updated_at: new Date().toISOString(),
+                    };
+                    console.log(
+                      "[onMutate] Updating workout movement optimistic:",
+                      newMovement
+                    );
                     return {
                       ...workoutMovement,
-                      user_movement: {
-                        ...workoutMovement.user_movement,
-                        ...updates,
-                        updated_at: new Date().toISOString(),
-                      },
+                      user_movement: newMovement,
                     };
                   }
                   return workoutMovement;
@@ -804,6 +811,8 @@ export function useUpdateUserMovement(
     },
     onSuccess: (data, { id }) => {
       if (user?.id) {
+        console.log("[onSuccess] Server returned data:", data);
+
         // Update the user movements list cache
         queryClient.setQueryData(
           movementKeys.userMovementsList(user.id),
@@ -836,6 +845,10 @@ export function useUpdateUserMovement(
                 if (!old) return old;
                 return old.map((wm) => {
                   if (wm.user_movement?.id === id) {
+                    console.log(
+                      "[onSuccess] Updating workout movement manually with:",
+                      data
+                    );
                     return {
                       ...wm,
                       user_movement: data, // Use the fresh server data

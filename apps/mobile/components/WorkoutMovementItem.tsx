@@ -34,7 +34,7 @@ export const WorkoutMovementItem = memo(function WorkoutMovementItem({
           </View>
           <View className="flex-1">
             <Text className="text-foreground font-bold text-base">
-              {item.user_movement?.name}
+              {item.user_movement?.name || "Unnamed Movement"}
             </Text>
             <Text className="text-slate-500 dark:text-gray-400 text-sm">
               {lastSetDate || "No sets"}

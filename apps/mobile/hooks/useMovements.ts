@@ -260,6 +260,7 @@ export function useWorkoutMovements(
             template_id,
             user_id,
             created_at,
+            created_at,
             updated_at,
             tracking_types!inner(name),
             user_movement_muscle_groups(
@@ -294,6 +295,7 @@ export function useWorkoutMovements(
       }));
     },
     enabled: isSafeForQueries(workoutId),
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 }
 
@@ -456,7 +458,7 @@ export function useCreateUserMovement(): UseMutationResult<
 
 // Update a user movement
 export function useUpdateUserMovement(): UseMutationResult<
-  Tables<"user_movements">,
+  UserMovement,
   Error,
   {
     id: string;
@@ -494,8 +496,8 @@ export function useUpdateUserMovement(): UseMutationResult<
         await updateMuscleGroupRelationships(supabase, id, muscle_groups);
       }
 
-      // Return the raw data first, then the queryClient will refetch with proper joins
-      return data;
+      // Return the full user movement with joins
+      return fetchFullUserMovement(supabase, data.id);
     },
     onMutate: async ({ id, updates }) => {
       if (!user?.id) return;
@@ -513,7 +515,7 @@ export function useUpdateUserMovement(): UseMutationResult<
         predicate: (query) => {
           return (
             query.queryKey.includes("workout") &&
-            query.queryKey.includes("movement")
+            query.queryKey.includes("movements")
           );
         },
       });
@@ -556,42 +558,31 @@ export function useUpdateUserMovement(): UseMutationResult<
       }
 
       // Optimistically update workout movements that contain this user movement
-      const workoutMovementQueries = queryClient.getQueriesData({
-        queryKey: movementKeys.all,
-        predicate: (query) => {
-          return (
-            query.queryKey.includes("workout") &&
-            query.queryKey.includes("movement")
-          );
-        },
+      const workoutMovementQueries = queryClient.getQueriesData<
+        WorkoutMovementWithDetails[]
+      >({
+        queryKey: movementKeys.workoutMovements(),
       });
 
-      workoutMovementQueries.forEach(([queryKey, data]) => {
-        if (Array.isArray(data)) {
-          queryClient.setQueryData(
+      workoutMovementQueries.forEach(([queryKey, queryData]) => {
+        if (Array.isArray(queryData)) {
+          queryClient.setQueryData<WorkoutMovementWithDetails[]>(
             queryKey,
-            (
-              old: Array<WorkoutMovement & { user_movement?: UserMovement }>
-            ) => {
-              return old.map(
-                (
-                  workoutMovement: WorkoutMovement & {
-                    user_movement?: UserMovement;
-                  }
-                ) => {
-                  if (workoutMovement.user_movement?.id === id) {
-                    return {
-                      ...workoutMovement,
-                      user_movement: {
-                        ...workoutMovement.user_movement,
-                        ...updates,
-                        updated_at: new Date().toISOString(),
-                      },
-                    };
-                  }
-                  return workoutMovement;
+            (old) => {
+              if (!old) return old;
+              return old.map((workoutMovement) => {
+                if (workoutMovement.user_movement?.id === id) {
+                  return {
+                    ...workoutMovement,
+                    user_movement: {
+                      ...workoutMovement.user_movement,
+                      ...updates,
+                      updated_at: new Date().toISOString(),
+                    },
+                  };
                 }
-              );
+                return workoutMovement;
+              });
             }
           );
         }
@@ -634,10 +625,35 @@ export function useUpdateUserMovement(): UseMutationResult<
           data as unknown as UserMovement
         );
 
-        // Only invalidate workout movements that use this user movement
-        // This is necessary because workout movements include joined user movement data
-        queryClient.invalidateQueries({
+        // Manually update workout movements cache with server data
+        // We do this instead of invalidating to prevent a race condition where
+        // the refetch returns stale or incomplete data momentarily.
+        const workoutMovementQueries = queryClient.getQueriesData<
+          WorkoutMovementWithDetails[]
+        >({
           queryKey: movementKeys.workoutMovements(),
+        });
+
+        workoutMovementQueries.forEach(([queryKey, queryData]) => {
+          if (Array.isArray(queryData)) {
+            queryClient.setQueryData(
+              queryKey,
+              (
+                old: Array<WorkoutMovement & { user_movement?: UserMovement }>
+              ) => {
+                if (!old) return old;
+                return old.map((wm) => {
+                  if (wm.user_movement?.id === id) {
+                    return {
+                      ...wm,
+                      user_movement: data,
+                    };
+                  }
+                  return wm;
+                });
+              }
+            );
+          }
         });
       }
     },
@@ -1211,12 +1227,29 @@ export function useUpdateWorkoutMovementNotes() {
       console.error("Error updating workout movement notes:", err);
     },
     onSuccess: (data) => {
-      // Update cache with server response
+      // Transform the server response to match our cache structure
+      // The server returns `user_movements` (plural) but our cache expects `user_movement` (singular)
+      const transformedData = {
+        ...data,
+        user_movement: (data as any).user_movements
+          ? ({
+              ...(data as any).user_movements,
+              tracking_type:
+                (data as any).user_movements.tracking_types?.name || "weight",
+              muscle_groups:
+                (data as any).user_movements.user_movement_muscle_groups
+                  ?.map((ummg: any) => ummg.muscle_groups?.display_name)
+                  .filter((name: any): name is string => Boolean(name)) || [],
+            } as UserMovement)
+          : null,
+      };
+
+      // Update cache with transformed response
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(data.workout_id),
-        (old: WorkoutMovement[] | undefined) => {
-          if (!old) return [data];
-          return old.map((m) => (m.id === data.id ? data : m));
+        (old: WorkoutMovementWithDetails[] | undefined) => {
+          if (!old) return [transformedData];
+          return old.map((m) => (m.id === data.id ? transformedData : m));
         }
       );
     },
@@ -1285,4 +1318,55 @@ export function useDeleteWorkoutMovement() {
       });
     },
   });
+}
+
+async function fetchFullUserMovement(
+  supabase: SupabaseClient<Database>,
+  movementId: string
+): Promise<UserMovement> {
+  const query = supabase
+    .from("user_movements")
+    .select(
+      `
+      id,
+      name,
+      personal_notes,
+      tags,
+      experience_level,
+      tracking_type_id,
+      custom_rest_timer,
+      is_reverse_weight,
+      last_used_at,
+      customized_at,
+      manual_1rm,
+      migrated_from_template,
+      migration_date,
+      original_template_id,
+      template_id,
+      user_id,
+      created_at,
+      updated_at,
+      tracking_types!inner(name),
+      user_movement_muscle_groups(
+        muscle_groups(name, display_name)
+      )
+    `
+    )
+    .eq("id", movementId)
+    .single();
+
+  const { data, error } = await query;
+  if (error) throw error;
+
+  // Transform the data to include muscle_groups array and tracking_type
+  const transformedData = data as any;
+  return {
+    ...transformedData,
+    tracking_type:
+      transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
+    muscle_groups:
+      transformedData.user_movement_muscle_groups
+        ?.map((ummg: any) => ummg.muscle_groups?.display_name)
+        .filter((name: any): name is string => Boolean(name)) || [],
+  } as UserMovement;
 }

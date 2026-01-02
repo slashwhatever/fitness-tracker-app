@@ -117,15 +117,31 @@ export function EditSetSheet({
       const distanceVal = parseFloat(data.distance);
       const durationVal = parseInt(data.duration);
 
+      // Determine which fields should be sent based on tracking type
+      // Send null for fields not applicable to this tracking type to avoid constraint violations
+      const shouldIncludeReps = ["weight", "bodyweight", "reps"].includes(
+        data.trackingType
+      );
+      const shouldIncludeWeight = data.trackingType === "weight";
+      const shouldIncludeDistance = data.trackingType === "distance";
+      const shouldIncludeDuration = data.trackingType === "duration";
+
       await updateSetMutation.mutateAsync({
         id: set.id,
         updates: {
-          reps: isNaN(repsVal) ? 0 : repsVal,
-          weight: isNaN(weightVal) ? 0 : weightVal,
+          reps:
+            shouldIncludeReps && !isNaN(repsVal) && repsVal > 0
+              ? repsVal
+              : null,
+          weight: shouldIncludeWeight && !isNaN(weightVal) ? weightVal : null,
           distance:
-            isNaN(distanceVal) || distanceVal === 0 ? null : distanceVal,
+            shouldIncludeDistance && !isNaN(distanceVal) && distanceVal > 0
+              ? distanceVal
+              : null,
           duration:
-            isNaN(durationVal) || durationVal === 0 ? null : durationVal,
+            shouldIncludeDuration && !isNaN(durationVal) && durationVal > 0
+              ? durationVal
+              : null,
           notes: data.notes?.trim() || undefined,
         },
       });

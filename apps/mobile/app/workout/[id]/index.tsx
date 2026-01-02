@@ -222,7 +222,13 @@ export default function WorkoutDetailScreen() {
 
       // Add all movements to workout
       if (userMovementIds.length > 0) {
-        const startingOrderIndex = movements?.length || 0;
+        // Fix: Use max order_index ensures we append to the end even if items were deleted
+        const maxOrderIndex =
+          movements && movements.length > 0
+            ? Math.max(...movements.map((m) => m.order_index))
+            : -1;
+        const startingOrderIndex = maxOrderIndex + 1;
+
         const workoutMovements = userMovementIds.map((umId, index) => ({
           workout_id: id,
           user_movement_id: umId,
@@ -339,6 +345,7 @@ export default function WorkoutDetailScreen() {
 
         <FlashList
           data={movements}
+          extraData={movements}
           renderItem={({ item }) => (
             <WorkoutMovementItem
               item={item}
