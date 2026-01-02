@@ -1,17 +1,19 @@
 import { EmptyState } from "@/components/EmptyState";
 import { GlassHeader } from "@/components/GlassHeader";
 import { GroupActionSheet } from "@/components/GroupActionSheet";
+import { GroupItem } from "@/components/GroupItem";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
+import { FlashList } from "@shopify/flash-list";
 import * as Haptics from "expo-haptics";
-import { MoreVertical, Plus } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Plus } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,6 +27,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function ManageGroupsScreen() {
   const { groups, createGroup, deleteGroup, updateGroup, loading } =
     useWorkoutGroups();
+  const router = useRouter();
   const colors = useThemeColors();
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
@@ -43,6 +46,7 @@ export default function ManageGroupsScreen() {
       await createGroup.mutateAsync(newGroupName.trim());
       setNewGroupName("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
     } catch (error) {
       Alert.alert("Error", "Failed to create group");
     }
@@ -86,52 +90,6 @@ export default function ManageGroupsScreen() {
     }
   };
 
-  const renderItem = ({ item }: { item: any }) => {
-    const isEditing = editingId === item.id;
-
-    return (
-      <View className="bg-card border border-border rounded-xl p-4 mb-3">
-        <View className="flex-row items-center">
-          <View className="flex-1">
-            {isEditing ? (
-              <TextInput
-                className="text-foreground font-semibold text-lg bg-input border border-border rounded-lg px-3 py-2"
-                value={editingName}
-                onChangeText={setEditingName}
-                onSubmitEditing={() => handleRename(item.id)}
-                onBlur={() => handleRename(item.id)}
-                autoFocus
-                returnKeyType="done"
-              />
-            ) : (
-              <>
-                <Text className="text-foreground font-semibold text-lg">
-                  {item.name}
-                </Text>
-                <Text className="text-muted-foreground text-sm mt-0.5">
-                  {item.workout_count}{" "}
-                  {item.workout_count === 1 ? "workout" : "workouts"}
-                </Text>
-              </>
-            )}
-          </View>
-          {!isEditing && (
-            <TouchableOpacity
-              onPress={() => {
-                setSelectedGroup(item);
-                setModalVisible(true);
-              }}
-              className="p-2 -mr-2"
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <MoreVertical size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["bottom"]}>
       <GlassHeader title="Manage Groups" showBack backPath="/(tabs)/workouts" />
@@ -156,11 +114,25 @@ export default function ManageGroupsScreen() {
                 description="Create groups to organize your workouts by muscle group, training style, or any way you prefer."
               />
             ) : (
-              <FlatList
+              <FlashList
                 data={groups}
-                renderItem={renderItem}
+                renderItem={({ item }) => (
+                  <GroupItem
+                    item={item}
+                    isEditing={editingId === item.id}
+                    editingName={editingName}
+                    onEditChange={setEditingName}
+                    onRenameSubmit={handleRename}
+                    onActionPress={(group) => {
+                      setSelectedGroup(group);
+                      setModalVisible(true);
+                    }}
+                  />
+                )}
                 keyExtractor={(item) => item.id}
                 scrollEnabled={false}
+                // @ts-expect-error - FlashList types might be incompatible with React 19
+                estimatedItemSize={76}
               />
             )}
           </View>

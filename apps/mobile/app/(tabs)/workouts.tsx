@@ -11,25 +11,20 @@ import {
   useWorkouts,
 } from "@hooks/useWorkouts";
 import { useRouter } from "expo-router";
-import {
-  ChevronDown,
-  ChevronRight,
-  Dumbbell,
-  MoreVertical,
-} from "lucide-react-native";
 import { useMemo, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  RefreshControl,
-  SectionList,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Pressable, RefreshControl, Text, View } from "react-native";
+
+import { WorkoutItem } from "@/components/WorkoutItem";
+import { WorkoutSectionHeader } from "@/components/WorkoutSectionHeader";
+import { FlashList } from "@shopify/flash-list";
+import { useCallback } from "react";
+
+type ListItem =
+  | { type: "header"; id: string; title: string }
+  | { type: "item"; data: Workout };
 
 export default function WorkoutsScreen() {
-  const { workouts, isLoading, error, refetch, isRefetching } = useWorkouts();
+  const { workouts, isLoading, refetch } = useWorkouts();
   const { groups } = useWorkoutGroups();
   const router = useRouter();
   const colors = useThemeColors();
@@ -44,12 +39,12 @@ export default function WorkoutsScreen() {
     Record<string, boolean>
   >({ archived: true });
 
-  const toggleSection = (id: string) => {
+  const toggleSection = useCallback((id: string) => {
     setCollapsedSections((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
+  }, []);
 
   const sections = useMemo(() => {
     if (!workouts) return [];
@@ -70,7 +65,7 @@ export default function WorkoutsScreen() {
 
     activeWorkouts.forEach((w) => {
       if (w.group_id && grouped.has(w.group_id)) {
-        grouped.get(w.group_id).data.push(w);
+        grouped.get(w.group_id)!.data.push(w);
       } else {
         ungrouped.push(w);
       }
@@ -95,11 +90,21 @@ export default function WorkoutsScreen() {
     return result;
   }, [workouts, groups]);
 
-  const displaySections = useMemo(() => {
-    return sections.map((section) => ({
-      ...section,
-      data: collapsedSections[section.id] ? [] : section.data,
-    }));
+  const flatListData = useMemo(() => {
+    const data: ListItem[] = [];
+    sections.forEach((section) => {
+      data.push({
+        type: "header",
+        id: section.id,
+        title: section.title,
+      });
+      if (!collapsedSections[section.id]) {
+        section.data.forEach((workout) => {
+          data.push({ type: "item", data: workout });
+        });
+      }
+    });
+    return data;
   }, [sections, collapsedSections]);
 
   const handleAction = async (
@@ -136,88 +141,47 @@ export default function WorkoutsScreen() {
     }
   };
 
-  const renderItem = ({ item }: { item: Workout }) => (
-    <TouchableOpacity
-      className={`p-4 rounded-2xl border mb-3 flex-row items-center ${
-        item.archived
-          ? "bg-slate-100 dark:bg-background border-border opacity-60"
-          : "bg-card border-border"
-      }`}
-      onPress={() => router.push(`/workout/${item.id}`)}
-    >
-      <View
-        className={`h-12 w-12 rounded-full items-center justify-center mr-4 ${
-          item.archived ? "bg-gray-800" : "bg-primary-500/20"
-        }`}
-      >
-        <Dumbbell size={24} color={item.archived ? "#94a3b8" : "#6366f1"} />
-      </View>
-      <View className="flex-1">
-        <Text className="text-foreground font-bold text-base">{item.name}</Text>
-        {item.description && (
-          <Text className="text-slate-500 dark:text-gray-400 text-sm">
-            {item.description}
-          </Text>
-        )}
-      </View>
+  const openActionSheet = useCallback((workout: Workout) => {
+    setSelectedWorkout(workout);
+    setModalVisible(true);
+  }, []);
 
-      <TouchableOpacity
-        className="p-2 -mr-2"
-        onPress={(e) => {
-          e.stopPropagation();
-          setSelectedWorkout(item);
-          setModalVisible(true);
-        }}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
-        <MoreVertical size={20} color={colors.textSecondary} />
-      </TouchableOpacity>
-    </TouchableOpacity>
+  const renderItem = useCallback(
+    ({ item }: { item: ListItem }) => {
+      if (item.type === "header") {
+        return (
+          <WorkoutSectionHeader
+            id={item.id}
+            title={item.title}
+            isCollapsed={!!collapsedSections[item.id]}
+            onToggle={toggleSection}
+          />
+        );
+      }
+      return <WorkoutItem item={item.data} onActionPress={openActionSheet} />;
+    },
+    [collapsedSections, toggleSection, openActionSheet]
   );
-
-  const renderSectionHeader = ({
-    section: { id, title },
-  }: {
-    section: { id: string; title: string };
-  }) => {
-    const isCollapsed = collapsedSections[id];
-    return (
-      <TouchableOpacity
-        onPress={() => toggleSection(id)}
-        className="bg-background py-2 mb-2 flex-row items-center justify-between"
-      >
-        <Text className="text-gray-400 font-semibold uppercase text-xs tracking-wider">
-          {title}
-        </Text>
-        {isCollapsed ? (
-          <ChevronRight size={16} color={colors.icon} />
-        ) : (
-          <ChevronDown size={16} color={colors.icon} />
-        )}
-      </TouchableOpacity>
-    );
-  };
 
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
 
   return (
     <View className="flex-1 bg-background">
-      <SectionList
-        sections={displaySections}
+      <FlashList
+        data={flatListData}
         renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        keyExtractor={(item) => item.id}
+        getItemType={(item) => item.type}
+        // @ts-expect-error - FlashList types might be incompatible with React 19
+        estimatedItemSize={88}
         contentContainerStyle={{
           padding: 16,
           paddingTop: headerPadding + 16,
           paddingBottom: bottomPadding,
-          gap: 4,
         }}
         showsVerticalScrollIndicator={false}
-        stickySectionHeadersEnabled={false}
         ListHeaderComponent={
-          <View className="flex-row items-center justify-end gap-4">
+          <View className="flex-row items-center justify-end gap-4 mb-4">
             <Pressable
               className="bg-card border border-border px-4 py-2 rounded-full"
               onPress={() => router.push("/groups/modal")}

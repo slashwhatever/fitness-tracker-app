@@ -3,6 +3,7 @@ import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
 import { MovementIcon } from "@/components/MovementIcon";
 import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
+import { WorkoutMovementItem } from "@/components/WorkoutMovementItem";
 import { createClient } from "@/lib/supabase/client";
 import { formatLastSetDate } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
@@ -21,13 +22,13 @@ import {
   useDuplicateWorkout,
   useWorkout,
 } from "@hooks/useWorkouts";
+import { FlashList } from "@shopify/flash-list";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { MoreVertical, Plus } from "lucide-react-native";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  FlatList,
   Text,
   TouchableOpacity,
   View,
@@ -336,15 +337,35 @@ export default function WorkoutDetailScreen() {
       <View className="flex-1 pb-0">
         {/* Header Removed */}
 
-        <FlatList
+        <FlashList
           data={movements}
-          renderItem={renderMovement}
+          renderItem={({ item }) => (
+            <WorkoutMovementItem
+              item={item}
+              onPress={(i) => {
+                if (i.user_movement?.id) {
+                  router.push(`/workout/${id}/movement/${i.user_movement.id}`);
+                }
+              }}
+              onActionPress={(i) => {
+                if (i.user_movement) {
+                  handleOpenActionSheet(i);
+                }
+              }}
+              lastSetDate={
+                item.user_movement?.id
+                  ? getLastSetDate(item.user_movement.id)
+                  : undefined
+              }
+            />
+          )}
           keyExtractor={(item) => item.id}
+          // @ts-expect-error - FlashList types might be incompatible with React 19
+          estimatedItemSize={76}
           contentContainerStyle={{
             paddingBottom: bottomPadding,
             paddingTop: headerPadding + 16,
             paddingHorizontal: 16,
-            gap: 4,
           }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={

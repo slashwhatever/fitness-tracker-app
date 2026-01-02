@@ -1,10 +1,10 @@
 import { useMovementTemplates, useUserMovements } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { FlashList } from "@shopify/flash-list";
 import { Search, X } from "lucide-react-native";
 import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   Modal,
   Pressable,
   Text,
@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { MovementIcon } from "./MovementIcon";
+import { AddMovementItem } from "./AddMovementItem";
+import { AddMovementSectionHeader } from "./AddMovementSectionHeader";
 
 interface AddMovementSheetProps {
   visible: boolean;
@@ -162,70 +163,6 @@ export function AddMovementSheet({
     onClose();
   };
 
-  const renderMovementItem = ({ item }: { item: MovementItem }) => {
-    const isSelected = selectedIds.has(item.id) || item.isExisting;
-    const isDisabled = item.isExisting;
-
-    return (
-      <TouchableOpacity
-        className={`p-4 rounded-xl mb-2 flex-row items-center ${
-          isDisabled
-            ? "bg-background/30 opacity-50"
-            : isSelected
-              ? "bg-primary-500/20"
-              : "bg-background/50"
-        }`}
-        style={
-          !isDisabled && isSelected
-            ? {
-                boxShadow: `${colors.tint} 0px 0px 1px 1px`,
-              }
-            : undefined
-        }
-        onPress={() => handleToggleMovement(item.id, item.isExisting)}
-        disabled={isDisabled}
-      >
-        <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
-          <MovementIcon trackingType={item.tracking_type} size={20} />
-        </View>
-        <View className="flex-1">
-          <View className="flex-row items-center gap-2">
-            <Text className="text-foreground font-semibold text-base">
-              {item.name}
-            </Text>
-            {item.isExisting && (
-              <View className="bg-green-500/20 px-2 py-0.5 rounded-full">
-                <Text className="text-green-600 dark:text-green-400 text-xs font-medium">
-                  Added
-                </Text>
-              </View>
-            )}
-          </View>
-          <Text className="text-slate-500 dark:text-gray-400 text-sm">
-            {item.muscle_groups.join(", ") || item.tracking_type}
-          </Text>
-        </View>
-        <View
-          className={`h-6 w-6 rounded-full border-2 items-center justify-center ${
-            isSelected
-              ? "bg-primary-500 border-primary-500"
-              : "border-slate-300 dark:border-gray-600"
-          }`}
-        >
-          {isSelected && <View className="h-3 w-3 rounded-full bg-white" />}
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderSectionHeader = (title: string, count: number) => (
-    <View className="py-2">
-      <Text className="text-slate-500 dark:text-gray-400 text-sm font-semibold uppercase">
-        {title} ({count})
-      </Text>
-    </View>
-  );
-
   // Build list data with proper typing
   const listData: ListItem[] = [
     ...(userMovementsList.length > 0
@@ -286,28 +223,49 @@ export function AddMovementSheet({
               <ActivityIndicator size="large" color={colors.tint} />
             </View>
           ) : (
-            <FlatList
+            <FlashList
               data={listData}
               renderItem={({ item }) => {
                 if (item.type === "header") {
                   if (item.key === "user-header") {
-                    return renderSectionHeader(
-                      "My Movements",
-                      userMovementsList.length
+                    return (
+                      <AddMovementSectionHeader
+                        title="My Movements"
+                        count={userMovementsList.length}
+                      />
                     );
                   } else {
-                    return renderSectionHeader(
-                      "Movement Library",
-                      templatesList.length
+                    return (
+                      <AddMovementSectionHeader
+                        title="Movement Library"
+                        count={templatesList.length}
+                      />
                     );
                   }
                 }
-                return renderMovementItem({ item: item.data });
+                return (
+                  <AddMovementItem
+                    item={item.data}
+                    isSelected={
+                      selectedIds.has(item.data.id) || item.data.isExisting
+                    }
+                    isDisabled={item.data.isExisting}
+                    onToggle={handleToggleMovement}
+                  />
+                );
               }}
+              getItemType={(item) => item.type}
+              // @ts-expect-error - FlashList types might be incompatible with React 19
+              estimatedItemSize={76}
               keyExtractor={(item, index) =>
                 item.type === "header" ? item.key : `${item.data.id}-${index}`
               }
               contentContainerStyle={{ padding: 16 }}
+              stickyHeaderIndices={
+                listData
+                  .map((item, index) => (item.type === "header" ? index : null))
+                  .filter((item) => item !== null) as number[]
+              }
               ListEmptyComponent={
                 <View className="items-center justify-center py-12">
                   <Text className="text-slate-500 dark:text-gray-400 text-base">
