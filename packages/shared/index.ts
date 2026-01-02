@@ -4,6 +4,7 @@ export * from "./src/hooks/useBackgroundSync";
 export * from "./src/hooks/useHomeStats";
 export * from "./src/hooks/useMovementLastSets";
 export * from "./src/hooks/usePersonalRecords";
+export * from "./src/hooks/useReferenceData";
 export * from "./src/hooks/useSets";
 export * from "./src/hooks/useUserProfile";
 export * from "./src/hooks/useWorkoutGroups";

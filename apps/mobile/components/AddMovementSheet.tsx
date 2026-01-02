@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { AddMovementItem } from "./AddMovementItem";
 import { AddMovementSectionHeader } from "./AddMovementSectionHeader";
+import { CreateCustomMovementForm } from "./CreateCustomMovementForm";
 
 interface AddMovementSheetProps {
   visible: boolean;
@@ -45,6 +46,7 @@ export function AddMovementSheet({
   const colors = useThemeColors();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<"list" | "create">("list");
 
   const { data: templates = [], isLoading: templatesLoading } =
     useMovementTemplates();
@@ -190,35 +192,48 @@ export function AddMovementSheet({
             <View className="w-12 h-1 bg-gray-400 dark:bg-gray-600 rounded-full mb-4 self-center" />
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-xl font-bold text-foreground">
-                Add Movements
+                {viewMode === "create" ? "Create Movement" : "Add Movements"}
               </Text>
               <TouchableOpacity onPress={handleCancel} className="p-2">
                 <X size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
 
-            {/* Search Bar */}
-            <View className="flex-row items-center bg-background rounded-xl px-4 py-3 gap-3">
-              <Search size={20} color={colors.textSecondary} />
-              <TextInput
-                className="flex-1 text-foreground text-base"
-                placeholder="Search movements..."
-                placeholderTextColor={colors.textSecondary}
-                value={searchTerm}
-                onChangeText={setSearchTerm}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-              {searchTerm.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchTerm("")}>
-                  <X size={20} color={colors.textSecondary} />
-                </TouchableOpacity>
-              )}
-            </View>
+            {/* Search Bar - only show in list mode */}
+            {viewMode === "list" && (
+              <View className="flex-row items-center bg-background rounded-xl px-4 py-3 gap-3">
+                <Search size={20} color={colors.textSecondary} />
+                <TextInput
+                  className="flex-1 text-foreground text-base"
+                  placeholder="Search movements..."
+                  placeholderTextColor={colors.textSecondary}
+                  value={searchTerm}
+                  onChangeText={setSearchTerm}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
+                {searchTerm.length > 0 && (
+                  <TouchableOpacity onPress={() => setSearchTerm("")}>
+                    <X size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
           </View>
 
           {/* Content */}
-          {isLoading ? (
+          {viewMode === "create" ? (
+            <CreateCustomMovementForm
+              onSuccess={(newId) => {
+                onAddMovements([newId]);
+                setViewMode("list");
+                setSelectedIds(new Set());
+                setSearchTerm("");
+                onClose();
+              }}
+              onCancel={() => setViewMode("list")}
+            />
+          ) : isLoading ? (
             <View className="flex-1 items-center justify-center p-8">
               <ActivityIndicator size="large" color={colors.tint} />
             </View>
@@ -266,6 +281,16 @@ export function AddMovementSheet({
                   .map((item, index) => (item.type === "header" ? index : null))
                   .filter((item) => item !== null) as number[]
               }
+              ListHeaderComponent={
+                <TouchableOpacity
+                  className="bg-primary-500/10 p-4 rounded-xl flex-row items-center justify-center border border-primary-500/20 mb-6"
+                  onPress={() => setViewMode("create")}
+                >
+                  <Text className="text-primary-500 font-semibold text-base">
+                    + Create Custom Movement
+                  </Text>
+                </TouchableOpacity>
+              }
               ListEmptyComponent={
                 <View className="items-center justify-center py-12">
                   <Text className="text-slate-500 dark:text-gray-400 text-base">
@@ -276,58 +301,60 @@ export function AddMovementSheet({
             />
           )}
 
-          {/* Footer */}
-          <View className="p-4 pb-12 border-t border-border bg-card">
-            <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-slate-500 dark:text-gray-400 text-sm">
-                {selectedIds.size} movement{selectedIds.size !== 1 ? "s" : ""}{" "}
-                selected
-              </Text>
-              <TouchableOpacity
-                onPress={() => setSelectedIds(new Set())}
-                disabled={selectedIds.size === 0}
-              >
-                <Text
-                  className={`text-sm font-medium ${
-                    selectedIds.size === 0
-                      ? "text-slate-400 dark:text-gray-600"
-                      : "text-primary-500"
-                  }`}
+          {/* Footer - only show in list mode */}
+          {viewMode === "list" && (
+            <View className="p-4 pb-12 border-t border-border bg-card">
+              <View className="flex-row items-center justify-between mb-3">
+                <Text className="text-slate-500 dark:text-gray-400 text-sm">
+                  {selectedIds.size} movement{selectedIds.size !== 1 ? "s" : ""}{" "}
+                  selected
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setSelectedIds(new Set())}
+                  disabled={selectedIds.size === 0}
                 >
-                  Clear
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 items-center"
-                onPress={handleCancel}
-              >
-                <Text className="text-foreground font-semibold text-base">
-                  Cancel
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={`flex-1 rounded-xl p-4 items-center ${
-                  selectedIds.size === 0
-                    ? "bg-slate-300 dark:bg-gray-700"
-                    : "bg-primary-500"
-                }`}
-                onPress={handleDone}
-                disabled={selectedIds.size === 0}
-              >
-                <Text
-                  className={`font-semibold text-base ${
-                    selectedIds.size === 0
-                      ? "text-slate-500 dark:text-gray-500"
-                      : "text-white"
-                  }`}
+                  <Text
+                    className={`text-sm font-medium ${
+                      selectedIds.size === 0
+                        ? "text-slate-400 dark:text-gray-600"
+                        : "text-primary-500"
+                    }`}
+                  >
+                    Clear
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 items-center"
+                  onPress={handleCancel}
                 >
-                  Add ({selectedIds.size})
-                </Text>
-              </TouchableOpacity>
+                  <Text className="text-foreground font-semibold text-base">
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`flex-1 rounded-xl p-4 items-center ${
+                    selectedIds.size === 0
+                      ? "bg-slate-300 dark:bg-gray-700"
+                      : "bg-primary-500"
+                  }`}
+                  onPress={handleDone}
+                  disabled={selectedIds.size === 0}
+                >
+                  <Text
+                    className={`font-semibold text-base ${
+                      selectedIds.size === 0
+                        ? "text-slate-500 dark:text-gray-500"
+                        : "text-white"
+                    }`}
+                  >
+                    Add ({selectedIds.size})
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          )}
         </View>
       </View>
     </Modal>

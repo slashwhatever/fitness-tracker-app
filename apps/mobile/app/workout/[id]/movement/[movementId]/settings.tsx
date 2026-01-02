@@ -209,7 +209,7 @@ export default function MovementSettingsScreen() {
           header: () => (
             <GlassHeader
               title="Movement Settings"
-              backPath={`/workout/${workoutId}/movement/${movementId}`}
+              onBack={() => router.back()}
             />
           ),
         }}

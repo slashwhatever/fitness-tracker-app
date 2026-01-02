@@ -694,7 +694,7 @@ export function useUpdateUserMovement(
         predicate: (query) => {
           return (
             query.queryKey.includes("workout") &&
-            query.queryKey.includes("movement")
+            query.queryKey.includes("movements")
           );
         },
       });
@@ -742,7 +742,7 @@ export function useUpdateUserMovement(
         predicate: (query) => {
           return (
             query.queryKey.includes("workout") &&
-            query.queryKey.includes("movement")
+            query.queryKey.includes("movements")
           );
         },
       });
@@ -795,6 +795,11 @@ export function useUpdateUserMovement(
             context.previousMovement
           );
         }
+        // We should also theoretically rollback workout movements, but that's complex
+        // and a full invalidate on error might be safer/easier
+        queryClient.invalidateQueries({
+          queryKey: movementKeys.workoutMovements(),
+        });
       }
     },
     onSuccess: (data, { id }) => {
@@ -807,11 +812,43 @@ export function useUpdateUserMovement(
             return old.map((m) => (m.id === id ? data : m));
           }
         );
-        // Update the individual movement cache
+        // Set individual movement cache
         queryClient.setQueryData(movementKeys.userMovement(id), data);
 
-        // Only invalidate workout movements that use this user movement
-        // This is necessary because workout movements include joined user movement data
+        // Manually update workout movements cache with server data
+        const workoutMovementQueries = queryClient.getQueriesData({
+          queryKey: movementKeys.all,
+          predicate: (query) => {
+            return (
+              query.queryKey.includes("workout") &&
+              query.queryKey.includes("movements")
+            );
+          },
+        });
+
+        workoutMovementQueries.forEach(([queryKey, queryData]) => {
+          if (Array.isArray(queryData)) {
+            queryClient.setQueryData(
+              queryKey,
+              (
+                old: Array<WorkoutMovement & { user_movement?: UserMovement }>
+              ) => {
+                if (!old) return old;
+                return old.map((wm) => {
+                  if (wm.user_movement?.id === id) {
+                    return {
+                      ...wm,
+                      user_movement: data, // Use the fresh server data
+                    };
+                  }
+                  return wm;
+                });
+              }
+            );
+          }
+        });
+
+        // Invalidate workout movements to ensure they get the fresh data
         queryClient.invalidateQueries({
           queryKey: movementKeys.workoutMovements(),
         });
