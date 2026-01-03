@@ -28,8 +28,11 @@ function AppContent() {
     return null;
   }
 
-  // Check if we're on an auth route (login, register)
-  const isAuthRoute = segments[0] === "login" || segments[0] === "register";
+  // Check if we're on an auth route (login, register, confirm-email)
+  const isAuthRoute =
+    segments[0] === "login" ||
+    segments[0] === "register" ||
+    segments[0] === "confirm-email";
 
   // If not authenticated and trying to access protected routes, redirect to login
   if (!session && !isAuthRoute) {

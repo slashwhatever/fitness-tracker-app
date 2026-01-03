@@ -1,5 +1,6 @@
 "use client";
 
+import { useDeepLink } from "@/hooks/useDeepLink";
 import type {
   AuthSession as Session,
   AuthUser as User,
@@ -20,6 +21,8 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshSession: () => Promise<void>;
+  deepLinkProcessing: boolean;
+  deepLinkError: string | null;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -36,6 +39,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   const [supabase] = useState(() => createClient());
+
+  // Handle deep links for auth (email confirmation, password reset, etc.)
+  const { isProcessing: deepLinkProcessing, error: deepLinkError } =
+    useDeepLink();
 
   const refreshSession = useCallback(async () => {
     console.log("Refreshing session...");
@@ -94,8 +101,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       loading,
       signOut: handleSignOut,
       refreshSession,
+      deepLinkProcessing,
+      deepLinkError,
     }),
-    [user, session, loading, handleSignOut, refreshSession]
+    [
+      user,
+      session,
+      loading,
+      handleSignOut,
+      refreshSession,
+      deepLinkProcessing,
+      deepLinkError,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

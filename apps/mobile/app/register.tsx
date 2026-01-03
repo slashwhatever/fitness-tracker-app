@@ -103,6 +103,8 @@ export default function RegisterScreen() {
           data: {
             display_name: values.displayName,
           },
+          // Redirect to the mobile app deep link for email confirmation
+          emailRedirectTo: "logset://confirm",
         },
       });
 
