@@ -29,11 +29,11 @@ function AuthenticatedApp() {
     return null;
   }
 
-  // Check if we're on an auth route (login, register, confirm-email)
+  // Check if we're on an auth route (login, register, confirm)
   const isAuthRoute =
     segments[0] === "login" ||
     segments[0] === "register" ||
-    segments[0] === "confirm-email";
+    segments[0] === "confirm";
 
   // If not authenticated and trying to access protected routes, redirect to login
   if (!session && !isAuthRoute) {
@@ -66,7 +66,7 @@ function AuthenticatedApp() {
       />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
-      <Stack.Screen name="confirm-email" options={{ headerShown: false }} />
+      <Stack.Screen name="confirm" options={{ headerShown: false }} />
     </Stack>
   );
 }
