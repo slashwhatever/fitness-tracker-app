@@ -4,12 +4,11 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Redirect, Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
-import LoginScreen from "./login";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,13 +23,23 @@ const queryClient = new QueryClient({
 
 function AuthenticatedApp() {
   const { session, loading } = useAuth();
+  const segments = useSegments();
 
   if (loading) {
     return null;
   }
 
-  if (!session) {
-    return <LoginScreen />;
+  // Check if we're on an auth route (login, register)
+  const isAuthRoute = segments[0] === "login" || segments[0] === "register";
+
+  // If not authenticated and trying to access protected routes, redirect to login
+  if (!session && !isAuthRoute) {
+    return <Redirect href="/login" />;
+  }
+
+  // If authenticated and on auth routes, redirect to home
+  if (session && isAuthRoute) {
+    return <Redirect href="/" />;
   }
 
   return (
@@ -52,8 +61,8 @@ function AuthenticatedApp() {
           headerShown: false,
         }}
       />
-      {/* Login route is technically available but we handle auth above */}
       <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="register" options={{ headerShown: false }} />
     </Stack>
   );
 }

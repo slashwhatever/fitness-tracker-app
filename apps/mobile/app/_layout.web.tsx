@@ -2,14 +2,12 @@ import { RestTimer } from "@/components/RestTimer";
 import { RestTimerProvider } from "@/components/RestTimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
-import { useThemeColors } from "@hooks/useThemeColors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Slot } from "expo-router";
+import { Redirect, Slot, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
-import LoginScreen from "./login";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,14 +22,23 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   const { session, loading } = useAuth();
-  const colors = useThemeColors();
+  const segments = useSegments();
 
   if (loading) {
     return null;
   }
 
-  if (!session) {
-    return <LoginScreen />;
+  // Check if we're on an auth route (login, register)
+  const isAuthRoute = segments[0] === "login" || segments[0] === "register";
+
+  // If not authenticated and trying to access protected routes, redirect to login
+  if (!session && !isAuthRoute) {
+    return <Redirect href="/login" />;
+  }
+
+  // If authenticated and on auth routes, redirect to home
+  if (session && isAuthRoute) {
+    return <Redirect href="/" />;
   }
 
   return <Slot />;
