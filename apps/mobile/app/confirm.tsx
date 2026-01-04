@@ -1,8 +1,8 @@
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
-import { CheckCircle, Loader2, XCircle } from "lucide-react-native";
+import { CheckCircle, XCircle } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ConfirmEmailState {
@@ -52,7 +52,7 @@ export default function ConfirmEmailScreen() {
           {/* Status Icon */}
           {state.status === "loading" && (
             <View className="bg-primary/20 p-6 rounded-full">
-              <Loader2 size={64} color={colors.tint} className="animate-spin" />
+              <ActivityIndicator size={64} color={colors.tint} />
             </View>
           )}
 

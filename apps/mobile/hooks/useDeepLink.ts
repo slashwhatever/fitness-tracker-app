@@ -29,6 +29,24 @@ export function useDeepLink() {
         const parsed = Linking.parse(url);
         console.log("[DeepLink] Parsed URL:", parsed);
 
+        // Supabase sends tokens in the URL fragment (after #), not as query params
+        // Example: logset://confirm#access_token=...&type=signup
+        // We need to parse the fragment manually
+        let params: Record<string, string | undefined> = {
+          ...parsed.queryParams,
+        } as Record<string, string | undefined>;
+
+        // Parse hash fragment if present
+        const hashIndex = url.indexOf("#");
+        if (hashIndex !== -1) {
+          const fragment = url.substring(hashIndex + 1);
+          const fragmentParams = new URLSearchParams(fragment);
+          fragmentParams.forEach((value, key) => {
+            params[key] = value;
+          });
+          console.log("[DeepLink] Parsed fragment params:", params);
+        }
+
         // Extract tokens from URL parameters
         // Supabase sends: token_hash, type, and sometimes access_token/refresh_token
         const {
@@ -38,7 +56,7 @@ export function useDeepLink() {
           refresh_token,
           error: urlError,
           error_description,
-        } = parsed.queryParams as Record<string, string | undefined>;
+        } = params;
 
         // Check for errors in URL
         if (urlError) {
