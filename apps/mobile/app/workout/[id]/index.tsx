@@ -438,13 +438,15 @@ export default function WorkoutDetailScreen() {
         isArchived={workout?.archived || false}
       />
 
-      <AddMovementSheet
-        visible={addMovementSheetVisible}
-        onClose={() => setAddMovementSheetVisible(false)}
-        onAddMovements={handleAddMovements}
-        workoutId={id}
-        existingMovementIds={movements?.map((m) => m.user_movement_id) || []}
-      />
+      {addMovementSheetVisible && (
+        <AddMovementSheet
+          visible={addMovementSheetVisible}
+          onClose={() => setAddMovementSheetVisible(false)}
+          onAddMovements={handleAddMovements}
+          workoutId={id}
+          existingMovementIds={movements?.map((m) => m.user_movement_id) || []}
+        />
+      )}
     </View>
   );
 }

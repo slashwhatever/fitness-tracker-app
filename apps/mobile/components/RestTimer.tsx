@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRestTimer } from "@fitness/shared";
+import notifee from "@notifee/react-native";
 import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
-import * as Notifications from "expo-notifications";
 import { useColorScheme } from "nativewind";
 import React, { useEffect, useMemo } from "react";
 import {
@@ -17,17 +17,6 @@ import twColors from "tailwindcss/colors";
 import { useThemeColors } from "../hooks/useThemeColors";
 
 export const REST_TIMER_HEIGHT = 60;
-
-// Configure notifications
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
 
 // Helper helper to format time
 const formatTime = (seconds: number) => {
@@ -61,7 +50,7 @@ export const RestTimer = () => {
   useEffect(() => {
     async function requestPermissions() {
       if (typeof Platform !== "undefined" && Platform.OS !== "web") {
-        await Notifications.requestPermissionsAsync();
+        await notifee.requestPermission();
       }
     }
     requestPermissions();
@@ -70,16 +59,7 @@ export const RestTimer = () => {
   useEffect(() => {
     if (isCompleted) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      if (typeof Platform !== "undefined" && Platform.OS !== "web") {
-        Notifications.scheduleNotificationAsync({
-          content: {
-            title: "Rest Finished",
-            body: "Get back to work!",
-          },
-          trigger: null, // Immediate
-        });
-      }
+      // Notification is now handled by notificationService via RestTimerProvider
     }
   }, [isCompleted]);
 

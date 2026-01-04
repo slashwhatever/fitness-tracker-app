@@ -3,6 +3,7 @@ import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useHomeStats } from "@hooks/useHomeStats";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useUserProfile } from "@hooks/useUserProfile";
 import { formatDistanceToNow } from "date-fns";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -21,6 +22,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { data: stats, isLoading, refetch } = useHomeStats();
   const { primary } = useThemeColors();
+  const { data: userProfile } = useUserProfile();
 
   const formatVolume = (vol: number) => {
     return Math.round(vol).toLocaleString();
@@ -49,12 +51,12 @@ export default function HomeScreen() {
               Welcome back,
             </Text>
             <Text className="text-2xl font-bold text-foreground">
-              {user?.email?.split("@")[0] || "Athlete"}
+              {userProfile?.display_name || "Athlete"}
             </Text>
           </View>
           <View className="h-10 w-10 rounded-full bg-primary-500 items-center justify-center">
             <Text className="text-white font-bold text-lg">
-              {(user?.email?.[0] || "A").toUpperCase()}
+              {(userProfile?.display_name?.[0] || "A").toUpperCase()}
             </Text>
           </View>
         </View>

@@ -67,8 +67,8 @@ export function useMovementTemplates(
           created_at,
           updated_at,
           tracking_types!inner(name),
-          movement_template_muscle_groups!inner(
-            muscle_groups!inner(name, display_name)
+          movement_template_muscle_groups(
+            muscle_groups(name, display_name)
           )
         `
         )

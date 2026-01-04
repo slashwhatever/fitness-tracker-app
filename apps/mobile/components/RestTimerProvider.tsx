@@ -1,6 +1,14 @@
 import { RestTimerContext, RestTimerState } from "@fitness/shared";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
+import {
+  cancelTimerNotification,
+  completeTimerNotification,
+  pauseTimerNotification,
+  setupNotificationChannel,
+  startTimerNotification,
+  updateTimerNotification,
+} from "../services/notificationService";
 
 export function RestTimerProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<RestTimerState>({
@@ -37,6 +45,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
 
   const cancelTimer = useCallback(() => {
     clearIntervalSafe();
+    cancelTimerNotification();
     setState({
       isActive: false,
       isPaused: false,
@@ -60,6 +69,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
 
       if (newRemaining <= 0) {
         clearIntervalSafe();
+        completeTimerNotification();
 
         // Auto-hide after 5 seconds
         autoHideTimeoutRef.current = setTimeout(() => {
@@ -79,6 +89,8 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
         };
       }
 
+      // Update notification with new remaining time
+      updateTimerNotification(prev.duration, newRemaining);
       return { ...prev, remainingTime: newRemaining };
     });
   }, []);
@@ -114,6 +126,8 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
         workoutId: metadata?.workoutId ?? null,
       });
 
+      // Start the notification with the timer
+      startTimerNotification(duration, duration);
       intervalRef.current = setInterval(tick, 1000);
     },
     [tick, state.isActive, state.movementId, state.startTime]
@@ -122,16 +136,19 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
   const pauseTimer = useCallback(() => {
     if (!state.isActive || state.isPaused) return;
     clearIntervalSafe();
+    pauseTimerNotification(state.remainingTime);
     setState((prev) => ({
       ...prev,
       isPaused: true,
       pausedAt: Date.now(),
     }));
-  }, [state.isActive, state.isPaused]);
+  }, [state.isActive, state.isPaused, state.remainingTime]);
 
   const resumeTimer = useCallback(() => {
     if (!state.isActive || !state.isPaused) return;
 
+    // Resume notification updates
+    startTimerNotification(state.duration, state.remainingTime);
     setState((prev) => ({
       ...prev,
       isPaused: false,
@@ -139,11 +156,19 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
     }));
 
     intervalRef.current = setInterval(tick, 1000);
-  }, [state.isActive, state.isPaused, tick]);
+  }, [
+    state.isActive,
+    state.isPaused,
+    state.duration,
+    state.remainingTime,
+    tick,
+  ]);
 
   const resetTimer = useCallback(() => {
     if (!state.isActive) return;
     clearIntervalSafe();
+    // Reset notification to full duration
+    startTimerNotification(state.duration, state.duration);
     setState((prev) => ({
       ...prev,
       isPaused: false,
@@ -152,7 +177,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
       pausedAt: null,
     }));
     intervalRef.current = setInterval(tick, 1000);
-  }, [state.isActive, tick]);
+  }, [state.isActive, state.duration, tick]);
 
   const addTime = useCallback((seconds: number) => {
     setState((prev) => {
@@ -170,6 +195,11 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
+
+  // Setup notification channel on mount
+  useEffect(() => {
+    setupNotificationChannel();
+  }, []);
 
   // Handle App State Changes (Background/Foreground)
   useEffect(() => {

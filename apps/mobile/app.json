@@ -27,13 +27,13 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.slashwhatever.logset",
-      "versionCode": 12
+      "versionCode": 23
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router"],
+    "plugins": ["expo-router", "./plugins/withNotifee.js"],
     "extra": {
       "router": {},
       "eas": {

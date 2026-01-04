@@ -48,10 +48,16 @@ export function AddMovementSheet({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<"list" | "create">("list");
 
-  const { data: templates = [], isLoading: templatesLoading } =
-    useMovementTemplates();
-  const { data: userMovements = [], isLoading: userMovementsLoading } =
-    useUserMovements();
+  const {
+    data: templates = [],
+    isLoading: templatesLoading,
+    error: templatesError,
+  } = useMovementTemplates();
+  const {
+    data: userMovements = [],
+    isLoading: userMovementsLoading,
+    error: userMovementsError,
+  } = useUserMovements();
 
   const isLoading = templatesLoading || userMovementsLoading;
 
