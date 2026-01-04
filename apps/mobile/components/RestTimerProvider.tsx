@@ -16,6 +16,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
   });
 
   const intervalRef = useRef<any>(null);
+  const autoHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const appState = useRef(AppState.currentState);
 
   // Helper to clear interval safely
@@ -23,6 +24,14 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
+    }
+  };
+
+  // Helper to clear auto-hide timeout safely
+  const clearAutoHideTimeout = () => {
+    if (autoHideTimeoutRef.current) {
+      clearTimeout(autoHideTimeoutRef.current);
+      autoHideTimeoutRef.current = null;
     }
   };
 
@@ -53,7 +62,8 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
         clearIntervalSafe();
 
         // Auto-hide after 5 seconds
-        setTimeout(() => {
+        autoHideTimeoutRef.current = setTimeout(() => {
+          autoHideTimeoutRef.current = null;
           setState((current) => ({
             ...current,
             isCompleted: false,
@@ -90,6 +100,8 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
       }
 
       clearIntervalSafe();
+      // Cancel any pending auto-hide timeout from a previous timer
+      clearAutoHideTimeout();
       setState({
         isActive: true,
         isPaused: false,
