@@ -68,6 +68,7 @@ export function GlassHeader({
       style={[
         {
           top: containerTop,
+          height: containerHeight,
           backgroundColor: isDark
             ? "rgba(15,23,42,0.5)"
             : "rgba(255,255,255,0.5)",
@@ -82,9 +83,8 @@ export function GlassHeader({
       <View
         style={{
           paddingTop: contentPaddingTop,
-          height: containerHeight,
         }}
-        className="px-4 flex-row items-center justify-between"
+        className="flex-1 px-4 flex-row items-center justify-between"
       >
         <View className="flex-1 flex-row items-center">
           {showBack && (
