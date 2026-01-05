@@ -78,24 +78,86 @@ export const RestTimer = () => {
 
   if (!isActive && !isCompleted) return null;
 
+  const containerStyle = [
+    styles.container,
+    {
+      paddingTop: insets.top,
+      height: insets.top + REST_TIMER_HEIGHT,
+      backgroundColor: isAndroid
+        ? isDark
+          ? "rgba(15,23,42,0.9)"
+          : "rgba(255,255,255,0.9)"
+        : isDark
+          ? "rgba(15,23,42,0.5)"
+          : "rgba(255,255,255,0.5)",
+      borderBottomColor: theme.border,
+    },
+  ];
+
+  if (isAndroid) {
+    return (
+      <View style={containerStyle}>
+        {/* Progress Bar Background */}
+        <View style={[styles.progressBarBg, { backgroundColor: theme.muted }]}>
+          <View
+            style={[
+              styles.progressBarFill,
+              { width: `${fillPercentage}%`, backgroundColor: color },
+            ]}
+          />
+        </View>
+
+        <View style={styles.content}>
+          {/* Time Display */}
+          <Text style={[styles.timerText, { color: theme.text }]}>
+            {formatTime(remainingTime)}
+          </Text>
+
+          {/* Controls */}
+          <View style={styles.controls}>
+            {/* +30s */}
+            <TouchableOpacity
+              onPress={() => addTime(30)}
+              style={styles.iconButton}
+            >
+              <Text style={[styles.addTimeText, { color: theme.text }]}>
+                +30s
+              </Text>
+            </TouchableOpacity>
+
+            {/* Pause/Play */}
+            <TouchableOpacity
+              onPress={isPaused ? resumeTimer : pauseTimer}
+              style={styles.iconButton}
+            >
+              <Ionicons
+                name={isPaused ? "play" : "pause"}
+                size={24}
+                color={theme.text}
+              />
+            </TouchableOpacity>
+
+            {/* Reset */}
+            <TouchableOpacity onPress={resetTimer} style={styles.iconButton}>
+              <Ionicons name="refresh" size={24} color={theme.text} />
+            </TouchableOpacity>
+
+            {/* Cancel */}
+            <TouchableOpacity onPress={cancelTimer} style={styles.iconButton}>
+              <Ionicons name="close" size={24} color={theme.danger} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <BlurView
       intensity={50}
       experimentalBlurMethod="dimezisBlurView"
       tint={isDark ? "systemThickMaterialDark" : "systemThickMaterialLight"}
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-          height: insets.top + REST_TIMER_HEIGHT,
-          backgroundColor: isAndroid
-            ? "transparent" // Ensure transparency on Android for blur to work
-            : isDark
-              ? "rgba(15,23,42,0.5)"
-              : "rgba(255,255,255,0.5)",
-          borderBottomColor: theme.border,
-        },
-      ]}
+      style={containerStyle}
     >
       {/* Progress Bar Background */}
       <View style={[styles.progressBarBg, { backgroundColor: theme.muted }]}>
