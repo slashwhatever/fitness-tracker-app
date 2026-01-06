@@ -27,7 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.slashwhatever.logset",
-      "versionCode": 23
+      "versionCode": 25
     },
     "web": {
       "favicon": "./assets/favicon.png",
