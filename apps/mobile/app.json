@@ -27,24 +27,13 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.slashwhatever.logset",
-      "versionCode": 25
+      "versionCode": 23
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": [
-      "expo-router",
-      "./plugins/withNotifee.js",
-      [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io/",
-          "project": "react-native",
-          "organization": "slashwhatever"
-        }
-      ]
-    ],
+    "plugins": ["expo-router", "./plugins/withNotifee.js"],
     "extra": {
       "router": {},
       "eas": {
