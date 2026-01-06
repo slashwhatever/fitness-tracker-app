@@ -1,22 +1,7 @@
 import { useThemeColors } from "@hooks/useThemeColors";
 import { ChevronDown, ChevronUp, FileText } from "lucide-react-native";
 import { useState } from "react";
-import {
-  LayoutAnimation,
-  Platform,
-  Text,
-  TouchableOpacity,
-  UIManager,
-  View,
-} from "react-native";
-
-// Enable LayoutAnimation on Android
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import { LayoutAnimation, Text, TouchableOpacity, View } from "react-native";
 
 interface CollapsibleNotesProps {
   personalNotes?: string | null;

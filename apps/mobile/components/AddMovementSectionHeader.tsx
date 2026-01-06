@@ -11,7 +11,7 @@ export const AddMovementSectionHeader = memo(function AddMovementSectionHeader({
   count,
 }: AddMovementSectionHeaderProps) {
   return (
-    <View className="py-2 bg-card">
+    <View className="py-2 px-4 bg-card">
       <Text className="text-slate-500 dark:text-gray-400 text-sm font-semibold uppercase">
         {title} ({count})
       </Text>

@@ -192,7 +192,7 @@ export function AddMovementSheet({
     >
       <View className="flex-1 bg-black/50">
         <Pressable className="flex-1" onPress={handleCancel} />
-        <View className="bg-card rounded-t-3xl max-h-[85%] border-t border-border">
+        <View className="bg-card rounded-t-3xl h-[90%] border-t border-border flex flex-col">
           {/* Header */}
           <View className="p-4 border-b border-border">
             <View className="w-12 h-1 bg-gray-400 dark:bg-gray-600 rounded-full mb-4 self-center" />
@@ -243,68 +243,84 @@ export function AddMovementSheet({
             <View className="flex-1 items-center justify-center p-8">
               <ActivityIndicator size="large" color={colors.tint} />
             </View>
+          ) : templatesError || userMovementsError ? (
+            <View className="flex-1 items-center justify-center p-8">
+              <Text className="text-red-500 text-center mb-2">
+                Failed to load movements
+              </Text>
+              <Text className="text-slate-500 text-center text-sm">
+                {(templatesError || userMovementsError)?.message}
+              </Text>
+            </View>
           ) : (
-            <FlashList
-              data={listData}
-              renderItem={({ item }) => {
-                if (item.type === "header") {
-                  if (item.key === "user-header") {
-                    return (
-                      <AddMovementSectionHeader
-                        title="My Movements"
-                        count={userMovementsList.length}
-                      />
-                    );
-                  } else {
-                    return (
-                      <AddMovementSectionHeader
-                        title="Movement Library"
-                        count={templatesList.length}
-                      />
-                    );
-                  }
-                }
-                return (
-                  <AddMovementItem
-                    item={item.data}
-                    isSelected={
-                      selectedIds.has(item.data.id) || item.data.isExisting
+            <View className="flex-1">
+              <FlashList
+                data={listData}
+                renderItem={({ item }) => {
+                  if (item.type === "header") {
+                    if (item.key === "user-header") {
+                      return (
+                        <AddMovementSectionHeader
+                          title="My Movements"
+                          count={userMovementsList.length}
+                        />
+                      );
+                    } else {
+                      return (
+                        <AddMovementSectionHeader
+                          title="Movement Library"
+                          count={templatesList.length}
+                        />
+                      );
                     }
-                    isDisabled={item.data.isExisting}
-                    onToggle={handleToggleMovement}
-                  />
-                );
-              }}
-              getItemType={(item) => item.type}
-              // @ts-expect-error - FlashList types might be incompatible with React 19
-              estimatedItemSize={76}
-              keyExtractor={(item, index) =>
-                item.type === "header" ? item.key : `${item.data.id}-${index}`
-              }
-              contentContainerStyle={{ padding: 16 }}
-              stickyHeaderIndices={
-                listData
-                  .map((item, index) => (item.type === "header" ? index : null))
-                  .filter((item) => item !== null) as number[]
-              }
-              ListHeaderComponent={
-                <TouchableOpacity
-                  className="bg-primary-500/10 p-4 rounded-xl flex-row items-center justify-center border border-primary-500/20 mb-6"
-                  onPress={() => setViewMode("create")}
-                >
-                  <Text className="text-primary-500 font-semibold text-base">
-                    + Create Custom Movement
-                  </Text>
-                </TouchableOpacity>
-              }
-              ListEmptyComponent={
-                <View className="items-center justify-center py-12">
-                  <Text className="text-slate-500 dark:text-gray-400 text-base">
-                    No movements found
-                  </Text>
-                </View>
-              }
-            />
+                  }
+                  return (
+                    <AddMovementItem
+                      item={item.data}
+                      isSelected={
+                        selectedIds.has(item.data.id) || item.data.isExisting
+                      }
+                      isDisabled={item.data.isExisting}
+                      onToggle={handleToggleMovement}
+                    />
+                  );
+                }}
+                getItemType={(item) => item.type}
+                estimatedItemSize={76}
+                keyExtractor={(item, index) =>
+                  item.type === "header" ? item.key : `${item.data.id}-${index}`
+                }
+                contentContainerStyle={{
+                  paddingVertical: 16,
+                }}
+                stickyHeaderIndices={
+                  listData
+                    .map((item, index) =>
+                      item.type === "header" ? index : null
+                    )
+                    .filter((item) => item !== null) as number[]
+                }
+                ListHeaderComponent={
+                  <View className="px-4">
+                    <TouchableOpacity
+                      className="bg-primary-500/10 p-4 rounded-xl flex-row items-center justify-center border border-primary-500/20 mb-6"
+                      onPress={() => setViewMode("create")}
+                    >
+                      <Text className="text-primary-500 font-semibold text-base">
+                        + Create Custom Movement
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                }
+                ListEmptyComponent={
+                  <View className="items-center justify-center py-12">
+                    <Text className="text-slate-500 dark:text-gray-400 text-base">
+                      No movements found
+                    </Text>
+                  </View>
+                }
+              />
+            </View>
           )}
 
           {/* Footer - only show in list mode */}

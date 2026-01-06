@@ -67,8 +67,8 @@ export function useMovementTemplates(
           created_at,
           updated_at,
           tracking_types!inner(name),
-          movement_template_muscle_groups(
-            muscle_groups(name, display_name)
+          movement_template_muscle_groups!inner(
+            muscle_groups!inner(name, display_name)
           )
         `
         )
@@ -141,7 +141,11 @@ export function useUserMovements(): UseQueryResult<UserMovement[], Error> {
       type QueryResult = QueryData<typeof query>;
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching user movements:", error);
+        throw error;
+      }
+      console.log("Fetched user movements:", data?.length);
 
       // Transform the data to include muscle_groups array and tracking_type
       return (data as QueryResult).map((movement) => ({
