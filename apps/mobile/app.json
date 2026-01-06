@@ -33,7 +33,18 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router", "./plugins/withNotifee.js"],
+    "plugins": [
+      "expo-router",
+      "./plugins/withNotifee.js",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "slashwhatever"
+        }
+      ]
+    ],
     "extra": {
       "router": {},
       "eas": {

@@ -1,11 +1,13 @@
-const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 const path = require("path");
+const {
+  getSentryExpoConfig
+} = require("@sentry/react-native/metro");
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, "../..");
 
-const config = getDefaultConfig(projectRoot);
+const config = getSentryExpoConfig(projectRoot);
 
 // Ensure lucide-react-native is transpiled
 config.resolver.sourceExts.push("mjs");

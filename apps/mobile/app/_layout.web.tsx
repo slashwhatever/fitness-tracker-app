@@ -2,12 +2,27 @@ import { RestTimer } from "@/components/RestTimer";
 import { RestTimerProvider } from "@/components/RestTimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
+import * as Sentry from "@sentry/react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Slot, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
+
+Sentry.init({
+  dsn: "https://06088e1edfbe92504a8f41b5e9c5f5c1@o4510658313125888.ingest.de.sentry.io/4510658314436688",
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  sendDefaultPii: true,
+
+  // Enable Logs
+  enableLogs: true,
+
+  // Configure Session Replay - web uses different sample rates
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +62,7 @@ function AppContent() {
   return <Slot />;
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
@@ -65,4 +80,4 @@ export default function RootLayout() {
       </SafeAreaProvider>
     </QueryClientProvider>
   );
-}
+});
