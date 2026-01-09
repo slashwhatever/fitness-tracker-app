@@ -103,7 +103,12 @@ function SetActionModal({
               }}
             />
           </View>
-          <Button size="lg" variant="outline" onPress={onClose}>
+          <Button
+            size="lg"
+            variant="outline"
+            className="mx-4"
+            onPress={onClose}
+          >
             Cancel
           </Button>
         </View>

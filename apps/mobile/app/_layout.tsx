@@ -2,7 +2,10 @@ import { RestTimer } from "@/components/RestTimer";
 import { RestTimerProvider } from "@/components/RestTimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider, useAuth } from "@/lib/auth/AuthProvider";
-import { registerForegroundService } from "@/services/notificationService";
+import {
+  registerBackgroundEventHandler,
+  registerForegroundService,
+} from "@/services/notificationService";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Stack, useSegments } from "expo-router";
@@ -11,8 +14,9 @@ import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
-// Register the foreground service at app startup (before any component renders)
+// Register the foreground service and background event handler at app startup
 registerForegroundService();
+registerBackgroundEventHandler();
 
 const queryClient = new QueryClient({
   defaultOptions: {

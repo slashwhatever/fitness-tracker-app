@@ -7,7 +7,9 @@ import { Platform } from "react-native";
 
 // Notification IDs
 const TIMER_NOTIFICATION_ID = "rest-timer-notification";
-const TIMER_CHANNEL_ID = "rest-timer-channel";
+// Use a versioned channel ID - Android caches channel settings, so changing
+// importance requires a new channel ID
+const TIMER_CHANNEL_ID = "rest-timer-channel-v2";
 
 // Headless timer state - tracked outside React for foreground service
 let timerEndTime: number | null = null;
@@ -144,8 +146,21 @@ export async function setupNotificationChannel(): Promise<void> {
     id: TIMER_CHANNEL_ID,
     name: "Rest Timer",
     description: "Shows countdown timer during rest periods",
-    importance: AndroidImportance.LOW, // Low = no sound, but visible in shade
-    visibility: AndroidVisibility.PUBLIC,
+    importance: AndroidImportance.HIGH, // HIGH = visible on lock screen, heads-up
+    visibility: AndroidVisibility.PUBLIC, // Show full content on lock screen
+    // Note: HIGH importance may make sounds, but onlyAlertOnce on notification prevents repeated alerts
+  });
+}
+
+/**
+ * Registers background event handler.
+ * MUST be called at app startup alongside registerForegroundService.
+ */
+export function registerBackgroundEventHandler(): void {
+  notifee.onBackgroundEvent(async ({ type, detail }) => {
+    // Handle notification press events when app is in background
+    // Currently we don't need special handling, but this prevents the warning
+    return;
   });
 }
 
