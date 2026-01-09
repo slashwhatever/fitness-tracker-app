@@ -9,6 +9,11 @@ import { Platform } from "react-native";
 const TIMER_NOTIFICATION_ID = "rest-timer-notification";
 const TIMER_CHANNEL_ID = "rest-timer-channel";
 
+// Headless timer state - tracked outside React for foreground service
+let timerEndTime: number | null = null;
+let timerDuration: number | null = null;
+let headlessInterval: ReturnType<typeof setInterval> | null = null;
+
 // Helper to format time for notification
 const formatTime = (seconds: number): string => {
   const m = Math.floor(seconds / 60);
@@ -17,16 +22,113 @@ const formatTime = (seconds: number): string => {
 };
 
 /**
+ * Headless completion handler - called by foreground service when timer expires
+ */
+async function handleTimerComplete(): Promise<void> {
+  // Clear tracking state
+  timerEndTime = null;
+  timerDuration = null;
+  if (headlessInterval) {
+    clearInterval(headlessInterval);
+    headlessInterval = null;
+  }
+
+  // Stop the foreground service first
+  await notifee.stopForegroundService();
+
+  // Create a high-importance channel for completion alert
+  await notifee.createChannel({
+    id: "rest-timer-complete",
+    name: "Rest Timer Complete",
+    description: "Alert when rest timer finishes",
+    importance: AndroidImportance.HIGH,
+    visibility: AndroidVisibility.PUBLIC,
+    sound: "default",
+    vibration: true,
+  });
+
+  // Show completion notification with sound/vibration
+  await notifee.displayNotification({
+    id: TIMER_NOTIFICATION_ID,
+    title: "Rest Complete!",
+    body: "Get back to work! 💪",
+    android: {
+      channelId: "rest-timer-complete",
+      importance: AndroidImportance.HIGH,
+      visibility: AndroidVisibility.PUBLIC,
+      pressAction: {
+        id: "default",
+        launchActivity: "default",
+      },
+      smallIcon: "ic_launcher",
+    },
+  });
+}
+
+/**
  * Registers the foreground service task handler.
  * MUST be called at app startup (in index.js or App.tsx root).
+ *
+ * This headless task runs independently of the main JS thread and will
+ * fire the completion notification even when the phone is locked.
  */
 export function registerForegroundService(): void {
   if (Platform.OS !== "android") return;
 
-  notifee.registerForegroundService((notification) => {
-    return new Promise(() => {
-      // Keep the service running - it will be stopped when we call stopForegroundService()
-      // The timer logic runs in the JS thread, this just keeps the notification alive
+  notifee.registerForegroundService(() => {
+    return new Promise<void>((resolve) => {
+      // Clear any existing interval
+      if (headlessInterval) {
+        clearInterval(headlessInterval);
+        headlessInterval = null;
+      }
+
+      // Check timer status every second
+      headlessInterval = setInterval(async () => {
+        // If timer was cancelled or paused, just wait
+        if (!timerEndTime || !timerDuration) {
+          return;
+        }
+
+        const now = Date.now();
+        const remainingMs = timerEndTime - now;
+        const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+
+        if (remainingSeconds <= 0) {
+          // Timer expired - fire completion
+          await handleTimerComplete();
+          resolve();
+        } else {
+          // Update notification with countdown (keeps service alive)
+          try {
+            await notifee.displayNotification({
+              id: TIMER_NOTIFICATION_ID,
+              title: "Rest Timer",
+              body: `${formatTime(remainingSeconds)} remaining`,
+              android: {
+                channelId: TIMER_CHANNEL_ID,
+                asForegroundService: true,
+                ongoing: true,
+                onlyAlertOnce: true,
+                category: AndroidCategory.PROGRESS,
+                visibility: AndroidVisibility.PUBLIC,
+                pressAction: {
+                  id: "default",
+                  launchActivity: "default",
+                },
+                progress: {
+                  max: timerDuration,
+                  current: timerDuration - remainingSeconds,
+                  indeterminate: false,
+                },
+                smallIcon: "ic_launcher",
+              },
+            });
+          } catch {
+            // Notification update failed, service may have been stopped
+          }
+        }
+      }, 1000);
     });
   });
 }
@@ -55,6 +157,10 @@ export async function startTimerNotification(
   remainingTime: number
 ): Promise<void> {
   if (Platform.OS !== "android") return;
+
+  // Set headless timer state so foreground service can track independently
+  timerEndTime = Date.now() + remainingTime * 1000;
+  timerDuration = duration;
 
   await notifee.displayNotification({
     id: TIMER_NOTIFICATION_ID,
@@ -123,6 +229,10 @@ export async function pauseTimerNotification(
 ): Promise<void> {
   if (Platform.OS !== "android") return;
 
+  // Clear headless timer state when paused
+  timerEndTime = null;
+  timerDuration = null;
+
   await notifee.displayNotification({
     id: TIMER_NOTIFICATION_ID,
     title: "Rest Timer (Paused)",
@@ -186,6 +296,14 @@ export async function completeTimerNotification(): Promise<void> {
  */
 export async function cancelTimerNotification(): Promise<void> {
   if (Platform.OS !== "android") return;
+
+  // Clear headless timer state
+  timerEndTime = null;
+  timerDuration = null;
+  if (headlessInterval) {
+    clearInterval(headlessInterval);
+    headlessInterval = null;
+  }
 
   try {
     await notifee.stopForegroundService();
