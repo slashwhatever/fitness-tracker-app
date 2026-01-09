@@ -15,6 +15,20 @@ const TIMER_CHANNEL_ID = "rest-timer-channel-v2";
 let timerEndTime: number | null = null;
 let timerDuration: number | null = null;
 let headlessInterval: ReturnType<typeof setInterval> | null = null;
+// Flag to indicate headless task already fired completion - prevents React from firing again
+let completedByHeadless = false;
+
+/**
+ * Check if the headless task already completed the timer.
+ * If true, clears the flag (one-time check).
+ */
+export function wasCompletedByHeadless(): boolean {
+  if (completedByHeadless) {
+    completedByHeadless = false;
+    return true;
+  }
+  return false;
+}
 
 // Helper to format time for notification
 const formatTime = (seconds: number): string => {
@@ -27,6 +41,9 @@ const formatTime = (seconds: number): string => {
  * Headless completion handler - called by foreground service when timer expires
  */
 async function handleTimerComplete(): Promise<void> {
+  // Mark that headless handled completion - React timer should check this
+  completedByHeadless = true;
+
   // Clear tracking state
   timerEndTime = null;
   timerDuration = null;

@@ -8,6 +8,7 @@ import {
   setupNotificationChannel,
   startTimerNotification,
   updateTimerNotification,
+  wasCompletedByHeadless,
 } from "../services/notificationService";
 
 export function RestTimerProvider({ children }: { children: React.ReactNode }) {
@@ -69,7 +70,13 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
 
       if (newRemaining <= 0) {
         clearIntervalSafe();
-        completeTimerNotification();
+
+        // Check if headless task already fired completion while app was in background
+        const alreadyCompleted = wasCompletedByHeadless();
+        if (!alreadyCompleted) {
+          // Only fire completion notification if headless didn't already handle it
+          completeTimerNotification();
+        }
 
         // Auto-hide after 5 seconds
         autoHideTimeoutRef.current = setTimeout(() => {
