@@ -937,6 +937,7 @@ export function useReorderWorkoutMovements() {
 
   return useMutation({
     mutationFn: async ({
+      workoutId,
       movements,
     }: {
       workoutId: string;
@@ -951,47 +952,31 @@ export function useReorderWorkoutMovements() {
       const error = results.find((result) => result.error)?.error;
       if (error) throw error;
 
-      return movements;
+      return { workoutId, movements };
     },
-    onMutate: async ({ workoutId, movements: reorderedMovements }) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({
-        queryKey: movementKeys.workoutMovementsList(workoutId),
-      });
-
-      // Snapshot the previous value
-      const previousWorkoutMovements = queryClient.getQueryData(
-        movementKeys.workoutMovementsList(workoutId)
-      ) as WorkoutMovement[] | undefined;
-
-      if (previousWorkoutMovements) {
-        // Create new order map
-        const orderMap = new Map(
-          reorderedMovements.map((m) => [m.id, m.order_index])
-        );
-
-        // Optimistically update with new order
-        const reorderedList = [...previousWorkoutMovements]
-          .map((movement) => ({
-            ...movement,
-            order_index: orderMap.get(movement.id) ?? movement.order_index ?? 0,
-          }))
-          .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
-
-        queryClient.setQueryData(
-          movementKeys.workoutMovementsList(workoutId),
-          reorderedList
-        );
-      }
-
-      return { previousWorkoutMovements };
-    },
-    onError: (err, { workoutId }, context) => {
-      // If the mutation fails, roll back
+    onSuccess: ({ workoutId, movements: reorderedMovements }) => {
+      // Update the cache with the new order
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(workoutId),
-        context?.previousWorkoutMovements
+        (oldData: WorkoutMovement[] | undefined) => {
+          if (!oldData) return oldData;
+
+          // Create a map for quick lookup of new order
+          const orderMap = new Map(
+            reorderedMovements.map((m) => [m.id, m.order_index])
+          );
+
+          // Update order_index in the cached data and sort
+          return [...oldData]
+            .map((movement) => ({
+              ...movement,
+              order_index: orderMap.get(movement.id) ?? movement.order_index,
+            }))
+            .sort((a, b) => a.order_index - b.order_index);
+        }
       );
+    },
+    onError: (err) => {
       console.error("Error reordering workout movements:", err);
     },
   });

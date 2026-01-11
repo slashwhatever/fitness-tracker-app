@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Stack, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import "../global.css";
 
@@ -82,22 +83,24 @@ function AuthenticatedApp() {
 // Inner layout removed - using simple stacking with Absolute Timer
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <AuthProvider>
-          <ThemeProvider>
-            {/* Import RestTimerProvider dynamically or directly if shared package allows */}
-            {/* Ideally we alias this in package.json or babel config but for now relative/alias imports */}
-            <RestTimerProvider>
-              <View className="flex-1 bg-background">
-                <StatusBar style="auto" />
-                <AuthenticatedApp />
-                <RestTimer />
-              </View>
-            </RestTimerProvider>
-          </ThemeProvider>
-        </AuthProvider>
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              {/* Import RestTimerProvider dynamically or directly if shared package allows */}
+              {/* Ideally we alias this in package.json or babel config but for now relative/alias imports */}
+              <RestTimerProvider>
+                <View className="flex-1 bg-background">
+                  <StatusBar style="auto" />
+                  <AuthenticatedApp />
+                  <RestTimer />
+                </View>
+              </RestTimerProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

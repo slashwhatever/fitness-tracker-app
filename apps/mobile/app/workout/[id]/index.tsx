@@ -3,7 +3,6 @@ import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
 import { MovementIcon } from "@/components/MovementIcon";
 import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
-import { WorkoutMovementItem } from "@/components/WorkoutMovementItem";
 import { createClient } from "@/lib/supabase/client";
 import { formatLastSetDate } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
@@ -13,6 +12,7 @@ import {
   useAddMovementsToWorkout,
   useCreateUserMovement,
   useDeleteWorkoutMovement,
+  useReorderWorkoutMovements,
   useWorkoutMovements,
 } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -22,10 +22,10 @@ import {
   useDuplicateWorkout,
   useWorkout,
 } from "@hooks/useWorkouts";
-import { FlashList } from "@shopify/flash-list";
+import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { MoreVertical, Plus } from "lucide-react-native";
-import { useState } from "react";
+import { GripVertical, MoreVertical, Plus } from "lucide-react-native";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -33,6 +33,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import DraggableFlatList, {
+  RenderItemParams,
+  ScaleDecorator,
+} from "react-native-draggable-flatlist";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WorkoutDetailScreen() {
@@ -60,10 +64,43 @@ export default function WorkoutDetailScreen() {
     useState(false);
   const [addMovementSheetVisible, setAddMovementSheetVisible] = useState(false);
 
+  // Local state for drag and drop (per official docs pattern)
+  const [localMovements, setLocalMovements] = useState<any[]>([]);
+
+  // Sync local state when server data changes
+  useEffect(() => {
+    if (movements) {
+      setLocalMovements(movements);
+    }
+  }, [movements]);
+
   const createUserMovementMutation = useCreateUserMovement();
   const addMovementsBatch = useAddMovementsToWorkout();
+  const reorderMutation = useReorderWorkoutMovements();
 
   const loading = workoutLoading || movementsLoading;
+
+  // Handle drag end - following the official docs pattern:
+  // 1. Update local state immediately for smooth UI
+  // 2. Persist to server in background
+  const handleDragEnd = useCallback(
+    ({ data }: { data: any[] }) => {
+      // Update local state immediately (per docs)
+      setLocalMovements(data);
+
+      // Persist to server in background
+      const updatedMovements = data.map((movement, index) => ({
+        id: movement.id,
+        order_index: index,
+      }));
+
+      reorderMutation.mutate({
+        workoutId: id,
+        movements: updatedMovements,
+      });
+    },
+    [id, reorderMutation]
+  );
 
   const handleWorkoutAction = async (
     action: "duplicate" | "archive" | "delete" | "edit"
@@ -280,49 +317,6 @@ export default function WorkoutDetailScreen() {
     return formatLastSetDate([{ created_at: lastSetData.last_set_date }]);
   };
 
-  const renderMovement = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      className="bg-card p-4 rounded-2xl border border-border mb-3"
-      onPress={() => {
-        if (item.user_movement?.id) {
-          router.push(`/workout/${id}/movement/${item.user_movement.id}`);
-        }
-      }}
-    >
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center flex-1">
-          <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
-            <MovementIcon
-              trackingType={item.user_movement?.tracking_type}
-              size={20}
-            />
-          </View>
-          <View className="flex-1">
-            <Text className="text-foreground font-bold text-base">
-              {item.user_movement?.name}
-            </Text>
-            <Text className="text-slate-500 dark:text-gray-400 text-sm">
-              {item.user_movement?.id
-                ? getLastSetDate(item.user_movement.id)
-                : "No sets"}
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation();
-            if (item.user_movement) {
-              handleOpenActionSheet(item);
-            }
-          }}
-          className="p-2"
-        >
-          <MoreVertical size={20} color={colors.textSecondary} />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
-
   return (
     <View className="flex-1 bg-background">
       <Stack.Screen
@@ -341,34 +335,70 @@ export default function WorkoutDetailScreen() {
       />
 
       <View className="flex-1 pb-0">
-        {/* Header Removed */}
+        <DraggableFlatList
+          data={localMovements}
+          renderItem={({ item, drag, isActive }: RenderItemParams<any>) => (
+            <ScaleDecorator>
+              <TouchableOpacity
+                className={`bg-card p-4 rounded-2xl border border-border mb-3 ${isActive ? "opacity-90" : ""}`}
+                onPress={() => {
+                  if (item.user_movement?.id) {
+                    router.push(
+                      `/workout/${id}/movement/${item.user_movement.id}`
+                    );
+                  }
+                }}
+                disabled={isActive}
+              >
+                <View className="flex-row items-center justify-between">
+                  {/* Drag Handle */}
+                  <TouchableOpacity
+                    onPressIn={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                      drag();
+                    }}
+                    disabled={isActive}
+                    className="pr-3 py-2"
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 5 }}
+                  >
+                    <GripVertical size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
 
-        <FlashList
-          data={movements}
-          extraData={movements}
-          renderItem={({ item }) => (
-            <WorkoutMovementItem
-              item={item}
-              onPress={(i) => {
-                if (i.user_movement?.id) {
-                  router.push(`/workout/${id}/movement/${i.user_movement.id}`);
-                }
-              }}
-              onActionPress={(i) => {
-                if (i.user_movement) {
-                  handleOpenActionSheet(i);
-                }
-              }}
-              lastSetDate={
-                item.user_movement?.id
-                  ? getLastSetDate(item.user_movement.id)
-                  : undefined
-              }
-            />
+                  <View className="flex-row items-center flex-1">
+                    <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
+                      <MovementIcon
+                        trackingType={item.user_movement?.tracking_type}
+                        size={20}
+                      />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-foreground font-bold text-base">
+                        {item.user_movement?.name || "Unnamed Movement"}
+                      </Text>
+                      <Text className="text-slate-500 dark:text-gray-400 text-sm">
+                        {item.user_movement?.id
+                          ? getLastSetDate(item.user_movement.id)
+                          : "No sets"}
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    onPress={(e) => {
+                      e.stopPropagation();
+                      if (item.user_movement) {
+                        handleOpenActionSheet(item);
+                      }
+                    }}
+                    className="p-2"
+                  >
+                    <MoreVertical size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+            </ScaleDecorator>
           )}
           keyExtractor={(item) => item.id}
-          // @ts-expect-error - FlashList types might be incompatible with React 19
-          estimatedItemSize={76}
+          onDragEnd={handleDragEnd}
           contentContainerStyle={{
             paddingBottom: bottomPadding,
             paddingTop: headerPadding + 16,
