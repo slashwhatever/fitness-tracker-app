@@ -172,8 +172,6 @@ export default function WorkoutsScreen() {
         data={flatListData}
         renderItem={renderItem}
         getItemType={(item) => item.type}
-        // @ts-expect-error - FlashList types might be incompatible with React 19
-        estimatedItemSize={88}
         contentContainerStyle={{
           padding: 16,
           paddingTop: headerPadding + 16,

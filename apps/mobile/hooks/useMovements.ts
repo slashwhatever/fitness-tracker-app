@@ -26,7 +26,7 @@ type UserMovementUpdate = TablesUpdate<"user_movements">;
 type WorkoutMovement = Tables<"workout_movements">;
 type WorkoutMovementInsert = TablesInsert<"workout_movements">;
 
-type WorkoutMovementWithDetails = WorkoutMovement & {
+export type WorkoutMovementWithDetails = WorkoutMovement & {
   user_movement: UserMovement | null;
 };
 

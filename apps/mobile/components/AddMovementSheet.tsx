@@ -286,7 +286,6 @@ export function AddMovementSheet({
                   );
                 }}
                 getItemType={(item) => item.type}
-                estimatedItemSize={76}
                 keyExtractor={(item, index) =>
                   item.type === "header" ? item.key : `${item.data.id}-${index}`
                 }

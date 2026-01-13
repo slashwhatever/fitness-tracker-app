@@ -14,6 +14,7 @@ import {
   useDeleteWorkoutMovement,
   useReorderWorkoutMovements,
   useWorkoutMovements,
+  type WorkoutMovementWithDetails,
 } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
 import {
@@ -58,14 +59,17 @@ export default function WorkoutDetailScreen() {
   const duplicateMutation = useDuplicateWorkout();
   const deleteMutation = useDeleteWorkout();
 
-  const [selectedMovement, setSelectedMovement] = useState<any>(null);
+  const [selectedMovement, setSelectedMovement] =
+    useState<WorkoutMovementWithDetails | null>(null);
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [workoutActionSheetVisible, setWorkoutActionSheetVisible] =
     useState(false);
   const [addMovementSheetVisible, setAddMovementSheetVisible] = useState(false);
 
   // Local state for drag and drop (per official docs pattern)
-  const [localMovements, setLocalMovements] = useState<any[]>([]);
+  const [localMovements, setLocalMovements] = useState<
+    WorkoutMovementWithDetails[]
+  >([]);
 
   // Sync local state when server data changes
   useEffect(() => {
@@ -84,7 +88,7 @@ export default function WorkoutDetailScreen() {
   // 1. Update local state immediately for smooth UI
   // 2. Persist to server in background
   const handleDragEnd = useCallback(
-    ({ data }: { data: any[] }) => {
+    ({ data }: { data: WorkoutMovementWithDetails[] }) => {
       // Update local state immediately (per docs)
       setLocalMovements(data);
 
@@ -138,7 +142,7 @@ export default function WorkoutDetailScreen() {
     }
   };
 
-  const handleOpenActionSheet = (movement: any) => {
+  const handleOpenActionSheet = (movement: WorkoutMovementWithDetails) => {
     setSelectedMovement(movement);
     setActionSheetVisible(true);
   };
@@ -337,7 +341,11 @@ export default function WorkoutDetailScreen() {
       <View className="flex-1 pb-0">
         <DraggableFlatList
           data={localMovements}
-          renderItem={({ item, drag, isActive }: RenderItemParams<any>) => (
+          renderItem={({
+            item,
+            drag,
+            isActive,
+          }: RenderItemParams<WorkoutMovementWithDetails>) => (
             <ScaleDecorator>
               <TouchableOpacity
                 className={`bg-card p-4 rounded-2xl border border-border mb-3 ${isActive ? "opacity-90" : ""}`}

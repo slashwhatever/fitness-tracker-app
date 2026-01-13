@@ -131,8 +131,6 @@ export default function ManageGroupsScreen() {
                 )}
                 keyExtractor={(item) => item.id}
                 scrollEnabled={false}
-                // @ts-expect-error - FlashList types might be incompatible with React 19
-                estimatedItemSize={76}
               />
             )}
           </View>
