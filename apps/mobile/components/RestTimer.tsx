@@ -1,10 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRestTimer } from "@fitness/shared";
 import notifee from "@notifee/react-native";
-import { BlurView } from "expo-blur";
 import * as Haptics from "expo-haptics";
 import { useColorScheme } from "nativewind";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Platform,
   StyleSheet,
@@ -43,10 +42,6 @@ export const RestTimer = () => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  // Safe Platform check for web/android specific logic if needed
-  const isAndroid =
-    typeof Platform !== "undefined" && Platform.OS === "android";
-
   useEffect(() => {
     async function requestPermissions() {
       if (typeof Platform !== "undefined" && Platform.OS !== "web") {
@@ -79,20 +74,15 @@ export const RestTimer = () => {
   if (!isActive && !isCompleted) return null;
 
   return (
-    <BlurView
-      intensity={50}
-      experimentalBlurMethod="dimezisBlurView"
-      tint={isDark ? "systemThickMaterialDark" : "systemThickMaterialLight"}
+    <View
       style={[
         styles.container,
         {
           paddingTop: insets.top,
           height: insets.top + REST_TIMER_HEIGHT,
-          backgroundColor: isAndroid
-            ? "transparent" // Ensure transparency on Android for blur to work
-            : isDark
-              ? "rgba(15,23,42,0.5)"
-              : "rgba(255,255,255,0.5)",
+          backgroundColor: isDark
+            ? "rgba(15,23,42,0.95)"
+            : "rgba(255,255,255,0.95)",
           borderBottomColor: theme.border,
         },
       ]}
@@ -148,7 +138,7 @@ export const RestTimer = () => {
           </TouchableOpacity>
         </View>
       </View>
-    </BlurView>
+    </View>
   );
 };
 

@@ -20,5 +20,8 @@ export function useHeaderPadding(options?: { ignoreTimer?: boolean }) {
 
   const timerHeight =
     (isActive || isCompleted) && !options?.ignoreTimer ? REST_TIMER_HEIGHT : 0;
-  return baseHeight + timerHeight;
+
+  const totalPadding = baseHeight + timerHeight;
+
+  return totalPadding;
 }

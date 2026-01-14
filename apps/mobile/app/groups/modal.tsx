@@ -92,7 +92,7 @@ export default function ManageGroupsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["bottom"]}>
-      <GlassHeader title="Manage Groups" showBack backPath="/(tabs)/workouts" />
+      <GlassHeader title="Manage Groups" showBack />
 
       <View className="flex-1">
         <ScrollView

@@ -301,7 +301,6 @@ export default function MovementDetailScreen() {
           header: () => (
             <GlassHeader
               title={workout?.name || "Back"}
-              backPath={`/workout/${workoutId}`}
               rightAction={
                 <TouchableOpacity
                   className="p-2 -mr-2"

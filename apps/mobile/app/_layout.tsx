@@ -1,3 +1,4 @@
+import { GlassHeaderProvider } from "@/components/GlassHeaderContext";
 import { RestTimer } from "@/components/RestTimer";
 import { RestTimerProvider } from "@/components/RestTimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -91,11 +92,13 @@ export default function RootLayout() {
               {/* Import RestTimerProvider dynamically or directly if shared package allows */}
               {/* Ideally we alias this in package.json or babel config but for now relative/alias imports */}
               <RestTimerProvider>
-                <View className="flex-1 bg-background">
-                  <StatusBar style="auto" />
-                  <AuthenticatedApp />
-                  <RestTimer />
-                </View>
+                <GlassHeaderProvider>
+                  <View className="flex-1 bg-background">
+                    <StatusBar style="auto" />
+                    <AuthenticatedApp />
+                    <RestTimer />
+                  </View>
+                </GlassHeaderProvider>
               </RestTimerProvider>
             </ThemeProvider>
           </AuthProvider>

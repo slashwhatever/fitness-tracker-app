@@ -1,11 +1,11 @@
+import { useGlassHeaderContext } from "@/components/GlassHeaderContext";
 import { REST_TIMER_HEIGHT } from "@/components/RestTimer";
 import { useRestTimer } from "@fitness/shared";
 import { useThemeColors } from "@hooks/useThemeColors";
-import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import React from "react";
+import React, { useEffect, useId } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,9 +15,7 @@ interface GlassHeaderProps {
   backPath?: string;
   showBack?: boolean;
   rightAction?: React.ReactNode;
-  intensity?: number;
   onBack?: () => void;
-  style?: any;
   ignoreTimer?: boolean;
 }
 
@@ -29,16 +27,27 @@ export function GlassHeader({
   backPath,
   showBack = true,
   rightAction,
-  intensity = 50,
+
   onBack,
   ignoreTimer = false,
 }: GlassHeaderProps) {
   const router = useRouter();
+
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = useThemeColors();
   const { isActive, isCompleted } = useRestTimer();
+  const headerId = useId();
+  const headerContext = useGlassHeaderContext();
+
+  // Register this header on mount, unregister on unmount
+  useEffect(() => {
+    headerContext?.registerHeader(headerId);
+    return () => {
+      headerContext?.unregisterHeader(headerId);
+    };
+  }, [headerId, headerContext]);
 
   const isTimerActive = (isActive || isCompleted) && !ignoreTimer;
 
@@ -48,37 +57,45 @@ export function GlassHeader({
     : insets.top + HEADER_CONTENT_HEIGHT;
   const contentPaddingTop = isTimerActive ? 0 : insets.top;
 
+  // Check if this header should be visible (only the topmost one)
+  const isActiveHeader = headerContext?.isActiveHeader(headerId) ?? true;
+
+  // Only render if this is the active (topmost) header
+  if (!isActiveHeader) {
+    return null;
+  }
+
   const handleBack = () => {
     if (onBack) {
       onBack();
-    } else if (backPath) {
-      router.replace(backPath);
     } else if (router.canGoBack()) {
       router.back();
+    } else if (backPath) {
+      router.replace(backPath);
     } else {
       router.replace("/(tabs)/workouts");
     }
   };
 
   return (
-    <BlurView
-      intensity={intensity}
-      experimentalBlurMethod="dimezisBlurView"
-      tint={isDark ? "systemThickMaterialDark" : "systemThickMaterialLight"}
+    <View
       style={[
         {
+          position: "absolute",
+          left: 0,
+          right: 0,
           top: containerTop,
           height: containerHeight,
           backgroundColor: isDark
-            ? "rgba(15,23,42,0.5)"
-            : "rgba(255,255,255,0.5)",
+            ? "rgba(15,23,42,0.85)"
+            : "rgba(255,255,255,0.85)",
+          zIndex: 50,
+          borderBottomWidth: 1,
+          borderBottomColor: isDark
+            ? "rgba(255,255,255,0.1)"
+            : "rgba(0,0,0,0.1)",
         },
-        // If used as a navigation header, absolute positioning might be redundant depending on parent,
-        // but robust for ensure it covers what it needs to.
-        // However, if we want to support non-absolute uses, we might want to make this configurable.
-        // For now, keeping it absolute but allowing style override is safest.
       ]}
-      className="absolute left-0 right-0 z-50 border-b border-slate-200/50 dark:border-white/10"
     >
       <View
         style={{
@@ -123,6 +140,6 @@ export function GlassHeader({
           {rightAction}
         </View>
       </View>
-    </BlurView>
+    </View>
   );
 }
