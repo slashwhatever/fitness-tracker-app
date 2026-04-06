@@ -16,6 +16,20 @@ interface SessionComparisonProps {
   movement: any; // Using any for flexibility
 }
 
+function getBarColors(metric: MetricData): { fg: string; bg: string } {
+  if (metric.previous === 0 || metric.current === metric.previous) {
+    return { fg: "hsl(210, 80%, 55%)", bg: "hsla(210, 80%, 30%, 0.4)" };
+  }
+  const ratio = metric.current / metric.previous;
+  const effectiveRatio = metric.invertImprovement ? 1 / ratio : ratio;
+  const t = Math.min(1, Math.max(0, effectiveRatio));
+  const hue = Math.round(t * 120); // 0 = red, 120 = green
+  return {
+    fg: `hsl(${hue}, 75%, 50%)`,
+    bg: `hsla(${hue}, 75%, 25%, 0.4)`,
+  };
+}
+
 export function SessionComparison({
   currentSets,
   previousSets,
@@ -35,18 +49,20 @@ export function SessionComparison({
   }
 
   const renderProgressBar = (metric: MetricData) => {
-    const currentAsPercentOfPrevious =
-      metric.previous > 0 ? (metric.current / metric.previous) * 100 : 100;
-
-    const height = Math.min(100, Math.max(5, currentAsPercentOfPrevious));
+    const ratio = metric.previous > 0 ? metric.current / metric.previous : 1;
+    const effectiveRatio =
+      metric.invertImprovement && ratio > 0 ? 1 / ratio : ratio;
+    const height = Math.min(100, Math.max(5, effectiveRatio * 100));
+    const { fg, bg } = getBarColors(metric);
 
     return (
       <View
-        className={`w-2 h-10 rounded-full overflow-hidden ${metric.backgroundColor} mr-3 relative justify-end`}
+        style={{ backgroundColor: bg }}
+        className="w-2 h-10 rounded-full overflow-hidden mr-3 relative justify-end"
       >
         <View
-          style={{ height: `${height}%` }}
-          className={`w-full ${metric.color} rounded-full absolute bottom-0`}
+          style={{ height: `${height}%`, backgroundColor: fg }}
+          className="w-full rounded-full absolute bottom-0"
         />
       </View>
     );

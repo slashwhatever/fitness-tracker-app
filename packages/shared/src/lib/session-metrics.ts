@@ -83,13 +83,17 @@ export const calculateMetrics = (
       // Weight per rep (total weight / total reps)
       const currentWeightPerRep =
         currentReps > 0
-          ? currentSets.reduce((sum, set) => sum + (set.weight || 0), 0) /
-            currentReps
+          ? currentSets.reduce(
+              (sum, set) => sum + (set.weight || 0) * (set.reps || 0),
+              0
+            ) / currentReps
           : 0;
       const previousWeightPerRep =
         previousReps > 0
-          ? previousSets.reduce((sum, set) => sum + (set.weight || 0), 0) /
-            previousReps
+          ? previousSets.reduce(
+              (sum, set) => sum + (set.weight || 0) * (set.reps || 0),
+              0
+            ) / previousReps
           : 0;
       const weightPerRepDiff = currentWeightPerRep - previousWeightPerRep;
       const weightPerRepPercent =
