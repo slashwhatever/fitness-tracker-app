@@ -1,19 +1,49 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import tseslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import nextPlugin from "@next/eslint-plugin-next";
 import storybook from "eslint-plugin-storybook";
 
-import { FlatCompat } from "@eslint/eslintrc";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
+export default [
+  // Next.js recommended + Core Web Vitals rules
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+  },
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+  // TypeScript rules (replaces next/typescript)
+  {
+    files: ["**/*.{ts,tsx}"],
+    plugins: {
+      "@typescript-eslint": tseslint,
+    },
+    languageOptions: {
+      parser: tsParser,
+    },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      // Allow _-prefixed names to mark intentionally unused variables/args
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+          destructuredArrayIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+  // Storybook
+  ...storybook.configs["flat/recommended"],
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  // Ignores
   {
     ignores: [
       "node_modules/**",
@@ -21,14 +51,12 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
-      // Exclude Storybook files from production builds
       "**/*.stories.ts",
       "**/*.stories.tsx",
       "**/*.stories.js",
       "**/*.stories.jsx",
       "src/stories/**",
       ".storybook/**",
-      // Exclude test files from production builds
       "**/*.test.ts",
       "**/*.test.tsx",
       "**/*.spec.ts",
@@ -38,7 +66,8 @@ const eslintConfig = [
       "**/__tests__/**",
     ],
   },
-  ...storybook.configs["flat/recommended"],
+
+  // Custom rules (app-wide)
   {
     rules: {
       "no-restricted-syntax": [
@@ -52,6 +81,21 @@ const eslintConfig = [
       ],
     },
   },
-];
 
-export default eslintConfig;
+  // src/hooks/ files ARE the wrappers — they must import use* from @fitness/shared
+  {
+    files: ["src/hooks/**"],
+    rules: {
+      "no-restricted-syntax": "off",
+    },
+  },
+
+  // shadcn/ui generated component library files — exports that aren't consumed
+  // within the same file are intentional (they form the public component API).
+  {
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+];

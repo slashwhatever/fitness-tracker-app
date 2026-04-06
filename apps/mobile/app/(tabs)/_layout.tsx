@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GlassHeader } from "@/components/GlassHeader";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Tabs } from "expo-router";
@@ -7,6 +8,7 @@ export default function TabLayout() {
   const colors = useThemeColors();
 
   return (
+    <ErrorBoundary>
     <Tabs
       screenOptions={{
         headerTransparent: true,
@@ -50,5 +52,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </ErrorBoundary>
   );
 }

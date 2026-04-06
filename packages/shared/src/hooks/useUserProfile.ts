@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import type { Tables, TablesUpdate } from "../types/database.types";
 import type { HookDependencies } from "./types";
+import logger from "../lib/utils/logger";
 
 type UserProfileUpdate = TablesUpdate<"user_profiles">;
 
@@ -43,7 +44,7 @@ export function useUserProfile(
       if (error) {
         // If profile doesn't exist, this is unexpected since triggers should create it
         if (error.code === "PGRST116") {
-          console.warn(
+          logger.warn(
             "User profile missing - this should not happen with database triggers. User ID:",
             user.id
           );

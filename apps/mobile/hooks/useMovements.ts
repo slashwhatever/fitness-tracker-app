@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
+import logger from "@/lib/utils/logger";
 import { isSafeForQueries } from "@/lib/utils/validation";
 import type {
   Database,
@@ -142,10 +143,10 @@ export function useUserMovements(): UseQueryResult<UserMovement[], Error> {
 
       const { data, error } = await query;
       if (error) {
-        console.error("Error fetching user movements:", error);
+        logger.error("Error fetching user movements:", error);
         throw error;
       }
-      console.log("Fetched user movements:", data?.length);
+      logger.log("Fetched user movements:", data?.length);
 
       // Transform the data to include muscle_groups array and tracking_type
       return (data as QueryResult).map((movement) => ({
@@ -434,7 +435,7 @@ export function useCreateUserMovement(): UseMutationResult<
           context?.previousUserMovements
         );
       }
-      console.error("Error creating user movement:", err);
+      logger.error("Error creating user movement:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {
@@ -778,7 +779,7 @@ export function useAddMovementToWorkout(): UseMutationResult<
         movementKeys.workoutMovementsList(newWorkoutMovement.workout_id),
         context?.previousWorkoutMovements
       );
-      console.error("Error adding movement to workout:", err);
+      logger.error("Error adding movement to workout:", err);
     },
     onSuccess: (data, variables) => {
       // Invalidate the workout movements query so it refetches with proper data transformation
@@ -911,7 +912,7 @@ export function useAddMovementsToWorkout(): UseMutationResult<
           context.previousWorkoutMovements
         );
       }
-      console.error("Error adding movements to workout:", err);
+      logger.error("Error adding movements to workout:", err);
     },
     onSuccess: (data, { workoutMovements }) => {
       if (workoutMovements.length > 0) {
@@ -977,7 +978,7 @@ export function useReorderWorkoutMovements() {
       );
     },
     onError: (err) => {
-      console.error("Error reordering workout movements:", err);
+      logger.error("Error reordering workout movements:", err);
     },
   });
 }
@@ -1030,7 +1031,7 @@ export function useRemoveMovementFromWorkout() {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-      console.error("Error removing movement from workout:", err);
+      logger.error("Error removing movement from workout:", err);
     },
     onSuccess: () => {
       // Invalidate workout movement counts so dashboard shows updated counts
@@ -1094,7 +1095,7 @@ export function useRemoveMovementsFromWorkout() {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-      console.error("Error removing movements from workout:", err);
+      logger.error("Error removing movements from workout:", err);
     },
     onSuccess: () => {
       // Invalidate workout movement counts so dashboard shows updated counts
@@ -1213,22 +1214,28 @@ export function useUpdateWorkoutMovementNotes() {
           context.previousWorkoutMovements
         );
       }
-      console.error("Error updating workout movement notes:", err);
+      logger.error("Error updating workout movement notes:", err);
     },
     onSuccess: (data) => {
       // Transform the server response to match our cache structure
       // The server returns `user_movements` (plural) but our cache expects `user_movement` (singular)
+      const rawData = data as unknown as Record<string, unknown> & {
+        user_movements?: {
+          tracking_types?: { name?: string } | null;
+          user_movement_muscle_groups?: { muscle_groups?: { display_name?: string } | null }[];
+          [key: string]: unknown;
+        } | null;
+      };
       const transformedData = {
         ...data,
-        user_movement: (data as any).user_movements
+        user_movement: rawData.user_movements
           ? ({
-              ...(data as any).user_movements,
-              tracking_type:
-                (data as any).user_movements.tracking_types?.name || "weight",
+              ...rawData.user_movements,
+              tracking_type: rawData.user_movements.tracking_types?.name || "weight",
               muscle_groups:
-                (data as any).user_movements.user_movement_muscle_groups
-                  ?.map((ummg: any) => ummg.muscle_groups?.display_name)
-                  .filter((name: any): name is string => Boolean(name)) || [],
+                rawData.user_movements.user_movement_muscle_groups
+                  ?.map((ummg) => ummg.muscle_groups?.display_name)
+                  .filter((name): name is string => Boolean(name)) || [],
             } as UserMovement)
           : null,
       };
@@ -1280,7 +1287,7 @@ export function useDeleteWorkoutMovement() {
       // Optimistically remove the item
       queryClient.setQueryData(
         movementKeys.workoutMovementsList(workoutId),
-        (old: any[]) => {
+        (old: WorkoutMovementWithDetails[] | undefined) => {
           if (!old) return [];
           return old.filter((movement) => movement.id !== workoutMovementId);
         }
@@ -1296,7 +1303,7 @@ export function useDeleteWorkoutMovement() {
           context.previousWorkoutMovements
         );
       }
-      console.error("Error deleting workout movement:", err);
+      logger.error("Error deleting workout movement:", err);
     },
     onSuccess: ({ workoutId }) => {
       queryClient.invalidateQueries({
@@ -1348,14 +1355,18 @@ async function fetchFullUserMovement(
   if (error) throw error;
 
   // Transform the data to include muscle_groups array and tracking_type
-  const transformedData = data as any;
+  type RawMovement = typeof data & {
+    tracking_types?: { name?: string } | null;
+    user_movement_muscle_groups?: { muscle_groups?: { display_name?: string } | null }[];
+  };
+  const transformedData = data as RawMovement;
   return {
     ...transformedData,
     tracking_type:
       transformedData.tracking_types?.name || ("weight" as TrackingTypeName),
     muscle_groups:
       transformedData.user_movement_muscle_groups
-        ?.map((ummg: any) => ummg.muscle_groups?.display_name)
-        .filter((name: any): name is string => Boolean(name)) || [],
+        ?.map((ummg) => ummg.muscle_groups?.display_name)
+        .filter((name): name is string => Boolean(name)) || [],
   } as UserMovement;
 }

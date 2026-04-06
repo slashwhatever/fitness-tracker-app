@@ -1,3 +1,4 @@
+import type { UserMovement } from "../models/types";
 import { Tables } from "../types/database.types";
 
 export type MetricData = {
@@ -12,11 +13,6 @@ export type MetricData = {
 };
 
 type Set = Tables<"sets">;
-type UserMovement = Tables<"user_movements"> & {
-  tracking_types?: { name: string } | null;
-  tracking_type?: string;
-  is_reverse_weight?: boolean | null;
-};
 
 export const calculateMetrics = (
   currentSets: Set[],
@@ -44,12 +40,11 @@ export const calculateMetrics = (
     },
   ];
 
-  const trackingType =
-    movement.tracking_type || movement.tracking_types?.name || "weight";
+  const trackingType = movement.tracking_type || "weight";
 
   // Add movement-type specific metrics
   switch (trackingType) {
-    case "weight":
+    case "weight": {
       // Total reps
       const currentReps = currentSets.reduce(
         (sum, set) => sum + (set.reps || 0),
@@ -133,9 +128,10 @@ export const calculateMetrics = (
         }
       );
       break;
+    }
 
     case "bodyweight":
-    case "reps":
+    case "reps": {
       // Total reps
       const currentBodyweightReps = currentSets.reduce(
         (sum, set) => sum + (set.reps || 0),
@@ -161,8 +157,9 @@ export const calculateMetrics = (
         backgroundColor: "bg-green-900/40",
       });
       break;
+    }
 
-    case "duration":
+    case "duration": {
       // Total time
       const currentTotalTime = currentSets.reduce(
         (sum, set) => sum + (set.duration || 0),
@@ -206,8 +203,9 @@ export const calculateMetrics = (
         }
       );
       break;
+    }
 
-    case "distance":
+    case "distance": {
       // Total distance
       const currentTotalDistance = currentSets.reduce(
         (sum, set) => sum + (set.distance || 0),
@@ -255,6 +253,7 @@ export const calculateMetrics = (
         }
       );
       break;
+    }
 
     default:
       break;
@@ -276,10 +275,11 @@ export const formatValue = (
   switch (label.toLowerCase()) {
     case "weight/rep":
       return `${Math.round(value * 10) / 10}${unitLabel}`;
-    case "total duration":
+    case "total duration": {
       const minutes = Math.floor(value / 60);
       const seconds = Math.round(value % 60);
       return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
     case "avg duration/set":
       return `${value}s`;
     case "total distance":
@@ -307,10 +307,11 @@ export const formatDiff = (value: number, label: string, weightUnit = "kg") => {
       return `${Math.round(absDiff)}${unitLabel}`;
     case "weight/rep":
       return `${Math.round(absDiff * 10) / 10}${unitLabel}`;
-    case "total duration":
+    case "total duration": {
       const minutes = Math.floor(absDiff / 60);
       const seconds = Math.round(absDiff % 60);
       return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
     case "avg duration/set":
       return `${Math.round(absDiff * 10) / 10}s`;
     case "total distance":

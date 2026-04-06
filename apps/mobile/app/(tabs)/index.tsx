@@ -16,7 +16,7 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
   const router = useRouter();

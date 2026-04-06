@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { GlassHeaderProvider } from "@/components/GlassHeaderContext";
 import { RestTimer } from "@/components/RestTimer";
 import { RestTimerProvider } from "@/components/RestTimerProvider";
@@ -84,26 +85,26 @@ function AuthenticatedApp() {
 // Inner layout removed - using simple stacking with Absolute Timer
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <AuthProvider>
-            <ThemeProvider>
-              {/* Import RestTimerProvider dynamically or directly if shared package allows */}
-              {/* Ideally we alias this in package.json or babel config but for now relative/alias imports */}
-              <RestTimerProvider>
-                <GlassHeaderProvider>
-                  <View className="flex-1 bg-background">
-                    <StatusBar style="auto" />
-                    <AuthenticatedApp />
-                    <RestTimer />
-                  </View>
-                </GlassHeaderProvider>
-              </RestTimerProvider>
-            </ThemeProvider>
-          </AuthProvider>
-        </SafeAreaProvider>
-      </QueryClientProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider>
+            <AuthProvider>
+              <ThemeProvider>
+                <RestTimerProvider>
+                  <GlassHeaderProvider>
+                    <View className="flex-1 bg-background">
+                      <StatusBar style="auto" />
+                      <AuthenticatedApp />
+                      <RestTimer />
+                    </View>
+                  </GlassHeaderProvider>
+                </RestTimerProvider>
+              </ThemeProvider>
+            </AuthProvider>
+          </SafeAreaProvider>
+        </QueryClientProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

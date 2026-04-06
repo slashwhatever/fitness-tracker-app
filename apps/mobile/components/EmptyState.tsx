@@ -1,4 +1,3 @@
-import { useThemeColors } from "@hooks/useThemeColors";
 import { Text, View } from "react-native";
 
 interface EmptyStateProps {
@@ -7,8 +6,6 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ title, description }: EmptyStateProps) {
-  const colors = useThemeColors();
-
   return (
     <View className="flex-1 items-center justify-center py-20 px-8">
       <Text className="text-foreground font-semibold text-xl mt-4 text-center">

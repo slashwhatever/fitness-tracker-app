@@ -6,6 +6,7 @@ import {
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type Workout, type WorkoutInsert } from "./types";
+import logger from "../../lib/utils/logger";
 
 /**
  * Create a new workout
@@ -83,7 +84,7 @@ export function useCreateWorkout(): UseMutationResult<
           context?.previousWorkouts
         );
       }
-      console.error("Error creating workout:", err);
+      logger.error("Error creating workout:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {

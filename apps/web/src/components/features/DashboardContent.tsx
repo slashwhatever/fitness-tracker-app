@@ -89,7 +89,7 @@ export default function DashboardContent() {
               const { data } = await supabase
                 .from("user_profiles")
                 .select("*")
-                .eq("user_id", user.id)
+                .eq("id", user.id)
                 .single();
               return data;
             },

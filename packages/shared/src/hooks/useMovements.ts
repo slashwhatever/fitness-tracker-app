@@ -19,6 +19,7 @@ import type {
   TablesUpdate,
 } from "../types/database.types";
 import type { HookDependencies } from "./types";
+import logger from "../lib/utils/logger";
 
 type UserMovementInsert = TablesInsert<"user_movements">;
 type UserMovementUpdate = TablesUpdate<"user_movements">;
@@ -518,7 +519,7 @@ export function useCreateUserMovement(
           context?.previousUserMovements
         );
       }
-      console.error("Error creating user movement:", err);
+      logger.error("Error creating user movement:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {
@@ -584,7 +585,7 @@ export function useUpdateUserMovement(
 
       // If editing identity field AND movement has template link, break the link
       if (editingIdentityField && currentMovement.template_id) {
-        console.log(
+        logger.log(
           `Breaking template link for movement ${id} - editing identity field`
         );
 
@@ -681,7 +682,7 @@ export function useUpdateUserMovement(
     onMutate: async ({ id, updates }) => {
       if (!user?.id) return;
 
-      console.log("[onMutate] received updates:", updates);
+      logger.log("[onMutate] received updates:", updates);
 
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
@@ -768,7 +769,7 @@ export function useUpdateUserMovement(
                       ...updates,
                       updated_at: new Date().toISOString(),
                     };
-                    console.log(
+                    logger.log(
                       "[onMutate] Updating workout movement optimistic:",
                       newMovement
                     );
@@ -811,7 +812,7 @@ export function useUpdateUserMovement(
     },
     onSuccess: (data, { id }) => {
       if (user?.id) {
-        console.log("[onSuccess] Server returned data:", data);
+        logger.log("[onSuccess] Server returned data:", data);
 
         // Update the user movements list cache
         queryClient.setQueryData(
@@ -845,7 +846,7 @@ export function useUpdateUserMovement(
                 if (!old) return old;
                 return old.map((wm) => {
                   if (wm.user_movement?.id === id) {
-                    console.log(
+                    logger.log(
                       "[onSuccess] Updating workout movement manually with:",
                       data
                     );
@@ -980,7 +981,7 @@ export function useAddMovementToWorkout(
         movementKeys.workoutMovementsList(newWorkoutMovement.workout_id),
         context?.previousWorkoutMovements
       );
-      console.error("Error adding movement to workout:", err);
+      logger.error("Error adding movement to workout:", err);
     },
     onSuccess: (data, variables) => {
       // Invalidate the workout movements query so it refetches with proper data transformation
@@ -1113,7 +1114,7 @@ export function useAddMovementsToWorkout(
           context.previousWorkoutMovements
         );
       }
-      console.error("Error adding movements to workout:", err);
+      logger.error("Error adding movements to workout:", err);
     },
     onSuccess: (data, { workoutMovements }) => {
       if (workoutMovements.length > 0) {
@@ -1194,7 +1195,7 @@ export function useReorderWorkoutMovements(deps: HookDependencies) {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-      console.error("Error reordering workout movements:", err);
+      logger.error("Error reordering workout movements:", err);
     },
   });
 }
@@ -1247,7 +1248,7 @@ export function useRemoveMovementFromWorkout(deps: HookDependencies) {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-      console.error("Error removing movement from workout:", err);
+      logger.error("Error removing movement from workout:", err);
     },
     onSuccess: () => {
       // Invalidate workout movement counts so dashboard shows updated counts
@@ -1311,7 +1312,7 @@ export function useRemoveMovementsFromWorkout(deps: HookDependencies) {
         movementKeys.workoutMovementsList(workoutId),
         context?.previousWorkoutMovements
       );
-      console.error("Error removing movements from workout:", err);
+      logger.error("Error removing movements from workout:", err);
     },
     onSuccess: () => {
       // Invalidate workout movement counts so dashboard shows updated counts
@@ -1430,7 +1431,7 @@ export function useUpdateWorkoutMovementNotes(deps: HookDependencies) {
           context.previousWorkoutMovements
         );
       }
-      console.error("Error updating workout movement notes:", err);
+      logger.error("Error updating workout movement notes:", err);
     },
     onSuccess: (data) => {
       // Update cache with server response
@@ -1496,7 +1497,7 @@ export function useDeleteWorkoutMovement(deps: HookDependencies) {
           context.previousWorkoutMovements
         );
       }
-      console.error("Error deleting workout movement:", err);
+      logger.error("Error deleting workout movement:", err);
     },
     onSuccess: ({ workoutId }) => {
       queryClient.invalidateQueries({

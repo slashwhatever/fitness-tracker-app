@@ -129,12 +129,12 @@ export default function WorkoutsScreen() {
         case "delete":
           try {
             await deleteMutation.mutateAsync(selectedWorkout.id);
-          } catch (error) {
+          } catch (_error) {
             Alert.alert("Error", "Failed to delete workout");
           }
           break;
       }
-    } catch (error) {
+    } catch (_error) {
       if (action !== "delete") {
         Alert.alert("Error", `Failed to ${action} workout`);
       }

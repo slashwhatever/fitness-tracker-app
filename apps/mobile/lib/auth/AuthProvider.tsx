@@ -13,6 +13,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import logger from "../utils/logger";
 import { createClient } from "../supabase/client";
 
 interface AuthContextType {
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     useDeepLink();
 
   const refreshSession = useCallback(async () => {
-    console.log("Refreshing session...");
+    logger.log("Refreshing session...");
     try {
       const {
         data: { session },
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } = await supabase.auth.getSession();
 
       if (error) {
-        console.error("Failed to get session:", error);
+        logger.error("Failed to get session:", error);
         setUser(null);
         setSession(null);
         return;
@@ -62,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(session?.user ?? null);
       setSession(session);
     } catch (error) {
-      console.error("Failed to refresh session:", error);
+      logger.error("Failed to refresh session:", error);
       setUser(null);
       setSession(null);
     }
@@ -74,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(null);
       setSession(null);
     } catch (error) {
-      console.error("Sign out error:", error);
+      logger.error("Sign out error:", error);
     }
   }, [supabase.auth]);
 

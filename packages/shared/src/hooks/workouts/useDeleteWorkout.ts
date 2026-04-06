@@ -6,6 +6,7 @@ import {
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type Workout } from "./types";
+import logger from "../../lib/utils/logger";
 
 /**
  * Delete a workout
@@ -45,7 +46,7 @@ export function useDeleteWorkout(): UseMutationResult<void, Error, string> {
           context.previousWorkouts
         );
       }
-      console.error("Error deleting workout:", err);
+      logger.error("Error deleting workout:", err);
     },
     onSuccess: () => {
       if (user?.id) {

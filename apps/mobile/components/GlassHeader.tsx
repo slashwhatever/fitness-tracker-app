@@ -1,6 +1,6 @@
 import { useGlassHeaderContext } from "@/components/GlassHeaderContext";
 import { REST_TIMER_HEIGHT } from "@/components/RestTimer";
-import { useRestTimer } from "@fitness/shared";
+import { useRestTimer } from "@hooks/useRestTimer";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";

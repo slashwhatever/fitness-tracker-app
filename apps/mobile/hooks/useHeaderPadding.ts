@@ -10,7 +10,7 @@ export function useHeaderPadding(options?: { ignoreTimer?: boolean }) {
   let headerHeight = 0;
   try {
     headerHeight = useHeaderHeight();
-  } catch (e) {
+  } catch (_e) {
     // Ignore error - useHeaderHeight throws if not in a screen with a header
   }
 

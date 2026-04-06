@@ -13,6 +13,7 @@ import type {
   TablesUpdate,
 } from "../types/database.types";
 import type { HookDependencies } from "./types";
+import logger from "../lib/utils/logger";
 import { groupKeys } from "./useWorkoutGroups";
 
 type Workout = Tables<"workouts">;
@@ -191,7 +192,7 @@ export function useCreateWorkout(
           context?.previousWorkouts
         );
       }
-      console.error("Error creating workout:", err);
+      logger.error("Error creating workout:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {
@@ -312,7 +313,7 @@ export function useDeleteWorkout(
           context?.previousWorkouts
         );
       }
-      console.error("Error deleting workout:", err);
+      logger.error("Error deleting workout:", err);
     },
     onSuccess: (workoutId) => {
       if (user?.id && workoutId) {
@@ -422,7 +423,7 @@ export function useReorderWorkouts(
           context.previousWorkouts
         );
       }
-      console.error("Error reordering workouts:", err);
+      logger.error("Error reordering workouts:", err);
     },
   });
 }
@@ -493,7 +494,7 @@ export function useArchiveWorkout(
           context.previousWorkouts
         );
       }
-      console.error("Error archiving/unarchiving workout:", err);
+      logger.error("Error archiving/unarchiving workout:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {
@@ -600,7 +601,7 @@ export function useDuplicateWorkout(
       }
     },
     onError: (err) => {
-      console.error("Error duplicating workout:", err);
+      logger.error("Error duplicating workout:", err);
     },
   });
 }

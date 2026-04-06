@@ -1,4 +1,5 @@
 import { Tables } from "@fitness/shared";
+import logger from "@/lib/utils/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateSet } from "@hooks/useSets";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -147,7 +148,7 @@ export function EditSetSheet({
       });
       onClose();
     } catch (error) {
-      console.error("Failed to update set:", error);
+      logger.error("Failed to update set:", error);
     }
   };
 

@@ -1,13 +1,14 @@
 import { MovementIcon } from "@/components/MovementIcon";
+import { type WorkoutMovementWithDetails } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { MoreVertical } from "lucide-react-native";
 import { memo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface WorkoutMovementItemProps {
-  item: any;
-  onPress: (item: any) => void;
-  onActionPress: (item: any) => void;
+  item: WorkoutMovementWithDetails;
+  onPress: (item: WorkoutMovementWithDetails) => void;
+  onActionPress: (item: WorkoutMovementWithDetails) => void;
   lastSetDate?: string;
 }
 

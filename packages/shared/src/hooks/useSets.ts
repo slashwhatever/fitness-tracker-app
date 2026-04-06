@@ -15,6 +15,7 @@ import type {
   TablesUpdate,
 } from "../types/database.types";
 import type { HookDependencies } from "./types";
+import logger from "../lib/utils/logger";
 
 type Set = Tables<"sets">;
 export type SetInsert = TablesInsert<"sets">;
@@ -505,7 +506,7 @@ export function useDeleteSet(deps: HookDependencies) {
           );
         }
       }
-      console.error("Error deleting set:", err);
+      logger.error("Error deleting set:", err);
     },
     onSuccess: ({ setId, setData, contextMovementId }) => {
       if (user?.id) {

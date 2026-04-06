@@ -1,5 +1,7 @@
+import { REST_TIMER_OPTIONS } from "@/lib/constants";
+import logger from "@/lib/utils/logger";
 import { MovementIcon } from "@/components/MovementIcon";
-import { useMuscleGroups, useTrackingTypes } from "@fitness/shared";
+import { useMuscleGroups, useTrackingTypes } from "@hooks/useReferenceData";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateUserMovement } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -19,20 +21,6 @@ import {
 } from "react-native";
 import { z } from "zod";
 
-// --- Rest Timer Options ---
-
-const REST_TIMER_OPTIONS = [
-  { label: "None", value: null },
-  { label: "30 sec", value: 30 },
-  { label: "45 sec", value: 45 },
-  { label: "1 min", value: 60 },
-  { label: "1 min 30 sec", value: 90 },
-  { label: "2 min", value: 120 },
-  { label: "2 min 30 sec", value: 150 },
-  { label: "3 min", value: 180 },
-  { label: "4 min", value: 240 },
-  { label: "5 min", value: 300 },
-];
 
 function formatDuration(seconds: number | null) {
   if (!seconds) return "None";
@@ -120,7 +108,7 @@ export function CreateCustomMovementForm({
 
       onSuccess(newMovement.id);
     } catch (error) {
-      console.error("Failed to create movement:", error);
+      logger.error("Failed to create movement:", error);
     }
   };
 

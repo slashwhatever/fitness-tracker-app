@@ -1,15 +1,18 @@
 import { useThemeColors } from "@hooks/useThemeColors";
+import type { Tables } from "@fitness/shared";
 import { MoreVertical } from "lucide-react-native";
 import { memo } from "react";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
+type WorkoutGroup = Tables<"workout_groups"> & { workout_count?: number };
+
 interface GroupItemProps {
-  item: any;
+  item: WorkoutGroup;
   isEditing: boolean;
   editingName: string;
   onEditChange: (text: string) => void;
   onRenameSubmit: (id: string) => void;
-  onActionPress: (item: any) => void;
+  onActionPress: (item: WorkoutGroup) => void;
 }
 
 export const GroupItem = memo(function GroupItem({

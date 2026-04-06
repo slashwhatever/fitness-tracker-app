@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import logger from "@/lib/utils/logger";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -21,13 +22,13 @@ export function useDeepLink() {
 
   const processAuthLink = useCallback(
     async (url: string) => {
-      console.log("[DeepLink] Processing URL:", url);
+      logger.log("[DeepLink] Processing URL:", url);
 
       try {
         setState({ isProcessing: true, error: null });
 
         const parsed = Linking.parse(url);
-        console.log("[DeepLink] Parsed URL:", parsed);
+        logger.log("[DeepLink] Parsed URL:", parsed);
 
         // Supabase sends tokens in the URL fragment (after #), not as query params
         // Example: logset://confirm#access_token=...&type=signup
@@ -44,7 +45,7 @@ export function useDeepLink() {
           fragmentParams.forEach((value, key) => {
             params[key] = value;
           });
-          console.log("[DeepLink] Parsed fragment params:", params);
+          logger.log("[DeepLink] Parsed fragment params:", params);
         }
 
         // Extract tokens from URL parameters
@@ -69,7 +70,7 @@ export function useDeepLink() {
         if (type === "signup" || type === "email") {
           // Email confirmation flow
           if (token_hash) {
-            console.log("[DeepLink] Verifying email with token_hash");
+            logger.log("[DeepLink] Verifying email with token_hash");
             const { error } = await supabase.auth.verifyOtp({
               token_hash,
               type: "email",
@@ -77,11 +78,11 @@ export function useDeepLink() {
 
             if (error) throw error;
 
-            console.log("[DeepLink] Email verified successfully");
+            logger.log("[DeepLink] Email verified successfully");
             router.replace("/");
           } else if (access_token && refresh_token) {
             // Direct session from magic link
-            console.log("[DeepLink] Setting session from tokens");
+            logger.log("[DeepLink] Setting session from tokens");
             const { error } = await supabase.auth.setSession({
               access_token,
               refresh_token,
@@ -94,7 +95,7 @@ export function useDeepLink() {
         } else if (type === "recovery") {
           // Password reset flow
           if (token_hash) {
-            console.log("[DeepLink] Processing password recovery");
+            logger.log("[DeepLink] Processing password recovery");
             const { error } = await supabase.auth.verifyOtp({
               token_hash,
               type: "recovery",
@@ -129,7 +130,7 @@ export function useDeepLink() {
         } else {
           // Unknown type - try to handle generic token
           if (access_token && refresh_token) {
-            console.log("[DeepLink] Setting session from generic tokens");
+            logger.log("[DeepLink] Setting session from generic tokens");
             const { error } = await supabase.auth.setSession({
               access_token,
               refresh_token,
@@ -143,7 +144,7 @@ export function useDeepLink() {
 
         setState({ isProcessing: false, error: null });
       } catch (error) {
-        console.error("[DeepLink] Error processing auth link:", error);
+        logger.error("[DeepLink] Error processing auth link:", error);
         setState({
           isProcessing: false,
           error:

@@ -20,11 +20,11 @@ export function SetAdjuster({
   variant = "primary",
 }: SetAdjusterProps) {
   const handleIncrement = (step: number) => {
-    onAdjust(step);
+    onAdjust?.(step);
   };
 
   const handleDecrement = (step: number) => {
-    onAdjust(-step);
+    onAdjust?.(-step);
   };
 
   /* Removed manual offset logic */

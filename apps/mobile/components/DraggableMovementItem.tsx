@@ -1,4 +1,5 @@
 import { MovementIcon } from "@/components/MovementIcon";
+import { type WorkoutMovementWithDetails } from "@hooks/useMovements";
 import * as Haptics from "expo-haptics";
 import { GripVertical, MoreVertical } from "lucide-react-native";
 import { memo } from "react";
@@ -19,9 +20,9 @@ interface ThemeColors {
 }
 
 interface DraggableMovementItemProps {
-  item: any;
-  onPress: (item: any) => void;
-  onActionPress: (item: any) => void;
+  item: WorkoutMovementWithDetails;
+  onPress: (item: WorkoutMovementWithDetails) => void;
+  onActionPress: (item: WorkoutMovementWithDetails) => void;
   lastSetDate?: string;
   drag?: () => void; // Optional for drax - DraxListItem handles dragging
   isActive?: boolean; // Optional for drax

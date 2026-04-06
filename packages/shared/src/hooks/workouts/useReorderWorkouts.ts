@@ -6,6 +6,7 @@ import {
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type Workout } from "./types";
+import logger from "../../lib/utils/logger";
 
 /**
  * Reorder workouts
@@ -67,7 +68,7 @@ export function useReorderWorkouts(): UseMutationResult<
           context.previousWorkouts
         );
       }
-      console.error("Error reordering workouts:", err);
+      logger.error("Error reordering workouts:", err);
     },
     onSuccess: () => {
       if (user?.id) {

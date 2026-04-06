@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect } from "react";
 import type { HookDependencies } from "./types";
+import logger from "../lib/utils/logger";
 
 /**
  * Hook for background synchronization of critical data
@@ -68,9 +69,7 @@ export function useBackgroundSync(deps: HookDependencies) {
       }
     } catch (error) {
       // Background sync errors are non-critical
-      if (process.env.NODE_ENV === "development") {
-        console.debug("Background sync failed:", error);
-      }
+      logger.warn("Background sync failed:", error);
     }
   }, [queryClient, user?.id, supabase]);
 

@@ -22,7 +22,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
   const startTimer = useCallback(
     (
       duration: number,
-      metadata?: { movementId?: string; workoutId?: string }
+      _metadata?: { movementId?: string; workoutId?: string }
     ) => {
       // For now, we ignore metadata in the web app as the web timer is global
       // TODO: Enhance web timer to support metadata tracking if needed
@@ -35,12 +35,9 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
     stopTimer();
   }, [stopTimer]);
 
-  const addTime = useCallback((seconds: number) => {
-    // Basic implementation: restart with added time?
-    // Or ignore for now as web timer interface doesn't strictly support "addTime" without reset
-    // Better: Since web timer logic is internal, we might define it as:
-    // This is a missing feature in web timer, let's leave it no-op or basic for now to fix build
-    console.warn("addTime not fully implemented for web adapter");
+  const addTime = useCallback((_seconds: number) => {
+    // addTime is not supported by the web timer adapter — no-op.
+    // TODO: implement addTime support in the web TimerContext if needed.
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 import { REST_TIMER_HEIGHT } from "@/components/RestTimer";
-import { useRestTimer } from "@fitness/shared";
+import { useRestTimer } from "@hooks/useRestTimer";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useWorkoutGroups } from "@hooks/useWorkoutGroups";
@@ -41,7 +41,7 @@ export default function NewWorkoutScreen() {
         archived: false,
       });
       router.back();
-    } catch (error) {
+    } catch (_error) {
       Alert.alert("Error", "Failed to create workout");
     }
   };

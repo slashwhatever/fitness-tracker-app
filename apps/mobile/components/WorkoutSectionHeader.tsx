@@ -1,6 +1,6 @@
 import { useThemeColors } from "@hooks/useThemeColors";
 import { ChevronDown, ChevronRight } from "lucide-react-native";
-import React, { memo } from "react";
+import { memo } from "react";
 import { Text, TouchableOpacity } from "react-native";
 
 interface WorkoutSectionHeaderProps {

@@ -24,7 +24,7 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
     workoutId: null,
   });
 
-  const intervalRef = useRef<any>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const autoHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const appState = useRef(AppState.currentState);
 

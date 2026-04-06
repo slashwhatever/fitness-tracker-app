@@ -29,7 +29,7 @@ interface SortableMovementItemProps {
 export default function SortableMovementItem({
   movement,
   workoutId,
-  movementSets,
+  movementSets: _movementSets,
   lastSetDate,
   onEdit,
   onDelete,

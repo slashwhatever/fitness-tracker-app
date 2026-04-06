@@ -27,7 +27,8 @@ import {
   MoreVertical,
   Pencil,
 } from "lucide-react-native";
-import { useEffect, useState } from "react";
+import type { Tables } from "@fitness/shared";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -144,10 +145,10 @@ export default function MovementDetailScreen() {
   const [reps, setReps] = useState("0");
   const [distance, setDistance] = useState("0");
   const [duration, setDuration] = useState("0");
-  const [rpe, setRpe] = useState<number | null>(null);
+  const [rpe, _setRpe] = useState<number | null>(null);
   const [notes, setNotes] = useState("");
 
-  const [selectedSet, setSelectedSet] = useState<any>(null);
+  const [selectedSet, setSelectedSet] = useState<Tables<"sets"> | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [editSheetVisible, setEditSheetVisible] = useState(false);
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
@@ -224,8 +225,11 @@ export default function MovementDetailScreen() {
         notes: notes.trim() || undefined,
       });
       // Optional: Give feedback or clear inputs
-    } catch (error: any) {
-      Alert.alert("Error", `Failed to log set: ${error.message}`);
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        `Failed to log set: ${error instanceof Error ? error.message : "Unknown error"}`
+      );
     }
   };
 
@@ -255,10 +259,22 @@ export default function MovementDetailScreen() {
           setEditSheetVisible(true);
           break;
       }
-    } catch (error) {
+    } catch (_error) {
       Alert.alert("Error", `Failed to ${action} set`);
     }
   };
+
+  // Group sets by date — must be before any early returns (Rules of Hooks)
+  const groupedSets = useMemo(
+    () =>
+      (sets || []).reduce<Record<string, Tables<"sets">[]>>((acc, set) => {
+        const date = format(new Date(set.created_at), "EEE, MMM d, yyyy");
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(set);
+        return acc;
+      }, {}),
+    [sets]
+  );
 
   const loading = movementLoading || setsLoading;
 
@@ -283,14 +299,6 @@ export default function MovementDetailScreen() {
       </SafeAreaView>
     );
   }
-
-  // Group sets by date
-  const groupedSets = (sets || []).reduce((acc: any, set) => {
-    const date = format(new Date(set.created_at), "EEE, MMM d, yyyy");
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(set);
-    return acc;
-  }, {});
 
   return (
     <View className="flex-1 bg-background">
@@ -409,13 +417,13 @@ export default function MovementDetailScreen() {
             disabled={createSetMutation.isPending || !isValidSet}
           >
             {createSetMutation.isPending ? (
-              <ActivityIndicator color="white" />
+              <ActivityIndicator size={24} color="white" />
             ) : (
-              <>
-                <Check size={24} color="white" />
-                <Text className="text-white text-lg font-bold">Log Set</Text>
-              </>
+              <Check size={24} color="white" />
             )}
+            <Text className="text-white text-lg font-bold">
+              {createSetMutation.isPending ? "Saving…" : "Log Set"}
+            </Text>
           </TouchableOpacity>
 
           <View className="bg-card rounded-xl border border-border p-3">
@@ -447,7 +455,7 @@ export default function MovementDetailScreen() {
             )
             .map(([date, dateSets], index, array) => {
               const nextSession = array[index + 1];
-              const previousSets = nextSession ? (nextSession[1] as any) : [];
+              const previousSets: Tables<"sets">[] = nextSession ? nextSession[1] : [];
 
               const showComparison =
                 index === 0 && previousSets && previousSets.length > 0;
@@ -470,7 +478,7 @@ export default function MovementDetailScreen() {
                         {/* Use SessionComparison Component */}
                         <View className="border-slate-200/50 dark:border-border/50">
                           <SessionComparison
-                            currentSets={dateSets as any[]}
+                            currentSets={dateSets}
                             previousSets={previousSets}
                             movement={movement}
                           />
@@ -480,11 +488,11 @@ export default function MovementDetailScreen() {
                   </View>
 
                   <View>
-                    {(dateSets as any[]).map((set, index) => (
+                    {dateSets.map((set, index) => (
                       <View
                         key={set.id}
                         className={`flex-row items-center justify-between p-3 ${
-                          index !== (dateSets as any[]).length - 1
+                          index !== dateSets.length - 1
                             ? "border-b border-slate-100 dark:border-border/30"
                             : ""
                         }`}

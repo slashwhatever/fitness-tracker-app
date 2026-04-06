@@ -6,6 +6,7 @@ import {
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type Workout, type WorkoutUpdate } from "./types";
+import logger from "../../lib/utils/logger";
 
 /**
  * Update a workout
@@ -58,7 +59,7 @@ export function useUpdateWorkout(): UseMutationResult<
           context.previousWorkout
         );
       }
-      console.error("Error updating workout:", err);
+      logger.error("Error updating workout:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {

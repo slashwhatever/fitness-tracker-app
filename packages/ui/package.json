@@ -9,11 +9,18 @@
     "./globals.css": "./src/globals.css"
   },
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^18.2.0",
     "tailwindcss": "4.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
+    "eslint": "^9.0.0",
+    "typescript": "^5.3.3"
   },
   "peerDependencies": {
     "react": "*"

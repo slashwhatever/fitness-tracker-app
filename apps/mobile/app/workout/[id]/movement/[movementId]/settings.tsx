@@ -1,6 +1,6 @@
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementIcon } from "@/components/MovementIcon";
-import { useMuscleGroups, useTrackingTypes } from "@fitness/shared";
+import { useMuscleGroups, useTrackingTypes } from "@hooks/useReferenceData";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import {
@@ -226,7 +226,7 @@ export default function MovementSettingsScreen() {
       }
 
       router.back();
-    } catch (error) {
+    } catch (_error) {
       Alert.alert("Error", "Failed to update movement settings");
     } finally {
       setIsSaving(false);

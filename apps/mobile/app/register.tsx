@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import logger from "@/lib/utils/logger";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Link, useRouter } from "expo-router";
@@ -117,7 +118,7 @@ export default function RegisterScreen() {
         setSuccess(true);
       }
     } catch (err) {
-      console.error("Registration error:", err);
+      logger.error("Registration error:", err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);

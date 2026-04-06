@@ -1,9 +1,11 @@
+import type { UserMovement, TrackingTypeName } from "@fitness/shared";
 import { AddMovementSheet } from "@/components/AddMovementSheet";
 import { GlassHeader } from "@/components/GlassHeader";
 import { MovementActionSheet } from "@/components/MovementActionSheet";
 import { MovementIcon } from "@/components/MovementIcon";
 import { WorkoutActionSheet } from "@/components/WorkoutActionSheet";
 import { createClient } from "@/lib/supabase/client";
+import logger from "@/lib/utils/logger";
 import { formatLastSetDate } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
@@ -130,12 +132,12 @@ export default function WorkoutDetailScreen() {
           try {
             await deleteMutation.mutateAsync(workout.id);
             router.replace("/workouts");
-          } catch (error) {
+          } catch (_error) {
             Alert.alert("Error", "Failed to delete workout");
           }
           break;
       }
-    } catch (error) {
+    } catch (_error) {
       if (action !== "delete") {
         Alert.alert("Error", `Failed to ${action} workout`);
       }
@@ -171,7 +173,7 @@ export default function WorkoutDetailScreen() {
     // which might not be implemented yet. Or navigate to movement detail?
     // User requested "Edit" button but didn't specify action details.
     // Assuming placeholder for now or navigate to detail.
-    if (selectedMovement) {
+    if (selectedMovement?.user_movement) {
       router.push(
         `/workout/${id}/movement/${selectedMovement.user_movement.id}/settings`
       );
@@ -182,7 +184,7 @@ export default function WorkoutDetailScreen() {
     try {
       // Collect data for optimistic updates
       const userMovementIds: string[] = [];
-      const userMovementsForOptimistic: any[] = [];
+      const userMovementsForOptimistic: UserMovement[] = [];
       const { data: templates } = await createClient()
         .from("movement_templates")
         .select(
@@ -220,8 +222,8 @@ export default function WorkoutDetailScreen() {
             // Create user movement with template link (Hybrid approach)
             const muscleGroups =
               template.movement_template_muscle_groups
-                ?.map((mtmg: any) => mtmg.muscle_groups?.display_name)
-                .filter(Boolean) || [];
+                ?.map((mtmg: { muscle_groups: { display_name: string } | null }) => mtmg.muscle_groups?.display_name)
+                .filter((name): name is string => Boolean(name)) || [];
 
             const newUserMovement =
               await createUserMovementMutation.mutateAsync({
@@ -238,13 +240,15 @@ export default function WorkoutDetailScreen() {
               id: newUserMovement.id,
               name: template.name, // Name is still needed for optimistic UI
               personal_notes: template.instructions, // Notes are still needed for optimistic UI
-              tracking_type: template.tracking_types?.name || "weight",
               tracking_type_id: template.tracking_type_id,
+              tracking_type: (template.tracking_types?.name ?? "weight") as TrackingTypeName,
               experience_level: template.experience_level,
               muscle_groups: muscleGroups,
               user_id: newUserMovement.user_id,
               created_at: newUserMovement.created_at,
               updated_at: newUserMovement.updated_at,
+              customized_at: null,
+              is_reverse_weight: false,
               template_id: template.id, // Keep link
               original_template_id: template.id,
               custom_rest_timer: null,
@@ -282,7 +286,7 @@ export default function WorkoutDetailScreen() {
         });
       }
     } catch (error) {
-      console.error("Error adding movements:", error);
+      logger.error("Error adding movements:", error);
       Alert.alert("Error", "Failed to add movements to workout");
     }
   };

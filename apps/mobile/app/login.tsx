@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import logger from "@/lib/utils/logger";
 import { signInWithEmail } from "@fitness/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -72,7 +73,7 @@ export default function LoginScreen() {
         router.replace("/");
       }
     } catch (error) {
-      console.error("Login error:", error);
+      logger.error("Login error:", error);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);

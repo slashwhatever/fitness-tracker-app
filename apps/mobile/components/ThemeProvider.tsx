@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import logger from "@/lib/utils/logger";
 import { useColorScheme as useNativeWindColorScheme, vars } from "nativewind";
 import React, {
   createContext,
@@ -82,7 +83,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           setColorScheme(systemColorScheme ?? "light");
         }
       } catch (error) {
-        console.error("Failed to load theme from storage:", error);
+        logger.error("Failed to load theme from storage:", error);
         setStoredTheme("system");
         setColorScheme(systemColorScheme ?? "light");
       } finally {
@@ -92,7 +93,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadTheme();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
   // Update color scheme when system theme changes (if user preference is "system")
@@ -115,7 +115,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
           setColorScheme(theme);
         }
       } catch (error) {
-        console.error("Failed to save theme to storage:", error);
+        logger.error("Failed to save theme to storage:", error);
       }
     },
     [setColorScheme, systemColorScheme]

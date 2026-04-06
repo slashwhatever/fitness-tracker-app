@@ -2,6 +2,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { GlassHeader } from "@/components/GlassHeader";
 import { GroupActionSheet } from "@/components/GroupActionSheet";
 import { GroupItem } from "@/components/GroupItem";
+import type { Tables } from "@fitness/shared";
 import { useBottomPadding } from "@hooks/useBottomPadding";
 import { useHeaderPadding } from "@hooks/useHeaderPadding";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -25,14 +26,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ManageGroupsScreen() {
-  const { groups, createGroup, deleteGroup, updateGroup, loading } =
-    useWorkoutGroups();
+  const { groups, createGroup, deleteGroup, updateGroup } = useWorkoutGroups();
   const router = useRouter();
   const colors = useThemeColors();
   const headerPadding = useHeaderPadding();
   const bottomPadding = useBottomPadding();
   const [newGroupName, setNewGroupName] = useState("");
-  const [selectedGroup, setSelectedGroup] = useState<any>(null);
+  const [selectedGroup, setSelectedGroup] =
+    useState<Tables<"workout_groups"> | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
@@ -47,7 +48,7 @@ export default function ManageGroupsScreen() {
       setNewGroupName("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
-    } catch (error) {
+    } catch (_error) {
       Alert.alert("Error", "Failed to create group");
     }
   };
@@ -76,7 +77,7 @@ export default function ManageGroupsScreen() {
       });
       setEditingId(null);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert("Error", "Failed to rename group");
     }
   };
@@ -85,7 +86,7 @@ export default function ManageGroupsScreen() {
     try {
       await deleteGroup.mutateAsync(id);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert("Error", "Failed to delete group");
     }
   };

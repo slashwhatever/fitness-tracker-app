@@ -174,7 +174,7 @@ export async function setupNotificationChannel(): Promise<void> {
  * MUST be called at app startup alongside registerForegroundService.
  */
 export function registerBackgroundEventHandler(): void {
-  notifee.onBackgroundEvent(async ({ type, detail }) => {
+  notifee.onBackgroundEvent(async ({ type: _type, detail: _detail }) => {
     // Handle notification press events when app is in background
     // Currently we don't need special handling, but this prevents the warning
     return;

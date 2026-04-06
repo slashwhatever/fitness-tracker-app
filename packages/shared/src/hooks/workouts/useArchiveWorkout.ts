@@ -6,6 +6,7 @@ import {
 import { useAuth } from "../../lib/auth/AuthProvider";
 import { createClient } from "../../lib/supabase/client";
 import { workoutKeys, type Workout } from "./types";
+import logger from "../../lib/utils/logger";
 
 /**
  * Archive a workout
@@ -58,7 +59,7 @@ export function useArchiveWorkout(): UseMutationResult<
           context.previousWorkout
         );
       }
-      console.error("Error archiving workout:", err);
+      logger.error("Error archiving workout:", err);
     },
     onSuccess: (data) => {
       if (user?.id) {

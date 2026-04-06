@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRestTimer } from "@fitness/shared";
+import { useRestTimer } from "@hooks/useRestTimer";
 import notifee from "@notifee/react-native";
 import * as Haptics from "expo-haptics";
 import { useColorScheme } from "nativewind";

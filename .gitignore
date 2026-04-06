@@ -58,3 +58,5 @@ storybook-static
 .vscode/settings.json
 DEPLOYMENT_GATE_SETUP.md
 apps/mobile/*.aab
+.turbo
+packages/shared/.turbo

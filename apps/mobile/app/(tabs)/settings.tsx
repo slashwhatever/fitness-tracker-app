@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button";
+import logger from "@/lib/utils/logger";
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { DistanceUnit, TIMER_PRESETS, WeightUnit } from "@fitness/shared";
@@ -119,7 +120,7 @@ export default function SettingsScreen() {
     "restTimer" | "weight" | "distance" | null
   >(null);
 
-  const { control, handleSubmit, reset, setValue, watch, formState } =
+  const { control, handleSubmit, reset, setValue, watch, formState: _formState } =
     useForm<SettingsFormData>({
       resolver: zodResolver(settingsSchema),
       defaultValues: {
@@ -168,7 +169,7 @@ export default function SettingsScreen() {
       await updateProfileMutation.mutateAsync(updates);
       // Could add toast here
     } catch (error) {
-      console.error("Failed to update profile:", error);
+      logger.error("Failed to update profile:", error);
     } finally {
       setIsSaving(false);
     }
@@ -192,7 +193,7 @@ export default function SettingsScreen() {
       await signOut();
       router.replace("/login");
     } catch (error) {
-      console.error("Error signing out:", error);
+      logger.error("Error signing out:", error);
     }
   };
 

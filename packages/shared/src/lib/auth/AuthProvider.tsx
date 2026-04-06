@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 import { createClient } from "../supabase/client";
+import logger from "../utils/logger";
 
 interface AuthContextType {
   user: User | null;
@@ -46,7 +47,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } = await supabase.auth.getSession();
 
       if (error) {
-        console.error("Failed to get session:", error);
+        logger.error("Failed to get session:", error);
         setUser(null);
         setSession(null);
         return;
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(session?.user ?? null);
       setSession(session);
     } catch (error) {
-      console.error("Failed to refresh session:", error);
+      logger.error("Failed to refresh session:", error);
       setUser(null);
       setSession(null);
     }
@@ -67,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(null);
       setSession(null);
     } catch (error) {
-      console.error("Sign out error:", error);
+      logger.error("Sign out error:", error);
     }
   }, [supabase.auth]);
 

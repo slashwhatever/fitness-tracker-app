@@ -28,6 +28,8 @@ export async function getUserMovementByTemplate(
       user_id,
       created_at,
       updated_at,
+      customized_at,
+      is_reverse_weight,
       tracking_types!inner(name),
       user_movement_muscle_groups(
         muscle_groups(name, display_name)

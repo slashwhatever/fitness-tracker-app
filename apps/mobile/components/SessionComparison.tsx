@@ -1,19 +1,20 @@
 import {
   MetricData,
+  UserMovement,
   calculateMetrics,
   formatDiff,
   formatValue,
 } from "@fitness/shared";
-import { useThemeColors } from "@hooks/useThemeColors";
+import type { Tables } from "@fitness/shared";
 import { useUserProfile } from "@hooks/useUserProfile";
 import { CircleEqual, Play } from "lucide-react-native";
 import { useMemo } from "react";
 import { Text, View } from "react-native";
 
 interface SessionComparisonProps {
-  currentSets: any[]; // Using any because shared types might be slightly incompatible with local inferred types
-  previousSets: any[] | undefined;
-  movement: any; // Using any for flexibility
+  currentSets: Tables<"sets">[];
+  previousSets: Tables<"sets">[] | undefined;
+  movement: UserMovement;
 }
 
 function getBarColors(metric: MetricData): { fg: string; bg: string } {
@@ -21,9 +22,12 @@ function getBarColors(metric: MetricData): { fg: string; bg: string } {
     return { fg: "hsl(210, 80%, 55%)", bg: "hsla(210, 80%, 30%, 0.4)" };
   }
   const ratio = metric.current / metric.previous;
-  const effectiveRatio = metric.invertImprovement ? 1 / ratio : ratio;
-  const t = Math.min(1, Math.max(0, effectiveRatio));
-  const hue = Math.round(t * 120); // 0 = red, 120 = green
+  const effectiveRatio = metric.invertImprovement && ratio > 0 ? 1 / ratio : ratio;
+  if (effectiveRatio > 1) {
+    return { fg: "hsl(120, 75%, 50%)", bg: "hsla(120, 75%, 25%, 0.4)" };
+  }
+  // Below 100%: red (hue 0) → amber (hue 50) — never enters green
+  const hue = Math.round(Math.max(0, effectiveRatio) * 50);
   return {
     fg: `hsl(${hue}, 75%, 50%)`,
     bg: `hsla(${hue}, 75%, 25%, 0.4)`,
@@ -36,7 +40,6 @@ export function SessionComparison({
   movement,
 }: SessionComparisonProps) {
   const { data: userProfile } = useUserProfile();
-  const colors = useThemeColors();
   const weightUnit = userProfile?.weight_unit || "kg";
 
   const metrics = useMemo(() => {
@@ -72,7 +75,7 @@ export function SessionComparison({
     <View className="mb-4">
       {/* Metrics Grid */}
       <View className="flex-row flex-wrap gap-y-4">
-        {metrics.map((metric, index) => {
+        {metrics.map((metric, _index) => {
           // Check if higher is better (default) or lower is better (reverse weight)
           const isImprovement = metric.invertImprovement
             ? metric.diff < 0
@@ -80,13 +83,13 @@ export function SessionComparison({
           const isDecline = metric.invertImprovement
             ? metric.diff > 0
             : metric.diff < 0;
-          const isNeutral = metric.diff === 0;
-
           // Progress percent display
           const progressPercent =
             metric.previous > 0
               ? Math.round((metric.current / metric.previous) * 100)
               : 100;
+
+          const { fg: accentColor } = getBarColors(metric);
 
           return (
             <View
@@ -110,31 +113,23 @@ export function SessionComparison({
                     <View style={{ transform: [{ rotate: "-90deg" }] }}>
                       <Play
                         size={16}
-                        color={colors.success}
-                        fill={colors.success}
+                        color={accentColor}
+                        fill={accentColor}
                       />
                     </View>
                   ) : isDecline ? (
                     <View style={{ transform: [{ rotate: "90deg" }] }}>
                       <Play
                         size={16}
-                        color={colors.danger}
-                        fill={colors.danger}
+                        color={accentColor}
+                        fill={accentColor}
                       />
                     </View>
                   ) : (
-                    <CircleEqual size={16} color={colors.info} />
+                    <CircleEqual size={16} color={accentColor} />
                   )}
 
-                  <Text
-                    className={`text-sm ${
-                      isImprovement
-                        ? "text-green-500"
-                        : isDecline
-                          ? "text-red-500"
-                          : "text-blue-500"
-                    }`}
-                  >
+                  <Text className="text-sm" style={{ color: accentColor }}>
                     {formatDiff(metric.diff, metric.label, weightUnit)} (
                     {progressPercent}%)
                   </Text>
