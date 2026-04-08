@@ -1,5 +1,4 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { GlassHeaderProvider } from "@/components/GlassHeaderContext";
 import { RestTimer } from "@/components/RestTimer";
 import { RestTimerProvider } from "@/components/RestTimerProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -92,13 +91,11 @@ export default function RootLayout() {
             <AuthProvider>
               <ThemeProvider>
                 <RestTimerProvider>
-                  <GlassHeaderProvider>
-                    <View className="flex-1 bg-background">
-                      <StatusBar style="auto" />
-                      <AuthenticatedApp />
-                      <RestTimer />
-                    </View>
-                  </GlassHeaderProvider>
+                  <View className="flex-1 bg-background">
+                    <StatusBar style="auto" />
+                    <AuthenticatedApp />
+                    <RestTimer />
+                  </View>
                 </RestTimerProvider>
               </ThemeProvider>
             </AuthProvider>

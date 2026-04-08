@@ -6,13 +6,21 @@ import React, {
   useState,
 } from "react";
 
-interface GlassHeaderContextType {
+interface GlassHeaderActions {
   registerHeader: (id: string) => void;
   unregisterHeader: (id: string) => void;
-  isActiveHeader: (id: string) => boolean;
 }
 
-const GlassHeaderContext = createContext<GlassHeaderContextType | null>(null);
+// Stable context — register/unregister functions never change reference.
+// The effect in GlassHeader depends only on this, so it never re-runs
+// just because the active header changed.
+const GlassHeaderActionsContext = createContext<GlassHeaderActions | null>(
+  null
+);
+
+// Separate context for the active header ID. Changes frequently but only
+// used for rendering (not in effects), so re-renders are harmless.
+const GlassHeaderActiveContext = createContext<string | null>(null);
 
 export function GlassHeaderProvider({
   children,
@@ -23,43 +31,38 @@ export function GlassHeaderProvider({
   const headerStackRef = useRef<string[]>([]);
 
   const registerHeader = useCallback((id: string) => {
-    // Add to stack if not already present
     if (!headerStackRef.current.includes(id)) {
       headerStackRef.current.push(id);
     }
-    // The last registered header is the active one
     setActiveHeaderId(
       headerStackRef.current[headerStackRef.current.length - 1]
     );
-  }, []);
+  }, []); // stable — no deps
 
   const unregisterHeader = useCallback((id: string) => {
-    // Remove from stack
     headerStackRef.current = headerStackRef.current.filter((h) => h !== id);
-    // Update active to the last in stack, or null if empty
     setActiveHeaderId(
       headerStackRef.current.length > 0
         ? headerStackRef.current[headerStackRef.current.length - 1]
         : null
     );
-  }, []);
-
-  const isActiveHeader = useCallback(
-    (id: string) => {
-      return activeHeaderId === id;
-    },
-    [activeHeaderId]
-  );
+  }, []); // stable — no deps
 
   return (
-    <GlassHeaderContext.Provider
-      value={{ registerHeader, unregisterHeader, isActiveHeader }}
+    <GlassHeaderActionsContext.Provider
+      value={{ registerHeader, unregisterHeader }}
     >
-      {children}
-    </GlassHeaderContext.Provider>
+      <GlassHeaderActiveContext.Provider value={activeHeaderId}>
+        {children}
+      </GlassHeaderActiveContext.Provider>
+    </GlassHeaderActionsContext.Provider>
   );
 }
 
-export function useGlassHeaderContext() {
-  return useContext(GlassHeaderContext);
+export function useGlassHeaderActions() {
+  return useContext(GlassHeaderActionsContext);
+}
+
+export function useGlassHeaderActiveId() {
+  return useContext(GlassHeaderActiveContext);
 }

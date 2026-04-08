@@ -1,11 +1,11 @@
-import { useGlassHeaderContext } from "@/components/GlassHeaderContext";
 import { REST_TIMER_HEIGHT } from "@/components/RestTimer";
 import { useRestTimer } from "@hooks/useRestTimer";
 import { useThemeColors } from "@hooks/useThemeColors";
+import { useIsFocused } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import React, { useEffect, useId } from "react";
+import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -27,27 +27,22 @@ export function GlassHeader({
   backPath,
   showBack = true,
   rightAction,
-
   onBack,
   ignoreTimer = false,
 }: GlassHeaderProps) {
   const router = useRouter();
-
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = useThemeColors();
   const { isActive, isCompleted } = useRestTimer();
-  const headerId = useId();
-  const headerContext = useGlassHeaderContext();
 
-  // Register this header on mount, unregister on unmount
-  useEffect(() => {
-    headerContext?.registerHeader(headerId);
-    return () => {
-      headerContext?.unregisterHeader(headerId);
-    };
-  }, [headerId, headerContext]);
+  // Only render the header for the screen that currently has navigation focus.
+  // useIsFocused() is provided by React Navigation and correctly handles tabs
+  // (all mounted simultaneously), stack screens, and swipe-back gestures —
+  // without any manual register/unregister bookkeeping.
+  const isFocused = useIsFocused();
+  if (!isFocused) return null;
 
   const isTimerActive = (isActive || isCompleted) && !ignoreTimer;
 
@@ -56,14 +51,6 @@ export function GlassHeader({
     ? HEADER_CONTENT_HEIGHT
     : insets.top + HEADER_CONTENT_HEIGHT;
   const contentPaddingTop = isTimerActive ? 0 : insets.top;
-
-  // Check if this header should be visible (only the topmost one)
-  const isActiveHeader = headerContext?.isActiveHeader(headerId) ?? true;
-
-  // Only render if this is the active (topmost) header
-  if (!isActiveHeader) {
-    return null;
-  }
 
   const handleBack = () => {
     if (onBack) {
@@ -98,9 +85,7 @@ export function GlassHeader({
       ]}
     >
       <View
-        style={{
-          paddingTop: contentPaddingTop,
-        }}
+        style={{ paddingTop: contentPaddingTop }}
         className="flex-1 px-4 flex-row items-center justify-between"
       >
         <View className="flex-1 flex-row items-center">
@@ -116,7 +101,7 @@ export function GlassHeader({
                   className="text-foreground text-lg font-semibold ml-1"
                   numberOfLines={1}
                 >
-                  {typeof title === "string" ? title : "Back"}
+                  {title}
                 </Text>
               )}
             </TouchableOpacity>
@@ -133,7 +118,6 @@ export function GlassHeader({
               )}
             </View>
           )}
-          {/* Custom title node/component logic can be expanded here if needed */}
         </View>
 
         <View className="flex-row items-center justify-end min-w-[40px]">
