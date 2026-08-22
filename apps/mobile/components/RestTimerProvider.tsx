@@ -4,6 +4,7 @@ import { AppState } from "react-native";
 import {
   cancelTimerNotification,
   completeTimerNotification,
+  extendTimerNotification,
   pauseTimerNotification,
   setupNotificationChannel,
   startTimerNotification,
@@ -160,6 +161,14 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       isPaused: false,
       pausedAt: null,
+      // Shift the absolute anchor forward by however long we were paused, so
+      // `duration - elapsed` in tick() again equals the frozen remainingTime.
+      // Without this, wall-clock kept advancing while paused and the timer
+      // jumps forward (or completes instantly) on resume.
+      startTime:
+        prev.startTime !== null && prev.pausedAt !== null
+          ? prev.startTime + (Date.now() - prev.pausedAt)
+          : prev.startTime,
     }));
 
     intervalRef.current = setInterval(tick, 1000);
@@ -195,6 +204,10 @@ export function RestTimerProvider({ children }: { children: React.ReactNode }) {
         remainingTime: prev.remainingTime + seconds,
       };
     });
+    // Keep the independent headless foreground-service anchor in sync, otherwise
+    // the Android service completes on the original deadline and fires
+    // "Rest Complete!" early. Self-guards when inactive/paused/iOS.
+    extendTimerNotification(seconds);
   }, []);
 
   // Keep stateRef updated for the event listener

@@ -1,10 +1,10 @@
 import type { Database } from "@fitness/shared";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createClient as createSupabaseClient,
   SupabaseClient,
 } from "@supabase/supabase-js";
 import { Platform } from "react-native";
+import { secureAuthStorage } from "./secureStorage";
 
 export type { Database } from "@fitness/shared";
 
@@ -30,7 +30,9 @@ export function createClient() {
 
   client = createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
     auth: {
-      storage: AsyncStorage,
+      // Persist the session (incl. refresh token) in the OS keystore rather
+      // than unencrypted AsyncStorage. See secureStorage.ts.
+      storage: secureAuthStorage,
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,

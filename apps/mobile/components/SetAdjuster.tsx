@@ -1,6 +1,6 @@
 import { useThemeColors } from "@hooks/useThemeColors";
 import { Minus, Plus } from "lucide-react-native";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 interface SetAdjusterProps {
   label: string;
@@ -57,41 +57,41 @@ export function SetAdjuster({
         {variant === "primary" ? (
           // Primary Variant: Large Buttons, Single Step
           <View className="flex-row items-center gap-6">
-            <TouchableOpacity
-              className="w-16 h-16 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+            <Pressable
+              className="w-16 h-16 rounded-full bg-card border border-border items-center justify-center active:bg-slate-100 dark:active:bg-slate-700"
               onPress={() => handleDecrement(steps[0] || 1)}
             >
               <Minus size={32} color={colors.icon} />
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
-              className="w-16 h-16 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+            <Pressable
+              className="w-16 h-16 rounded-full bg-card border border-border items-center justify-center active:bg-slate-100 dark:active:bg-slate-700"
               onPress={() => handleIncrement(steps[0] || 1)}
             >
               <Plus size={32} color={colors.icon} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         ) : (
           // Secondary Variant: Multiple Rows, Smaller Buttons
           steps.map((step) => (
             <View key={step} className="flex-row items-center gap-4">
-              <TouchableOpacity
-                className="w-10 h-10 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+              <Pressable
+                className="w-10 h-10 rounded-full bg-card border border-border items-center justify-center active:bg-slate-100 dark:active:bg-slate-700"
                 onPress={() => handleDecrement(step)}
               >
                 <Minus size={20} color={colors.icon} />
-              </TouchableOpacity>
+              </Pressable>
 
               <Text className="text-foreground text-lg font-medium w-8 text-center">
                 {step}
               </Text>
 
-              <TouchableOpacity
-                className="w-10 h-10 rounded-full bg-card border border-border items-center justify-center active:bg-slate-50 dark:active:bg-dark-border"
+              <Pressable
+                className="w-10 h-10 rounded-full bg-card border border-border items-center justify-center active:bg-slate-100 dark:active:bg-slate-700"
                 onPress={() => handleIncrement(step)}
               >
                 <Plus size={20} color={colors.icon} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           ))
         )}

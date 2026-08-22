@@ -9,6 +9,7 @@ import { ChevronLeft } from "lucide-react-native";
 import { useState } from "react";
 import {
   Alert,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
@@ -67,13 +68,13 @@ export default function NewWorkoutScreen() {
           </Text>
         </TouchableOpacity>
         <Text className="text-foreground text-lg font-bold">New Workout</Text>
-        <TouchableOpacity
+        <Pressable
           onPress={handleCreate}
           disabled={createWorkout.isPending}
-          className="bg-primary-500 px-4 py-2 rounded-full"
+          className="bg-primary-500 active:bg-primary-600 px-4 py-2 rounded-full"
         >
           <Text className="text-white font-semibold">Save</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <ScrollView
@@ -103,12 +104,12 @@ export default function NewWorkoutScreen() {
             showsHorizontalScrollIndicator={false}
             className="flex-row"
           >
-            <TouchableOpacity
+            <Pressable
               onPress={() => setSelectedGroupId(null)}
               className={`mr-3 px-4 py-2 rounded-full border ${
                 selectedGroupId === null
-                  ? "bg-primary-500 border-primary-500"
-                  : "bg-transparent border-slate-300 dark:border-gray-600"
+                  ? "bg-primary-500 border-primary-500 active:bg-primary-600"
+                  : "bg-transparent border-slate-300 dark:border-gray-600 active:bg-slate-100 dark:active:bg-slate-700"
               }`}
             >
               <Text
@@ -120,15 +121,15 @@ export default function NewWorkoutScreen() {
               >
                 None
               </Text>
-            </TouchableOpacity>
+            </Pressable>
             {groups.map((group) => (
-              <TouchableOpacity
+              <Pressable
                 key={group.id}
                 onPress={() => setSelectedGroupId(group.id)}
                 className={`mr-3 px-4 py-2 rounded-full border ${
                   selectedGroupId === group.id
-                    ? "bg-primary-500 border-primary-500"
-                    : "bg-transparent border-slate-300 dark:border-gray-600"
+                    ? "bg-primary-500 border-primary-500 active:bg-primary-600"
+                    : "bg-transparent border-slate-300 dark:border-gray-600 active:bg-slate-100 dark:active:bg-slate-700"
                 }`}
               >
                 <Text
@@ -140,7 +141,7 @@ export default function NewWorkoutScreen() {
                 >
                   {group.name}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </ScrollView>
         </View>

@@ -1,6 +1,6 @@
 import type { Metric } from "@/lib/utils/analytics";
 import { metricLabel } from "@/lib/utils/analytics";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { Pressable, ScrollView, Text } from "react-native";
 
 const METRICS: Metric[] = ["volume", "sets", "reps", "weight_per_rep"];
 
@@ -19,13 +19,13 @@ export function MetricSelector({ value, onChange }: MetricSelectorProps) {
       {METRICS.map((m) => {
         const active = m === value;
         return (
-          <TouchableOpacity
+          <Pressable
             key={m}
             onPress={() => onChange(m)}
             className={`px-4 py-2 rounded-full border ${
               active
-                ? "bg-primary border-primary"
-                : "bg-card border-border"
+                ? "bg-primary border-primary active:bg-primary/80"
+                : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
             }`}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
@@ -38,7 +38,7 @@ export function MetricSelector({ value, onChange }: MetricSelectorProps) {
             >
               {metricLabel(m)}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         );
       })}
     </ScrollView>

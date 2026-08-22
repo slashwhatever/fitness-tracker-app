@@ -325,8 +325,8 @@ export default function MovementSettingsScreen() {
               <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-2">
                 Custom Rest Timer
               </Text>
-              <TouchableOpacity
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 flex-row items-center justify-between"
+              <Pressable
+                className="w-full bg-card border border-border rounded-xl px-4 py-3 flex-row items-center justify-between active:bg-slate-100 dark:active:bg-slate-700"
                 onPress={() => setShowRestTimerModal(true)}
               >
                 <View className="flex-row items-center gap-2">
@@ -336,7 +336,7 @@ export default function MovementSettingsScreen() {
                   </Text>
                 </View>
                 <ChevronRight size={20} color={colors.textSecondary} />
-              </TouchableOpacity>
+              </Pressable>
               <Text className="text-xs text-gray-500 mt-1">
                 Overrides workout default for this movement
               </Text>
@@ -351,13 +351,13 @@ export default function MovementSettingsScreen() {
                 {experienceLevels.map((level) => {
                   const isSelected = experienceLevel === level.id;
                   return (
-                    <TouchableOpacity
+                    <Pressable
                       key={level.id}
                       onPress={() => setExperienceLevel(level.id)}
                       className={`flex-1 items-center justify-center px-4 py-3 rounded-xl border ${
                         isSelected
-                          ? "bg-primary-500/10 border-primary-500"
-                          : "bg-card border-border"
+                          ? "bg-primary-500/10 border-primary-500 active:bg-primary-500/20"
+                          : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
                       }`}
                     >
                       <Text
@@ -367,7 +367,7 @@ export default function MovementSettingsScreen() {
                       >
                         {level.name}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   );
                 })}
               </View>
@@ -382,7 +382,7 @@ export default function MovementSettingsScreen() {
                 {muscleGroups.map((mg) => {
                   const isSelected = selectedMuscleGroupIds.includes(mg.id);
                   return (
-                    <TouchableOpacity
+                    <Pressable
                       key={mg.id}
                       onPress={() => {
                         setSelectedMuscleGroupIds((prev) =>
@@ -393,8 +393,8 @@ export default function MovementSettingsScreen() {
                       }}
                       className={`px-4 py-2 rounded-xl border flex-grow items-center justify-center ${
                         isSelected
-                          ? "bg-primary-500/10 border-primary-500"
-                          : "bg-card border-border"
+                          ? "bg-primary-500/10 border-primary-500 active:bg-primary-500/20"
+                          : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
                       }`}
                     >
                       <Text
@@ -404,7 +404,7 @@ export default function MovementSettingsScreen() {
                       >
                         {mg.display_name}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   );
                 })}
               </View>
@@ -419,13 +419,13 @@ export default function MovementSettingsScreen() {
                 {trackingTypes.map((type) => {
                   const isSelected = trackingTypeId === type.id;
                   return (
-                    <TouchableOpacity
+                    <Pressable
                       key={type.id}
                       onPress={() => setTrackingTypeId(type.id)}
                       className={`flex-row items-center p-2 pr-4 rounded-xl border w-[48%] flex-grow ${
                         isSelected
-                          ? "bg-primary-500/10 border-primary-500"
-                          : "bg-card border-border"
+                          ? "bg-primary-500/10 border-primary-500 active:bg-primary-500/20"
+                          : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
                       }`}
                     >
                       <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
@@ -438,7 +438,7 @@ export default function MovementSettingsScreen() {
                       >
                         {type.display_name}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   );
                 })}
               </View>
@@ -471,11 +471,11 @@ export default function MovementSettingsScreen() {
               </View>
             </View>
 
-            <TouchableOpacity
+            <Pressable
               className={`w-full p-4 rounded-xl items-center flex-row justify-center gap-2 mt-4 ${
                 !name.trim() || !trackingTypeId || isSaving
                   ? "bg-primary-500/50"
-                  : "bg-primary-500"
+                  : "bg-primary-500 active:bg-primary-600"
               }`}
               onPress={handleSave}
               disabled={!name.trim() || !trackingTypeId || isSaving}
@@ -488,7 +488,7 @@ export default function MovementSettingsScreen() {
               <Text className="text-white font-bold text-lg">
                 {isSaving ? "Saving..." : "Save Changes"}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
 
             <View className="h-20" />
           </View>

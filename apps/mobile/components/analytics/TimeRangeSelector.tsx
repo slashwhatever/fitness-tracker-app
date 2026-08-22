@@ -1,5 +1,5 @@
 import type { TimeRange } from "@/lib/utils/analytics";
-import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { Pressable, ScrollView, Text } from "react-native";
 
 const RANGES: TimeRange[] = ["1W", "1M", "3M", "6M", "1Y", "All"];
 
@@ -18,13 +18,13 @@ export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
       {RANGES.map((range) => {
         const active = range === value;
         return (
-          <TouchableOpacity
+          <Pressable
             key={range}
             onPress={() => onChange(range)}
             className={`px-4 py-2 rounded-full border ${
               active
-                ? "bg-primary border-primary"
-                : "bg-card border-border"
+                ? "bg-primary border-primary active:bg-primary/80"
+                : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
             }`}
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
@@ -37,7 +37,7 @@ export function TimeRangeSelector({ value, onChange }: TimeRangeSelectorProps) {
             >
               {range}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         );
       })}
     </ScrollView>

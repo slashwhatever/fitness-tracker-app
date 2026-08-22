@@ -37,7 +37,7 @@ export function Button({
   // Variant styles
   switch (variant) {
     case "default":
-      containerStyles += " bg-primary active:opacity-90";
+      containerStyles += " bg-primary active:bg-primary-600";
       textStyles += " text-white";
       break;
     case "destructive":
@@ -47,12 +47,12 @@ export function Button({
       break;
     case "outline":
       containerStyles +=
-        " bg-transparent border border-border active:bg-slate-50 dark:active:bg-dark-bg/50";
+        " bg-transparent border border-border active:bg-slate-100 dark:active:bg-slate-700";
       textStyles += " text-foreground";
       break;
     case "ghost":
       containerStyles +=
-        " bg-transparent active:bg-slate-100 dark:active:bg-dark-bg/50";
+        " bg-transparent active:bg-slate-100 dark:active:bg-slate-700";
       textStyles += " text-foreground";
       break;
     case "secondary":

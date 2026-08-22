@@ -3,7 +3,7 @@ import { useThemeColors } from "@hooks/useThemeColors";
 import { useRouter } from "expo-router";
 import { Dumbbell, MoreVertical } from "lucide-react-native";
 import { memo } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface WorkoutItemProps {
   item: Workout;
@@ -18,11 +18,11 @@ export const WorkoutItem = memo(function WorkoutItem({
   const colors = useThemeColors();
 
   return (
-    <TouchableOpacity
+    <Pressable
       className={`p-4 rounded-2xl border mb-3 flex-row items-center ${
         item.archived
-          ? "bg-slate-100 dark:bg-background border-border opacity-60"
-          : "bg-card border-border"
+          ? "bg-slate-100 dark:bg-background border-border opacity-60 active:bg-slate-200 dark:active:bg-slate-800"
+          : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
       }`}
       onPress={() => router.push(`/workout/${item.id}`)}
     >
@@ -52,6 +52,6 @@ export const WorkoutItem = memo(function WorkoutItem({
       >
         <MoreVertical size={20} color={colors.textSecondary} />
       </TouchableOpacity>
-    </TouchableOpacity>
+    </Pressable>
   );
 });

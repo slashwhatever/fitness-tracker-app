@@ -108,12 +108,18 @@ export default function WorkoutsScreen() {
   }, [sections, collapsedSections]);
 
   const handleAction = async (
-    action: "duplicate" | "archive" | "delete" | "edit"
+    action: "duplicate" | "archive" | "delete" | "edit" | "analytics"
   ) => {
     if (!selectedWorkout) return;
 
     try {
       switch (action) {
+        case "analytics":
+          router.navigate({
+            pathname: "/(tabs)/analytics",
+            params: { workoutId: selectedWorkout.id },
+          });
+          break;
         case "edit":
           router.push(`/workout/${selectedWorkout.id}/settings`);
           break;
@@ -135,7 +141,7 @@ export default function WorkoutsScreen() {
           break;
       }
     } catch (_error) {
-      if (action !== "delete") {
+      if (action !== "delete" && action !== "analytics") {
         Alert.alert("Error", `Failed to ${action} workout`);
       }
     }

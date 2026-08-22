@@ -128,18 +128,14 @@ export function useDeepLink() {
             router.replace("/");
           }
         } else {
-          // Unknown type - try to handle generic token
-          if (access_token && refresh_token) {
-            logger.log("[DeepLink] Setting session from generic tokens");
-            const { error } = await supabase.auth.setSession({
-              access_token,
-              refresh_token,
-            });
-
-            if (error) throw error;
-
-            router.replace("/");
-          }
+          // Unknown auth type. Do NOT establish a session from raw tokens
+          // supplied by an unrecognized link: custom URL schemes are not
+          // owner-exclusive, so a crafted logset:// link carrying an attacker's
+          // tokens could silently sign the victim into the attacker's account
+          // (session fixation). Only the explicit, expected flows above are
+          // honored.
+          logger.warn("[DeepLink] Ignoring auth link with unknown type:", type);
+          throw new Error("Unsupported authentication link.");
         }
 
         setState({ isProcessing: false, error: null });

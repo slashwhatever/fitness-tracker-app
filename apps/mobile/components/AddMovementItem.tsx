@@ -1,7 +1,7 @@
 import { MovementIcon } from "@/components/MovementIcon";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { memo } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 interface AddMovementItemProps {
   item: {
@@ -26,13 +26,13 @@ export const AddMovementItem = memo(function AddMovementItem({
 
   return (
     <View className="px-4">
-      <TouchableOpacity
+      <Pressable
         className={`p-4 rounded-xl mb-2 flex-row items-center ${
           isDisabled
             ? "bg-background/30 opacity-50"
             : isSelected
-              ? "bg-primary-500/20"
-              : "bg-background/50"
+              ? "bg-primary-500/20 active:bg-primary-500/30"
+              : "bg-background/50 active:bg-slate-100 dark:active:bg-slate-700/50"
         }`}
         style={
           !isDisabled && isSelected
@@ -41,7 +41,7 @@ export const AddMovementItem = memo(function AddMovementItem({
               }
             : undefined
         }
-        onPress={() => onToggle(item.id, item.isExisting)}
+        onPress={() => !isDisabled && onToggle(item.id, item.isExisting)}
         disabled={isDisabled}
       >
         <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
@@ -73,7 +73,7 @@ export const AddMovementItem = memo(function AddMovementItem({
         >
           {isSelected && <View className="h-3 w-3 rounded-full bg-white" />}
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 });

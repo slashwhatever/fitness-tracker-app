@@ -9,6 +9,7 @@ import { useSets } from "@hooks/useSets";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { useUserProfile } from "@hooks/useUserProfile";
 import { useWorkouts } from "@hooks/useWorkouts";
+import { useLocalSearchParams } from "expo-router";
 import {
   type Metric,
   type TimeRange,
@@ -18,7 +19,7 @@ import {
   getSummaryStats,
   metricLabel,
 } from "@/lib/utils/analytics";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -36,11 +37,25 @@ export default function AnalyticsScreen() {
   const bottomPadding = useBottomPadding();
   const colors = useThemeColors();
 
+  // ── Deep-link params ───────────────────────────────────────────────────────
+  const { workoutId: paramWorkoutId, movementId: paramMovementId } =
+    useLocalSearchParams<{ workoutId?: string; movementId?: string }>();
+
   // ── Filters ────────────────────────────────────────────────────────────────
   const [timeRange, setTimeRange] = useState<TimeRange>("1M");
   const [metric, setMetric] = useState<Metric>("volume");
   const [workoutIds, setWorkoutIds] = useState<string[]>([]);
   const [movementIds, setMovementIds] = useState<string[]>([]);
+
+  // Apply deep-link params whenever they change (e.g. navigating here from a
+  // workout or movement action sheet). Runs only when params are present so
+  // manually-set filters are preserved when the user switches tabs normally.
+  useEffect(() => {
+    if (paramWorkoutId || paramMovementId) {
+      setWorkoutIds(paramWorkoutId ? [paramWorkoutId] : []);
+      setMovementIds(paramMovementId ? [paramMovementId] : []);
+    }
+  }, [paramWorkoutId, paramMovementId]);
 
   // ── Data ───────────────────────────────────────────────────────────────────
   const { data: allSets, isLoading: setsLoading } = useSets();

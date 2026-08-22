@@ -254,6 +254,29 @@ export async function updateTimerNotification(
 }
 
 /**
+ * Extends (or shortens) the running headless timer by `seconds`, keeping the
+ * foreground-service completion anchor in sync with the in-app "+N s" control.
+ *
+ * Without this, the headless service keeps comparing against the original
+ * `timerEndTime` and fires "Rest Complete!" early after an addTime bump.
+ * No-ops when the headless timer is not currently running (inactive/paused on
+ * Android, or iOS) — resumeTimer/startTimer re-anchor those paths.
+ */
+export async function extendTimerNotification(seconds: number): Promise<void> {
+  if (Platform.OS !== "android") return;
+  if (timerEndTime == null || timerDuration == null) return;
+
+  timerEndTime += seconds * 1000;
+  timerDuration = Math.max(0, timerDuration + seconds);
+
+  const remainingSeconds = Math.max(
+    0,
+    Math.ceil((timerEndTime - Date.now()) / 1000)
+  );
+  await updateTimerNotification(timerDuration, remainingSeconds);
+}
+
+/**
  * Updates the notification to show paused state.
  */
 export async function pauseTimerNotification(

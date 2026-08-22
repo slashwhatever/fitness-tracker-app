@@ -32,9 +32,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   Modal,
   Pressable,
-  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -48,6 +48,13 @@ interface SetActionModalProps {
   onSelect: (action: "duplicate" | "edit" | "delete") => void;
   setDetails: string;
 }
+
+type SessionGroup = {
+  date: string;
+  dateSets: Tables<"sets">[];
+  previousSets: Tables<"sets">[];
+  showComparison: boolean;
+};
 
 function SetActionModal({
   visible,
@@ -276,6 +283,25 @@ export default function MovementDetailScreen() {
     [sets]
   );
 
+  // Flatten grouped sets into a virtualization-friendly list, newest first, with
+  // the previous session (for the comparison card) precomputed once.
+  const sessions = useMemo<SessionGroup[]>(() => {
+    const entries = Object.entries(groupedSets).sort(
+      ([dateA], [dateB]) =>
+        new Date(dateB).getTime() - new Date(dateA).getTime()
+    );
+    return entries.map(([date, dateSets], index, array) => {
+      const nextSession = array[index + 1];
+      const previousSets = nextSession ? nextSession[1] : [];
+      return {
+        date,
+        dateSets,
+        previousSets,
+        showComparison: index === 0 && previousSets.length > 0,
+      };
+    });
+  }, [groupedSets]);
+
   const loading = movementLoading || setsLoading;
 
   if (loading) {
@@ -324,30 +350,44 @@ export default function MovementDetailScreen() {
         }}
       />
 
-      <ScrollView
+      <FlatList
         className="flex-1"
+        data={sessions}
+        keyExtractor={(item) => item.date}
         contentContainerStyle={{
           paddingTop: headerPadding + 16,
           paddingBottom: bottomPadding,
         }}
-      >
-        <View className="px-4 mb-6 flex-row items-center gap-3">
-          <View className="h-12 w-12 rounded-full bg-primary-500/20 items-center justify-center">
-            <MovementIcon trackingType={trackingType} size={24} />
+        removeClippedSubviews
+        initialNumToRender={6}
+        maxToRenderPerBatch={6}
+        windowSize={9}
+        ListEmptyComponent={
+          <View className="px-4 pb-8">
+            <Text className="text-slate-500 dark:text-gray-400 text-base">
+              No sets logged yet.
+            </Text>
           </View>
-          <Text className="text-3xl font-bold text-foreground text-left flex-1">
-            {movement.name}
-          </Text>
-        </View>
+        }
+        ListHeaderComponent={
+          <>
+            <View className="px-4 mb-6 flex-row items-center gap-3">
+              <View className="h-12 w-12 rounded-full bg-primary-500/20 items-center justify-center">
+                <MovementIcon trackingType={trackingType} size={24} />
+              </View>
+              <Text className="text-3xl font-bold text-foreground text-left flex-1">
+                {movement.name}
+              </Text>
+            </View>
 
-        {/* Collapsible Notes Section */}
-        <CollapsibleNotes
-          personalNotes={movement.personal_notes}
-          workoutNotes={workoutMovement?.workout_notes}
-        />
+            {/* Collapsible Notes Section */}
+            <CollapsibleNotes
+              personalNotes={movement.personal_notes}
+              workoutNotes={workoutMovement?.workout_notes}
+            />
 
-        {/* Input Section */}
-        <View className="p-4 gap-6">
+            {/* Input Section */}
+            <View className="p-4 gap-6">
           <View className="flex-row gap-4 justify-between">
             {/* Dynamic Controls based on tracking_type */}
             {(trackingType === "weight" ||
@@ -439,141 +479,126 @@ export default function MovementDetailScreen() {
           </View>
         </View>
 
-        {/* History Section */}
-        <View className="px-4 pb-20">
-          <View className="flex-row items-center flex-start mb-4 gap-2">
-            <Calendar size={24} color={colors.text} />
-            <Text className="text-lg font-bold text-foreground">
-              Set history
-            </Text>
-          </View>
+            {/* History Section title */}
+            <View className="px-4 flex-row items-center flex-start mb-4 gap-2">
+              <Calendar size={24} color={colors.text} />
+              <Text className="text-lg font-bold text-foreground">
+                Set history
+              </Text>
+            </View>
+          </>
+        }
+        renderItem={({ item }) => {
+          const { date, dateSets, previousSets, showComparison } = item;
+          return (
+            <View className="px-4">
+              <View className="bg-card rounded-xl border border-border mb-4 overflow-hidden">
+                <View className="bg-slate-50/50 dark:bg-background/50 p-3 border-b border-border gap-1">
+                  <Text className="text-slate-700 dark:text-gray-300 font-semibold text-base">
+                    {date}
+                  </Text>
+                  {showComparison && (
+                    <>
+                      <Text className="text-xs text-gray-500">
+                        Compared to previous
+                      </Text>
 
-          {Object.entries(groupedSets)
-            .sort(
-              ([dateA], [dateB]) =>
-                new Date(dateB).getTime() - new Date(dateA).getTime()
-            )
-            .map(([date, dateSets], index, array) => {
-              const nextSession = array[index + 1];
-              const previousSets: Tables<"sets">[] = nextSession ? nextSession[1] : [];
-
-              const showComparison =
-                index === 0 && previousSets && previousSets.length > 0;
-
-              return (
-                <View
-                  key={date}
-                  className="bg-card rounded-xl border border-border mb-4 overflow-hidden"
-                >
-                  <View className="bg-slate-50/50 dark:bg-background/50 p-3 border-b border-border gap-1">
-                    <Text className="text-slate-700 dark:text-gray-300 font-semibold text-base">
-                      {date}
-                    </Text>
-                    {showComparison && (
-                      <>
-                        <Text className="text-xs text-gray-500">
-                          Compared to previous
-                        </Text>
-
-                        {/* Use SessionComparison Component */}
-                        <View className="border-slate-200/50 dark:border-border/50">
-                          <SessionComparison
-                            currentSets={dateSets}
-                            previousSets={previousSets}
-                            movement={movement}
-                          />
-                        </View>
-                      </>
-                    )}
-                  </View>
-
-                  <View>
-                    {dateSets.map((set, index) => (
-                      <View
-                        key={set.id}
-                        className={`flex-row items-center justify-between p-3 ${
-                          index !== dateSets.length - 1
-                            ? "border-b border-slate-100 dark:border-border/30"
-                            : ""
-                        }`}
-                      >
-                        <View className="flex-row items-center gap-2">
-                          {(trackingType === "weight" ||
-                            trackingType === "reps" ||
-                            trackingType === "bodyweight") && (
-                            <>
-                              <Text className="text-foreground font-bold text-xl text-center">
-                                {set.reps}
-                              </Text>
-                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                                reps
-                              </Text>
-                            </>
-                          )}
-
-                          {trackingType === "weight" && (
-                            <>
-                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                                x
-                              </Text>
-                              <Text className="text-foreground font-bold text-xl text-center">
-                                {set.weight}
-                              </Text>
-                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                                {profile?.weight_unit || "kg"}
-                              </Text>
-                            </>
-                          )}
-
-                          {trackingType === "duration" && (
-                            <>
-                              <Text className="text-foreground font-bold text-xl text-center">
-                                {set.duration}
-                              </Text>
-                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                                s
-                              </Text>
-                            </>
-                          )}
-
-                          {trackingType === "distance" && (
-                            <>
-                              <Text className="text-foreground font-bold text-xl text-center">
-                                {set.distance}
-                              </Text>
-                              <Text className="text-slate-500 dark:text-gray-500 text-sm">
-                                {profile?.distance_unit || "km"}
-                              </Text>
-                            </>
-                          )}
-                        </View>
-
-                        <TouchableOpacity
-                          className="p-2 -mr-2"
-                          onPress={() => {
-                            setSelectedSet(set);
-                            setModalVisible(true);
-                          }}
-                          hitSlop={{
-                            top: 10,
-                            bottom: 10,
-                            left: 10,
-                            right: 10,
-                          }}
-                        >
-                          <MoreVertical
-                            size={20}
-                            color={colors.textSecondary}
-                          />
-                        </TouchableOpacity>
+                      {/* Use SessionComparison Component */}
+                      <View className="border-slate-200/50 dark:border-border/50">
+                        <SessionComparison
+                          currentSets={dateSets}
+                          previousSets={previousSets}
+                          movement={movement}
+                        />
                       </View>
-                    ))}
-                  </View>
+                    </>
+                  )}
                 </View>
-              );
-            })}
-        </View>
-      </ScrollView>
+
+                <View>
+                  {dateSets.map((set, index) => (
+                    <View
+                      key={set.id}
+                      className={`flex-row items-center justify-between p-3 ${
+                        index !== dateSets.length - 1
+                          ? "border-b border-slate-100 dark:border-border/30"
+                          : ""
+                      }`}
+                    >
+                      <View className="flex-row items-center gap-2">
+                        {(trackingType === "weight" ||
+                          trackingType === "reps" ||
+                          trackingType === "bodyweight") && (
+                          <>
+                            <Text className="text-foreground font-bold text-xl text-center">
+                              {set.reps}
+                            </Text>
+                            <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                              reps
+                            </Text>
+                          </>
+                        )}
+
+                        {trackingType === "weight" && (
+                          <>
+                            <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                              x
+                            </Text>
+                            <Text className="text-foreground font-bold text-xl text-center">
+                              {set.weight}
+                            </Text>
+                            <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                              {profile?.weight_unit || "kg"}
+                            </Text>
+                          </>
+                        )}
+
+                        {trackingType === "duration" && (
+                          <>
+                            <Text className="text-foreground font-bold text-xl text-center">
+                              {set.duration}
+                            </Text>
+                            <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                              s
+                            </Text>
+                          </>
+                        )}
+
+                        {trackingType === "distance" && (
+                          <>
+                            <Text className="text-foreground font-bold text-xl text-center">
+                              {set.distance}
+                            </Text>
+                            <Text className="text-slate-500 dark:text-gray-500 text-sm">
+                              {profile?.distance_unit || "km"}
+                            </Text>
+                          </>
+                        )}
+                      </View>
+
+                      <TouchableOpacity
+                        className="p-2 -mr-2"
+                        onPress={() => {
+                          setSelectedSet(set);
+                          setModalVisible(true);
+                        }}
+                        hitSlop={{
+                          top: 10,
+                          bottom: 10,
+                          left: 10,
+                          right: 10,
+                        }}
+                      >
+                        <MoreVertical size={20} color={colors.textSecondary} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </View>
+          );
+        }}
+      />
       <SetActionModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -605,6 +630,12 @@ export default function MovementDetailScreen() {
         visible={actionSheetVisible}
         onClose={() => setActionSheetVisible(false)}
         title={movement.name}
+        onAnalytics={() => {
+          router.navigate({
+            pathname: "/(tabs)/analytics",
+            params: { workoutId, movementId },
+          });
+        }}
         onEdit={() => {
           setActionSheetVisible(false);
           router.push(`/workout/${workoutId}/movement/${movementId}/settings`);

@@ -345,16 +345,16 @@ export function CreateCustomMovementForm({
 
       {/* Footer Actions */}
       <View className="p-4 border-t border-border bg-card flex-row gap-3">
-        <TouchableOpacity
-          className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 items-center"
+        <Pressable
+          className="flex-1 bg-slate-100 dark:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 rounded-xl p-4 items-center"
           onPress={onCancel}
         >
           <Text className="text-foreground font-semibold text-base">
             Cancel
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1 bg-primary-500 rounded-xl p-4 items-center flex-row justify-center gap-2"
+        </Pressable>
+        <Pressable
+          className="flex-1 bg-primary-500 active:bg-primary-600 rounded-xl p-4 items-center flex-row justify-center gap-2"
           onPress={handleSubmit(onSubmit)}
           disabled={createMutation.isPending}
         >
@@ -365,7 +365,7 @@ export function CreateCustomMovementForm({
               Create Movement
             </Text>
           )}
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Rest Timer Modal */}

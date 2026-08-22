@@ -1,13 +1,13 @@
 import { Button } from "@/components/Button";
 import { useThemeColors } from "@hooks/useThemeColors";
-import { Archive, Copy, Pencil, Undo2 } from "lucide-react-native";
+import { Archive, BarChart2, Copy, Pencil, Undo2 } from "lucide-react-native";
 import { Modal, Pressable, Text, View } from "react-native";
 import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
 
 interface WorkoutActionSheetProps {
   visible: boolean;
   onClose: () => void;
-  onSelect: (action: "duplicate" | "archive" | "delete" | "edit") => void;
+  onSelect: (action: "duplicate" | "archive" | "delete" | "edit" | "analytics") => void;
   workoutName: string;
   isArchived: boolean;
 }
@@ -36,6 +36,19 @@ export function WorkoutActionSheet({
             </Text>
           </View>
           <View className="p-4 gap-2">
+            <Button
+              size="lg"
+              variant="outline"
+              className="flex-row items-center gap-2 justify-start"
+              onPress={() => {
+                onSelect("analytics");
+                onClose();
+              }}
+              icon={<BarChart2 size={20} color={colors.tint} />}
+            >
+              View Analytics
+            </Button>
+
             <Button
               size="lg"
               variant="outline"

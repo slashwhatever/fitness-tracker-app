@@ -17,10 +17,10 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -154,9 +154,11 @@ export default function ManageGroupsScreen() {
                 returnKeyType="done"
                 editable={!createGroup.isPending}
               />
-              <TouchableOpacity
+              <Pressable
                 className={`p-3 rounded-xl ${
-                  canCreate ? "bg-primary-500" : "bg-muted"
+                  canCreate
+                    ? "bg-primary-500 active:bg-primary-600"
+                    : "bg-muted"
                 }`}
                 disabled={!canCreate}
                 onPress={handleCreate}
@@ -166,7 +168,7 @@ export default function ManageGroupsScreen() {
                 ) : (
                   <Plus size={24} color="white" />
                 )}
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </KeyboardAvoidingView>

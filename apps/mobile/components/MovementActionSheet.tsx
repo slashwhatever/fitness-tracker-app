@@ -1,5 +1,6 @@
 import { Button } from "@/components/Button";
-import { Pencil } from "lucide-react-native";
+import { useThemeColors } from "@hooks/useThemeColors";
+import { BarChart2, Pencil } from "lucide-react-native";
 import { Modal, Pressable, Text, View } from "react-native";
 import { TimedConfirmDeleteButton } from "./TimedConfirmDeleteButton";
 
@@ -8,6 +9,7 @@ interface MovementActionSheetProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onAnalytics?: () => void;
   title?: string;
 }
 
@@ -16,8 +18,10 @@ export function MovementActionSheet({
   onClose,
   onEdit,
   onDelete,
+  onAnalytics,
   title,
 }: MovementActionSheetProps) {
+  const colors = useThemeColors();
   return (
     <Modal
       visible={visible}
@@ -39,6 +43,18 @@ export function MovementActionSheet({
 
         {/* Actions */}
         <View className="p-4 gap-2">
+          {onAnalytics && (
+            <Button
+              size="lg"
+              variant="outline"
+              onPress={() => { onAnalytics(); onClose(); }}
+              className="flex-row items-center gap-2 justify-start"
+              icon={<BarChart2 size={20} color={colors.tint} />}
+            >
+              View Analytics
+            </Button>
+          )}
+
           <Button
             size="lg"
             variant="outline"

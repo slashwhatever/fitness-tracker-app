@@ -126,10 +126,12 @@ export function FilterPicker(props: FilterPickerProps) {
   return (
     <>
       {/* Chip trigger */}
-      <TouchableOpacity
+      <Pressable
         onPress={handleOpen}
         className={`flex-row items-center gap-1 px-4 py-2 rounded-full border ${
-          hasSelection ? "bg-primary border-primary" : "bg-card border-border"
+          hasSelection
+            ? "bg-primary border-primary active:bg-primary-600"
+            : "bg-card border-border active:bg-slate-100 dark:active:bg-slate-700"
         }`}
         accessibilityRole="button"
         accessibilityLabel={`Filter by ${label}: ${hasSelection ? chipLabel : "All"}`}
@@ -153,7 +155,7 @@ export function FilterPicker(props: FilterPickerProps) {
         ) : (
           <ChevronDown size={12} color={colors.textSecondary} />
         )}
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Bottom sheet modal */}
       <Modal
@@ -209,9 +211,11 @@ export function FilterPicker(props: FilterPickerProps) {
               ListHeaderComponent={
                 /* "All" row — clears selection */
                 <View className="px-4">
-                  <TouchableOpacity
+                  <Pressable
                     className={`p-4 rounded-xl mb-2 flex-row items-center ${
-                      allSelected ? "bg-primary-500/20" : "bg-background/50"
+                      allSelected
+                        ? "bg-primary-500/20 active:bg-primary-500/30"
+                        : "bg-background/50 active:bg-slate-100 dark:active:bg-slate-700/50"
                     }`}
                     style={
                       allSelected
@@ -238,16 +242,18 @@ export function FilterPicker(props: FilterPickerProps) {
                         <View className="h-3 w-3 rounded-full bg-white" />
                       )}
                     </View>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               }
               renderItem={({ item }) => {
                 const selected = isStaged(item.id);
                 return (
                   <View className="px-4">
-                    <TouchableOpacity
+                    <Pressable
                       className={`p-4 rounded-xl mb-2 flex-row items-center ${
-                        selected ? "bg-primary-500/20" : "bg-background/50"
+                        selected
+                          ? "bg-primary-500/20 active:bg-primary-500/30"
+                          : "bg-background/50 active:bg-slate-100 dark:active:bg-slate-700/50"
                       }`}
                       style={
                         selected
@@ -275,7 +281,7 @@ export function FilterPicker(props: FilterPickerProps) {
                           <View className="h-3 w-3 rounded-full bg-white" />
                         )}
                       </View>
-                    </TouchableOpacity>
+                    </Pressable>
                   </View>
                 );
               }}
@@ -313,22 +319,22 @@ export function FilterPicker(props: FilterPickerProps) {
                   </TouchableOpacity>
                 </View>
                 <View className="flex-row gap-3">
-                  <TouchableOpacity
-                    className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 items-center"
+                  <Pressable
+                    className="flex-1 bg-slate-100 dark:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 rounded-xl p-4 items-center"
                     onPress={handleCancel}
                   >
                     <Text className="text-foreground font-semibold text-base">
                       Cancel
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className="flex-1 bg-primary-500 rounded-xl p-4 items-center"
+                  </Pressable>
+                  <Pressable
+                    className="flex-1 bg-primary-500 active:bg-primary-600 rounded-xl p-4 items-center"
                     onPress={handleApply}
                   >
                     <Text className="text-white font-semibold text-base">
                       Apply
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
               </View>
             )}

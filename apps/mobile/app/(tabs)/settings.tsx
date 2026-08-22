@@ -271,8 +271,8 @@ export default function SettingsScreen() {
                 control={control}
                 name="default_rest_timer"
                 render={({ field: { value } }) => (
-                  <TouchableOpacity
-                    className="p-4 border-b border-border flex-row justify-between items-center bg-card active:bg-slate-50 dark:active:bg-dark-bg/50"
+                  <Pressable
+                    className="p-4 border-b border-border flex-row justify-between items-center bg-card active:bg-slate-100 dark:active:bg-slate-700"
                     onPress={() => setActiveModal("restTimer")}
                   >
                     <View className="flex-1">
@@ -285,7 +285,7 @@ export default function SettingsScreen() {
                       </Text>
                     </View>
                     <ChevronDown size={20} color={colors.icon} />
-                  </TouchableOpacity>
+                  </Pressable>
                 )}
               />
 
@@ -295,8 +295,8 @@ export default function SettingsScreen() {
                   control={control}
                   name="weight_unit"
                   render={({ field: { value } }) => (
-                    <TouchableOpacity
-                      className="flex-1 p-4 border-r border-border border-b-0 active:bg-slate-50 dark:active:bg-dark-bg/50"
+                    <Pressable
+                      className="flex-1 p-4 border-r border-border border-b-0 active:bg-slate-100 dark:active:bg-slate-700"
                       onPress={() => setActiveModal("weight")}
                     >
                       <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
@@ -308,7 +308,7 @@ export default function SettingsScreen() {
                         </Text>
                         <ChevronDown size={16} color={colors.textSecondary} />
                       </View>
-                    </TouchableOpacity>
+                    </Pressable>
                   )}
                 />
 
@@ -316,8 +316,8 @@ export default function SettingsScreen() {
                   control={control}
                   name="distance_unit"
                   render={({ field: { value } }) => (
-                    <TouchableOpacity
-                      className="flex-1 p-4 active:bg-slate-50 dark:active:bg-dark-bg/50 border-b-0"
+                    <Pressable
+                      className="flex-1 p-4 active:bg-slate-100 dark:active:bg-slate-700 border-b-0"
                       onPress={() => setActiveModal("distance")}
                     >
                       <Text className="text-sm font-medium text-slate-500 dark:text-gray-400 mb-1">
@@ -329,7 +329,7 @@ export default function SettingsScreen() {
                         </Text>
                         <ChevronDown size={16} color={colors.textSecondary} />
                       </View>
-                    </TouchableOpacity>
+                    </Pressable>
                   )}
                 />
               </View>

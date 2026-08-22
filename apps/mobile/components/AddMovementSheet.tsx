@@ -301,14 +301,14 @@ export function AddMovementSheet({
                 }
                 ListHeaderComponent={
                   <View className="px-4">
-                    <TouchableOpacity
-                      className="bg-primary-500/10 p-4 rounded-xl flex-row items-center justify-center border border-primary-500/20 mb-6"
+                    <Pressable
+                      className="bg-primary-500/10 active:bg-primary-500/20 p-4 rounded-xl flex-row items-center justify-center border border-primary-500/20 mb-6"
                       onPress={() => setViewMode("create")}
                     >
                       <Text className="text-primary-500 font-semibold text-base">
                         + Create Custom Movement
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   </View>
                 }
                 ListEmptyComponent={
@@ -346,19 +346,19 @@ export function AddMovementSheet({
                 </TouchableOpacity>
               </View>
               <View className="flex-row gap-3">
-                <TouchableOpacity
-                  className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-4 items-center"
+                <Pressable
+                  className="flex-1 bg-slate-100 dark:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 rounded-xl p-4 items-center"
                   onPress={handleCancel}
                 >
                   <Text className="text-foreground font-semibold text-base">
                     Cancel
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Pressable>
+                <Pressable
                   className={`flex-1 rounded-xl p-4 items-center ${
                     selectedIds.size === 0
                       ? "bg-slate-300 dark:bg-gray-700"
-                      : "bg-primary-500"
+                      : "bg-primary-500 active:bg-primary-600"
                   }`}
                   onPress={handleDone}
                   disabled={selectedIds.size === 0}
@@ -372,7 +372,7 @@ export function AddMovementSheet({
                   >
                     Add ({selectedIds.size})
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           )}

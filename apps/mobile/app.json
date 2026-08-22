@@ -33,7 +33,11 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router", "./plugins/withNotifee.js"],
+    "plugins": [
+      "expo-router",
+      "./plugins/withNotifee.js",
+      "expo-secure-store"
+    ],
     "extra": {
       "router": {},
       "eas": {

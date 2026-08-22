@@ -3,7 +3,7 @@ import { type WorkoutMovementWithDetails } from "@hooks/useMovements";
 import { useThemeColors } from "@hooks/useThemeColors";
 import { MoreVertical } from "lucide-react-native";
 import { memo } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface WorkoutMovementItemProps {
   item: WorkoutMovementWithDetails;
@@ -21,8 +21,8 @@ export const WorkoutMovementItem = memo(function WorkoutMovementItem({
   const colors = useThemeColors();
 
   return (
-    <TouchableOpacity
-      className="bg-card p-4 rounded-2xl border border-border mb-3"
+    <Pressable
+      className="bg-card p-4 rounded-2xl border border-border mb-3 active:bg-slate-100 dark:active:bg-slate-700"
       onPress={() => onPress(item)}
     >
       <View className="flex-row items-center justify-between">
@@ -52,6 +52,6 @@ export const WorkoutMovementItem = memo(function WorkoutMovementItem({
           <MoreVertical size={20} color={colors.textSecondary} />
         </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 });

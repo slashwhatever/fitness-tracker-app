@@ -28,10 +28,11 @@ import {
 import * as Haptics from "expo-haptics";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { GripVertical, MoreVertical, Plus } from "lucide-react-native";
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Pressable,
   Text,
   TouchableOpacity,
   View,
@@ -41,6 +42,80 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from "react-native-draggable-flatlist";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+// Memoized row so re-renders of the screen (e.g. opening an action sheet, or
+// the 1 Hz rest-timer tick) don't re-render every movement — only the row whose
+// props actually change. Props are primitives/stable callbacks for this reason.
+const MovementRow = memo(function MovementRow({
+  item,
+  drag,
+  isActive,
+  lastSetLabel,
+  iconColor,
+  onPress,
+  onOpenActionSheet,
+}: {
+  item: WorkoutMovementWithDetails;
+  drag: () => void;
+  isActive: boolean;
+  lastSetLabel: string;
+  iconColor: string;
+  onPress: (item: WorkoutMovementWithDetails) => void;
+  onOpenActionSheet: (item: WorkoutMovementWithDetails) => void;
+}) {
+  return (
+    <ScaleDecorator>
+      <Pressable
+        className={`bg-card p-4 rounded-2xl border border-border mb-3 active:bg-slate-100 dark:active:bg-slate-700 ${isActive ? "opacity-90" : ""}`}
+        onPress={() => onPress(item)}
+        disabled={isActive}
+      >
+        <View className="flex-row items-center justify-between">
+          {/* Drag Handle */}
+          <TouchableOpacity
+            onPressIn={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              drag();
+            }}
+            disabled={isActive}
+            className="pr-3 py-2"
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 5 }}
+          >
+            <GripVertical size={20} color={iconColor} />
+          </TouchableOpacity>
+
+          <View className="flex-row items-center flex-1">
+            <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
+              <MovementIcon
+                trackingType={item.user_movement?.tracking_type}
+                size={20}
+              />
+            </View>
+            <View className="flex-1">
+              <Text className="text-foreground font-bold text-base">
+                {item.user_movement?.name || "Unnamed Movement"}
+              </Text>
+              <Text className="text-slate-500 dark:text-gray-400 text-sm">
+                {lastSetLabel}
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              if (item.user_movement) {
+                onOpenActionSheet(item);
+              }
+            }}
+            className="p-2"
+          >
+            <MoreVertical size={20} color={iconColor} />
+          </TouchableOpacity>
+        </View>
+      </Pressable>
+    </ScaleDecorator>
+  );
+});
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -109,12 +184,18 @@ export default function WorkoutDetailScreen() {
   );
 
   const handleWorkoutAction = async (
-    action: "duplicate" | "archive" | "delete" | "edit"
+    action: "duplicate" | "archive" | "delete" | "edit" | "analytics"
   ) => {
     if (!workout) return;
 
     try {
       switch (action) {
+        case "analytics":
+          router.navigate({
+            pathname: "/(tabs)/analytics",
+            params: { workoutId: workout.id },
+          });
+          break;
         case "edit":
           router.push(`/workout/${workout.id}/settings`);
           break;
@@ -138,16 +219,19 @@ export default function WorkoutDetailScreen() {
           break;
       }
     } catch (_error) {
-      if (action !== "delete") {
+      if (action !== "delete" && action !== "analytics") {
         Alert.alert("Error", `Failed to ${action} workout`);
       }
     }
   };
 
-  const handleOpenActionSheet = (movement: WorkoutMovementWithDetails) => {
-    setSelectedMovement(movement);
-    setActionSheetVisible(true);
-  };
+  const handleOpenActionSheet = useCallback(
+    (movement: WorkoutMovementWithDetails) => {
+      setSelectedMovement(movement);
+      setActionSheetVisible(true);
+    },
+    []
+  );
 
   const handleDeleteMovement = () => {
     if (!selectedMovement) return;
@@ -291,6 +375,57 @@ export default function WorkoutDetailScreen() {
     }
   };
 
+  // Precompute a Map of last-set dates once, instead of an O(n) .find() per row
+  // on every render (which made the whole list O(n^2)).
+  const lastSetByMovement = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const entry of lastSetsData) {
+      map.set(entry.user_movement_id, entry.last_set_date);
+    }
+    return map;
+  }, [lastSetsData]);
+
+  const getLastSetLabel = useCallback(
+    (userMovementId: string) => {
+      const date = lastSetByMovement.get(userMovementId);
+      if (!date) return "No sets";
+      return formatLastSetDate([{ created_at: date }]);
+    },
+    [lastSetByMovement]
+  );
+
+  const handlePressMovement = useCallback(
+    (item: WorkoutMovementWithDetails) => {
+      if (item.user_movement?.id) {
+        router.push(`/workout/${id}/movement/${item.user_movement.id}`);
+      }
+    },
+    [id, router]
+  );
+
+  const renderMovement = useCallback(
+    ({
+      item,
+      drag,
+      isActive,
+    }: RenderItemParams<WorkoutMovementWithDetails>) => (
+      <MovementRow
+        item={item}
+        drag={drag}
+        isActive={isActive}
+        lastSetLabel={
+          item.user_movement?.id
+            ? getLastSetLabel(item.user_movement.id)
+            : "No sets"
+        }
+        iconColor={colors.textSecondary}
+        onPress={handlePressMovement}
+        onOpenActionSheet={handleOpenActionSheet}
+      />
+    ),
+    [getLastSetLabel, colors.textSecondary, handlePressMovement, handleOpenActionSheet]
+  );
+
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-background items-center justify-center">
@@ -313,18 +448,6 @@ export default function WorkoutDetailScreen() {
     );
   }
 
-  const getLastSetDate = (userMovementId: string) => {
-    const lastSetData = lastSetsData.find(
-      (data) => data.user_movement_id === userMovementId
-    );
-
-    if (!lastSetData?.last_set_date) {
-      return "No sets";
-    }
-
-    return formatLastSetDate([{ created_at: lastSetData.last_set_date }]);
-  };
-
   return (
     <View className="flex-1 bg-background">
       <Stack.Screen
@@ -337,6 +460,14 @@ export default function WorkoutDetailScreen() {
               onBack={() => {
                 router.replace("/workouts");
               }}
+              rightAction={
+                <TouchableOpacity
+                  className="p-2 -mr-2"
+                  onPress={() => setWorkoutActionSheetVisible(true)}
+                >
+                  <MoreVertical size={24} color={colors.text} />
+                </TouchableOpacity>
+              }
             />
           ),
         }}
@@ -345,70 +476,7 @@ export default function WorkoutDetailScreen() {
       <View className="flex-1 pb-0">
         <DraggableFlatList
           data={localMovements}
-          renderItem={({
-            item,
-            drag,
-            isActive,
-          }: RenderItemParams<WorkoutMovementWithDetails>) => (
-            <ScaleDecorator>
-              <TouchableOpacity
-                className={`bg-card p-4 rounded-2xl border border-border mb-3 ${isActive ? "opacity-90" : ""}`}
-                onPress={() => {
-                  if (item.user_movement?.id) {
-                    router.push(
-                      `/workout/${id}/movement/${item.user_movement.id}`
-                    );
-                  }
-                }}
-                disabled={isActive}
-              >
-                <View className="flex-row items-center justify-between">
-                  {/* Drag Handle */}
-                  <TouchableOpacity
-                    onPressIn={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      drag();
-                    }}
-                    disabled={isActive}
-                    className="pr-3 py-2"
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 5 }}
-                  >
-                    <GripVertical size={20} color={colors.textSecondary} />
-                  </TouchableOpacity>
-
-                  <View className="flex-row items-center flex-1">
-                    <View className="h-10 w-10 rounded-full bg-primary-500/20 items-center justify-center mr-3">
-                      <MovementIcon
-                        trackingType={item.user_movement?.tracking_type}
-                        size={20}
-                      />
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-foreground font-bold text-base">
-                        {item.user_movement?.name || "Unnamed Movement"}
-                      </Text>
-                      <Text className="text-slate-500 dark:text-gray-400 text-sm">
-                        {item.user_movement?.id
-                          ? getLastSetDate(item.user_movement.id)
-                          : "No sets"}
-                      </Text>
-                    </View>
-                  </View>
-                  <TouchableOpacity
-                    onPress={(e) => {
-                      e.stopPropagation();
-                      if (item.user_movement) {
-                        handleOpenActionSheet(item);
-                      }
-                    }}
-                    className="p-2"
-                  >
-                    <MoreVertical size={20} color={colors.textSecondary} />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            </ScaleDecorator>
-          )}
+          renderItem={renderMovement}
           keyExtractor={(item) => item.id}
           onDragEnd={handleDragEnd}
           contentContainerStyle={{
@@ -469,6 +537,16 @@ export default function WorkoutDetailScreen() {
         onClose={() => setActionSheetVisible(false)}
         onEdit={handleEditMovement}
         onDelete={handleDeleteMovement}
+        onAnalytics={() => {
+          setActionSheetVisible(false);
+          router.navigate({
+            pathname: "/(tabs)/analytics",
+            params: {
+              workoutId: id,
+              movementId: selectedMovement?.user_movement?.id,
+            },
+          });
+        }}
         title={selectedMovement?.user_movement?.name}
       />
 

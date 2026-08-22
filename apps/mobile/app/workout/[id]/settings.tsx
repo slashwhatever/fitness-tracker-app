@@ -211,12 +211,12 @@ export default function WorkoutSettingsScreen() {
                 showsHorizontalScrollIndicator={false}
                 className="flex-row"
               >
-                <TouchableOpacity
+                <Pressable
                   onPress={() => setGroupId(null)}
                   className={`mr-3 px-4 py-2 rounded-full border ${
                     groupId === null
-                      ? "bg-primary-500 border-primary-500"
-                      : "bg-transparent border-slate-300 dark:border-gray-600"
+                      ? "bg-primary-500 border-primary-500 active:bg-primary-600"
+                      : "bg-transparent border-slate-300 dark:border-gray-600 active:bg-slate-100 dark:active:bg-slate-700"
                   }`}
                 >
                   <Text
@@ -228,15 +228,15 @@ export default function WorkoutSettingsScreen() {
                   >
                     None
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
                 {groups.map((group) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={group.id}
                     onPress={() => setGroupId(group.id)}
                     className={`mr-3 px-4 py-2 rounded-full border ${
                       groupId === group.id
-                        ? "bg-primary-500 border-primary-500"
-                        : "bg-transparent border-slate-300 dark:border-gray-600"
+                        ? "bg-primary-500 border-primary-500 active:bg-primary-600"
+                        : "bg-transparent border-slate-300 dark:border-gray-600 active:bg-slate-100 dark:active:bg-slate-700"
                     }`}
                   >
                     <Text
@@ -248,7 +248,7 @@ export default function WorkoutSettingsScreen() {
                     >
                       {group.name}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </ScrollView>
             </View>
@@ -286,11 +286,11 @@ export default function WorkoutSettingsScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity
+            <Pressable
               className={`w-full p-4 rounded-xl items-center flex-row justify-center gap-2 ${
                 !name.trim() || isSaving
                   ? "bg-primary-500/50"
-                  : "bg-primary-500"
+                  : "bg-primary-500 active:bg-primary-600"
               }`}
               onPress={handleSave}
               disabled={!name.trim() || isSaving}
@@ -303,7 +303,7 @@ export default function WorkoutSettingsScreen() {
               <Text className="text-white font-bold text-lg">
                 {isSaving ? "Saving..." : "Save Changes"}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

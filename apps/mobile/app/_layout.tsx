@@ -9,8 +9,9 @@ import {
 } from "@/services/notificationService";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Redirect, Stack, useSegments } from "expo-router";
+import { Stack, useRootNavigationState, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -34,10 +35,8 @@ const queryClient = new QueryClient({
 function AuthenticatedApp() {
   const { session, loading } = useAuth();
   const segments = useSegments();
-
-  if (loading) {
-    return null;
-  }
+  const router = useRouter();
+  const rootNavState = useRootNavigationState();
 
   // Check if we're on an auth route (login, register, confirm)
   const isAuthRoute =
@@ -45,14 +44,30 @@ function AuthenticatedApp() {
     segments[0] === "register" ||
     segments[0] === "confirm";
 
-  // If not authenticated and trying to access protected routes, redirect to login
-  if (!session && !isAuthRoute) {
-    return <Redirect href="/login" />;
-  }
+  // reset-password is reachable in BOTH auth states: unauthenticated (the
+  // "Forgot password?" email-request flow) and authenticated-via-recovery (the
+  // new-password flow after the recovery deep link exchanges a session). Keep
+  // it out of isAuthRoute so a recovery session isn't bounced to home.
+  const isResetRoute = segments[0] === "reset-password";
 
-  // If authenticated and on auth routes, redirect to home
-  if (session && isAuthRoute) {
-    return <Redirect href="/" />;
+  // Drive auth redirects imperatively against the ALWAYS-mounted Stack below.
+  // Previously this component returned <Redirect> *instead of* the <Stack>,
+  // which unmounted the navigator mid-transition and produced the dev warning
+  // "The action 'REPLACE' ... was not handled by any navigator" on login.
+  // Guarding on rootNavState?.key ensures we never navigate before the root
+  // navigator is mounted.
+  useEffect(() => {
+    if (loading || !rootNavState?.key) return;
+
+    if (!session && !isAuthRoute && !isResetRoute) {
+      router.replace("/login");
+    } else if (session && isAuthRoute) {
+      router.replace("/");
+    }
+  }, [loading, session, isAuthRoute, isResetRoute, rootNavState?.key, router]);
+
+  if (loading) {
+    return null;
   }
 
   return (
@@ -77,6 +92,7 @@ function AuthenticatedApp() {
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="register" options={{ headerShown: false }} />
       <Stack.Screen name="confirm" options={{ headerShown: false }} />
+      <Stack.Screen name="reset-password" options={{ headerShown: false }} />
     </Stack>
   );
 }

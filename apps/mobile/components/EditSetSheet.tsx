@@ -1,5 +1,5 @@
-import { Tables } from "@fitness/shared";
 import logger from "@/lib/utils/logger";
+import { Tables } from "@fitness/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateSet } from "@hooks/useSets";
 import { useThemeColors } from "@hooks/useThemeColors";
@@ -9,9 +9,9 @@ import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   Modal,
+  Pressable,
   Text,
   TextInput,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -121,7 +121,7 @@ export function EditSetSheet({
       // Determine which fields should be sent based on tracking type
       // Send null for fields not applicable to this tracking type to avoid constraint violations
       const shouldIncludeReps = ["weight", "bodyweight", "reps"].includes(
-        data.trackingType
+        data.trackingType,
       );
       const shouldIncludeWeight = data.trackingType === "weight";
       const shouldIncludeDistance = data.trackingType === "distance";
@@ -155,7 +155,7 @@ export function EditSetSheet({
   const handleAdjust = (
     setter: (val: string) => void,
     current: string,
-    delta: number
+    delta: number,
   ) => {
     const val = parseFloat(current) || 0;
     const newVal = Math.max(0, val + delta);
@@ -292,8 +292,8 @@ export function EditSetSheet({
               )}
 
               {/* Save Button */}
-              <TouchableOpacity
-                className={`bg-green-600 rounded-full py-4 items-center flex-row justify-center gap-2 active:bg-green-700 mb-6 ${
+              <Pressable
+                className={`bg-green-600 active:bg-green-700 rounded-full py-4 items-center flex-row justify-center gap-2 mb-6 ${
                   !formState.isValid ? "opacity-50" : ""
                 }`}
                 onPress={handleSubmit(onSubmit)}
@@ -309,7 +309,7 @@ export function EditSetSheet({
                     </Text>
                   </>
                 )}
-              </TouchableOpacity>
+              </Pressable>
 
               {/* Notes */}
               <View className="bg-slate-100 dark:bg-slate-800 rounded-xl border border-border p-3 flex-row items-center justify-between">
